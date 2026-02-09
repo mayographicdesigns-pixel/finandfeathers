@@ -3,6 +3,7 @@ import { MapPin } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import CategoryFilter from '../components/CategoryFilter';
 import MenuCard from '../components/MenuCard';
+import MenuLineItem from '../components/MenuLineItem';
 import { categories, menuItems } from '../mockData';
 
 const MenuPage = () => {
@@ -21,8 +22,19 @@ const MenuPage = () => {
     [filteredItems]
   );
 
+  // Line items (sides and brunch-sides)
+  const lineItems = useMemo(() => 
+    filteredItems.filter(item => item.category === 'sides' || item.category === 'brunch-sides'),
+    [filteredItems]
+  );
+
   const smallItems = useMemo(() => 
-    filteredItems.filter(item => item.category !== 'entrees' && item.category !== 'seafood-grits'),
+    filteredItems.filter(item => 
+      item.category !== 'entrees' && 
+      item.category !== 'seafood-grits' &&
+      item.category !== 'sides' &&
+      item.category !== 'brunch-sides'
+    ),
     [filteredItems]
   );
 
