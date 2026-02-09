@@ -15,15 +15,31 @@ const MenuPage = () => {
     return menuItems.filter(item => item.category === activeCategory);
   }, [activeCategory]);
 
-  // Separate entrees from other items
-  const entreeItems = useMemo(() => 
-    filteredItems.filter(item => item.category === 'entrees'),
+  // Separate large items (entrees & seafood-grits) from other items
+  const largeItems = useMemo(() => 
+    filteredItems.filter(item => item.category === 'entrees' || item.category === 'seafood-grits'),
     [filteredItems]
   );
 
-  const otherItems = useMemo(() => 
-    filteredItems.filter(item => item.category !== 'entrees'),
+  const smallItems = useMemo(() => 
+    filteredItems.filter(item => item.category !== 'entrees' && item.category !== 'seafood-grits'),
     [filteredItems]
+  );
+
+  // For daily specials, separate drinks (cocktails) from food
+  const dailySpecialFood = useMemo(() => 
+    smallItems.filter(item => item.category === 'daily-specials'),
+    [smallItems]
+  );
+
+  const dailySpecialDrinks = useMemo(() => 
+    filteredItems.filter(item => item.category === 'cocktails' && activeCategory === 'daily-specials'),
+    [filteredItems, activeCategory]
+  );
+
+  const otherSmallItems = useMemo(() => 
+    smallItems.filter(item => item.category !== 'daily-specials'),
+    [smallItems]
   );
 
   return (
@@ -71,21 +87,45 @@ const MenuPage = () => {
 
       {/* Menu Grid */}
       <div className="container mx-auto px-4 pb-16">
-        {/* Entrees - 3 columns (larger cards) */}
-        {entreeItems.length > 0 && (
+        {/* Large items - Entrees & Seafood & Grits - 3 columns */}
+        {largeItems.length > 0 && (
           <div className="mb-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {entreeItems.map((item) => (
+              {largeItems.map((item) => (
                 <MenuCard key={item.id} item={item} />
               ))}
             </div>
           </div>
         )}
 
-        {/* Other items - 4 columns (smaller cards) */}
-        {otherItems.length > 0 && (
+        {/* Daily Specials Food - 4 columns (smaller cards) */}
+        {activeCategory === 'daily-specials' && dailySpecialFood.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-2xl font-bold text-white mb-4">Food</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+              {dailySpecialFood.map((item) => (
+                <MenuCard key={item.id} item={item} variant="compact" />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Daily Specials Drinks - 4 columns (smaller cards) */}
+        {activeCategory === 'daily-specials' && dailySpecialDrinks.length > 0 && (
+          <div>
+            <h3 className="text-2xl font-bold text-white mb-4">Drinks</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+              {dailySpecialDrinks.map((item) => (
+                <MenuCard key={item.id} item={item} variant="compact" />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Other small items - 4 columns (smaller cards) */}
+        {activeCategory !== 'daily-specials' && otherSmallItems.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-            {otherItems.map((item) => (
+            {otherSmallItems.map((item) => (
               <MenuCard key={item.id} item={item} variant="compact" />
             ))}
           </div>
