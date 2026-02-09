@@ -15,6 +15,17 @@ const MenuPage = () => {
     return menuItems.filter(item => item.category === activeCategory);
   }, [activeCategory]);
 
+  // Separate entrees from other items
+  const entreeItems = useMemo(() => 
+    filteredItems.filter(item => item.category === 'entrees'),
+    [filteredItems]
+  );
+
+  const otherItems = useMemo(() => 
+    filteredItems.filter(item => item.category !== 'entrees'),
+    [filteredItems]
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Header with location */}
@@ -60,11 +71,25 @@ const MenuPage = () => {
 
       {/* Menu Grid */}
       <div className="container mx-auto px-4 pb-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredItems.map((item) => (
-            <MenuCard key={item.id} item={item} />
-          ))}
-        </div>
+        {/* Entrees - 3 columns (larger cards) */}
+        {entreeItems.length > 0 && (
+          <div className="mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {entreeItems.map((item) => (
+                <MenuCard key={item.id} item={item} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Other items - 4 columns (smaller cards) */}
+        {otherItems.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+            {otherItems.map((item) => (
+              <MenuCard key={item.id} item={item} variant="compact" />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
