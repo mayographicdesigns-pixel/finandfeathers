@@ -16,6 +16,48 @@ const MenuPage = () => {
     return menuItems.filter(item => item.category === activeCategory);
   }, [activeCategory]);
 
+  // Group items by category for "All" view
+  const itemsByCategory = useMemo(() => {
+    if (activeCategory !== 'all') {
+      return null;
+    }
+
+    const grouped = {
+      'daily-specials': [],
+      'starters': [],
+      'entrees': [],
+      'seafood-grits': [],
+      'sandwiches': [],
+      'salads': [],
+      'sides': [],
+      'brunch': [],
+      'brunch-sides': [],
+      'cocktails': []
+    };
+
+    menuItems.forEach(item => {
+      if (grouped[item.category]) {
+        grouped[item.category].push(item);
+      }
+    });
+
+    return grouped;
+  }, [activeCategory]);
+
+  // Category display names
+  const categoryNames = {
+    'daily-specials': 'Daily Specials',
+    'starters': 'Starters',
+    'entrees': 'Entrees',
+    'seafood-grits': 'Seafood & Grits',
+    'sandwiches': 'Sandwiches',
+    'salads': 'Salads',
+    'sides': 'Sides',
+    'brunch': 'Brunch',
+    'brunch-sides': 'Brunch Sides',
+    'cocktails': 'Cocktails'
+  };
+
   // Separate large items (entrees & seafood-grits) from other items
   const largeItems = useMemo(() => 
     filteredItems.filter(item => item.category === 'entrees' || item.category === 'seafood-grits'),
