@@ -1,14 +1,17 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
 from typing import List
-import uuid
-from datetime import datetime, timezone
+from models import (
+    LoyaltyMember, LoyaltyMemberCreate, PushSubscription,
+    PushNotification, PushNotificationCreate,
+    ContactForm, ContactFormCreate
+)
+from push_service import PushNotificationService
 
 
 ROOT_DIR = Path(__file__).parent
@@ -19,6 +22,9 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
+# Initialize Push Notification Service
+push_service = PushNotificationService(db)
+
 # Create the main app without a prefix
 app = FastAPI()
 
@@ -26,45 +32,99 @@ app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
 
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-
-class StatusCheckCreate(BaseModel):
-    client_name: str
-
-# Add your routes to the router instead of directly to app
+# Health check
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Fin & Feathers API is running"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
+# VAPID Public Key endpoint
+@api_router.get("/push/public-key")
+async def get_vapid_public_key():
+    return {"publicKey": push_service.get_public_key()}
+
+
+# Loyalty Program Endpoints
+@api_router.post("/loyalty/signup", response_model=LoyaltyMember)
+async def signup_loyalty(member: LoyaltyMemberCreate):
+    """Sign up for loyalty program"""
+    # Check if email already exists
+    existing = await db.loyalty_members.find_one({"email": member.email})
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
     
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
+    member_dict = member.dict()
+    loyalty_member = LoyaltyMember(**member_dict)
+    await db.loyalty_members.insert_one(loyalty_member.dict())
+    return loyalty_member
+
+
+@api_router.post("/loyalty/subscribe-push/{member_id}")
+async def subscribe_push(member_id: str, subscription: PushSubscription):
+    """Subscribe to push notifications"""
+    member = await db.loyalty_members.find_one({"id": member_id})
+    if not member:
+        raise HTTPException(status_code=404, detail="Member not found")
     
-    return status_checks
+    await db.loyalty_members.update_one(
+        {"id": member_id},
+        {"$set": {"push_subscription": subscription.dict()}}
+    )
+    return {"message": "Push subscription saved successfully"}
+
+
+@api_router.get("/loyalty/members", response_model=List[LoyaltyMember])
+async def get_loyalty_members():
+    """Get all loyalty members (admin only - add auth in production)"""
+    members = await db.loyalty_members.find().to_list(1000)
+    return [LoyaltyMember(**member) for member in members]
+
+
+# Push Notification Endpoints
+@api_router.post("/notifications/send")
+async def send_push_notification(notification: PushNotificationCreate):
+    """Send push notification to subscribers (admin only - add auth in production)"""
+    notification_data = {
+        "title": notification.title,
+        "body": notification.body,
+        "icon": notification.icon,
+        "image": notification.image,
+        "url": notification.url
+    }
+    
+    if notification.send_to_all:
+        result = await push_service.send_to_all_subscribers(notification_data)
+    else:
+        result = {"sent": 0, "failed": 0, "total_subscribers": 0}
+    
+    # Save notification record
+    push_notif = PushNotification(
+        **notification.dict(exclude={'send_to_all'}),
+        sent_to=[]
+    )
+    await db.push_notifications.insert_one(push_notif.dict())
+    
+    return {
+        "message": "Push notifications sent",
+        "result": result
+    }
+
+
+@api_router.get("/notifications/history", response_model=List[PushNotification])
+async def get_notification_history():
+    """Get push notification history (admin only - add auth in production)"""
+    notifications = await db.push_notifications.find().sort("sent_at", -1).limit(50).to_list(50)
+    return [PushNotification(**notif) for notif in notifications]
+
+
+# Contact Form Endpoint
+@api_router.post("/contact", response_model=ContactForm)
+async def submit_contact_form(form: ContactFormCreate):
+    """Submit contact form"""
+    contact = ContactForm(**form.dict())
+    await db.contact_forms.insert_one(contact.dict())
+    return contact
+
 
 # Include the router in the main app
 app.include_router(api_router)
@@ -72,7 +132,7 @@ app.include_router(api_router)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
