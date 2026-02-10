@@ -842,3 +842,43 @@ export const menuItems = [
   }
 ];
 
+// LOCATIONS DATA
+export const locations = [
+  {
+    id: 1,
+    name: 'Fin & Feathers - Edgewood',
+    address: '2841 Candler Rd, Decatur, GA 30034',
+    phone: '(404) 555-0123',
+    coordinates: { lat: 33.7147, lng: -84.2847 },
+    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80',
+    hours: 'Mon-Thu: 12pm-10pm, Fri-Sat: 12pm-11pm, Sun: 11am-9pm',
+    onlineOrdering: 'https://order.finandfeathers.com/edgewood',
+    reservations: 'https://reserve.finandfeathers.com/edgewood',
+    delivery: 'https://delivery.finandfeathers.com/edgewood'
+  },
+  {
+    id: 2,
+    name: 'Fin & Feathers - Buckhead',
+    address: '3350 Peachtree Rd NE, Atlanta, GA 30326',
+    phone: '(404) 555-0124',
+    coordinates: { lat: 33.8490, lng: -84.3671 },
+    image: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=800&q=80',
+    hours: 'Mon-Thu: 11am-10pm, Fri-Sat: 11am-11pm, Sun: 10am-9pm',
+    onlineOrdering: 'https://order.finandfeathers.com/buckhead',
+    reservations: 'https://reserve.finandfeathers.com/buckhead',
+    delivery: 'https://delivery.finandfeathers.com/buckhead'
+  },
+  {
+    id: 3,
+    name: 'Fin & Feathers - Midtown',
+    address: '500 10th St NW, Atlanta, GA 30318',
+    phone: '(404) 555-0125',
+    coordinates: { lat: 33.7812, lng: -84.3902 },
+    image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80',
+    hours: 'Mon-Thu: 11am-10pm, Fri-Sat: 11am-12am, Sun: 10am-9pm',
+    onlineOrdering: 'https://order.finandfeathers.com/midtown',
+    reservations: 'https://reserve.finandfeathers.com/midtown',
+    delivery: 'https://delivery.finandfeathers.com/midtown'
+  }
+];
+
