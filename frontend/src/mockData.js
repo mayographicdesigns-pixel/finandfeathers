@@ -846,101 +846,262 @@ export const menuItems = [
 export const locations = [
   {
     id: 1,
+    slug: 'edgewood-atlanta',
     name: 'Fin & Feathers - Edgewood (Atlanta)',
     address: '345 Edgewood Ave SE, Atlanta, GA 30312',
     phone: '(404) 855-5524',
     reservationPhone: '(404) 692-1252',
     coordinates: { lat: 33.7547, lng: -84.3733 },
     image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80',
-    hours: 'Mon-Thu: 11am-1am, Fri: 11am-3am, Sat: 10am-3am, Sun: 10am-12am',
+    hours: {
+      monday: '11am-1am',
+      tuesday: '11am-1am',
+      wednesday: '11am-1am',
+      thursday: '11am-1am',
+      friday: '11am-3am',
+      saturday: '10am-3am',
+      sunday: '10am-12am'
+    },
     locationUrl: 'https://finandfeathersrestaurants.com/edgewood/',
     onlineOrdering: 'https://finandfeathersrestaurants.com/edgewood/',
     reservations: 'sms:14046921252?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: 'https://finandfeathersrestaurants.com/edgewood/'
+    delivery: 'https://finandfeathersrestaurants.com/edgewood/',
+    socialMedia: {
+      instagram: 'https://instagram.com/finandfeathers_edgewood',
+      facebook: 'https://facebook.com/finandfeathers',
+      twitter: 'https://twitter.com/finandfeathers'
+    },
+    weeklySpecials: [
+      { day: 'Monday', special: '$5 Wings & $5 Margaritas', image: '/videos/5.mp4' },
+      { day: 'Tuesday', special: 'Taco Tuesday - $2 Tacos', image: '/videos/9.mp4' },
+      { day: 'Wednesday', special: 'Wine Down Wednesday - Half Price Wine', image: '/videos/13.mp4' },
+      { day: 'Thursday', special: 'Thirsty Thursday - $10 Long Islands', image: '/videos/17.mp4' },
+      { day: 'Friday', special: 'Fresh Fish Friday - Market Price', image: '/videos/21.mp4' },
+      { day: 'Saturday', special: 'Brunch & Bottomless Mimosas', image: '/videos/24.mp4' },
+      { day: 'Sunday', special: 'Sunday Funday - Kids Eat Free', image: '/videos/1.mp4' }
+    ]
   },
   {
     id: 2,
+    slug: 'midtown-atlanta',
     name: 'Fin & Feathers - Midtown (Atlanta)',
     address: '1136 Crescent Ave NE, Atlanta, GA 30309',
     phone: '(404) 549-7555',
     reservationPhone: '(678) 421-4083',
     coordinates: { lat: 33.7812, lng: -84.3838 },
     image: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=800&q=80',
-    hours: 'Mon-Sun: Hours vary, call for details',
+    hours: {
+      monday: '11am-10pm',
+      tuesday: '11am-10pm',
+      wednesday: '11am-10pm',
+      thursday: '11am-11pm',
+      friday: '11am-12am',
+      saturday: '10am-12am',
+      sunday: '10am-10pm'
+    },
     locationUrl: 'https://finandfeathersrestaurants.com/midtown-atlanta/',
     onlineOrdering: 'https://finandfeathersrestaurants.com/midtown-atlanta/',
     reservations: 'sms:16784214083?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: 'https://finandfeathersrestaurants.com/midtown-atlanta/'
+    delivery: 'https://finandfeathersrestaurants.com/midtown-atlanta/',
+    socialMedia: {
+      instagram: 'https://instagram.com/finandfeathers_midtown',
+      facebook: 'https://facebook.com/finandfeathers',
+      twitter: 'https://twitter.com/finandfeathers'
+    },
+    weeklySpecials: [
+      { day: 'Monday', special: 'Margarita Madness - $7 Margaritas', image: '/videos/5.mp4' },
+      { day: 'Tuesday', special: '$1 Oysters All Day', image: '/videos/9.mp4' },
+      { day: 'Wednesday', special: 'Wings & Things - $6 Wings', image: '/videos/13.mp4' },
+      { day: 'Thursday', special: 'Steak Night - $25 Ribeye', image: '/videos/17.mp4' },
+      { day: 'Friday', special: 'Lobster Special - Market Price', image: '/videos/21.mp4' },
+      { day: 'Saturday', special: 'Weekend Brunch 10am-3pm', image: '/videos/24.mp4' },
+      { day: 'Sunday', special: 'Live Music & Happy Hour', image: '/videos/1.mp4' }
+    ]
   },
   {
     id: 3,
+    slug: 'douglasville',
     name: 'Fin & Feathers - Douglasville',
     address: '7430 Douglas Blvd, Douglasville, GA 30135',
     phone: '(678) 653-9577',
     reservationPhone: '(404) 458-1958',
     coordinates: { lat: 33.7515, lng: -84.7477 },
     image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80',
-    hours: 'Mon-Sun: Hours vary, call for details',
+    hours: {
+      monday: '12pm-10pm',
+      tuesday: '12pm-10pm',
+      wednesday: '12pm-10pm',
+      thursday: '12pm-11pm',
+      friday: '12pm-12am',
+      saturday: '11am-12am',
+      sunday: '11am-9pm'
+    },
     locationUrl: 'https://finandfeathersrestaurants.com/douglasville/',
     onlineOrdering: 'https://finandfeathersrestaurants.com/douglasville/',
     reservations: 'sms:14044581958?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: 'https://finandfeathersrestaurants.com/douglasville/'
+    delivery: 'https://finandfeathersrestaurants.com/douglasville/',
+    socialMedia: {
+      instagram: 'https://instagram.com/finandfeathers_douglasville',
+      facebook: 'https://facebook.com/finandfeathers',
+      twitter: 'https://twitter.com/finandfeathers'
+    },
+    weeklySpecials: [
+      { day: 'Monday', special: 'Family Night - Kids Eat Free', image: '/videos/6.mp4' },
+      { day: 'Tuesday', special: 'Taco & Tequila Tuesday', image: '/videos/10.mp4' },
+      { day: 'Wednesday', special: 'Wine & Dine - 50% Off Bottles', image: '/videos/14.mp4' },
+      { day: 'Thursday', special: 'Craft Beer Night', image: '/videos/18.mp4' },
+      { day: 'Friday', special: 'Seafood Boil Special', image: '/videos/22.mp4' },
+      { day: 'Saturday', special: 'Brunch Party 11am-3pm', image: '/videos/25.mp4' },
+      { day: 'Sunday', special: 'Sunday Roast Special', image: '/videos/2.mp4' }
+    ]
   },
   {
     id: 4,
+    slug: 'riverdale',
     name: 'Fin & Feathers - Riverdale',
     address: '6340 Hwy 85, Riverdale, GA 30274',
     phone: '(770) 703-2282',
     reservationPhone: '(678) 304-8191',
     coordinates: { lat: 33.5726, lng: -84.4132 },
     image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80',
-    hours: 'Mon-Sun: Hours vary, call for details',
+    hours: {
+      monday: '11am-10pm',
+      tuesday: '11am-10pm',
+      wednesday: '11am-10pm',
+      thursday: '11am-11pm',
+      friday: '11am-12am',
+      saturday: '10am-12am',
+      sunday: '10am-10pm'
+    },
     locationUrl: 'https://finandfeathersrestaurants.com/riverdale/',
     onlineOrdering: 'https://finandfeathersrestaurants.com/riverdale/',
     reservations: 'sms:16783048191?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: 'https://finandfeathersrestaurants.com/riverdale/'
+    delivery: 'https://finandfeathersrestaurants.com/riverdale/',
+    socialMedia: {
+      instagram: 'https://instagram.com/finandfeathers_riverdale',
+      facebook: 'https://facebook.com/finandfeathers',
+      twitter: 'https://twitter.com/finandfeathers'
+    },
+    weeklySpecials: [
+      { day: 'Monday', special: '$5 Daily Specials All Day', image: '/videos/7.mp4' },
+      { day: 'Tuesday', special: 'Two for Tuesday - BOGO Entrees', image: '/videos/11.mp4' },
+      { day: 'Wednesday', special: 'Wine Wednesday - $5 Glasses', image: '/videos/15.mp4' },
+      { day: 'Thursday', special: 'Throwback Thursday - Classic Menu', image: '/videos/19.mp4' },
+      { day: 'Friday', special: 'Fried Fish Friday', image: '/videos/23.mp4' },
+      { day: 'Saturday', special: 'All Day Brunch & Cocktails', image: '/videos/26.mp4' },
+      { day: 'Sunday', special: 'Southern Sunday Dinner', image: '/videos/3.mp4' }
+    ]
   },
   {
     id: 5,
+    slug: 'valdosta',
     name: 'Fin & Feathers - Valdosta',
     address: '1700 Norman Dr, Valdosta, GA 31601',
     phone: '(229) 474-4049',
     reservationPhone: '(229) 231-4653',
     coordinates: { lat: 30.8327, lng: -83.2785 },
     image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80',
-    hours: 'Mon-Sun: Hours vary, call for details',
+    hours: {
+      monday: '12pm-9pm',
+      tuesday: '12pm-9pm',
+      wednesday: '12pm-9pm',
+      thursday: '12pm-10pm',
+      friday: '12pm-11pm',
+      saturday: '11am-11pm',
+      sunday: '11am-9pm'
+    },
     locationUrl: 'https://finandfeathersrestaurants.com/valdosta/',
     onlineOrdering: 'https://finandfeathersrestaurants.com/valdosta/',
     reservations: 'sms:2292314653?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: 'https://finandfeathersrestaurants.com/valdosta/'
+    delivery: 'https://finandfeathersrestaurants.com/valdosta/',
+    socialMedia: {
+      instagram: 'https://instagram.com/finandfeathers_valdosta',
+      facebook: 'https://facebook.com/finandfeathers',
+      twitter: 'https://twitter.com/finandfeathers'
+    },
+    weeklySpecials: [
+      { day: 'Monday', special: 'Manic Monday - $8 Burgers', image: '/videos/8.mp4' },
+      { day: 'Tuesday', special: 'Taco Tuesday Fiesta', image: '/videos/12.mp4' },
+      { day: 'Wednesday', special: 'Wine Down Wednesday', image: '/videos/16.mp4' },
+      { day: 'Thursday', special: 'Thirsty Thursday - $3 Drafts', image: '/videos/20.mp4' },
+      { day: 'Friday', special: 'Fresh Catch Friday', image: '/videos/21.mp4' },
+      { day: 'Saturday', special: 'Brunch & Bubbles', image: '/videos/27.mp4' },
+      { day: 'Sunday', special: 'Family Sunday Feast', image: '/videos/4.mp4' }
+    ]
   },
   {
     id: 6,
+    slug: 'albany',
     name: 'Fin & Feathers - Albany',
     address: '2800 Old Dawson Rd Unit 5, Albany, GA 31707',
     phone: '(229) 231-2101',
     reservationPhone: '(229) 231-2101',
     coordinates: { lat: 31.5785, lng: -84.1558 },
     image: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=800&q=80',
-    hours: 'Mon-Sun: Hours vary, call for details',
+    hours: {
+      monday: '11am-9pm',
+      tuesday: '11am-9pm',
+      wednesday: '11am-9pm',
+      thursday: '11am-10pm',
+      friday: '11am-11pm',
+      saturday: '10am-11pm',
+      sunday: '10am-9pm'
+    },
     locationUrl: 'https://finandfeathersrestaurants.com/albany/',
     onlineOrdering: 'https://finandfeathersrestaurants.com/albany/',
     reservations: 'sms:12292312101?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: 'https://finandfeathersrestaurants.com/albany/'
+    delivery: 'https://finandfeathersrestaurants.com/albany/',
+    socialMedia: {
+      instagram: 'https://instagram.com/finandfeathers_albany',
+      facebook: 'https://facebook.com/finandfeathers',
+      twitter: 'https://twitter.com/finandfeathers'
+    },
+    weeklySpecials: [
+      { day: 'Monday', special: 'Monday Blues Buster - Live Music', image: '/videos/5.mp4' },
+      { day: 'Tuesday', special: '$2 Taco & $2 Tecate', image: '/videos/9.mp4' },
+      { day: 'Wednesday', special: 'Wing Wednesday - 50¢ Wings', image: '/videos/13.mp4' },
+      { day: 'Thursday', special: 'Thirsty Thursday Cocktails', image: '/videos/17.mp4' },
+      { day: 'Friday', special: 'Fish Fry Friday', image: '/videos/21.mp4' },
+      { day: 'Saturday', special: 'Weekend Brunch Extravaganza', image: '/videos/28.mp4' },
+      { day: 'Sunday', special: 'Sunday Funday - All Day Happy Hour', image: '/videos/1.mp4' }
+    ]
   },
   {
     id: 7,
+    slug: 'las-vegas',
     name: 'Fin & Feathers - Las Vegas',
     address: '1229 S Casino Center Blvd, Las Vegas, NV 89104',
     phone: '(725) 204-9655',
     reservationPhone: '(702) 546-6394',
     coordinates: { lat: 36.1622, lng: -115.1505 },
     image: 'https://images.unsplash.com/photo-1514683877543-bffef8e73001?w=800&q=80',
-    hours: 'Mon-Sun: Hours vary, call for details',
+    hours: {
+      monday: '10am-2am',
+      tuesday: '10am-2am',
+      wednesday: '10am-2am',
+      thursday: '10am-3am',
+      friday: '10am-4am',
+      saturday: '10am-4am',
+      sunday: '10am-2am'
+    },
     locationUrl: 'https://finandfeathersrestaurants.com/las-vegas/',
     onlineOrdering: 'https://finandfeathersrestaurants.com/las-vegas/',
     reservations: 'sms:7025466394?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: 'https://finandfeathersrestaurants.com/las-vegas/'
+    delivery: 'https://finandfeathersrestaurants.com/las-vegas/',
+    socialMedia: {
+      instagram: 'https://instagram.com/finandfeathers_vegas',
+      facebook: 'https://facebook.com/finandfeathers',
+      twitter: 'https://twitter.com/finandfeathers'
+    },
+    weeklySpecials: [
+      { day: 'Monday', special: 'Monday Night Madness - $20 All You Can Eat Wings', image: '/videos/6.mp4' },
+      { day: 'Tuesday', special: 'Taco Tuesday Vegas Style', image: '/videos/10.mp4' },
+      { day: 'Wednesday', special: 'Wine & Dine - Premium Bottles $30', image: '/videos/14.mp4' },
+      { day: 'Thursday', special: 'Vegas Thursday - Champagne Brunch', image: '/videos/18.mp4' },
+      { day: 'Friday', special: 'High Roller Friday - Lobster & Steak', image: '/videos/22.mp4' },
+      { day: 'Saturday', special: 'Saturday Night Party - DJ & Specials', image: '/videos/29.mp4' },
+      { day: 'Sunday', special: 'Recovery Sunday - Hangover Brunch', image: '/videos/2.mp4' }
+    ]
   }
 ];
 
