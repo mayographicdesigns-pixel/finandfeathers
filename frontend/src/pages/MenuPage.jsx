@@ -91,7 +91,7 @@ const MenuPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen bg-black">
       {/* Header with logo and location */}
       <div className="container mx-auto px-4 pt-8 pb-4">
         <div className="flex flex-col items-center gap-4">
@@ -109,7 +109,7 @@ const MenuPage = () => {
           <Button
             onClick={() => navigate('/')}
             variant="outline"
-            className="bg-slate-800/70 border-amber-600/50 text-amber-500 hover:bg-slate-700 hover:text-amber-400 hover:border-amber-500 transition-all duration-300 px-6 py-2.5 rounded-lg"
+            className="bg-slate-800/70 border-red-600/50 text-red-500 hover:bg-slate-700 hover:text-red-400 hover:border-red-500 transition-all duration-300 px-6 py-2.5 rounded-lg"
           >
             <MapPin className="w-4 h-4 mr-2" />
             Select a location to view availability and place orders
