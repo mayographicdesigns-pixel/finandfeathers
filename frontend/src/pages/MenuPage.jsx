@@ -23,6 +23,7 @@ const MenuPage = () => {
     }
 
     const grouped = {
+      'daily-specials': [],
       'starters': [],
       'entrees': [],
       'seafood-grits': [],
@@ -42,6 +43,7 @@ const MenuPage = () => {
 
   // Category display names
   const categoryNames = {
+    'daily-specials': '$5 Daily Specials',
     'starters': 'Starters',
     'entrees': 'Entrees',
     'seafood-grits': 'Seafood & Grits',
