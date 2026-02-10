@@ -402,7 +402,6 @@ export const menuItems = [
 
 
 export const menuItems = [
-  // Signature Selections / Daily Specials
   {
     id: '1',
     name: 'New Zealand Lamb Chops',
