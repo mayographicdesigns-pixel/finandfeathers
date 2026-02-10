@@ -105,15 +105,26 @@ const MenuPage = () => {
             />
           </div>
           
-          {/* Location Button */}
-          <Button
-            onClick={() => navigate('/')}
-            variant="outline"
-            className="bg-slate-800/70 border-red-600/50 text-red-500 hover:bg-slate-700 hover:text-red-400 hover:border-red-500 transition-all duration-300 px-6 py-2.5 rounded-lg"
-          >
-            <MapPin className="w-4 h-4 mr-2" />
-            Select a location to view availability and place orders
-          </Button>
+          {/* Navigation Buttons */}
+          <div className="flex gap-3">
+            <Button
+              onClick={() => navigate('/')}
+              variant="outline"
+              className="bg-slate-800/70 border-red-600/50 text-red-500 hover:bg-slate-700 hover:text-red-400 hover:border-red-500 transition-all duration-300 px-6 py-2.5 rounded-lg"
+            >
+              <Home className="w-4 h-4 mr-2" />
+              Home
+            </Button>
+            
+            <Button
+              onClick={() => navigate('/locations')}
+              variant="outline"
+              className="bg-slate-800/70 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white transition-all duration-300 px-6 py-2.5 rounded-lg"
+            >
+              <MapPin className="w-4 h-4 mr-2" />
+              Locations
+            </Button>
+          </div>
         </div>
       </div>
 
