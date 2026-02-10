@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
 import LinkTreeHomePage from "./pages/LinkTreeHomePage";
 import LocationsPage from "./pages/LocationsPage";
+import LocationDetailPage from "./pages/LocationDetailPage";
 import MenuPage from "./pages/MenuPage";
 import AdminPage from "./pages/AdminPage";
 import { Toaster } from "./components/ui/toaster";
@@ -14,6 +15,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LinkTreeHomePage />} />
           <Route path="/locations" element={<LocationsPage />} />
+          <Route path="/location/:slug" element={<LocationDetailPage />} />
           <Route path="/menu" element={<MenuPage />} />
           <Route path="/admin" element={<AdminPage />} />
         </Routes>
