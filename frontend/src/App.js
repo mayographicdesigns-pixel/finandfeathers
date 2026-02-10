@@ -4,6 +4,7 @@ import LinkTreeHomePage from "./pages/LinkTreeHomePage";
 import LocationsPage from "./pages/LocationsPage";
 import MenuPage from "./pages/MenuPage";
 import { Toaster } from "./components/ui/toaster";
+import PWAInstallPrompt from "./components/PWAInstallPrompt";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         </Routes>
       </BrowserRouter>
       <Toaster />
+      <PWAInstallPrompt />
     </div>
   );
 }
