@@ -5,7 +5,7 @@ import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { locations } from '../mockData';
 
-const HomePage = () => {
+const LocationsPage = () => {
   const navigate = useNavigate();
   const [userLocation, setUserLocation] = useState(null);
   const [sortedLocations, setSortedLocations] = useState(locations);
