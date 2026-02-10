@@ -14,7 +14,7 @@ const LinkTreeHomePage = () => {
   const [phone, setPhone] = useState('');
   const [agreeToMarketing, setAgreeToMarketing] = useState(false);
 
-  const handleLoyaltySignup = (e) => {
+  const handleLoyaltySignup = async (e) => {
     e.preventDefault();
     if (!agreeToMarketing) {
       toast({
@@ -24,15 +24,37 @@ const LinkTreeHomePage = () => {
       });
       return;
     }
-    // Handle signup logic here
-    toast({
-      title: "Welcome to Fin & Feathers Loyalty!",
-      description: `Thank you ${name}! Check your email for exclusive offers.`,
-    });
-    setEmail('');
-    setName('');
-    setPhone('');
-    setAgreeToMarketing(false);
+
+    try {
+      // Sign up loyalty member
+      const member = await signupLoyalty({
+        name,
+        email,
+        phone: phone || null,
+        marketing_consent: agreeToMarketing
+      });
+
+      // Subscribe to push notifications
+      const pushSubscribed = await subscribeToPush(member.id);
+
+      toast({
+        title: "Welcome to Fin & Feathers Loyalty!",
+        description: pushSubscribed 
+          ? `Thank you ${name}! You'll receive exclusive offers and push notifications.`
+          : `Thank you ${name}! Check your email for exclusive offers.`,
+      });
+
+      setEmail('');
+      setName('');
+      setPhone('');
+      setAgreeToMarketing(false);
+    } catch (error) {
+      toast({
+        title: "Signup Failed",
+        description: error.message || "Unable to complete signup. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const socialLinks = [
