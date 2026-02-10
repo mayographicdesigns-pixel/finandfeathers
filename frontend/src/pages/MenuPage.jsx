@@ -68,7 +68,7 @@ const MenuPage = () => {
 
   // Line items (sides and brunch-sides)
   const lineItems = useMemo(() => 
-    filteredItems.filter(item => item.category === 'sides' || item.category === 'brunch-sides'),
+    filteredItems.filter(item => item.category === 'sides' || item.category === 'brunch-sides' || item.category === 'brunch-drinks'),
     [filteredItems]
   );
 
@@ -77,7 +77,8 @@ const MenuPage = () => {
       item.category !== 'entrees' && 
       item.category !== 'seafood-grits' &&
       item.category !== 'sides' &&
-      item.category !== 'brunch-sides'
+      item.category !== 'brunch-sides' &&
+      item.category !== 'brunch-drinks'
     ),
     [filteredItems]
   );
