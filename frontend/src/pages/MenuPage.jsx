@@ -56,9 +56,9 @@ const MenuPage = () => {
     [filteredItems]
   );
 
-  // Line items (sides and brunch-sides)
+  // Line items (sides)
   const lineItems = useMemo(() => 
-    filteredItems.filter(item => item.category === 'sides' || item.category === 'brunch-sides'),
+    filteredItems.filter(item => item.category === 'sides'),
     [filteredItems]
   );
 
@@ -66,25 +66,13 @@ const MenuPage = () => {
     filteredItems.filter(item => 
       item.category !== 'entrees' && 
       item.category !== 'seafood-grits' &&
-      item.category !== 'sides' &&
-      item.category !== 'brunch-sides'
+      item.category !== 'sides'
     ),
     [filteredItems]
   );
 
-  // For daily specials, separate drinks (cocktails) from food
-  const dailySpecialFood = useMemo(() => 
-    smallItems.filter(item => item.category === 'daily-specials'),
-    [smallItems]
-  );
-
-  const dailySpecialDrinks = useMemo(() => 
-    filteredItems.filter(item => item.category === 'cocktails' && activeCategory === 'daily-specials'),
-    [filteredItems, activeCategory]
-  );
-
   const otherSmallItems = useMemo(() => 
-    smallItems.filter(item => item.category !== 'daily-specials'),
+    smallItems,
     [smallItems]
   );
 
