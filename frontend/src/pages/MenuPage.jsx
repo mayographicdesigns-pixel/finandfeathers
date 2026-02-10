@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin } from 'lucide-react';
+import { MapPin, Home } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import CategoryFilter from '../components/CategoryFilter';
 import MenuCard from '../components/MenuCard';
