@@ -60,12 +60,23 @@ const LocationsPage = () => {
             <img 
               src="https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png" 
               alt="Fin & Feathers Restaurants"
-              className="h-32 md:h-40 w-auto"
+              className="h-32 md:h-40 w-auto cursor-pointer"
+              onClick={() => navigate('/')}
             />
           </div>
-          <p className="text-slate-300 text-lg max-w-2xl mx-auto">
+          <p className="text-slate-300 text-lg max-w-2xl mx-auto mb-6">
             Elevated dining meets Southern soul. Find a location near you.
           </p>
+          
+          {/* Home Button */}
+          <Button
+            onClick={() => navigate('/')}
+            variant="outline"
+            className="bg-slate-800/70 border-red-600/50 text-red-500 hover:bg-slate-700 hover:text-red-400 hover:border-red-500 transition-all duration-300 px-6 py-2.5 rounded-lg"
+          >
+            <Home className="w-4 h-4 mr-2" />
+            Back to Home
+          </Button>
         </div>
 
         {/* Location Permission Notice */}
