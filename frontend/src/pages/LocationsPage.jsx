@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Phone, ExternalLink, Calendar, ShoppingBag, Truck } from 'lucide-react';
+import { MapPin, Phone, ExternalLink, Calendar, ShoppingBag, Home } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { locations } from '../mockData';
