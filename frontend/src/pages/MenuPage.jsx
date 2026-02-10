@@ -141,64 +141,211 @@ const MenuPage = () => {
 
       {/* Menu Grid */}
       <div className="container mx-auto px-4 pb-16">
-        {/* Large items - Entrees & Seafood & Grits - 3 columns */}
-        {largeItems.length > 0 && (
-          <div className="mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {largeItems.map((item) => (
-                <MenuCard key={item.id} item={item} />
-              ))}
-            </div>
+        {/* If "All" tab is selected, show items grouped by category with headers */}
+        {activeCategory === 'all' && itemsByCategory && (
+          <div className="space-y-12">
+            {/* Daily Specials */}
+            {itemsByCategory['daily-specials'].length > 0 && (
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
+                  {categoryNames['daily-specials']}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                  {itemsByCategory['daily-specials'].map((item) => (
+                    <MenuCard key={item.id} item={item} variant="compact" />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Starters */}
+            {itemsByCategory['starters'].length > 0 && (
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
+                  {categoryNames['starters']}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                  {itemsByCategory['starters'].map((item) => (
+                    <MenuCard key={item.id} item={item} variant="compact" />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Entrees */}
+            {itemsByCategory['entrees'].length > 0 && (
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
+                  {categoryNames['entrees']}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {itemsByCategory['entrees'].map((item) => (
+                    <MenuCard key={item.id} item={item} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Seafood & Grits */}
+            {itemsByCategory['seafood-grits'].length > 0 && (
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
+                  {categoryNames['seafood-grits']}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {itemsByCategory['seafood-grits'].map((item) => (
+                    <MenuCard key={item.id} item={item} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Sandwiches */}
+            {itemsByCategory['sandwiches'].length > 0 && (
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
+                  {categoryNames['sandwiches']}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                  {itemsByCategory['sandwiches'].map((item) => (
+                    <MenuCard key={item.id} item={item} variant="compact" />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Salads */}
+            {itemsByCategory['salads'].length > 0 && (
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
+                  {categoryNames['salads']}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                  {itemsByCategory['salads'].map((item) => (
+                    <MenuCard key={item.id} item={item} variant="compact" />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Sides */}
+            {itemsByCategory['sides'].length > 0 && (
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
+                  {categoryNames['sides']}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-5xl">
+                  {itemsByCategory['sides'].map((item) => (
+                    <MenuLineItem key={item.id} item={item} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Brunch */}
+            {itemsByCategory['brunch'].length > 0 && (
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
+                  {categoryNames['brunch']}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                  {itemsByCategory['brunch'].map((item) => (
+                    <MenuCard key={item.id} item={item} variant="compact" />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Brunch Sides */}
+            {itemsByCategory['brunch-sides'].length > 0 && (
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
+                  {categoryNames['brunch-sides']}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-5xl">
+                  {itemsByCategory['brunch-sides'].map((item) => (
+                    <MenuLineItem key={item.id} item={item} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Cocktails */}
+            {itemsByCategory['cocktails'].length > 0 && (
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
+                  {categoryNames['cocktails']}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                  {itemsByCategory['cocktails'].map((item) => (
+                    <MenuCard key={item.id} item={item} variant="compact" />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
-        {/* Daily Specials Food - 4 columns (smaller cards) */}
-        {activeCategory === 'daily-specials' && dailySpecialFood.length > 0 && (
-          <div className="mb-8">
-            <h3 className="text-2xl font-bold text-white mb-4">Food</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-              {dailySpecialFood.map((item) => (
-                <MenuCard key={item.id} item={item} variant="compact" />
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Single category view */}
+        {activeCategory !== 'all' && (
+          <>
+            {/* Large items - Entrees & Seafood & Grits - 3 columns */}
+            {largeItems.length > 0 && (
+              <div className="mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {largeItems.map((item) => (
+                    <MenuCard key={item.id} item={item} />
+                  ))}
+                </div>
+              </div>
+            )}
 
-        {/* Daily Specials Drinks - 4 columns (smaller cards) */}
-        {activeCategory === 'daily-specials' && dailySpecialDrinks.length > 0 && (
-          <div className="mb-6">
-            <h3 className="text-2xl font-bold text-white mb-4">Drinks</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-              {dailySpecialDrinks.map((item) => (
-                <MenuCard key={item.id} item={item} variant="compact" />
-              ))}
-            </div>
-          </div>
-        )}
+            {/* Daily Specials Food - 4 columns (smaller cards) */}
+            {activeCategory === 'daily-specials' && dailySpecialFood.length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-2xl font-bold text-white mb-4">Food</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                  {dailySpecialFood.map((item) => (
+                    <MenuCard key={item.id} item={item} variant="compact" />
+                  ))}
+                </div>
+              </div>
+            )}
 
-        {/* Other small items - 4 columns (smaller cards) */}
-        {activeCategory !== 'daily-specials' && otherSmallItems.length > 0 && (
-          <div className="mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-              {otherSmallItems.map((item) => (
-                <MenuCard key={item.id} item={item} variant="compact" />
-              ))}
-            </div>
-          </div>
-        )}
+            {/* Daily Specials Drinks - 4 columns (smaller cards) */}
+            {activeCategory === 'daily-specials' && dailySpecialDrinks.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-white mb-4">Drinks</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                  {dailySpecialDrinks.map((item) => (
+                    <MenuCard key={item.id} item={item} variant="compact" />
+                  ))}
+                </div>
+              </div>
+            )}
 
-        {/* Line items - Sides & Brunch Sides - Simple list */}
-        {lineItems.length > 0 && (
-          <div>
-            <h3 className="text-2xl font-bold text-white mb-4">
-              {activeCategory === 'sides' ? 'Sides' : activeCategory === 'brunch-sides' ? 'Brunch Sides' : 'Sides'}
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-5xl">
-              {lineItems.map((item) => (
-                <MenuLineItem key={item.id} item={item} />
-              ))}
-            </div>
-          </div>
+            {/* Other small items - 4 columns (smaller cards) */}
+            {activeCategory !== 'daily-specials' && otherSmallItems.length > 0 && (
+              <div className="mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                  {otherSmallItems.map((item) => (
+                    <MenuCard key={item.id} item={item} variant="compact" />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Line items - Sides & Brunch Sides - Simple list */}
+            {lineItems.length > 0 && (
+              <div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-5xl">
+                  {lineItems.map((item) => (
+                    <MenuLineItem key={item.id} item={item} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
