@@ -82,3 +82,54 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
+
+// Push notification event
+self.addEventListener('push', (event) => {
+  if (!event.data) {
+    return;
+  }
+
+  const data = event.data.json();
+  const title = data.title || 'Fin & Feathers';
+  const options = {
+    body: data.body || 'New update available!',
+    icon: data.icon || '/logo192.png',
+    badge: data.badge || '/logo192.png',
+    image: data.image,
+    data: {
+      url: data.url || '/'
+    },
+    vibrate: [200, 100, 200],
+    tag: 'fin-feathers-notification',
+    requireInteraction: false
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(title, options)
+  );
+});
+
+// Notification click event
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  const urlToOpen = event.notification.data.url || '/';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clientList) => {
+        // Check if there's already a window open
+        for (let i = 0; i < clientList.length; i++) {
+          const client = clientList[i];
+          if (client.url === urlToOpen && 'focus' in client) {
+            return client.focus();
+          }
+        }
+        // Open new window if none exists
+        if (clients.openWindow) {
+          return clients.openWindow(urlToOpen);
+        }
+      })
+  );
+});
+
