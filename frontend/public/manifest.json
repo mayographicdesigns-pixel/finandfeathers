@@ -1,0 +1,33 @@
+{
+  "short_name": "Fin & Feathers",
+  "name": "Fin & Feathers Restaurants",
+  "description": "Elevated dining meets Southern soul. View our menu, find locations, and order online.",
+  "icons": [
+    {
+      "src": "/logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#dc2626",
+  "background_color": "#000000",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "categories": ["food", "restaurant", "lifestyle"],
+  "screenshots": [
+    {
+      "src": "/screenshot1.png",
+      "type": "image/png",
+      "sizes": "1080x1920"
+    }
+  ]
+}
