@@ -23,16 +23,12 @@ const MenuPage = () => {
     }
 
     const grouped = {
-      'daily-specials': [],
       'starters': [],
       'entrees': [],
       'seafood-grits': [],
       'sandwiches': [],
       'salads': [],
-      'sides': [],
-      'brunch': [],
-      'brunch-sides': [],
-      'cocktails': []
+      'sides': []
     };
 
     menuItems.forEach(item => {
@@ -46,16 +42,12 @@ const MenuPage = () => {
 
   // Category display names
   const categoryNames = {
-    'daily-specials': 'Daily Specials',
     'starters': 'Starters',
     'entrees': 'Entrees',
     'seafood-grits': 'Seafood & Grits',
     'sandwiches': 'Sandwiches',
     'salads': 'Salads',
-    'sides': 'Sides',
-    'brunch': 'Brunch',
-    'brunch-sides': 'Brunch Sides',
-    'cocktails': 'Cocktails'
+    'sides': 'Sides'
   };
 
   // Separate large items (entrees & seafood-grits) from other items
