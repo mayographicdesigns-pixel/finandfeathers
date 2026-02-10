@@ -135,6 +135,40 @@ const MenuPage = () => {
         {/* If "All" tab is selected, show items grouped by category with headers */}
         {activeCategory === 'all' && itemsByCategory && (
           <div className="space-y-12">
+            {/* $5 Daily Specials - At the top */}
+            {itemsByCategory['daily-specials'].length > 0 && (
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-2 border-b border-slate-700 pb-3">
+                  {categoryNames['daily-specials']}
+                </h3>
+                <p className="text-slate-400 text-sm mb-5">Monday-Friday 12pm-8pm • Saturday 5pm-8pm • Sunday 6pm-12am</p>
+                
+                {/* Food Items */}
+                <div className="mb-6">
+                  <h4 className="text-xl font-semibold text-slate-300 mb-4">Food</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                    {itemsByCategory['daily-specials']
+                      .filter(item => item.type === 'food')
+                      .map((item) => (
+                        <MenuCard key={item.id} item={item} variant="compact" />
+                      ))}
+                  </div>
+                </div>
+                
+                {/* Drink Items */}
+                <div>
+                  <h4 className="text-xl font-semibold text-slate-300 mb-4">Drinks</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                    {itemsByCategory['daily-specials']
+                      .filter(item => item.type === 'drink')
+                      .map((item) => (
+                        <MenuCard key={item.id} item={item} variant="compact" />
+                      ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Starters */}
             {itemsByCategory['starters'].length > 0 && (
               <div>
