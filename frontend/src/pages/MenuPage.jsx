@@ -262,6 +262,20 @@ const MenuPage = () => {
                 </div>
               </div>
             )}
+            
+            {/* Signature Cocktails */}
+            {itemsByCategory['cocktails'].length > 0 && (
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
+                  {categoryNames['cocktails']}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                  {itemsByCategory['cocktails'].map((item) => (
+                    <MenuCard key={item.id} item={item} variant="compact" />
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Sides - Line items in 4 columns */}
             {itemsByCategory['sides'].length > 0 && (
@@ -286,6 +300,20 @@ const MenuPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
                   {itemsByCategory['brunch'].map((item) => (
                     <MenuCard key={item.id} item={item} variant="compact" />
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Brunch Drinks - Line items in 4 columns */}
+            {itemsByCategory['brunch-drinks'].length > 0 && (
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
+                  {categoryNames['brunch-drinks']}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {itemsByCategory['brunch-drinks'].map((item) => (
+                    <MenuLineItem key={item.id} item={item} />
                   ))}
                 </div>
               </div>
