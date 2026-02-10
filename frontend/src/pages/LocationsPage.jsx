@@ -187,4 +187,4 @@ const LocationsPage = () => {
   );
 };
 
-export default HomePage;
+export default LocationsPage;
