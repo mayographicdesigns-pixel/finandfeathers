@@ -101,7 +101,8 @@ const LocationsPage = () => {
           {sortedLocations.map((location, index) => (
             <Card 
               key={location.id} 
-              className="overflow-hidden bg-slate-800/80 border-slate-700/50 hover:bg-slate-800 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl group"
+              className="overflow-hidden bg-slate-800/80 border-slate-700/50 hover:bg-slate-800 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl group cursor-pointer"
+              onClick={() => navigate(`/location/${location.slug}`)}
             >
               {/* Location Image */}
               <div className="relative h-48 overflow-hidden">
