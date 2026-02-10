@@ -5,6 +5,7 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { toast } from '../hooks/use-toast';
+import DailyVideoCarousel from '../components/DailyVideoCarousel';
 
 const LinkTreeHomePage = () => {
   const navigate = useNavigate();
