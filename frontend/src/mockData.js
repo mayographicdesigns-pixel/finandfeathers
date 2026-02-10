@@ -711,6 +711,53 @@ export const menuItems = [
     badges: []
   },
   
+  // BRUNCH DRINKS
+  {
+    id: 'bd1',
+    name: 'Mimosa',
+    description: 'Champagne & orange juice offered in various flavors: peach, strawberry, pineapple, cranberry or mango',
+    price: 10,
+    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
+    category: 'brunch-drinks',
+    badges: []
+  },
+  {
+    id: 'bd2',
+    name: 'Bellini',
+    description: 'A bellini is a cocktail crafted from Prosecco and peach schnapps',
+    price: 12,
+    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
+    category: 'brunch-drinks',
+    badges: []
+  },
+  {
+    id: 'bd3',
+    name: 'Tequila Sunrise',
+    description: 'Casamigos Blanco tequila, orange juice, and a splash of grenadine, served in a glass with a Tajín or salted rim',
+    price: 15,
+    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
+    category: 'brunch-drinks',
+    badges: []
+  },
+  {
+    id: 'bd4',
+    name: 'Vodka Sunrise',
+    description: 'Ciroc vodka, orange juice, and a splash of grenadine in a glass with a Tajín or salted rim',
+    price: 15,
+    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
+    category: 'brunch-drinks',
+    badges: []
+  },
+  {
+    id: 'bd5',
+    name: 'French 75',
+    description: 'Tanqueray gin, champagne, lemon muddled and simple syrup',
+    price: 15,
+    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
+    category: 'brunch-drinks',
+    badges: []
+  },
+  
   // BRUNCH SIDES
   {
     id: 'bs1',
