@@ -95,14 +95,17 @@ const MenuPage = () => {
         <div className="flex flex-col items-center gap-4">
           {/* Logo */}
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-1 tracking-wide">
-              Fin & Feathers
-            </h1>
-            <p className="text-amber-500 text-lg font-semibold tracking-wider">RESTAURANTS</p>
+            <img 
+              src="https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png" 
+              alt="Fin & Feathers Restaurants"
+              className="h-24 md:h-32 w-auto mx-auto cursor-pointer"
+              onClick={() => navigate('/')}
+            />
           </div>
           
           {/* Location Button */}
           <Button
+            onClick={() => navigate('/')}
             variant="outline"
             className="bg-slate-800/70 border-amber-600/50 text-amber-500 hover:bg-slate-700 hover:text-amber-400 hover:border-amber-500 transition-all duration-300 px-6 py-2.5 rounded-lg"
           >
