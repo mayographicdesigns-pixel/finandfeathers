@@ -258,8 +258,41 @@ const MenuPage = () => {
         {/* Single category view */}
         {activeCategory !== 'all' && (
           <>
+            {/* Daily Specials Category - Split into Food and Drinks */}
+            {activeCategory === 'daily-specials' && (
+              <>
+                <div className="mb-2">
+                  <p className="text-slate-400 text-sm mb-6">Monday-Friday 12pm-8pm • Saturday 5pm-8pm • Sunday 6pm-12am</p>
+                </div>
+                
+                {/* Food section */}
+                <div className="mb-8">
+                  <h3 className="text-2xl font-bold text-white mb-4">Food</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                    {filteredItems
+                      .filter(item => item.type === 'food')
+                      .map((item) => (
+                        <MenuCard key={item.id} item={item} variant="compact" />
+                      ))}
+                  </div>
+                </div>
+                
+                {/* Drinks section */}
+                <div>
+                  <h3 className="text-2xl font-bold text-white mb-4">Drinks</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                    {filteredItems
+                      .filter(item => item.type === 'drink')
+                      .map((item) => (
+                        <MenuCard key={item.id} item={item} variant="compact" />
+                      ))}
+                  </div>
+                </div>
+              </>
+            )}
+            
             {/* Large items - Entrees & Seafood & Grits - 3 columns */}
-            {largeItems.length > 0 && (
+            {activeCategory !== 'daily-specials' && largeItems.length > 0 && (
               <div className="mb-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {largeItems.map((item) => (
@@ -270,7 +303,7 @@ const MenuPage = () => {
             )}
 
             {/* Other small items - 4 columns (smaller cards) */}
-            {otherSmallItems.length > 0 && (
+            {activeCategory !== 'daily-specials' && otherSmallItems.length > 0 && (
               <div className="mb-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
                   {otherSmallItems.map((item) => (
@@ -281,7 +314,7 @@ const MenuPage = () => {
             )}
 
             {/* Line items - Sides - Simple list in 4 columns */}
-            {lineItems.length > 0 && (
+            {activeCategory !== 'daily-specials' && lineItems.length > 0 && (
               <div>
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
                   {lineItems.map((item) => (
