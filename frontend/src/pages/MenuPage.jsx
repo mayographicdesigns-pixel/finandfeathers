@@ -251,7 +251,7 @@ const MenuPage = () => {
                 <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
                   {categoryNames['sides']}
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-5xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {itemsByCategory['sides'].map((item) => (
                     <MenuLineItem key={item.id} item={item} />
                   ))}
