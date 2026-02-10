@@ -25,12 +25,14 @@ const MenuPage = () => {
     const grouped = {
       'daily-specials': [],
       'starters': [],
+      'sides': [],
       'entrees': [],
       'seafood-grits': [],
       'sandwiches': [],
       'salads': [],
-      'sides': [],
+      'cocktails': [],
       'brunch': [],
+      'brunch-drinks': [],
       'brunch-sides': []
     };
 
@@ -47,12 +49,14 @@ const MenuPage = () => {
   const categoryNames = {
     'daily-specials': '$5 Daily Specials',
     'starters': 'Starters',
+    'sides': 'Sides',
     'entrees': 'Entrees',
     'seafood-grits': 'Seafood & Grits',
     'sandwiches': 'Sandwiches',
     'salads': 'Salads',
-    'sides': 'Sides',
+    'cocktails': 'Signature Cocktails',
     'brunch': 'Brunch',
+    'brunch-drinks': 'Brunch Drinks',
     'brunch-sides': 'Brunch Sides'
   };
 
