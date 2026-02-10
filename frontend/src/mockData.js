@@ -527,6 +527,89 @@ export const menuItems = [
     badges: ['Vegetarian']
   },
   
+  // SIGNATURE COCKTAILS
+  {
+    id: 'c1',
+    name: 'California Dreaming',
+    description: 'A colorful punch that gives you island vibes. Made with Malibu rum, Captain Morgan spiced rum, pineapple juice, melon liqueur, sour mix and a splash of blue curaçao',
+    price: 15,
+    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
+    category: 'cocktails',
+    badges: []
+  },
+  {
+    id: 'c2',
+    name: 'Sunset Blvd',
+    description: 'F&F\'s best selling beverage! Hennessey, agave, freshly muddled lime and simple syrup',
+    price: 15,
+    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
+    category: 'cocktails',
+    badges: ['Chef\'s Special']
+  },
+  {
+    id: 'c3',
+    name: 'LAX Sidecar',
+    description: 'A delightfully sweet variation of the traditional sidecar martini! Crafted with Remy Martin VSOP, freshly muddled citrus and a hint of simple syrup',
+    price: 15,
+    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
+    category: 'cocktails',
+    badges: []
+  },
+  {
+    id: 'c4',
+    name: 'Marina Del Rey',
+    description: 'Our rum punch includes Malibu rum, pineapple juice, cranberry juice, lime juice and grenadine',
+    price: 15,
+    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
+    category: 'cocktails',
+    badges: []
+  },
+  {
+    id: 'c5',
+    name: 'The 405',
+    description: 'A popular boozy delight! Uncle Nearest 100-proof whiskey mixed with a hint of lemon juice and agave',
+    price: 15,
+    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
+    category: 'cocktails',
+    badges: []
+  },
+  {
+    id: 'c6',
+    name: 'Baldwin Hills',
+    description: 'A unique cocktail exclusive to our establishment! Crafted with Island Jon Apple Guava Vodka, strawberry puree and pineapple juice',
+    price: 15,
+    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
+    category: 'cocktails',
+    badges: []
+  },
+  {
+    id: 'c7',
+    name: 'East LA',
+    description: 'A bit sweet, a bit tart, and absolutely delightful! Crafted with Gran Coramino Reposado tequila, fresh lime, simple syrup and a red wine float',
+    price: 15,
+    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
+    category: 'cocktails',
+    badges: []
+  },
+  {
+    id: 'c8',
+    name: 'Melrose Ave',
+    description: 'A refreshing summer cocktail crafted with Peach Cîroc, pineapple juice and a hint of grenadine',
+    price: 15,
+    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
+    category: 'cocktails',
+    badges: []
+  },
+  {
+    id: 'c9',
+    name: 'Pacific Coast Hwy',
+    description: 'A sophisticated margarita crafted with Rémy Martin 1738 Cognac—a favorite among the socialites at Fin & Feathers',
+    price: 17,
+    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
+    category: 'cocktails',
+    badges: ['Chef\'s Special']
+  },
+  
   // BRUNCH
   {
     id: 'b1',
