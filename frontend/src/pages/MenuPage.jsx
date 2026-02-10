@@ -279,7 +279,7 @@ const MenuPage = () => {
                 <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
                   {categoryNames['brunch-sides']}
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-5xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {itemsByCategory['brunch-sides'].map((item) => (
                     <MenuLineItem key={item.id} item={item} />
                   ))}
@@ -287,19 +287,7 @@ const MenuPage = () => {
               </div>
             )}
 
-            {/* Cocktails */}
-            {itemsByCategory['cocktails'].length > 0 && (
-              <div>
-                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
-                  {categoryNames['cocktails']}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                  {itemsByCategory['cocktails'].map((item) => (
-                    <MenuCard key={item.id} item={item} variant="compact" />
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Cocktails - Don't show separately since they're in Daily Specials */}
           </div>
         )}
 
