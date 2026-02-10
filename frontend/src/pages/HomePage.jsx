@@ -117,11 +117,19 @@ const HomePage = () => {
                 </div>
 
                 {/* Phone */}
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-2 mb-2">
                   <Phone className="w-4 h-4 text-amber-500 flex-shrink-0" />
                   <a href={`tel:${location.phone}`} className="text-slate-300 text-sm hover:text-amber-500 transition-colors">
                     {location.phone}
                   </a>
+                </div>
+                
+                {/* Reservation Phone */}
+                <div className="flex items-center gap-2 mb-3">
+                  <Calendar className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                  <div className="text-slate-400 text-xs">
+                    Reservations (Text): {location.reservationPhone}
+                  </div>
                 </div>
 
                 {/* Hours */}
