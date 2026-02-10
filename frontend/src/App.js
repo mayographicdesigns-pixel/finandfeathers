@@ -3,6 +3,7 @@ import "./App.css";
 import LinkTreeHomePage from "./pages/LinkTreeHomePage";
 import LocationsPage from "./pages/LocationsPage";
 import MenuPage from "./pages/MenuPage";
+import AdminPage from "./pages/AdminPage";
 import { Toaster } from "./components/ui/toaster";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 
@@ -14,6 +15,7 @@ function App() {
           <Route path="/" element={<LinkTreeHomePage />} />
           <Route path="/locations" element={<LocationsPage />} />
           <Route path="/menu" element={<MenuPage />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Routes>
       </BrowserRouter>
       <Toaster />
