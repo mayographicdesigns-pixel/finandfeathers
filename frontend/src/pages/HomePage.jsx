@@ -140,30 +140,30 @@ const HomePage = () => {
                   </Button>
                   
                   <Button
-                    onClick={() => window.open(location.onlineOrdering, '_blank')}
+                    onClick={() => window.open(location.locationUrl, '_blank')}
                     variant="outline"
                     className="w-full border-slate-600 text-slate-300 hover:bg-slate-700"
                   >
                     <ShoppingBag className="w-4 h-4 mr-2" />
-                    Order Pickup
+                    Order Online
                   </Button>
                   
                   <Button
-                    onClick={() => window.open(location.delivery, '_blank')}
-                    variant="outline"
-                    className="w-full border-slate-600 text-slate-300 hover:bg-slate-700"
-                  >
-                    <Truck className="w-4 h-4 mr-2" />
-                    Order Delivery
-                  </Button>
-                  
-                  <Button
-                    onClick={() => window.open(location.reservations, '_blank')}
+                    onClick={() => window.location.href = location.reservations}
                     variant="outline"
                     className="w-full border-amber-600 text-amber-500 hover:bg-slate-700"
                   >
                     <Calendar className="w-4 h-4 mr-2" />
-                    Make Reservation
+                    Make Reservation (Text)
+                  </Button>
+                  
+                  <Button
+                    onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location.address)}`, '_blank')}
+                    variant="outline"
+                    className="w-full border-slate-600 text-slate-300 hover:bg-slate-700"
+                  >
+                    <MapPin className="w-4 h-4 mr-2" />
+                    Get Directions
                   </Button>
                 </div>
               </CardContent>
