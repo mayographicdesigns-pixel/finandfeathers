@@ -6,7 +6,9 @@ export const categories = [
   { id: 'seafood-grits', name: 'Seafood & Grits', icon: '🦞' },
   { id: 'sandwiches', name: 'Sandwiches', icon: '🥪' },
   { id: 'salads', name: 'Salads', icon: '🥗' },
-  { id: 'sides', name: 'Sides', icon: '🍟' }
+  { id: 'sides', name: 'Sides', icon: '🍟' },
+  { id: 'brunch', name: 'Brunch', icon: '🥞' },
+  { id: 'brunch-sides', name: 'Brunch Sides', icon: '🥓' }
 ];
 
 export const menuItems = [
