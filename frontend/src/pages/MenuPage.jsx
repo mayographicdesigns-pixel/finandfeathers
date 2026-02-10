@@ -144,17 +144,34 @@ const MenuPage = () => {
         {/* If "All" tab is selected, show items grouped by category with headers */}
         {activeCategory === 'all' && itemsByCategory && (
           <div className="space-y-12">
-            {/* Daily Specials */}
-            {itemsByCategory['daily-specials'].length > 0 && (
+            {/* Daily Specials - Include both food and drinks */}
+            {(itemsByCategory['daily-specials'].length > 0 || itemsByCategory['cocktails'].length > 0) && (
               <div>
                 <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
                   {categoryNames['daily-specials']}
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                  {itemsByCategory['daily-specials'].map((item) => (
-                    <MenuCard key={item.id} item={item} variant="compact" />
-                  ))}
-                </div>
+                {/* Daily Specials Food */}
+                {itemsByCategory['daily-specials'].length > 0 && (
+                  <div className="mb-6">
+                    <h4 className="text-xl font-semibold text-slate-300 mb-4">Food</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                      {itemsByCategory['daily-specials'].map((item) => (
+                        <MenuCard key={item.id} item={item} variant="compact" />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* Daily Specials Drinks */}
+                {itemsByCategory['cocktails'].length > 0 && (
+                  <div>
+                    <h4 className="text-xl font-semibold text-slate-300 mb-4">Drinks</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                      {itemsByCategory['cocktails'].map((item) => (
+                        <MenuCard key={item.id} item={item} variant="compact" />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
