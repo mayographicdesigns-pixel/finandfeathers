@@ -524,6 +524,190 @@ export const menuItems = [
     image: 'https://images.unsplash.com/photo-1516684732162-798a0062be99?w=800&q=80',
     category: 'sides',
     badges: ['Vegetarian']
+  },
+  
+  // BRUNCH
+  {
+    id: 'b1',
+    name: 'All Star Breakfast',
+    description: 'Two eggs prepared in any style, served with breakfast potatoes or cheese grits, accompanied by a choice of bacon or chicken sausage and a biscuit',
+    price: 15,
+    image: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=800&q=80',
+    category: 'brunch',
+    badges: []
+  },
+  {
+    id: 'b2',
+    name: 'Edgewood Breakfast',
+    description: 'Two eggs prepared in any style, along with a selection of bacon or chicken sausage. Enjoy two pancakes or a waffle garnished with powdered sugar, blueberries and strawberries',
+    price: 17,
+    image: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=800&q=80',
+    category: 'brunch',
+    badges: []
+  },
+  {
+    id: 'b3',
+    name: 'French Toast Breakfast',
+    description: 'Delicious French toast topped with powdered sugar, a triple sec sugar glaze, fresh blueberries, and strawberries. Enjoy it with two eggs and your choice of bacon or chicken sausage, or three wings for an additional $6',
+    price: 18,
+    image: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=800&q=80',
+    category: 'brunch',
+    badges: []
+  },
+  {
+    id: 'b4',
+    name: 'Chicken & Waffle',
+    description: 'Three whole wings or a boneless thigh, seasoned, battered and fried to perfection, served with a waffle dusted with powdered sugar and garnished with blueberries and strawberries',
+    price: 19,
+    image: 'https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=800&q=80',
+    category: 'brunch',
+    badges: []
+  },
+  {
+    id: 'b5',
+    name: 'Ultimate French Toast Sandwich',
+    description: 'Frosted French toast sandwich stuffed with scrambled cheesy eggs, bacon, or chicken sausage, topped with a triple sec sugar glaze and a dusting of powdered sugar',
+    price: 20,
+    image: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=800&q=80',
+    category: 'brunch',
+    badges: []
+  },
+  {
+    id: 'b6',
+    name: 'Breakfast Burrito',
+    description: 'A flour tortilla filled with three eggs, bacon or chicken sausage, green peppers, red peppers, mushrooms, spinach, tomatoes and cheese',
+    price: 17,
+    image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&q=80',
+    category: 'brunch',
+    badges: []
+  },
+  {
+    id: 'b7',
+    name: 'Lamb Chops & Eggs',
+    description: 'Three New Zealand lamb chops grilled and served with a balsamic ginger sauce, two eggs cooked to your liking and a choice of breakfast potatoes or cheese grits and a biscuit',
+    price: 32,
+    image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800&q=80',
+    category: 'brunch',
+    badges: ['Chef\'s Special']
+  },
+  {
+    id: 'b8',
+    name: 'Malibu Ribeye & Eggs',
+    description: 'Hand-cut ribeye steak marinated in the essence of California and grilled to perfection according to your preference, served with two eggs and a choice of breakfast potatoes or cheese grits and a biscuit',
+    price: 30,
+    image: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=800&q=80',
+    category: 'brunch',
+    badges: ['Chef\'s Special']
+  },
+  {
+    id: 'b9',
+    name: 'California Omelette',
+    description: 'Three eggs, green peppers, red peppers, mushrooms, spinach, tomatoes and cheese with bacon or chicken sausage served with a biscuit',
+    price: 18,
+    image: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=800&q=80',
+    category: 'brunch',
+    badges: []
+  },
+  {
+    id: 'b10',
+    name: 'Veggie Breakfast Bowl',
+    description: 'Choice of cheese grits or breakfast potatoes topped with spinach, mushroom, tomatoes, red peppers, green peppers and two eggs scrambled with cheese',
+    price: 18,
+    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80',
+    category: 'brunch',
+    badges: ['Vegetarian']
+  },
+  {
+    id: 'b11',
+    name: 'Seafood & Grits (Brunch)',
+    description: 'Choice of one: Catfish $22, Shrimp $26, Salmon $28, Lobster MKT. A delightful seafood dish of your choosing, expertly cooked and served on a bed of cheese grits. It\'s topped with spinach, roasted peppers and drizzled with a zesty parmesan cheese sauce',
+    price: 22,
+    image: 'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?w=800&q=80',
+    category: 'brunch',
+    badges: []
+  },
+  
+  // BRUNCH SIDES
+  {
+    id: 'bs1',
+    name: 'Two Eggs (Any Style)',
+    description: 'Two eggs cooked to your preference',
+    price: 7,
+    image: 'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=800&q=80',
+    category: 'brunch-sides',
+    badges: []
+  },
+  {
+    id: 'bs2',
+    name: 'Chicken Sausage (3)',
+    description: 'Three chicken sausage links',
+    price: 7,
+    image: 'https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=800&q=80',
+    category: 'brunch-sides',
+    badges: []
+  },
+  {
+    id: 'bs3',
+    name: 'Breakfast Potatoes',
+    description: 'Seasoned breakfast potatoes',
+    price: 7,
+    image: 'https://images.unsplash.com/photo-1585307833696-98baee8f8fc9?w=800&q=80',
+    category: 'brunch-sides',
+    badges: []
+  },
+  {
+    id: 'bs4',
+    name: 'Waffle',
+    description: 'Golden Belgian waffle',
+    price: 9,
+    image: 'https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=800&q=80',
+    category: 'brunch-sides',
+    badges: []
+  },
+  {
+    id: 'bs5',
+    name: 'Cheese Grits',
+    description: 'Creamy cheese grits',
+    price: 7,
+    image: 'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?w=800&q=80',
+    category: 'brunch-sides',
+    badges: []
+  },
+  {
+    id: 'bs6',
+    name: 'Biscuit',
+    description: 'Freshly baked biscuit',
+    price: 5,
+    image: 'https://images.unsplash.com/photo-1585238341710-7a9b68c097b5?w=800&q=80',
+    category: 'brunch-sides',
+    badges: []
+  },
+  {
+    id: 'bs7',
+    name: 'Bacon (3)',
+    description: 'Three crispy bacon strips',
+    price: 7,
+    image: 'https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=800&q=80',
+    category: 'brunch-sides',
+    badges: []
+  },
+  {
+    id: 'bs8',
+    name: 'French Toast',
+    description: 'Classic French toast',
+    price: 13,
+    image: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=800&q=80',
+    category: 'brunch-sides',
+    badges: []
+  },
+  {
+    id: 'bs9',
+    name: 'Whole Wings (3)',
+    description: 'Three whole chicken wings',
+    price: 14,
+    image: 'https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=800&q=80',
+    category: 'brunch-sides',
+    badges: []
   }
 ];
 
