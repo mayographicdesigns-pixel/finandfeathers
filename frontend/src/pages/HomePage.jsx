@@ -145,7 +145,7 @@ const HomePage = () => {
                 <div className="space-y-2">
                   <Button
                     onClick={() => navigate('/menu')}
-                    className="w-full bg-amber-600 hover:bg-amber-700 text-white"
+                    className="w-full bg-red-600 hover:bg-red-700 text-white"
                   >
                     <ExternalLink className="w-4 h-4 mr-2" />
                     View Menu
@@ -163,7 +163,7 @@ const HomePage = () => {
                   <Button
                     onClick={() => window.location.href = location.reservations}
                     variant="outline"
-                    className="w-full border-amber-600 text-amber-500 hover:bg-slate-700"
+                    className="w-full border-red-600 text-red-500 hover:bg-slate-700"
                   >
                     <Calendar className="w-4 h-4 mr-2" />
                     Make Reservation (Text)
