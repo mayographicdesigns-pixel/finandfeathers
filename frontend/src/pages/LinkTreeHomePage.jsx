@@ -63,30 +63,12 @@ const LinkTreeHomePage = () => {
               <Clock className="w-5 h-5 text-red-500" />
               <h2 className="text-xl font-bold text-white">This Week's Specials</h2>
             </div>
-            <div className="space-y-3">
-              {/* Placeholder for weekly specials - will be replaced with images/videos */}
-              <div className="bg-black/40 rounded-lg p-4 border border-slate-700">
-                <h3 className="text-white font-semibold mb-2">Monday Special</h3>
-                <p className="text-slate-300 text-sm">Special content will appear here</p>
-              </div>
-              <div className="bg-black/40 rounded-lg p-4 border border-slate-700">
-                <h3 className="text-white font-semibold mb-2">Weekend Brunch</h3>
-                <p className="text-slate-300 text-sm">Special content will appear here</p>
-              </div>
-            </div>
+            {/* Daily Video Carousel */}
+            <DailyVideoCarousel />
           </CardContent>
         </Card>
 
-        {/* Advertising/Promo Section */}
-        <Card className="mb-6 bg-slate-800/80 border-slate-700/50">
-          <CardContent className="p-6">
-            <h2 className="text-xl font-bold text-white mb-4 text-center">Featured Promotion</h2>
-            {/* Placeholder for advertising content */}
-            <div className="bg-black/40 rounded-lg aspect-video flex items-center justify-center border border-slate-700">
-              <p className="text-slate-400 text-sm">Advertising content will appear here</p>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Advertising/Promo Section - Removed since videos are in weekly specials */}
 
         {/* Main Link Buttons */}
         <div className="space-y-3 mb-6">
