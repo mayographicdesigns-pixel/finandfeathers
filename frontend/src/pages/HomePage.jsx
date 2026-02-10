@@ -55,10 +55,14 @@ const HomePage = () => {
       {/* Header */}
       <div className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-2 tracking-wide">
-            Fin & Feathers
-          </h1>
-          <p className="text-amber-500 text-xl font-semibold tracking-wider mb-4">RESTAURANTS</p>
+          {/* Logo */}
+          <div className="flex justify-center mb-6">
+            <img 
+              src="https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png" 
+              alt="Fin & Feathers Restaurants"
+              className="h-32 md:h-40 w-auto"
+            />
+          </div>
           <p className="text-slate-300 text-lg max-w-2xl mx-auto">
             Elevated dining meets Southern soul. Find a location near you.
           </p>
