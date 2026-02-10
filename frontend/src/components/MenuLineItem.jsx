@@ -30,7 +30,7 @@ const MenuLineItem = ({ item }) => {
         )}
       </div>
       <div className="ml-4 flex-shrink-0">
-        <span className="text-amber-500 font-bold text-base">${item.price}</span>
+        <span className="text-red-500 font-bold text-base">${item.price}</span>
       </div>
     </div>
   );
