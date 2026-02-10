@@ -343,7 +343,7 @@ const MenuPage = () => {
             {/* Line items - Sides & Brunch Sides - Simple list */}
             {lineItems.length > 0 && (
               <div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-5xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {lineItems.map((item) => (
                     <MenuLineItem key={item.id} item={item} />
                   ))}
