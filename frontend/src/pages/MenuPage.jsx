@@ -224,32 +224,8 @@ const MenuPage = () => {
               </div>
             )}
 
-            {/* Daily Specials Food - 4 columns (smaller cards) */}
-            {activeCategory === 'daily-specials' && dailySpecialFood.length > 0 && (
-              <div className="mb-8">
-                <h3 className="text-2xl font-bold text-white mb-4">Food</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                  {dailySpecialFood.map((item) => (
-                    <MenuCard key={item.id} item={item} variant="compact" />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Daily Specials Drinks - 4 columns (smaller cards) */}
-            {activeCategory === 'daily-specials' && dailySpecialDrinks.length > 0 && (
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold text-white mb-4">Drinks</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                  {dailySpecialDrinks.map((item) => (
-                    <MenuCard key={item.id} item={item} variant="compact" />
-                  ))}
-                </div>
-              </div>
-            )}
-
             {/* Other small items - 4 columns (smaller cards) */}
-            {activeCategory !== 'daily-specials' && otherSmallItems.length > 0 && (
+            {otherSmallItems.length > 0 && (
               <div className="mb-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
                   {otherSmallItems.map((item) => (
@@ -259,10 +235,10 @@ const MenuPage = () => {
               </div>
             )}
 
-            {/* Line items - Sides & Brunch Sides - Simple list */}
+            {/* Line items - Sides - Simple list in 4 columns */}
             {lineItems.length > 0 && (
               <div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
                   {lineItems.map((item) => (
                     <MenuLineItem key={item.id} item={item} />
                   ))}
