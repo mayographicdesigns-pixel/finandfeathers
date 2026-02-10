@@ -8,6 +8,7 @@ import MenuLineItem from '../components/MenuLineItem';
 import { categories, menuItems } from '../mockData';
 
 const MenuPage = () => {
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('all');
 
   const filteredItems = useMemo(() => {
