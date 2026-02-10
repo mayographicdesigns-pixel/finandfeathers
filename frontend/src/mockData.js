@@ -2,11 +2,12 @@ export const categories = [
   { id: 'all', name: 'All', icon: '✨' },
   { id: 'daily-specials', name: '$5 Daily Specials', icon: '⭐' },
   { id: 'starters', name: 'Starters', icon: '🍤' },
+  { id: 'sides', name: 'Sides', icon: '🍟' },
   { id: 'entrees', name: 'Entrees', icon: '🍖' },
   { id: 'seafood-grits', name: 'Seafood & Grits', icon: '🦞' },
   { id: 'sandwiches', name: 'Sandwiches', icon: '🥪' },
   { id: 'salads', name: 'Salads', icon: '🥗' },
-  { id: 'sides', name: 'Sides', icon: '🍟' },
+  { id: 'cocktails', name: 'Signature Cocktails', icon: '🍹' },
   { id: 'brunch', name: 'Brunch', icon: '🥞' },
   { id: 'brunch-sides', name: 'Brunch Sides', icon: '🥓' }
 ];
