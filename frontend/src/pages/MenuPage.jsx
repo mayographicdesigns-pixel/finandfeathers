@@ -29,7 +29,9 @@ const MenuPage = () => {
       'seafood-grits': [],
       'sandwiches': [],
       'salads': [],
-      'sides': []
+      'sides': [],
+      'brunch': [],
+      'brunch-sides': []
     };
 
     menuItems.forEach(item => {
@@ -49,7 +51,9 @@ const MenuPage = () => {
     'seafood-grits': 'Seafood & Grits',
     'sandwiches': 'Sandwiches',
     'salads': 'Salads',
-    'sides': 'Sides'
+    'sides': 'Sides',
+    'brunch': 'Brunch',
+    'brunch-sides': 'Brunch Sides'
   };
 
   // Separate large items (entrees & seafood-grits) from other items
