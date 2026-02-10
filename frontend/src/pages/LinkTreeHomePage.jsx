@@ -6,6 +6,7 @@ import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { toast } from '../hooks/use-toast';
 import DailyVideoCarousel from '../components/DailyVideoCarousel';
+import { signupLoyalty, subscribeToPush } from '../services/api';
 
 const LinkTreeHomePage = () => {
   const navigate = useNavigate();
