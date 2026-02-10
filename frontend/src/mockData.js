@@ -1,5 +1,6 @@
 export const categories = [
   { id: 'all', name: 'All', icon: '✨' },
+  { id: 'daily-specials', name: '$5 Daily Specials', icon: '⭐' },
   { id: 'starters', name: 'Starters', icon: '🍤' },
   { id: 'entrees', name: 'Entrees', icon: '🍖' },
   { id: 'seafood-grits', name: 'Seafood & Grits', icon: '🦞' },
@@ -9,6 +10,130 @@ export const categories = [
 ];
 
 export const menuItems = [
+  // $5 DAILY SPECIALS - FOOD
+  {
+    id: 'ds1',
+    name: '4 Party Wings & Fries',
+    description: 'Four wings in your choice of flavor: lemon pepper, BBQ, mild, or fire. Served with fries',
+    price: 5,
+    image: 'https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=800&q=80',
+    category: 'daily-specials',
+    badges: [],
+    type: 'food'
+  },
+  {
+    id: 'ds2',
+    name: '2 Chicken Tenders & Fries',
+    description: 'Two crispy chicken tenders served with fries',
+    price: 5,
+    image: 'https://images.unsplash.com/photo-1562967914-608f82629710?w=800&q=80',
+    category: 'daily-specials',
+    badges: [],
+    type: 'food'
+  },
+  {
+    id: 'ds3',
+    name: 'Chicken Caesar Wrap',
+    description: 'Grilled chicken, romaine lettuce, parmesan cheese, and Caesar dressing wrapped in a flour tortilla',
+    price: 5,
+    image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&q=80',
+    category: 'daily-specials',
+    badges: [],
+    type: 'food'
+  },
+  {
+    id: 'ds4',
+    name: 'Thigh Nuggets & Fries',
+    description: 'Crispy chicken thigh nuggets served with fries',
+    price: 5,
+    image: 'https://images.unsplash.com/photo-1562967914-608f82629710?w=800&q=80',
+    category: 'daily-specials',
+    badges: [],
+    type: 'food'
+  },
+  {
+    id: 'ds5',
+    name: '2 Tacos',
+    description: 'Two tacos with your choice of chicken, fish, veggie, or shrimp (+$1)',
+    price: 5,
+    image: 'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?w=800&q=80',
+    category: 'daily-specials',
+    badges: [],
+    type: 'food'
+  },
+  {
+    id: 'ds6',
+    name: 'Catfish Nuggets & Fries',
+    description: 'Crispy catfish nuggets served with fries',
+    price: 5,
+    image: 'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?w=800&q=80',
+    category: 'daily-specials',
+    badges: [],
+    type: 'food'
+  },
+  
+  // $5 DAILY SPECIALS - DRINKS
+  {
+    id: 'ds7',
+    name: 'Whiskey Sour',
+    description: 'Classic whiskey sour cocktail',
+    price: 5,
+    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
+    category: 'daily-specials',
+    badges: [],
+    type: 'drink'
+  },
+  {
+    id: 'ds8',
+    name: 'Long Island Iced Tea',
+    description: 'Classic Long Island Iced Tea cocktail',
+    price: 5,
+    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
+    category: 'daily-specials',
+    badges: [],
+    type: 'drink'
+  },
+  {
+    id: 'ds9',
+    name: 'Rum Punch',
+    description: 'Refreshing rum punch',
+    price: 5,
+    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
+    category: 'daily-specials',
+    badges: [],
+    type: 'drink'
+  },
+  {
+    id: 'ds10',
+    name: 'Margarita',
+    description: 'Classic margarita cocktail',
+    price: 5,
+    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
+    category: 'daily-specials',
+    badges: [],
+    type: 'drink'
+  },
+  {
+    id: 'ds11',
+    name: 'CK Mondavi White Wines',
+    description: 'Chardonnay, Moscato, or Pinot Grigio',
+    price: 5,
+    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800&q=80',
+    category: 'daily-specials',
+    badges: [],
+    type: 'drink'
+  },
+  {
+    id: 'ds12',
+    name: 'CK Mondavi Red Wine',
+    description: 'Cabernet or Merlot',
+    price: 5,
+    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800&q=80',
+    category: 'daily-specials',
+    badges: [],
+    type: 'drink'
+  },
+  
   // STARTERS
   {
     id: '1',
