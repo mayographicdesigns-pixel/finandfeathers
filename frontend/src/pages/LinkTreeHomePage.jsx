@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ExternalLink, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Clock } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -6,7 +6,7 @@ import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { toast } from '../hooks/use-toast';
 import DailyVideoCarousel from '../components/DailyVideoCarousel';
-import { signupLoyalty, subscribeToPush } from '../services/api';
+import { signupLoyalty, subscribeToPush, getPublicSocialLinks, getPublicInstagramFeed, getPublicSpecials } from '../services/api';
 
 const LinkTreeHomePage = () => {
   const navigate = useNavigate();
@@ -14,6 +14,28 @@ const LinkTreeHomePage = () => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [agreeToMarketing, setAgreeToMarketing] = useState(false);
+  const [socialLinks, setSocialLinks] = useState([]);
+  const [instagramFeed, setInstagramFeed] = useState([]);
+  const [specials, setSpecials] = useState([]);
+
+  useEffect(() => {
+    // Fetch social data
+    const fetchSocialData = async () => {
+      try {
+        const [links, feed, activeSpecials] = await Promise.all([
+          getPublicSocialLinks(),
+          getPublicInstagramFeed(),
+          getPublicSpecials()
+        ]);
+        setSocialLinks(links);
+        setInstagramFeed(feed);
+        setSpecials(activeSpecials);
+      } catch (err) {
+        console.error('Failed to fetch social data:', err);
+      }
+    };
+    fetchSocialData();
+  }, []);
 
   const handleLoyaltySignup = async (e) => {
     e.preventDefault();
