@@ -406,3 +406,93 @@ export async function deleteUpload(filename) {
   if (!response.ok) throw new Error('Failed to delete upload');
   return await response.json();
 }
+
+// ==================== SPECIALS API ====================
+
+// Get public specials (no auth)
+export async function getPublicSpecials() {
+  try {
+    const response = await fetch(`${API_URL}/specials`);
+    if (!response.ok) throw new Error('Failed to fetch specials');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching specials:', error);
+    return [];
+  }
+}
+
+// Get all specials (admin)
+export async function getAdminSpecials() {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/specials`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) throw new Error('Failed to fetch specials');
+  return await response.json();
+}
+
+// Create/Post a special (admin) - auto sends notification
+export async function createSpecial(special) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/specials`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(special)
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to create special');
+  }
+  return await response.json();
+}
+
+// Update a special (admin)
+export async function updateSpecial(specialId, update) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/specials/${specialId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(update)
+  });
+
+  if (!response.ok) throw new Error('Failed to update special');
+  return await response.json();
+}
+
+// Delete a special (admin)
+export async function deleteSpecial(specialId) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/specials/${specialId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) throw new Error('Failed to delete special');
+  return await response.json();
+}
+
+// Resend notification for a special (admin)
+export async function resendSpecialNotification(specialId) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/specials/${specialId}/notify`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) throw new Error('Failed to send notification');
+  return await response.json();
+}
