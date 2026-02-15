@@ -71,6 +71,21 @@ async def root():
     return {"message": "Fin & Feathers API is running"}
 
 
+# Public Menu Endpoints (no auth required)
+@api_router.get("/menu/items")
+async def get_public_menu_items():
+    """Get all menu items for public display"""
+    items = await db.menu_items.find({}, {"_id": 0}).to_list(1000)
+    return items
+
+
+@api_router.get("/menu/categories")
+async def get_menu_categories():
+    """Get unique menu categories"""
+    categories = await db.menu_items.distinct("category")
+    return categories
+
+
 # VAPID Public Key endpoint
 @api_router.get("/push/public-key")
 async def get_vapid_public_key():
