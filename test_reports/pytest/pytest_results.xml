@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="22" time="8.048" timestamp="2026-02-15T02:50:41.804610+00:00" hostname="agent-env-48e4057c-c6a3-45f5-b6ce-aa6ce35b0f80"><testcase classname="tests.test_admin_auth.TestHealthCheck" name="test_api_root" time="0.167" /><testcase classname="tests.test_admin_auth.TestAdminAuth" name="test_login_success" time="0.349" /><testcase classname="tests.test_admin_auth.TestAdminAuth" name="test_login_invalid_username" time="0.170" /><testcase classname="tests.test_admin_auth.TestAdminAuth" name="test_login_invalid_password" time="0.365" /><testcase classname="tests.test_admin_auth.TestAdminAuth" name="test_auth_me_endpoint" time="0.478" /><testcase classname="tests.test_admin_auth.TestAdminAuth" name="test_auth_me_without_token" time="0.157" /><testcase classname="tests.test_admin_auth.TestAdminAuth" name="test_auth_me_invalid_token" time="0.114" /><testcase classname="tests.test_admin_auth.TestAdminDashboard" name="test_admin_stats" time="0.458" /><testcase classname="tests.test_admin_auth.TestAdminDashboard" name="test_admin_stats_without_auth" time="0.105" /><testcase classname="tests.test_admin_auth.TestLoyaltyMembers" name="test_loyalty_signup_public" time="0.129" /><testcase classname="tests.test_admin_auth.TestLoyaltyMembers" name="test_loyalty_signup_duplicate_email" time="0.232" /><testcase classname="tests.test_admin_auth.TestLoyaltyMembers" name="test_get_loyalty_members" time="0.478" /><testcase classname="tests.test_admin_auth.TestLoyaltyMembers" name="test_delete_loyalty_member" time="0.587" /><testcase classname="tests.test_admin_auth.TestContacts" name="test_submit_contact_form" time="0.133" /><testcase classname="tests.test_admin_auth.TestContacts" name="test_get_contacts_admin" time="0.451" /><testcase classname="tests.test_admin_auth.TestContacts" name="test_update_contact_status" time="0.584" /><testcase classname="tests.test_admin_auth.TestMenuItems" name="test_get_menu_items" time="0.458" /><testcase classname="tests.test_admin_auth.TestMenuItems" name="test_create_menu_item" time="0.514"><failure message="assert 520 == 200&#10; +  where 520 = &lt;Response [520]&gt;.status_code">tests/test_admin_auth.py:318: in test_create_menu_item
+    assert response.status_code == 200
+E   assert 520 == 200
+E    +  where 520 = &lt;Response [520]&gt;.status_code</failure></testcase><testcase classname="tests.test_admin_auth.TestMenuItems" name="test_update_menu_item" time="0.569"><failure message="requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)">/root/.venv/lib/python3.11/site-packages/requests/models.py:976: in json
+    return complexjson.loads(self.text, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/json/decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/json/decoder.py:355: in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+E   json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+During handling of the above exception, another exception occurred:
+tests/test_admin_auth.py:338: in test_update_menu_item
+    item_id = create_response.json()["id"]
+              ^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/models.py:980: in json
+    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+E   requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)</failure></testcase><testcase classname="tests.test_admin_auth.TestMenuItems" name="test_delete_menu_item" time="0.426"><failure message="requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)">/root/.venv/lib/python3.11/site-packages/requests/models.py:976: in json
+    return complexjson.loads(self.text, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/json/decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/json/decoder.py:355: in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+E   json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+During handling of the above exception, another exception occurred:
+tests/test_admin_auth.py:364: in test_delete_menu_item
+    item_id = create_response.json()["id"]
+              ^^^^^^^^^^^^^^^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/models.py:980: in json
+    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+E   requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)</failure></testcase><testcase classname="tests.test_admin_auth.TestNotifications" name="test_send_notification" time="0.532" /><testcase classname="tests.test_admin_auth.TestNotifications" name="test_get_notification_history" time="0.448" /></testsuite></testsuites>
