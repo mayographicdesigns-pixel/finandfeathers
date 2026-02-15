@@ -500,6 +500,122 @@ async def admin_resend_special_notification(special_id: str, username: str = Dep
     }
 
 
+# ==================== SOCIAL LINKS ENDPOINTS ====================
+
+# Public: Get active social links
+@api_router.get("/social-links")
+async def get_public_social_links():
+    """Get all active social links"""
+    links = await db.social_links.find(
+        {"is_active": True}, 
+        {"_id": 0}
+    ).sort("display_order", 1).to_list(100)
+    return links
+
+
+# Admin: Get all social links
+@api_router.get("/admin/social-links")
+async def admin_get_social_links(username: str = Depends(get_current_admin)):
+    """Get all social links"""
+    links = await db.social_links.find({}, {"_id": 0}).sort("display_order", 1).to_list(100)
+    return links
+
+
+# Admin: Create social link
+@api_router.post("/admin/social-links")
+async def admin_create_social_link(link: SocialLinkCreate, username: str = Depends(get_current_admin)):
+    """Create a new social link"""
+    link_dict = link.dict()
+    link_dict["id"] = str(uuid.uuid4())
+    link_dict["is_active"] = True
+    link_dict["created_at"] = datetime.now(timezone.utc)
+    await db.social_links.insert_one(link_dict)
+    link_dict.pop("_id", None)
+    return link_dict
+
+
+# Admin: Update social link
+@api_router.put("/admin/social-links/{link_id}")
+async def admin_update_social_link(link_id: str, update: SocialLinkUpdate, username: str = Depends(get_current_admin)):
+    """Update a social link"""
+    update_dict = {k: v for k, v in update.dict().items() if v is not None}
+    if not update_dict:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    result = await db.social_links.update_one({"id": link_id}, {"$set": update_dict})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Social link not found")
+    return {"message": "Social link updated"}
+
+
+# Admin: Delete social link
+@api_router.delete("/admin/social-links/{link_id}")
+async def admin_delete_social_link(link_id: str, username: str = Depends(get_current_admin)):
+    """Delete a social link"""
+    result = await db.social_links.delete_one({"id": link_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Social link not found")
+    return {"message": "Social link deleted"}
+
+
+# ==================== INSTAGRAM FEED ENDPOINTS ====================
+
+# Public: Get active Instagram posts
+@api_router.get("/instagram-feed")
+async def get_public_instagram_feed():
+    """Get Instagram posts for public display"""
+    posts = await db.instagram_posts.find(
+        {"is_active": True},
+        {"_id": 0}
+    ).sort("display_order", 1).to_list(20)
+    return posts
+
+
+# Admin: Get all Instagram posts
+@api_router.get("/admin/instagram-posts")
+async def admin_get_instagram_posts(username: str = Depends(get_current_admin)):
+    """Get all Instagram posts"""
+    posts = await db.instagram_posts.find({}, {"_id": 0}).sort("display_order", 1).to_list(100)
+    return posts
+
+
+# Admin: Create Instagram post
+@api_router.post("/admin/instagram-posts")
+async def admin_create_instagram_post(post: InstagramPostCreate, username: str = Depends(get_current_admin)):
+    """Add an Instagram post to the feed"""
+    post_dict = post.dict()
+    post_dict["id"] = str(uuid.uuid4())
+    post_dict["is_active"] = True
+    post_dict["created_at"] = datetime.now(timezone.utc)
+    await db.instagram_posts.insert_one(post_dict)
+    post_dict.pop("_id", None)
+    return post_dict
+
+
+# Admin: Update Instagram post
+@api_router.put("/admin/instagram-posts/{post_id}")
+async def admin_update_instagram_post(post_id: str, update: InstagramPostUpdate, username: str = Depends(get_current_admin)):
+    """Update an Instagram post"""
+    update_dict = {k: v for k, v in update.dict().items() if v is not None}
+    if not update_dict:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    result = await db.instagram_posts.update_one({"id": post_id}, {"$set": update_dict})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Instagram post not found")
+    return {"message": "Instagram post updated"}
+
+
+# Admin: Delete Instagram post
+@api_router.delete("/admin/instagram-posts/{post_id}")
+async def admin_delete_instagram_post(post_id: str, username: str = Depends(get_current_admin)):
+    """Delete an Instagram post"""
+    result = await db.instagram_posts.delete_one({"id": post_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Instagram post not found")
+    return {"message": "Instagram post deleted"}
+
+
 # File Upload (Admin)
 ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
