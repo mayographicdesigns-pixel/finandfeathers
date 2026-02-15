@@ -15,7 +15,8 @@ from models import (
     PushNotification, PushNotificationCreate,
     ContactForm, ContactFormCreate, ContactFormUpdate,
     MenuItem, MenuItemCreate, MenuItemUpdate,
-    UserLogin, Token, UserResponse
+    UserLogin, Token, UserResponse,
+    Special, SpecialCreate, SpecialUpdate
 )
 from push_service import PushNotificationService
 from auth import verify_password, get_password_hash, create_access_token, decode_access_token
