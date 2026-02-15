@@ -1,17 +1,23 @@
-from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Header
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from typing import List
+from typing import List, Optional
+from datetime import datetime, timezone
 from models import (
     LoyaltyMember, LoyaltyMemberCreate, PushSubscription,
     PushNotification, PushNotificationCreate,
-    ContactForm, ContactFormCreate
+    ContactForm, ContactFormCreate, ContactFormUpdate,
+    MenuItem, MenuItemCreate, MenuItemUpdate,
+    UserLogin, Token, UserResponse
 )
 from push_service import PushNotificationService
+from auth import verify_password, get_password_hash, create_access_token, decode_access_token
+import uuid
 
 
 ROOT_DIR = Path(__file__).parent
