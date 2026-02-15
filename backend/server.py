@@ -233,6 +233,8 @@ async def admin_create_menu_item(item: MenuItemCreate, username: str = Depends(g
     item_dict = item.dict()
     item_dict["id"] = str(uuid.uuid4())
     await db.menu_items.insert_one(item_dict)
+    # Remove MongoDB's _id before returning
+    item_dict.pop("_id", None)
     return {**item_dict}
 
 
