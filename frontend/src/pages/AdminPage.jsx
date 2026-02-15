@@ -1414,9 +1414,11 @@ const AdminPage = () => {
 
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-    { id: 'members', label: 'Loyalty Members', icon: Users },
-    { id: 'contacts', label: 'Contacts', icon: Mail },
+    { id: 'specials', label: 'Post Special', icon: Megaphone },
+    { id: 'social', label: 'Social', icon: Share2 },
     { id: 'menu', label: 'Menu Items', icon: UtensilsCrossed },
+    { id: 'members', label: 'Loyalty', icon: Users },
+    { id: 'contacts', label: 'Contacts', icon: Mail },
     { id: 'notifications', label: 'Notifications', icon: Bell },
   ];
 
