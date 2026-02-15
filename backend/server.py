@@ -1,5 +1,6 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, Header
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Header, UploadFile, File
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -8,6 +9,7 @@ import logging
 from pathlib import Path
 from typing import List, Optional
 from datetime import datetime, timezone
+import shutil
 from models import (
     LoyaltyMember, LoyaltyMemberCreate, PushSubscription,
     PushNotification, PushNotificationCreate,
@@ -21,6 +23,8 @@ import uuid
 
 
 ROOT_DIR = Path(__file__).parent
+UPLOAD_DIR = ROOT_DIR / "uploads"
+UPLOAD_DIR.mkdir(exist_ok=True)
 load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection
