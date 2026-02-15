@@ -50,6 +50,7 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Loyalty Members management (view, delete)
 - [x] Contact form submissions (view, update status)
 - [x] Menu Items CRUD (create, read, update, delete)
+- [x] **Image Upload for menu items** (JPG, PNG, GIF, WebP up to 5MB)
 - [x] Push Notifications (send to all subscribers, view history)
 - [x] Logout functionality
 
