@@ -326,6 +326,78 @@ async def admin_get_stats(username: str = Depends(get_current_admin)):
     }
 
 
+# File Upload (Admin)
+ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+
+@api_router.post("/admin/upload")
+async def admin_upload_file(
+    file: UploadFile = File(...),
+    username: str = Depends(get_current_admin)
+):
+    """Upload an image file for menu items"""
+    # Validate file extension
+    file_ext = Path(file.filename).suffix.lower()
+    if file_ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"File type not allowed. Allowed types: {', '.join(ALLOWED_EXTENSIONS)}"
+        )
+    
+    # Generate unique filename
+    unique_filename = f"{uuid.uuid4()}{file_ext}"
+    file_path = UPLOAD_DIR / unique_filename
+    
+    # Save file
+    try:
+        # Check file size by reading content
+        contents = await file.read()
+        if len(contents) > MAX_FILE_SIZE:
+            raise HTTPException(status_code=400, detail="File too large. Maximum size is 5MB")
+        
+        with open(file_path, "wb") as f:
+            f.write(contents)
+        
+        # Return the URL path (will be served via static files mount)
+        return {
+            "filename": unique_filename,
+            "url": f"/uploads/{unique_filename}",
+            "size": len(contents)
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save file: {str(e)}")
+
+
+@api_router.get("/admin/uploads")
+async def admin_list_uploads(username: str = Depends(get_current_admin)):
+    """List all uploaded files"""
+    files = []
+    for f in UPLOAD_DIR.iterdir():
+        if f.is_file() and f.suffix.lower() in ALLOWED_EXTENSIONS:
+            files.append({
+                "filename": f.name,
+                "url": f"/uploads/{f.name}",
+                "size": f.stat().st_size
+            })
+    return files
+
+
+@api_router.delete("/admin/uploads/{filename}")
+async def admin_delete_upload(filename: str, username: str = Depends(get_current_admin)):
+    """Delete an uploaded file"""
+    file_path = UPLOAD_DIR / filename
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    try:
+        file_path.unlink()
+        return {"message": "File deleted successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete file: {str(e)}")
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
