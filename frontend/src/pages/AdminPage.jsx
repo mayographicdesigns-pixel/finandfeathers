@@ -713,6 +713,342 @@ const NotificationsTab = () => {
   );
 };
 
+// Specials Tab - Post specials that auto-send to app users
+const SpecialsTab = () => {
+  const [specials, setSpecials] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    image: '',
+    send_notification: true
+  });
+
+  useEffect(() => {
+    fetchSpecials();
+  }, []);
+
+  const fetchSpecials = async () => {
+    try {
+      const data = await getAdminSpecials();
+      setSpecials(data);
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ title: 'Error', description: 'Please upload a valid image', variant: 'destructive' });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: 'Error', description: 'Image must be less than 5MB', variant: 'destructive' });
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const result = await uploadImage(file);
+      const backendUrl = process.env.REACT_APP_BACKEND_URL;
+      const fullUrl = `${backendUrl}${result.url}`;
+      setFormData({ ...formData, image: fullUrl });
+      toast({ title: 'Success', description: 'Image uploaded' });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.title || !formData.description) {
+      toast({ title: 'Error', description: 'Title and description are required', variant: 'destructive' });
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const result = await createSpecial(formData);
+      setSpecials([result.special, ...specials]);
+      
+      const notifResult = result.notification_result;
+      if (formData.send_notification && notifResult) {
+        toast({ 
+          title: 'Special Posted!', 
+          description: `Sent to ${notifResult.sent} app users` 
+        });
+      } else {
+        toast({ title: 'Special Created', description: 'Special saved (no notification sent)' });
+      }
+      
+      resetForm();
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleToggleActive = async (special) => {
+    try {
+      await updateSpecial(special.id, { is_active: !special.is_active });
+      setSpecials(specials.map(s => 
+        s.id === special.id ? { ...s, is_active: !s.is_active } : s
+      ));
+      toast({ title: 'Success', description: `Special ${special.is_active ? 'deactivated' : 'activated'}` });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+  };
+
+  const handleResendNotification = async (special) => {
+    try {
+      const result = await resendSpecialNotification(special.id);
+      toast({ title: 'Notification Sent!', description: `Sent to ${result.result.sent} app users` });
+      fetchSpecials();
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this special?')) return;
+    try {
+      await deleteSpecial(id);
+      setSpecials(specials.filter(s => s.id !== id));
+      toast({ title: 'Success', description: 'Special deleted' });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+  };
+
+  const resetForm = () => {
+    setShowForm(false);
+    setFormData({ title: '', description: '', image: '', send_notification: true });
+  };
+
+  if (loading) return <div className="text-white text-center py-8">Loading...</div>;
+
+  return (
+    <div className="space-y-6">
+      {/* Post New Special */}
+      <Card className="bg-gradient-to-br from-red-900/30 to-slate-800/50 border-red-600/30">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center gap-2">
+            <Megaphone className="w-5 h-5 text-red-500" />
+            Post a Special
+          </CardTitle>
+          <p className="text-slate-400 text-sm">
+            Create a special/promotion and automatically notify all app users
+          </p>
+        </CardHeader>
+        <CardContent>
+          {!showForm ? (
+            <Button 
+              onClick={() => setShowForm(true)} 
+              className="w-full bg-red-600 hover:bg-red-700 h-12"
+              data-testid="new-special-button"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Create New Special
+            </Button>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="text-slate-300 text-sm block mb-2">Special Title</label>
+                <Input
+                  placeholder="e.g., Weekend Happy Hour - 50% Off Apps!"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  className="bg-slate-900 border-slate-700 text-white"
+                  required
+                  data-testid="special-title-input"
+                />
+              </div>
+              
+              <div>
+                <label className="text-slate-300 text-sm block mb-2">Description</label>
+                <Textarea
+                  placeholder="Describe the special... This will be shown to customers and in the notification"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="bg-slate-900 border-slate-700 text-white"
+                  rows={3}
+                  required
+                  data-testid="special-description-input"
+                />
+              </div>
+
+              <div>
+                <label className="text-slate-300 text-sm block mb-2">Image (optional)</label>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Image URL or upload"
+                    value={formData.image}
+                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                    className="bg-slate-900 border-slate-700 text-white flex-1"
+                  />
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="border-slate-600 text-slate-300"
+                  >
+                    {uploading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                  </Button>
+                </div>
+                {formData.image && (
+                  <img src={formData.image} alt="Preview" className="w-20 h-20 object-cover rounded mt-2" />
+                )}
+              </div>
+
+              <div className="flex items-center gap-3 p-3 bg-slate-900/50 rounded-lg">
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, send_notification: !formData.send_notification })}
+                  className="flex items-center gap-2"
+                >
+                  {formData.send_notification ? (
+                    <ToggleRight className="w-8 h-8 text-green-500" />
+                  ) : (
+                    <ToggleLeft className="w-8 h-8 text-slate-500" />
+                  )}
+                </button>
+                <div>
+                  <p className="text-white text-sm font-medium">
+                    {formData.send_notification ? 'Will notify all app users' : 'No notification'}
+                  </p>
+                  <p className="text-slate-400 text-xs">
+                    {formData.send_notification 
+                      ? 'Push notification will be sent immediately to all users with the app installed'
+                      : 'Special will be saved but no notification sent'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  type="submit"
+                  disabled={submitting}
+                  className="flex-1 bg-red-600 hover:bg-red-700 h-11"
+                  data-testid="post-special-button"
+                >
+                  {submitting ? (
+                    <RefreshCw className="w-4 h-4 animate-spin mr-2" />
+                  ) : (
+                    <Megaphone className="w-4 h-4 mr-2" />
+                  )}
+                  {submitting ? 'Posting...' : 'Post Special'}
+                </Button>
+                <Button type="button" variant="outline" onClick={resetForm} className="border-slate-600 text-slate-300">
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Specials List */}
+      <div>
+        <h3 className="text-white font-semibold mb-4">All Specials ({specials.length})</h3>
+        {specials.length === 0 ? (
+          <Card className="bg-slate-800/50 border-slate-700">
+            <CardContent className="p-8 text-center text-slate-400">
+              No specials posted yet. Create your first special above!
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-3">
+            {specials.map((special) => (
+              <Card 
+                key={special.id} 
+                className={`border ${special.is_active ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-900/50 border-slate-800 opacity-60'}`}
+              >
+                <CardContent className="p-4">
+                  <div className="flex gap-4">
+                    {special.image && (
+                      <img src={special.image} alt="" className="w-20 h-20 object-cover rounded" />
+                    )}
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h4 className="text-white font-semibold">{special.title}</h4>
+                          <p className="text-slate-400 text-sm mt-1">{special.description}</p>
+                        </div>
+                        <span className={`px-2 py-1 rounded text-xs ${special.is_active ? 'bg-green-600 text-white' : 'bg-slate-700 text-slate-300'}`}>
+                          {special.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
+                        <span>Created: {new Date(special.created_at).toLocaleDateString()}</span>
+                        {special.notification_sent && (
+                          <span className="text-green-400">
+                            Notified {special.notification_sent_at && new Date(special.notification_sent_at).toLocaleString()}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex gap-2 mt-3">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleToggleActive(special)}
+                          className="border-slate-600 text-slate-300"
+                        >
+                          {special.is_active ? 'Deactivate' : 'Activate'}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleResendNotification(special)}
+                          className="border-blue-600 text-blue-400"
+                        >
+                          <Bell className="w-3 h-3 mr-1" />
+                          Resend Notification
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleDelete(special.id)}
+                          className="text-red-400 hover:bg-red-900/30"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 // Main Admin Page Component
 const AdminPage = () => {
   const navigate = useNavigate();
