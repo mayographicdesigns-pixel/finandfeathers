@@ -47,6 +47,9 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] JWT-based authentication (username: admin, password: admin)
 - [x] Protected routes with Bearer token
 - [x] Dashboard with statistics overview
+- [x] **Post Special** - Create promotions that auto-send push notifications to all app users
+- [x] **Social Media Links** - Manage Instagram, Facebook, TikTok links
+- [x] **Instagram Feed** - Add posts to display on homepage
 - [x] Loyalty Members management (view, delete)
 - [x] Contact form submissions (view, update status)
 - [x] Menu Items CRUD (create, read, update, delete)
