@@ -150,7 +150,12 @@ const LocationsPage = () => {
 
                 {/* Hours */}
                 <div className="mb-4 pb-4 border-b border-slate-700">
-                  <p className="text-slate-400 text-xs">{location.hours}</p>
+                  <p className="text-slate-400 text-xs">
+                    {typeof location.hours === 'object' 
+                      ? `Mon-Thu: ${location.hours.monday || 'Closed'} | Fri-Sat: ${location.hours.friday || 'Closed'} | Sun: ${location.hours.sunday || 'Closed'}`
+                      : location.hours
+                    }
+                  </p>
                 </div>
 
                 {/* Action Buttons */}
