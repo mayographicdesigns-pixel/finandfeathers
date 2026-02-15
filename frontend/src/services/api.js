@@ -496,3 +496,133 @@ export async function resendSpecialNotification(specialId) {
   if (!response.ok) throw new Error('Failed to send notification');
   return await response.json();
 }
+
+// ==================== SOCIAL LINKS API ====================
+
+// Get public social links
+export async function getPublicSocialLinks() {
+  try {
+    const response = await fetch(`${API_URL}/social-links`);
+    if (!response.ok) throw new Error('Failed to fetch social links');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching social links:', error);
+    return [];
+  }
+}
+
+// Get admin social links
+export async function getAdminSocialLinks() {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/social-links`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error('Failed to fetch social links');
+  return await response.json();
+}
+
+// Create social link
+export async function createSocialLink(link) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/social-links`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(link)
+  });
+  if (!response.ok) throw new Error('Failed to create social link');
+  return await response.json();
+}
+
+// Update social link
+export async function updateSocialLink(linkId, update) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/social-links/${linkId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(update)
+  });
+  if (!response.ok) throw new Error('Failed to update social link');
+  return await response.json();
+}
+
+// Delete social link
+export async function deleteSocialLink(linkId) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/social-links/${linkId}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error('Failed to delete social link');
+  return await response.json();
+}
+
+// ==================== INSTAGRAM FEED API ====================
+
+// Get public Instagram feed
+export async function getPublicInstagramFeed() {
+  try {
+    const response = await fetch(`${API_URL}/instagram-feed`);
+    if (!response.ok) throw new Error('Failed to fetch Instagram feed');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching Instagram feed:', error);
+    return [];
+  }
+}
+
+// Get admin Instagram posts
+export async function getAdminInstagramPosts() {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/instagram-posts`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error('Failed to fetch Instagram posts');
+  return await response.json();
+}
+
+// Create Instagram post
+export async function createInstagramPost(post) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/instagram-posts`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(post)
+  });
+  if (!response.ok) throw new Error('Failed to create Instagram post');
+  return await response.json();
+}
+
+// Update Instagram post
+export async function updateInstagramPost(postId, update) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/instagram-posts/${postId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(update)
+  });
+  if (!response.ok) throw new Error('Failed to update Instagram post');
+  return await response.json();
+}
+
+// Delete Instagram post
+export async function deleteInstagramPost(postId) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/instagram-posts/${postId}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error('Failed to delete Instagram post');
+  return await response.json();
+}
