@@ -87,6 +87,19 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - `DELETE /api/admin/uploads/{filename}` - Delete uploaded file
 - `POST /api/admin/notifications/send` - Send push notification
 - `GET /api/admin/notifications/history` - Notification history
+- `GET /api/admin/specials` - List all specials
+- `POST /api/admin/specials` - Create special + auto send notification
+- `PUT /api/admin/specials/{id}` - Update special
+- `DELETE /api/admin/specials/{id}` - Delete special
+- `POST /api/admin/specials/{id}/notify` - Resend notification
+- `GET /api/admin/social-links` - List social links
+- `POST /api/admin/social-links` - Add social link
+- `PUT /api/admin/social-links/{id}` - Update social link
+- `DELETE /api/admin/social-links/{id}` - Delete social link
+- `GET /api/admin/instagram-posts` - List Instagram feed posts
+- `POST /api/admin/instagram-posts` - Add Instagram post
+- `PUT /api/admin/instagram-posts/{id}` - Update Instagram post
+- `DELETE /api/admin/instagram-posts/{id}` - Delete Instagram post
 
 ## Tech Stack
 - **Frontend**: React, React Router, TailwindCSS, Shadcn UI
