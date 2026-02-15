@@ -152,6 +152,171 @@ async def submit_contact_form(form: ContactFormCreate):
     return contact
 
 
+# ==================== AUTH ENDPOINTS ====================
+
+@api_router.post("/auth/login", response_model=Token)
+async def login(credentials: UserLogin):
+    """Admin login endpoint"""
+    if credentials.username != ADMIN_USERNAME:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    if not verify_password(credentials.password, ADMIN_PASSWORD_HASH):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    access_token = create_access_token(data={"sub": credentials.username})
+    return Token(access_token=access_token, token_type="bearer")
+
+
+@api_router.get("/auth/me", response_model=UserResponse)
+async def get_current_user(username: str = Depends(get_current_admin)):
+    """Get current authenticated admin info"""
+    return UserResponse(
+        id="admin-001",
+        username=username,
+        email="admin@finandfeathers.com",
+        is_admin=True,
+        is_active=True,
+        created_at=datetime.now(timezone.utc)
+    )
+
+
+# ==================== ADMIN ENDPOINTS ====================
+
+# Loyalty Members (Admin)
+@api_router.get("/admin/loyalty-members", response_model=List[LoyaltyMember])
+async def admin_get_loyalty_members(username: str = Depends(get_current_admin)):
+    """Get all loyalty members (protected)"""
+    members = await db.loyalty_members.find({}, {"_id": 0}).to_list(1000)
+    return [LoyaltyMember(**member) for member in members]
+
+
+@api_router.delete("/admin/loyalty-members/{member_id}")
+async def admin_delete_loyalty_member(member_id: str, username: str = Depends(get_current_admin)):
+    """Delete a loyalty member"""
+    result = await db.loyalty_members.delete_one({"id": member_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Member not found")
+    return {"message": "Member deleted successfully"}
+
+
+# Contact Forms (Admin)
+@api_router.get("/admin/contacts")
+async def admin_get_contacts(username: str = Depends(get_current_admin)):
+    """Get all contact form submissions"""
+    contacts = await db.contact_forms.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    return contacts
+
+
+@api_router.patch("/admin/contacts/{contact_id}")
+async def admin_update_contact(contact_id: str, update: ContactFormUpdate, username: str = Depends(get_current_admin)):
+    """Update contact form status"""
+    result = await db.contact_forms.update_one(
+        {"id": contact_id},
+        {"$set": {"status": update.status}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Contact not found")
+    return {"message": "Contact updated successfully"}
+
+
+# Menu Items (Admin)
+@api_router.get("/admin/menu-items")
+async def admin_get_menu_items(username: str = Depends(get_current_admin)):
+    """Get all menu items for admin"""
+    items = await db.menu_items.find({}, {"_id": 0}).to_list(1000)
+    return items
+
+
+@api_router.post("/admin/menu-items")
+async def admin_create_menu_item(item: MenuItemCreate, username: str = Depends(get_current_admin)):
+    """Create a new menu item"""
+    item_dict = item.dict()
+    item_dict["id"] = str(uuid.uuid4())
+    await db.menu_items.insert_one(item_dict)
+    return {**item_dict}
+
+
+@api_router.put("/admin/menu-items/{item_id}")
+async def admin_update_menu_item(item_id: str, update: MenuItemUpdate, username: str = Depends(get_current_admin)):
+    """Update a menu item"""
+    update_dict = {k: v for k, v in update.dict().items() if v is not None}
+    if not update_dict:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    result = await db.menu_items.update_one(
+        {"id": item_id},
+        {"$set": update_dict}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Menu item not found")
+    return {"message": "Menu item updated successfully"}
+
+
+@api_router.delete("/admin/menu-items/{item_id}")
+async def admin_delete_menu_item(item_id: str, username: str = Depends(get_current_admin)):
+    """Delete a menu item"""
+    result = await db.menu_items.delete_one({"id": item_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Menu item not found")
+    return {"message": "Menu item deleted successfully"}
+
+
+# Push Notifications (Admin - Protected versions)
+@api_router.post("/admin/notifications/send")
+async def admin_send_notification(notification: PushNotificationCreate, username: str = Depends(get_current_admin)):
+    """Send push notification (protected)"""
+    notification_data = {
+        "title": notification.title,
+        "body": notification.body,
+        "icon": notification.icon,
+        "image": notification.image,
+        "url": notification.url
+    }
+    
+    if notification.send_to_all:
+        result = await push_service.send_to_all_subscribers(notification_data)
+    else:
+        result = {"sent": 0, "failed": 0, "total_subscribers": 0}
+    
+    # Save notification record
+    push_notif = PushNotification(
+        **notification.dict(exclude={'send_to_all'}),
+        sent_to=[]
+    )
+    await db.push_notifications.insert_one(push_notif.dict())
+    
+    return {
+        "message": "Push notifications sent",
+        "result": result
+    }
+
+
+@api_router.get("/admin/notifications/history")
+async def admin_get_notification_history(username: str = Depends(get_current_admin)):
+    """Get push notification history (protected)"""
+    notifications = await db.push_notifications.find({}, {"_id": 0}).sort("sent_at", -1).limit(50).to_list(50)
+    return notifications
+
+
+# Dashboard Stats (Admin)
+@api_router.get("/admin/stats")
+async def admin_get_stats(username: str = Depends(get_current_admin)):
+    """Get dashboard statistics"""
+    loyalty_count = await db.loyalty_members.count_documents({})
+    contacts_count = await db.contact_forms.count_documents({})
+    new_contacts_count = await db.contact_forms.count_documents({"status": "new"})
+    menu_items_count = await db.menu_items.count_documents({})
+    notifications_count = await db.push_notifications.count_documents({})
+    
+    return {
+        "loyalty_members": loyalty_count,
+        "total_contacts": contacts_count,
+        "new_contacts": new_contacts_count,
+        "menu_items": menu_items_count,
+        "notifications_sent": notifications_count
+    }
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
