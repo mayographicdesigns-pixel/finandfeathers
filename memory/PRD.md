@@ -141,4 +141,4 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - **Admin Login**: username=`admin`, password=`admin`
 
 ## Preview URL
-https://admin-portal-rest.preview.emergentagent.com
+https://resto-loyalty-hub-1.preview.emergentagent.com
