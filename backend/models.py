@@ -171,3 +171,51 @@ class SpecialUpdate(BaseModel):
     is_active: Optional[bool] = None
     location_id: Optional[str] = None
 
+
+# Social Links Model
+class SocialLink(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    platform: str  # instagram, facebook, tiktok, twitter
+    url: str
+    username: str
+    is_active: bool = True
+    display_order: int = 0
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class SocialLinkCreate(BaseModel):
+    platform: str
+    url: str
+    username: str
+    display_order: int = 0
+
+class SocialLinkUpdate(BaseModel):
+    platform: Optional[str] = None
+    url: Optional[str] = None
+    username: Optional[str] = None
+    is_active: Optional[bool] = None
+    display_order: Optional[int] = None
+
+
+# Instagram Post Model (for feed)
+class InstagramPost(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    instagram_url: str
+    caption: Optional[str] = None
+    image_url: Optional[str] = None
+    is_active: bool = True
+    display_order: int = 0
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class InstagramPostCreate(BaseModel):
+    instagram_url: str
+    caption: Optional[str] = None
+    image_url: Optional[str] = None
+    display_order: int = 0
+
+class InstagramPostUpdate(BaseModel):
+    instagram_url: Optional[str] = None
+    caption: Optional[str] = None
+    image_url: Optional[str] = None
+    is_active: Optional[bool] = None
+    display_order: Optional[int] = None
+
