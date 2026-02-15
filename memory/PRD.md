@@ -79,6 +79,9 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - `POST /api/admin/menu-items` - Create menu item
 - `PUT /api/admin/menu-items/{id}` - Update menu item
 - `DELETE /api/admin/menu-items/{id}` - Delete menu item
+- `POST /api/admin/upload` - Upload image file (returns URL)
+- `GET /api/admin/uploads` - List uploaded files
+- `DELETE /api/admin/uploads/{filename}` - Delete uploaded file
 - `POST /api/admin/notifications/send` - Send push notification
 - `GET /api/admin/notifications/history` - Notification history
 
