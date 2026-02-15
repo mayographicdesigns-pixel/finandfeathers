@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Home, Send, Bell, Users, Mail, UtensilsCrossed, 
   LogOut, BarChart3, Trash2, Eye, Check, X, Plus, Edit2, 
-  Lock, User, AlertCircle, RefreshCw
+  Lock, User, AlertCircle, RefreshCw, Upload, Image
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -15,7 +15,8 @@ import {
   getLoyaltyMembers, deleteLoyaltyMember,
   getContacts, updateContactStatus,
   getAdminMenuItems, createMenuItem, updateMenuItem, deleteMenuItem,
-  sendPushNotification, getNotificationHistory
+  sendPushNotification, getNotificationHistory,
+  uploadImage, listUploads, deleteUpload
 } from '../services/api';
 
 // Login Component
