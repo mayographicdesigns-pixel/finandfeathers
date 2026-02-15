@@ -1,22 +1,83 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Home } from 'lucide-react';
+import { MapPin, Home, RefreshCw } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import CategoryFilter from '../components/CategoryFilter';
 import MenuCard from '../components/MenuCard';
 import MenuLineItem from '../components/MenuLineItem';
-import { categories, menuItems } from '../mockData';
+import { categories as defaultCategories, menuItems as mockMenuItems } from '../mockData';
+import { getPublicMenuItems } from '../services/api';
 
 const MenuPage = () => {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('all');
+  const [menuItems, setMenuItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [usingMockData, setUsingMockData] = useState(false);
+
+  // Fetch menu items from API on mount
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      setLoading(true);
+      try {
+        const items = await getPublicMenuItems();
+        if (items && items.length > 0) {
+          setMenuItems(items);
+          setUsingMockData(false);
+        } else {
+          // Fallback to mock data if no items in database
+          setMenuItems(mockMenuItems);
+          setUsingMockData(true);
+        }
+      } catch (error) {
+        console.error('Failed to fetch menu items, using mock data:', error);
+        setMenuItems(mockMenuItems);
+        setUsingMockData(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMenuItems();
+  }, []);
+
+  // Build dynamic categories from menu items
+  const categories = useMemo(() => {
+    if (menuItems.length === 0) return defaultCategories;
+    
+    // Get unique categories from current menu items
+    const uniqueCategories = [...new Set(menuItems.map(item => item.category))];
+    
+    // Map to category objects with icons
+    const categoryIcons = {
+      'daily-specials': '⭐',
+      'starters': '🍤',
+      'sides': '🍟',
+      'entrees': '🍖',
+      'seafood-grits': '🦞',
+      'sandwiches': '🥪',
+      'salads': '🥗',
+      'cocktails': '🍹',
+      'brunch': '🥞',
+      'brunch-drinks': '🥂',
+      'brunch-sides': '🥓'
+    };
+
+    const dynamicCategories = uniqueCategories.map(cat => ({
+      id: cat,
+      name: categoryNames[cat] || cat.charAt(0).toUpperCase() + cat.slice(1).replace(/-/g, ' '),
+      icon: categoryIcons[cat] || '🍽️'
+    }));
+
+    return [{ id: 'all', name: 'All', icon: '✨' }, ...dynamicCategories];
+  }, [menuItems]);
 
   const filteredItems = useMemo(() => {
     if (activeCategory === 'all') {
       return menuItems;
     }
     return menuItems.filter(item => item.category === activeCategory);
-  }, [activeCategory]);
+  }, [activeCategory, menuItems]);
 
   // Group items by category for "All" view
   const itemsByCategory = useMemo(() => {
@@ -24,28 +85,28 @@ const MenuPage = () => {
       return null;
     }
 
-    const grouped = {
-      'daily-specials': [],
-      'starters': [],
-      'sides': [],
-      'entrees': [],
-      'seafood-grits': [],
-      'sandwiches': [],
-      'salads': [],
-      'cocktails': [],
-      'brunch': [],
-      'brunch-drinks': [],
-      'brunch-sides': []
-    };
+    const grouped = {};
+    
+    // Initialize groups for known categories
+    const knownCategories = [
+      'daily-specials', 'starters', 'sides', 'entrees', 
+      'seafood-grits', 'sandwiches', 'salads', 'cocktails',
+      'brunch', 'brunch-drinks', 'brunch-sides'
+    ];
+    
+    knownCategories.forEach(cat => {
+      grouped[cat] = [];
+    });
 
     menuItems.forEach(item => {
-      if (grouped[item.category]) {
-        grouped[item.category].push(item);
+      if (!grouped[item.category]) {
+        grouped[item.category] = [];
       }
+      grouped[item.category].push(item);
     });
 
     return grouped;
-  }, [activeCategory]);
+  }, [activeCategory, menuItems]);
 
   // Category display names
   const categoryNames = {
@@ -89,6 +150,17 @@ const MenuPage = () => {
     smallItems,
     [smallItems]
   );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <RefreshCw className="w-8 h-8 text-red-500 animate-spin mx-auto mb-4" />
+          <p className="text-white">Loading menu...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black">
@@ -137,6 +209,11 @@ const MenuPage = () => {
           Elevated dining meets Southern soul. Every dish crafted with fresh
           ingredients and genuine hospitality.
         </p>
+        {usingMockData && (
+          <p className="text-yellow-500 text-sm mt-2">
+            Showing sample menu. Admin can add items via the dashboard.
+          </p>
+        )}
       </div>
 
       {/* Signature Selections Header */}
@@ -162,7 +239,7 @@ const MenuPage = () => {
         {activeCategory === 'all' && itemsByCategory && (
           <div className="space-y-12">
             {/* $5 Daily Specials - At the top */}
-            {itemsByCategory['daily-specials'].length > 0 && (
+            {itemsByCategory['daily-specials']?.length > 0 && (
               <div>
                 <h3 className="text-2xl font-bold text-white mb-2 border-b border-slate-700 pb-3">
                   {categoryNames['daily-specials']}
@@ -196,7 +273,7 @@ const MenuPage = () => {
             )}
 
             {/* Starters */}
-            {itemsByCategory['starters'].length > 0 && (
+            {itemsByCategory['starters']?.length > 0 && (
               <div>
                 <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
                   {categoryNames['starters']}
@@ -210,7 +287,7 @@ const MenuPage = () => {
             )}
             
             {/* Sides - Line items in 4 columns */}
-            {itemsByCategory['sides'].length > 0 && (
+            {itemsByCategory['sides']?.length > 0 && (
               <div>
                 <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
                   {categoryNames['sides']}
@@ -224,7 +301,7 @@ const MenuPage = () => {
             )}
 
             {/* Entrees */}
-            {itemsByCategory['entrees'].length > 0 && (
+            {itemsByCategory['entrees']?.length > 0 && (
               <div>
                 <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
                   {categoryNames['entrees']}
@@ -238,7 +315,7 @@ const MenuPage = () => {
             )}
 
             {/* Seafood & Grits */}
-            {itemsByCategory['seafood-grits'].length > 0 && (
+            {itemsByCategory['seafood-grits']?.length > 0 && (
               <div>
                 <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
                   {categoryNames['seafood-grits']}
@@ -252,7 +329,7 @@ const MenuPage = () => {
             )}
 
             {/* Sandwiches */}
-            {itemsByCategory['sandwiches'].length > 0 && (
+            {itemsByCategory['sandwiches']?.length > 0 && (
               <div>
                 <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
                   {categoryNames['sandwiches']}
@@ -266,7 +343,7 @@ const MenuPage = () => {
             )}
 
             {/* Salads */}
-            {itemsByCategory['salads'].length > 0 && (
+            {itemsByCategory['salads']?.length > 0 && (
               <div>
                 <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
                   {categoryNames['salads']}
@@ -280,7 +357,7 @@ const MenuPage = () => {
             )}
             
             {/* Signature Cocktails */}
-            {itemsByCategory['cocktails'].length > 0 && (
+            {itemsByCategory['cocktails']?.length > 0 && (
               <div>
                 <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
                   {categoryNames['cocktails']}
@@ -292,23 +369,9 @@ const MenuPage = () => {
                 </div>
               </div>
             )}
-
-            {/* Sides - Line items in 4 columns */}
-            {itemsByCategory['sides'].length > 0 && (
-              <div>
-                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
-                  {categoryNames['sides']}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {itemsByCategory['sides'].map((item) => (
-                    <MenuLineItem key={item.id} item={item} />
-                  ))}
-                </div>
-              </div>
-            )}
             
             {/* Brunch */}
-            {itemsByCategory['brunch'].length > 0 && (
+            {itemsByCategory['brunch']?.length > 0 && (
               <div>
                 <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
                   {categoryNames['brunch']}
@@ -322,7 +385,7 @@ const MenuPage = () => {
             )}
             
             {/* Brunch Drinks - Line items in 4 columns */}
-            {itemsByCategory['brunch-drinks'].length > 0 && (
+            {itemsByCategory['brunch-drinks']?.length > 0 && (
               <div>
                 <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
                   {categoryNames['brunch-drinks']}
@@ -336,7 +399,7 @@ const MenuPage = () => {
             )}
             
             {/* Brunch Sides - Line items in 4 columns */}
-            {itemsByCategory['brunch-sides'].length > 0 && (
+            {itemsByCategory['brunch-sides']?.length > 0 && (
               <div>
                 <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
                   {categoryNames['brunch-sides']}
@@ -348,6 +411,23 @@ const MenuPage = () => {
                 </div>
               </div>
             )}
+
+            {/* Dynamic categories not in the predefined list */}
+            {Object.entries(itemsByCategory)
+              .filter(([cat]) => !Object.keys(categoryNames).includes(cat) && itemsByCategory[cat]?.length > 0)
+              .map(([category, items]) => (
+                <div key={category}>
+                  <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
+                    {category.charAt(0).toUpperCase() + category.slice(1).replace(/-/g, ' ')}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                    {items.map((item) => (
+                      <MenuCard key={item.id} item={item} variant="compact" />
+                    ))}
+                  </div>
+                </div>
+              ))
+            }
           </div>
         )}
 
@@ -420,6 +500,13 @@ const MenuPage = () => {
               </div>
             )}
           </>
+        )}
+
+        {/* Empty state for filtered category */}
+        {activeCategory !== 'all' && filteredItems.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-slate-400 text-lg">No items in this category yet.</p>
+          </div>
         )}
       </div>
     </div>
