@@ -276,18 +276,90 @@ const LinkTreeHomePage = () => {
           </CardContent>
         </Card>
 
+        {/* Active Specials */}
+        {specials.length > 0 && (
+          <Card className="mb-6 bg-gradient-to-br from-yellow-900/20 to-slate-800/80 border-yellow-600/30">
+            <CardContent className="p-6">
+              <h2 className="text-xl font-bold text-white mb-4 text-center flex items-center justify-center gap-2">
+                <span className="text-2xl">🎉</span> Current Specials
+              </h2>
+              <div className="space-y-3">
+                {specials.slice(0, 3).map((special) => (
+                  <div key={special.id} className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+                    <div className="flex gap-3">
+                      {special.image && (
+                        <img src={special.image} alt="" className="w-16 h-16 object-cover rounded" />
+                      )}
+                      <div>
+                        <h3 className="text-white font-semibold">{special.title}</h3>
+                        <p className="text-slate-300 text-sm">{special.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Instagram Feed */}
+        {instagramFeed.length > 0 && (
+          <Card className="mb-6 bg-slate-800/80 border-slate-700/50">
+            <CardContent className="p-6">
+              <h2 className="text-xl font-bold text-white mb-4 text-center flex items-center justify-center gap-2">
+                <Instagram className="w-5 h-5 text-pink-500" /> Follow Us on Instagram
+              </h2>
+              <div className="grid grid-cols-3 gap-2">
+                {instagramFeed.slice(0, 6).map((post) => (
+                  <a 
+                    key={post.id} 
+                    href={post.instagram_url || '#'} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="aspect-square overflow-hidden rounded-lg group"
+                  >
+                    {post.image_url ? (
+                      <img 
+                        src={post.image_url} 
+                        alt={post.caption || 'Instagram post'} 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-purple-600 to-pink-500 flex items-center justify-center">
+                        <Instagram className="w-8 h-8 text-white opacity-50" />
+                      </div>
+                    )}
+                  </a>
+                ))}
+              </div>
+              {displaySocialLinks.find(l => l.platform === 'instagram') && (
+                <Button
+                  onClick={() => window.open(displaySocialLinks.find(l => l.platform === 'instagram').url, '_blank')}
+                  className="w-full mt-4 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600"
+                >
+                  <Instagram className="w-4 h-4 mr-2" />
+                  Follow @finandfeathers
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Social Media Links */}
         <div className="flex justify-center gap-4 mb-8">
-          {socialLinks.map((social, index) => (
-            <button
-              key={index}
-              onClick={() => window.open(social.url, '_blank')}
-              className="w-12 h-12 rounded-full bg-slate-800 hover:bg-red-600 transition-all duration-300 flex items-center justify-center border border-slate-700 hover:border-red-500"
-              aria-label={social.label}
-            >
-              <social.icon className="w-5 h-5 text-white" />
-            </button>
-          ))}
+          {displaySocialLinks.map((social, index) => {
+            const Icon = getSocialIcon(social.platform);
+            return (
+              <button
+                key={index}
+                onClick={() => window.open(social.url, '_blank')}
+                className="w-12 h-12 rounded-full bg-slate-800 hover:bg-red-600 transition-all duration-300 flex items-center justify-center border border-slate-700 hover:border-red-500"
+                aria-label={social.platform}
+              >
+                {typeof Icon === 'function' && Icon.prototype ? <Icon className="w-5 h-5 text-white" /> : <Icon />}
+              </button>
+            );
+          })}
         </div>
 
         {/* Footer */}
