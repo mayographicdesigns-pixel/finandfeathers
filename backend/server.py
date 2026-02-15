@@ -45,6 +45,9 @@ ADMIN_PASSWORD_HASH = get_password_hash("admin")
 # Create the main app without a prefix
 app = FastAPI()
 
+# Mount static files for uploads
+app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
+
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
