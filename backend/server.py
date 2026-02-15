@@ -45,6 +45,19 @@ app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
 
+# Auth dependency
+async def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Verify JWT token and return admin username"""
+    token = credentials.credentials
+    payload = decode_access_token(token)
+    if payload is None:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    username = payload.get("sub")
+    if username != ADMIN_USERNAME:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    return username
+
+
 # Health check
 @api_router.get("/")
 async def root():
