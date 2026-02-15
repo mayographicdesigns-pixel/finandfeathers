@@ -1068,6 +1068,43 @@ export const locations = [
   },
   {
     id: 7,
+    slug: 'stone-mountain',
+    name: 'Fin & Feathers - Stone Mountain',
+    address: '5370 Stone Mountain Hwy, Stone Mountain, GA 30087',
+    phone: '(470) 334-8255',
+    reservationPhone: '(470) 334-8255',
+    coordinates: { lat: 33.8081, lng: -84.1458 },
+    image: 'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=800&q=80',
+    hours: {
+      monday: '11am-10pm',
+      tuesday: '11am-10pm',
+      wednesday: '11am-10pm',
+      thursday: '11am-11pm',
+      friday: '11am-12am',
+      saturday: '10am-12am',
+      sunday: '10am-10pm'
+    },
+    locationUrl: 'https://finandfeathersrestaurants.com/stone-mountain/',
+    onlineOrdering: 'https://finandfeathersrestaurants.com/stone-mountain/',
+    reservations: 'sms:14703348255?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
+    delivery: 'https://finandfeathersrestaurants.com/stone-mountain/',
+    socialMedia: {
+      instagram: 'https://instagram.com/finandfeathers_stonemountain',
+      facebook: 'https://facebook.com/finandfeathers',
+      twitter: 'https://twitter.com/finandfeathers'
+    },
+    weeklySpecials: [
+      { day: 'Monday', special: '$5 Wings & $5 Margaritas', image: '/videos/5.mp4' },
+      { day: 'Tuesday', special: 'Taco Tuesday - $2 Tacos', image: '/videos/9.mp4' },
+      { day: 'Wednesday', special: 'Wine Down Wednesday - Half Price Wine', image: '/videos/13.mp4' },
+      { day: 'Thursday', special: 'Thirsty Thursday - $10 Long Islands', image: '/videos/17.mp4' },
+      { day: 'Friday', special: 'Fresh Fish Friday - Market Price', image: '/videos/21.mp4' },
+      { day: 'Saturday', special: 'Brunch & Bottomless Mimosas', image: '/videos/24.mp4' },
+      { day: 'Sunday', special: 'Sunday Funday - Kids Eat Free', image: '/videos/1.mp4' }
+    ]
+  },
+  {
+    id: 8,
     slug: 'las-vegas',
     name: 'Fin & Feathers - Las Vegas',
     address: '1229 S Casino Center Blvd, Las Vegas, NV 89104',
