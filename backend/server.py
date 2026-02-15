@@ -332,13 +332,169 @@ async def admin_get_stats(username: str = Depends(get_current_admin)):
     new_contacts_count = await db.contact_forms.count_documents({"status": "new"})
     menu_items_count = await db.menu_items.count_documents({})
     notifications_count = await db.push_notifications.count_documents({})
+    specials_count = await db.specials.count_documents({"is_active": True})
     
     return {
         "loyalty_members": loyalty_count,
         "total_contacts": contacts_count,
         "new_contacts": new_contacts_count,
         "menu_items": menu_items_count,
-        "notifications_sent": notifications_count
+        "notifications_sent": notifications_count,
+        "active_specials": specials_count
+    }
+
+
+# ==================== SPECIALS ENDPOINTS ====================
+
+# Public endpoint to get active specials
+@api_router.get("/specials")
+async def get_public_specials():
+    """Get all active specials for public display"""
+    now = datetime.now(timezone.utc)
+    specials = await db.specials.find(
+        {
+            "is_active": True,
+            "$or": [
+                {"valid_until": None},
+                {"valid_until": {"$gte": now}}
+            ]
+        },
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    return specials
+
+
+# Admin: Get all specials
+@api_router.get("/admin/specials")
+async def admin_get_specials(username: str = Depends(get_current_admin)):
+    """Get all specials (including inactive)"""
+    specials = await db.specials.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return specials
+
+
+# Admin: Create and post a special (with auto push notification)
+@api_router.post("/admin/specials")
+async def admin_create_special(special: SpecialCreate, username: str = Depends(get_current_admin)):
+    """Create a new special and optionally send push notification"""
+    special_dict = special.dict()
+    special_dict["id"] = str(uuid.uuid4())
+    special_dict["is_active"] = True
+    special_dict["created_at"] = datetime.now(timezone.utc)
+    special_dict["notification_sent"] = False
+    special_dict["notification_sent_at"] = None
+    
+    # Remove the send_notification flag before storing
+    send_notification = special_dict.pop("send_notification", True)
+    
+    # Save the special
+    await db.specials.insert_one(special_dict)
+    
+    notification_result = None
+    
+    # Send push notification if requested
+    if send_notification:
+        notification_data = {
+            "title": f"🎉 {special.title}",
+            "body": special.description[:100] + ("..." if len(special.description) > 100 else ""),
+            "icon": "/logo192.png",
+            "image": special.image,
+            "url": "/"
+        }
+        
+        notification_result = await push_service.send_to_all_subscribers(notification_data)
+        
+        # Update special with notification info
+        await db.specials.update_one(
+            {"id": special_dict["id"]},
+            {
+                "$set": {
+                    "notification_sent": True,
+                    "notification_sent_at": datetime.now(timezone.utc)
+                }
+            }
+        )
+        special_dict["notification_sent"] = True
+        special_dict["notification_sent_at"] = datetime.now(timezone.utc)
+        
+        # Also save to push notifications history
+        push_notif = PushNotification(
+            title=notification_data["title"],
+            body=notification_data["body"],
+            icon=notification_data["icon"],
+            image=notification_data.get("image"),
+            url=notification_data["url"],
+            sent_to=[]
+        )
+        await db.push_notifications.insert_one(push_notif.dict())
+    
+    # Remove MongoDB _id if present
+    special_dict.pop("_id", None)
+    
+    return {
+        "special": special_dict,
+        "notification_result": notification_result
+    }
+
+
+# Admin: Update a special
+@api_router.put("/admin/specials/{special_id}")
+async def admin_update_special(special_id: str, update: SpecialUpdate, username: str = Depends(get_current_admin)):
+    """Update a special"""
+    update_dict = {k: v for k, v in update.dict().items() if v is not None}
+    if not update_dict:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    result = await db.specials.update_one(
+        {"id": special_id},
+        {"$set": update_dict}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Special not found")
+    return {"message": "Special updated successfully"}
+
+
+# Admin: Delete a special
+@api_router.delete("/admin/specials/{special_id}")
+async def admin_delete_special(special_id: str, username: str = Depends(get_current_admin)):
+    """Delete a special"""
+    result = await db.specials.delete_one({"id": special_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Special not found")
+    return {"message": "Special deleted successfully"}
+
+
+# Admin: Resend notification for a special
+@api_router.post("/admin/specials/{special_id}/notify")
+async def admin_resend_special_notification(special_id: str, username: str = Depends(get_current_admin)):
+    """Resend push notification for a special"""
+    special = await db.specials.find_one({"id": special_id}, {"_id": 0})
+    if not special:
+        raise HTTPException(status_code=404, detail="Special not found")
+    
+    notification_data = {
+        "title": f"🎉 {special['title']}",
+        "body": special['description'][:100] + ("..." if len(special['description']) > 100 else ""),
+        "icon": "/logo192.png",
+        "image": special.get("image"),
+        "url": "/"
+    }
+    
+    result = await push_service.send_to_all_subscribers(notification_data)
+    
+    # Update notification timestamp
+    await db.specials.update_one(
+        {"id": special_id},
+        {
+            "$set": {
+                "notification_sent": True,
+                "notification_sent_at": datetime.now(timezone.utc)
+            }
+        }
+    )
+    
+    return {
+        "message": "Notification sent",
+        "result": result
     }
 
 
