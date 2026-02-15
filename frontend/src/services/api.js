@@ -17,6 +17,32 @@ function urlBase64ToUint8Array(base64String) {
   return outputArray;
 }
 
+// ==================== PUBLIC API ====================
+
+// Get public menu items (no auth required)
+export async function getPublicMenuItems() {
+  try {
+    const response = await fetch(`${API_URL}/menu/items`);
+    if (!response.ok) throw new Error('Failed to fetch menu items');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching menu items:', error);
+    return [];
+  }
+}
+
+// Get menu categories (no auth required)
+export async function getMenuCategories() {
+  try {
+    const response = await fetch(`${API_URL}/menu/categories`);
+    if (!response.ok) throw new Error('Failed to fetch categories');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    return [];
+  }
+}
+
 // Get VAPID public key from server
 export async function getVapidPublicKey() {
   try {
