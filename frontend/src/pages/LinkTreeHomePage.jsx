@@ -80,11 +80,24 @@ const LinkTreeHomePage = () => {
     }
   };
 
-  const socialLinks = [
-    { icon: Instagram, url: 'https://instagram.com/finandfeathers', label: 'Instagram' },
-    { icon: Facebook, url: 'https://facebook.com/finandfeathers', label: 'Facebook' },
-    { icon: Twitter, url: 'https://twitter.com/finandfeathers', label: 'Twitter' }
+  // Default social links if none configured
+  const defaultSocialLinks = [
+    { platform: 'instagram', url: 'https://instagram.com/finandfeathers', username: '@finandfeathers' },
+    { platform: 'facebook', url: 'https://facebook.com/finandfeathers', username: 'Fin & Feathers' },
+    { platform: 'twitter', url: 'https://twitter.com/finandfeathers', username: '@finandfeathers' }
   ];
+
+  const displaySocialLinks = socialLinks.length > 0 ? socialLinks : defaultSocialLinks;
+
+  const getSocialIcon = (platform) => {
+    switch (platform) {
+      case 'instagram': return Instagram;
+      case 'facebook': return Facebook;
+      case 'twitter': return Twitter;
+      case 'tiktok': return () => <span className="text-lg">🎵</span>;
+      default: return ExternalLink;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black py-8 px-4">
