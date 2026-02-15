@@ -332,3 +332,51 @@ export async function getNotificationHistory() {
   if (!response.ok) throw new Error('Failed to fetch notifications');
   return await response.json();
 }
+
+// Upload image file
+export async function uploadImage(file) {
+  const token = localStorage.getItem('adminToken');
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await fetch(`${API_URL}/admin/upload`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
+    body: formData
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to upload image');
+  }
+  return await response.json();
+}
+
+// List uploaded images
+export async function listUploads() {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/uploads`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) throw new Error('Failed to fetch uploads');
+  return await response.json();
+}
+
+// Delete uploaded image
+export async function deleteUpload(filename) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/uploads/${filename}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) throw new Error('Failed to delete upload');
+  return await response.json();
+}
