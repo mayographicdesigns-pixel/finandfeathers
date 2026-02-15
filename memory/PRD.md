@@ -109,7 +109,6 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 
 ### P1 (High Priority)
 - [ ] Connect MenuPage.jsx to backend API (replace mockData.js)
-- [ ] Add/find actual menu item photos
 - [ ] Upload and manage promo videos via admin panel
 
 ### P2 (Medium Priority)
