@@ -138,3 +138,36 @@ class MediaCreate(BaseModel):
     type: str
     category: str
 
+
+# Special/Promotion Model
+class Special(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    title: str
+    description: str
+    image: Optional[str] = None
+    valid_from: Optional[datetime] = None
+    valid_until: Optional[datetime] = None
+    is_active: bool = True
+    location_id: Optional[str] = None  # None means all locations
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    notification_sent: bool = False
+    notification_sent_at: Optional[datetime] = None
+
+class SpecialCreate(BaseModel):
+    title: str
+    description: str
+    image: Optional[str] = None
+    valid_from: Optional[datetime] = None
+    valid_until: Optional[datetime] = None
+    location_id: Optional[str] = None
+    send_notification: bool = True  # Auto-send push notification
+
+class SpecialUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    image: Optional[str] = None
+    valid_from: Optional[datetime] = None
+    valid_until: Optional[datetime] = None
+    is_active: Optional[bool] = None
+    location_id: Optional[str] = None
+
