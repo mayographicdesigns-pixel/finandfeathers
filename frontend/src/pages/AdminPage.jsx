@@ -316,6 +316,8 @@ const MenuItemsTab = () => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     name: '', description: '', price: '', category: '', image: '', badges: ''
   });
@@ -332,6 +334,41 @@ const MenuItemsTab = () => {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ title: 'Error', description: 'Please upload a valid image (JPG, PNG, GIF, or WebP)', variant: 'destructive' });
+      return;
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: 'Error', description: 'Image must be less than 5MB', variant: 'destructive' });
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const result = await uploadImage(file);
+      // Construct full URL for the uploaded image
+      const backendUrl = process.env.REACT_APP_BACKEND_URL;
+      const fullUrl = `${backendUrl}${result.url}`;
+      setFormData({ ...formData, image: fullUrl });
+      toast({ title: 'Success', description: 'Image uploaded successfully' });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -447,13 +484,57 @@ const MenuItemsTab = () => {
                   className="bg-slate-900 border-slate-700 text-white"
                 />
               </div>
-              <Input
-                placeholder="Image URL"
-                value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                className="bg-slate-900 border-slate-700 text-white"
-                required
-              />
+              
+              {/* Image Upload Section */}
+              <div className="space-y-2">
+                <label className="text-slate-300 text-sm block">Menu Item Image</label>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Image URL (or upload below)"
+                    value={formData.image}
+                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                    className="bg-slate-900 border-slate-700 text-white flex-1"
+                    required
+                  />
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    accept="image/jpeg,image/png,image/gif,image/webp"
+                    className="hidden"
+                    data-testid="image-upload-input"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                    data-testid="upload-image-button"
+                  >
+                    {uploading ? (
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Upload className="w-4 h-4" />
+                    )}
+                    <span className="ml-2">{uploading ? 'Uploading...' : 'Upload'}</span>
+                  </Button>
+                </div>
+                {formData.image && (
+                  <div className="mt-2 flex items-center gap-3">
+                    <img 
+                      src={formData.image} 
+                      alt="Preview" 
+                      className="w-20 h-20 object-cover rounded border border-slate-600"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                    <span className="text-slate-400 text-xs truncate max-w-xs">{formData.image}</span>
+                  </div>
+                )}
+              </div>
+
               <div className="flex gap-2">
                 <Button type="submit" className="bg-green-600 hover:bg-green-700">
                   {editingItem ? 'Update' : 'Create'} Item
