@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Home, Send, Bell, Users, Mail, UtensilsCrossed, 
   LogOut, BarChart3, Trash2, Eye, Check, X, Plus, Edit2, 
-  Lock, User, AlertCircle, RefreshCw, Upload, Image
+  Lock, User, AlertCircle, RefreshCw, Upload, Image, Megaphone, 
+  Calendar, ToggleLeft, ToggleRight
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -16,7 +17,8 @@ import {
   getContacts, updateContactStatus,
   getAdminMenuItems, createMenuItem, updateMenuItem, deleteMenuItem,
   sendPushNotification, getNotificationHistory,
-  uploadImage, listUploads, deleteUpload
+  uploadImage, listUploads, deleteUpload,
+  getAdminSpecials, createSpecial, updateSpecial, deleteSpecial, resendSpecialNotification
 } from '../services/api';
 
 // Login Component
