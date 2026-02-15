@@ -4,7 +4,7 @@ import {
   Home, Send, Bell, Users, Mail, UtensilsCrossed, 
   LogOut, BarChart3, Trash2, Eye, Check, X, Plus, Edit2, 
   Lock, User, AlertCircle, RefreshCw, Upload, Image, Megaphone, 
-  Calendar, ToggleLeft, ToggleRight
+  Calendar, ToggleLeft, ToggleRight, Share2, Instagram, Facebook, ExternalLink
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -18,7 +18,9 @@ import {
   getAdminMenuItems, createMenuItem, updateMenuItem, deleteMenuItem,
   sendPushNotification, getNotificationHistory,
   uploadImage, listUploads, deleteUpload,
-  getAdminSpecials, createSpecial, updateSpecial, deleteSpecial, resendSpecialNotification
+  getAdminSpecials, createSpecial, updateSpecial, deleteSpecial, resendSpecialNotification,
+  getAdminSocialLinks, createSocialLink, updateSocialLink, deleteSocialLink,
+  getAdminInstagramPosts, createInstagramPost, updateInstagramPost, deleteInstagramPost
 } from '../services/api';
 
 // Login Component
