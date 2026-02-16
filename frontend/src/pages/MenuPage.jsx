@@ -123,21 +123,6 @@ const MenuPage = () => {
     return grouped;
   }, [activeCategory, menuItems]);
 
-  // Category display names
-  const categoryNames = {
-    'daily-specials': '$5 Daily Specials',
-    'starters': 'Starters',
-    'sides': 'Sides',
-    'entrees': 'Entrees',
-    'seafood-grits': 'Seafood & Grits',
-    'sandwiches': 'Sandwiches',
-    'salads': 'Salads',
-    'cocktails': 'Signature Cocktails',
-    'brunch': 'Brunch',
-    'brunch-drinks': 'Brunch Drinks',
-    'brunch-sides': 'Brunch Sides'
-  };
-
   // Separate large items (entrees & seafood-grits) from other items
   const largeItems = useMemo(() => 
     filteredItems.filter(item => item.category === 'entrees' || item.category === 'seafood-grits'),
