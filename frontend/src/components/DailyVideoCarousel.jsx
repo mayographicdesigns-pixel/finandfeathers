@@ -21,6 +21,9 @@ const DailyVideoCarousel = () => {
   const [showPlayButton, setShowPlayButton] = useState(false);
   const videoRef = useRef(null);
 
+  const videos = weeklyVideos[currentDay] || [];
+  const currentVideo = videos[currentVideoIndex];
+
   useEffect(() => {
     // Update to current day on mount
     setCurrentDay(new Date().getDay());
@@ -79,9 +82,6 @@ const DailyVideoCarousel = () => {
       video.removeEventListener('error', handleError);
     };
   }, [currentVideo]);
-
-  const videos = weeklyVideos[currentDay] || [];
-  const currentVideo = videos[currentVideoIndex];
 
   const nextVideo = () => {
     setCurrentVideoIndex((prev) => (prev + 1) % videos.length);
