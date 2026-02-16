@@ -107,8 +107,7 @@ const LinkTreeHomePage = () => {
           <img 
             src="https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png" 
             alt="Fin & Feathers Restaurants"
-            className="h-32 md:h-40 mx-auto mb-4 object-contain"
-            style={{ aspectRatio: '1/1' }}
+            className="max-h-32 md:max-h-40 w-auto mx-auto mb-4 object-contain"
           />
           <p className="text-slate-300 text-sm">
             Elevated dining meets Southern soul
