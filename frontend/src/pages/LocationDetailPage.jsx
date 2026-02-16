@@ -6,7 +6,7 @@ import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { locations } from '../mockData';
 import { checkInAtLocation, getCheckedInUsers, checkOut } from '../services/api';
-import { useToast } from '../components/ui/use-toast';
+import { useToast } from '../hooks/use-toast';
 
 const AVATAR_EMOJIS = ['😊', '😎', '🤩', '🥳', '😋', '🍗', '🦐', '🍹', '🔥', '💯', '🎉', '✨'];
 const MOODS = ['Vibing', 'Hungry', 'Celebrating', 'Date Night', 'Girls Night', 'With Friends', 'Solo Dining', 'Business Dinner'];
