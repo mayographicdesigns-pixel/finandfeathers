@@ -158,7 +158,7 @@ const DailyVideoCarousel = () => {
             <video
               ref={videoRef}
               key={currentVideo}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
               muted
               loop
               playsInline
