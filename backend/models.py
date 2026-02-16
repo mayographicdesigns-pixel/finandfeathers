@@ -219,3 +219,30 @@ class InstagramPostUpdate(BaseModel):
     is_active: Optional[bool] = None
     display_order: Optional[int] = None
 
+
+# Location Check-in Model
+class CheckIn(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    location_slug: str
+    display_name: str
+    avatar_emoji: str = "😊"
+    mood: Optional[str] = None  # e.g., "Vibing", "Hungry", "Celebrating"
+    message: Optional[str] = None
+    checked_in_at: datetime = Field(default_factory=datetime.utcnow)
+    expires_at: datetime = None  # Auto-checkout after X hours
+
+class CheckInCreate(BaseModel):
+    location_slug: str
+    display_name: str
+    avatar_emoji: str = "😊"
+    mood: Optional[str] = None
+    message: Optional[str] = None
+
+class CheckInResponse(BaseModel):
+    id: str
+    location_slug: str
+    display_name: str
+    avatar_emoji: str
+    mood: Optional[str]
+    message: Optional[str]
+    checked_in_at: datetime
