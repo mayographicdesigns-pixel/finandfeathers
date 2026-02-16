@@ -1,17 +1,129 @@
-import React, { useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { MapPin, Phone, Clock, Home, Calendar, ShoppingBag, Instagram, Facebook, Twitter, ExternalLink, Navigation } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { MapPin, Phone, Clock, Home, Calendar, ShoppingBag, Instagram, Facebook, Twitter, ExternalLink, Navigation, Users, LogIn, LogOut, Smile, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
+import { Input } from '../components/ui/input';
 import { locations } from '../mockData';
+import { checkInAtLocation, getCheckedInUsers, checkOut } from '../services/api';
+import { useToast } from '../components/ui/use-toast';
+
+const AVATAR_EMOJIS = ['😊', '😎', '🤩', '🥳', '😋', '🍗', '🦐', '🍹', '🔥', '💯', '🎉', '✨'];
+const MOODS = ['Vibing', 'Hungry', 'Celebrating', 'Date Night', 'Girls Night', 'With Friends', 'Solo Dining', 'Business Dinner'];
 
 const LocationDetailPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { toast } = useToast();
   
+  // Check-in state
+  const [showCheckInModal, setShowCheckInModal] = useState(false);
+  const [checkedInUsers, setCheckedInUsers] = useState([]);
+  const [myCheckIn, setMyCheckIn] = useState(null);
+  const [displayName, setDisplayName] = useState('');
+  const [selectedEmoji, setSelectedEmoji] = useState('😊');
+  const [selectedMood, setSelectedMood] = useState('');
+  const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
   const location = useMemo(() => {
     return locations.find(loc => loc.slug === slug);
   }, [slug]);
+
+  // Check for checkin parameter in URL (from QR code scan)
+  useEffect(() => {
+    const shouldCheckIn = searchParams.get('checkin');
+    if (shouldCheckIn === 'true' && !myCheckIn) {
+      setShowCheckInModal(true);
+    }
+  }, [searchParams, myCheckIn]);
+
+  // Load checked-in users
+  useEffect(() => {
+    if (slug) {
+      loadCheckedInUsers();
+      // Check if user already checked in (from localStorage)
+      const savedCheckIn = localStorage.getItem(`checkin_${slug}`);
+      if (savedCheckIn) {
+        setMyCheckIn(JSON.parse(savedCheckIn));
+      }
+    }
+  }, [slug]);
+
+  // Refresh checked-in users every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (slug) loadCheckedInUsers();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [slug]);
+
+  const loadCheckedInUsers = async () => {
+    const users = await getCheckedInUsers(slug);
+    setCheckedInUsers(users);
+  };
+
+  const handleCheckIn = async () => {
+    if (!displayName.trim()) {
+      toast({
+        title: "Name Required",
+        description: "Please enter a display name to check in",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const checkInData = {
+        location_slug: slug,
+        display_name: displayName.trim(),
+        avatar_emoji: selectedEmoji,
+        mood: selectedMood || null,
+        message: message.trim() || null
+      };
+
+      const result = await checkInAtLocation(checkInData);
+      setMyCheckIn(result);
+      localStorage.setItem(`checkin_${slug}`, JSON.stringify(result));
+      setShowCheckInModal(false);
+      await loadCheckedInUsers();
+
+      toast({
+        title: "You're checked in! 🎉",
+        description: `Welcome to ${location?.name}! Others can now see you're here.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Check-in Failed",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCheckOut = async () => {
+    if (!myCheckIn) return;
+
+    try {
+      await checkOut(myCheckIn.id);
+      localStorage.removeItem(`checkin_${slug}`);
+      setMyCheckIn(null);
+      await loadCheckedInUsers();
+
+      toast({
+        title: "Checked out",
+        description: "Thanks for visiting! See you next time.",
+      });
+    } catch (error) {
+      // Even if API fails, clear local state
+      localStorage.removeItem(`checkin_${slug}`);
+      setMyCheckIn(null);
+    }
+  };
 
   if (!location) {
     return (
@@ -27,10 +139,110 @@ const LocationDetailPage = () => {
   }
 
   const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-  const todaysSpecial = location.weeklySpecials.find(s => s.day.toLowerCase() === currentDay);
+  const todaysSpecial = location.weeklySpecials?.find(s => s.day.toLowerCase() === currentDay);
 
   return (
     <div className="min-h-screen bg-black">
+      {/* Check-In Modal */}
+      {showCheckInModal && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <Card className="bg-slate-900 border-red-600/50 w-full max-w-md">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-white">Check In</h2>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowCheckInModal(false)}
+                  className="text-slate-400 hover:text-white"
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
+
+              <p className="text-slate-300 mb-6">
+                Join the vibe at <span className="text-red-500 font-semibold">{location.name}</span>! 
+                Let others know you're here.
+              </p>
+
+              {/* Display Name */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-slate-300 mb-2">Your Name</label>
+                <Input
+                  type="text"
+                  placeholder="How should we call you?"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  className="bg-slate-800 border-slate-700 text-white"
+                  maxLength={20}
+                />
+              </div>
+
+              {/* Avatar Emoji */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-slate-300 mb-2">Pick Your Avatar</label>
+                <div className="flex flex-wrap gap-2">
+                  {AVATAR_EMOJIS.map((emoji) => (
+                    <button
+                      key={emoji}
+                      onClick={() => setSelectedEmoji(emoji)}
+                      className={`w-10 h-10 text-2xl rounded-lg flex items-center justify-center transition-all ${
+                        selectedEmoji === emoji 
+                          ? 'bg-red-600 scale-110' 
+                          : 'bg-slate-800 hover:bg-slate-700'
+                      }`}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Mood */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-slate-300 mb-2">What's Your Vibe?</label>
+                <div className="flex flex-wrap gap-2">
+                  {MOODS.map((mood) => (
+                    <button
+                      key={mood}
+                      onClick={() => setSelectedMood(selectedMood === mood ? '' : mood)}
+                      className={`px-3 py-1.5 text-sm rounded-full transition-all ${
+                        selectedMood === mood 
+                          ? 'bg-red-600 text-white' 
+                          : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                      }`}
+                    >
+                      {mood}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Message */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-slate-300 mb-2">Quick Message (optional)</label>
+                <Input
+                  type="text"
+                  placeholder="What are you excited about?"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  className="bg-slate-800 border-slate-700 text-white"
+                  maxLength={50}
+                />
+              </div>
+
+              <Button
+                onClick={handleCheckIn}
+                disabled={isLoading}
+                className="w-full bg-red-600 hover:bg-red-700 text-white h-12 text-lg"
+              >
+                {isLoading ? 'Checking in...' : `Check In ${selectedEmoji}`}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Header */}
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
@@ -58,52 +270,125 @@ const LocationDetailPage = () => {
           <img 
             src="https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png" 
             alt="Fin & Feathers Restaurants"
-            className="h-24 md:h-32 w-auto mx-auto cursor-pointer mb-4"
+            className="max-h-32 md:max-h-40 w-auto mx-auto mb-4 object-contain cursor-pointer"
             onClick={() => navigate('/')}
           />
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">{location.name}</h1>
-          <p className="text-slate-300">{location.address}</p>
+          <h1 className="text-3xl md:text-4xl font-bold text-white">{location.name}</h1>
+          <p className="text-slate-400 mt-2">{location.address}</p>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Google Map */}
-          <Card className="bg-slate-800/80 border-slate-700/50 overflow-hidden">
-            <CardContent className="p-0">
-              <iframe
-                title={`Map to ${location.name}`}
-                width="100%"
-                height="400"
-                frameBorder="0"
-                style={{ border: 0 }}
-                src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(location.address)}&zoom=15`}
-                allowFullScreen
-              ></iframe>
-              <div className="p-4 bg-slate-900/50">
+        {/* Who's Here Section - Social Environment */}
+        <Card className="mb-6 bg-gradient-to-br from-red-900/30 to-slate-800/80 border-red-600/30">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <Users className="w-5 h-5 text-red-500" />
+                Who's Here Right Now
+              </h2>
+              <span className="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                {checkedInUsers.length} {checkedInUsers.length === 1 ? 'person' : 'people'}
+              </span>
+            </div>
+
+            {/* Check-in/out button */}
+            {myCheckIn ? (
+              <div className="mb-4 p-3 bg-green-900/30 border border-green-600/30 rounded-lg flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{myCheckIn.avatar_emoji}</span>
+                  <div>
+                    <p className="text-white font-semibold">You're checked in!</p>
+                    <p className="text-slate-400 text-sm">Others can see you're here</p>
+                  </div>
+                </div>
                 <Button
-                  onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(location.address)}`, '_blank')}
-                  className="w-full bg-red-600 hover:bg-red-700"
+                  onClick={handleCheckOut}
+                  variant="outline"
+                  size="sm"
+                  className="border-red-600/50 text-red-500 hover:bg-red-900/30"
                 >
-                  <Navigation className="w-4 h-4 mr-2" />
-                  Get Directions
+                  <LogOut className="w-4 h-4 mr-1" />
+                  Check Out
                 </Button>
               </div>
+            ) : (
+              <Button
+                onClick={() => setShowCheckInModal(true)}
+                className="w-full mb-4 bg-red-600 hover:bg-red-700 text-white h-12 text-lg"
+              >
+                <LogIn className="w-5 h-5 mr-2" />
+                Check In & Join the Vibe
+              </Button>
+            )}
+
+            {/* Checked-in users grid */}
+            {checkedInUsers.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {checkedInUsers.map((user) => (
+                  <div
+                    key={user.id}
+                    className={`p-3 rounded-lg text-center transition-all ${
+                      myCheckIn?.id === user.id 
+                        ? 'bg-green-900/30 border border-green-600/30' 
+                        : 'bg-slate-800/50 hover:bg-slate-700/50'
+                    }`}
+                  >
+                    <span className="text-3xl block mb-1">{user.avatar_emoji}</span>
+                    <p className="text-white font-medium text-sm truncate">{user.display_name}</p>
+                    {user.mood && (
+                      <p className="text-red-400 text-xs mt-1">{user.mood}</p>
+                    )}
+                    {user.message && (
+                      <p className="text-slate-400 text-xs mt-1 truncate">"{user.message}"</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-6">
+                <Smile className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+                <p className="text-slate-400">Be the first to check in!</p>
+                <p className="text-slate-500 text-sm">Let others know you're enjoying the vibe</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Map & Directions */}
+          <Card className="bg-slate-900/80 border-slate-700">
+            <CardContent className="p-4">
+              <div className="aspect-video w-full rounded-lg overflow-hidden mb-4">
+                <iframe
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent(location.address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                  className="w-full h-full"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  title={`Map of ${location.name}`}
+                />
+              </div>
+              <Button
+                onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(location.address)}`, '_blank')}
+                className="w-full bg-red-600 hover:bg-red-700"
+              >
+                <Navigation className="w-4 h-4 mr-2" />
+                Get Directions
+              </Button>
             </CardContent>
           </Card>
 
-          {/* Contact & Hours */}
-          <div className="space-y-6">
-            {/* Contact Information */}
-            <Card className="bg-slate-800/80 border-slate-700/50">
+          {/* Contact Information */}
+          <div className="space-y-4">
+            <Card className="bg-slate-900/80 border-slate-700">
               <CardContent className="p-6">
-                <h2 className="text-2xl font-bold text-white mb-4">Contact Information</h2>
+                <h2 className="text-xl font-bold text-white mb-4">Contact Information</h2>
                 
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <Phone className="w-5 h-5 text-red-500" />
                     <div>
-                      <p className="text-white font-semibold text-sm">Main Line</p>
-                      <a href={`tel:${location.phone}`} className="text-slate-300 text-sm hover:text-red-500">
+                      <p className="text-slate-400 text-sm">Main Line</p>
+                      <a href={`tel:${location.phone}`} className="text-white hover:text-red-400">
                         {location.phone}
                       </a>
                     </div>
@@ -112,8 +397,8 @@ const LocationDetailPage = () => {
                   <div className="flex items-center gap-3">
                     <Calendar className="w-5 h-5 text-red-500" />
                     <div>
-                      <p className="text-white font-semibold text-sm">Reservations (Text)</p>
-                      <a href={location.reservations} className="text-slate-300 text-sm hover:text-red-500">
+                      <p className="text-slate-400 text-sm">Reservations (Text)</p>
+                      <a href={location.reservations} className="text-white hover:text-red-400">
                         {location.reservationPhone}
                       </a>
                     </div>
@@ -122,8 +407,8 @@ const LocationDetailPage = () => {
                   <div className="flex items-center gap-3">
                     <MapPin className="w-5 h-5 text-red-500" />
                     <div>
-                      <p className="text-white font-semibold text-sm">Address</p>
-                      <p className="text-slate-300 text-sm">{location.address}</p>
+                      <p className="text-slate-400 text-sm">Address</p>
+                      <p className="text-white">{location.address}</p>
                     </div>
                   </div>
                 </div>
@@ -131,16 +416,21 @@ const LocationDetailPage = () => {
             </Card>
 
             {/* Hours */}
-            <Card className="bg-slate-800/80 border-slate-700/50">
+            <Card className="bg-slate-900/80 border-slate-700">
               <CardContent className="p-6">
-                <div className="flex items-center gap-2 mb-4">
+                <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                   <Clock className="w-5 h-5 text-red-500" />
-                  <h2 className="text-2xl font-bold text-white">Hours</h2>
-                </div>
+                  Hours
+                </h2>
                 
                 <div className="space-y-2">
                   {Object.entries(location.hours).map(([day, hours]) => (
-                    <div key={day} className={`flex justify-between ${day === currentDay ? 'text-red-500 font-semibold' : 'text-slate-300'}`}>
+                    <div 
+                      key={day} 
+                      className={`flex justify-between ${
+                        day === currentDay ? 'text-red-500 font-semibold' : 'text-slate-300'
+                      }`}
+                    >
                       <span className="capitalize">{day}</span>
                       <span>{hours}</span>
                     </div>
@@ -152,102 +442,88 @@ const LocationDetailPage = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
           <Button
             onClick={() => navigate('/menu')}
-            className="bg-red-600 hover:bg-red-700 text-white h-14 text-lg"
+            className="bg-red-600 hover:bg-red-700 h-12"
           >
-            <ExternalLink className="w-5 h-5 mr-2" />
+            <ExternalLink className="w-4 h-4 mr-2" />
             View Menu
           </Button>
           
           <Button
-            onClick={() => window.open(location.onlineOrdering, '_blank')}
-            className="bg-slate-800 hover:bg-slate-700 border-2 border-slate-700 text-white h-14 text-lg"
+            onClick={() => navigate(`/location/${slug}`)}
+            variant="outline"
+            className="border-slate-600 text-slate-300 hover:bg-slate-700 h-12"
           >
-            <ShoppingBag className="w-5 h-5 mr-2" />
+            <ShoppingBag className="w-4 h-4 mr-2" />
             Order Online
           </Button>
           
           <Button
-            onClick={() => window.location.href = location.reservations}
-            className="bg-slate-800 hover:bg-slate-700 border-2 border-red-600 text-red-500 h-14 text-lg"
+            onClick={() => window.open(location.reservations, '_blank')}
+            variant="outline"
+            className="border-red-600/50 text-red-400 hover:bg-red-900/30 h-12"
           >
-            <Calendar className="w-5 h-5 mr-2" />
-            Make Reservation
+            <Calendar className="w-4 h-4 mr-2" />
+            Reservations
+          </Button>
+          
+          <Button
+            onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(location.address)}`, '_blank')}
+            variant="outline"
+            className="border-slate-600 text-slate-300 hover:bg-slate-700 h-12"
+          >
+            <Navigation className="w-4 h-4 mr-2" />
+            Directions
           </Button>
         </div>
 
-        {/* Today's Special Highlight */}
+        {/* Today's Special */}
         {todaysSpecial && (
-          <Card className="bg-gradient-to-br from-red-900/30 to-red-950/30 border-red-600/50 mb-8">
+          <Card className="mt-6 bg-gradient-to-r from-red-900/30 to-slate-800/50 border-red-600/30">
             <CardContent className="p-6">
-              <h2 className="text-2xl font-bold text-white mb-4 text-center">
-                🔥 Today's Special - {todaysSpecial.day}
-              </h2>
-              <p className="text-xl text-center text-slate-200 font-semibold mb-4">
-                {todaysSpecial.special}
-              </p>
+              <h2 className="text-xl font-bold text-white mb-2">Today's Special</h2>
+              <p className="text-red-400 text-lg">{todaysSpecial.special}</p>
             </CardContent>
           </Card>
         )}
 
-        {/* Weekly Specials */}
-        <Card className="bg-slate-800/80 border-slate-700/50 mb-8">
-          <CardContent className="p-6">
-            <h2 className="text-2xl font-bold text-white mb-6 text-center">Weekly Specials</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {location.weeklySpecials.map((special, index) => (
-                <div
-                  key={index}
-                  className={`bg-slate-900/50 rounded-lg p-4 border ${
-                    special.day.toLowerCase() === currentDay
-                      ? 'border-red-500 shadow-lg shadow-red-500/20'
-                      : 'border-slate-700'
-                  }`}
-                >
-                  <h3 className={`font-bold mb-2 ${
-                    special.day.toLowerCase() === currentDay ? 'text-red-500' : 'text-white'
-                  }`}>
-                    {special.day}
-                  </h3>
-                  <p className="text-slate-300 text-sm">{special.special}</p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Social Media */}
-        <Card className="bg-slate-800/80 border-slate-700/50">
-          <CardContent className="p-6">
-            <h2 className="text-2xl font-bold text-white mb-4 text-center">Follow Us</h2>
-            
-            <div className="flex justify-center gap-4">
-              <button
+        {/* Social Links */}
+        {location.socialMedia && (
+          <div className="flex justify-center gap-4 mt-8">
+            {location.socialMedia.instagram && (
+              <Button
                 onClick={() => window.open(location.socialMedia.instagram, '_blank')}
-                className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transition-all duration-300 flex items-center justify-center"
+                variant="ghost"
+                size="lg"
+                className="text-pink-500 hover:text-pink-400 hover:bg-pink-900/20"
               >
-                <Instagram className="w-6 h-6 text-white" />
-              </button>
-              
-              <button
+                <Instagram className="w-6 h-6" />
+              </Button>
+            )}
+            {location.socialMedia.facebook && (
+              <Button
                 onClick={() => window.open(location.socialMedia.facebook, '_blank')}
-                className="w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-700 transition-all duration-300 flex items-center justify-center"
+                variant="ghost"
+                size="lg"
+                className="text-blue-500 hover:text-blue-400 hover:bg-blue-900/20"
               >
-                <Facebook className="w-6 h-6 text-white" />
-              </button>
-              
-              <button
+                <Facebook className="w-6 h-6" />
+              </Button>
+            )}
+            {location.socialMedia.twitter && (
+              <Button
                 onClick={() => window.open(location.socialMedia.twitter, '_blank')}
-                className="w-14 h-14 rounded-full bg-sky-500 hover:bg-sky-600 transition-all duration-300 flex items-center justify-center"
+                variant="ghost"
+                size="lg"
+                className="text-sky-500 hover:text-sky-400 hover:bg-sky-900/20"
               >
-                <Twitter className="w-6 h-6 text-white" />
-              </button>
-            </div>
-          </CardContent>
-        </Card>
+                <Twitter className="w-6 h-6" />
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
