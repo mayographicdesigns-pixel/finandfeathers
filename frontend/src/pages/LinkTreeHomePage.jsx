@@ -67,10 +67,14 @@ const LinkTreeHomePage = () => {
           : `Thank you ${name}! Check your email for exclusive offers.`,
       });
 
+      // Clear form
       setEmail('');
       setName('');
       setPhone('');
       setAgreeToMarketing(false);
+
+      // Redirect to Toast Tab rewards signup after successful registration
+      window.open('https://www.toasttab.com/fins-feathers-douglasville-7430-douglas-blvd-zmrgr/rewardsSignup', '_blank');
     } catch (error) {
       toast({
         title: "Signup Failed",
