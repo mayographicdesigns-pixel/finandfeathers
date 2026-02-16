@@ -689,6 +689,76 @@ async def admin_delete_upload(filename: str, username: str = Depends(get_current
         raise HTTPException(status_code=500, detail=f"Failed to delete file: {str(e)}")
 
 
+# =====================================================
+# LOCATION CHECK-IN ENDPOINTS
+# =====================================================
+
+@api_router.post("/checkin", response_model=CheckInResponse)
+async def check_in(checkin_data: CheckInCreate):
+    """Check in at a location"""
+    # Auto-expire after 4 hours
+    expires_at = datetime.now(timezone.utc) + timedelta(hours=4)
+    
+    checkin = CheckIn(
+        id=str(uuid.uuid4()),
+        location_slug=checkin_data.location_slug,
+        display_name=checkin_data.display_name,
+        avatar_emoji=checkin_data.avatar_emoji,
+        mood=checkin_data.mood,
+        message=checkin_data.message,
+        checked_in_at=datetime.now(timezone.utc),
+        expires_at=expires_at
+    )
+    
+    checkin_dict = checkin.model_dump()
+    await db.checkins.insert_one(checkin_dict)
+    
+    return CheckInResponse(
+        id=checkin.id,
+        location_slug=checkin.location_slug,
+        display_name=checkin.display_name,
+        avatar_emoji=checkin.avatar_emoji,
+        mood=checkin.mood,
+        message=checkin.message,
+        checked_in_at=checkin.checked_in_at
+    )
+
+@api_router.get("/checkin/{location_slug}", response_model=List[CheckInResponse])
+async def get_checked_in_users(location_slug: str):
+    """Get all users currently checked in at a location"""
+    # Clean up expired check-ins
+    await db.checkins.delete_many({
+        "expires_at": {"$lt": datetime.now(timezone.utc)}
+    })
+    
+    # Get active check-ins for this location
+    checkins = await db.checkins.find(
+        {"location_slug": location_slug},
+        {"_id": 0}
+    ).sort("checked_in_at", -1).to_list(100)
+    
+    return [CheckInResponse(**c) for c in checkins]
+
+@api_router.delete("/checkin/{checkin_id}")
+async def check_out(checkin_id: str):
+    """Check out from a location"""
+    result = await db.checkins.delete_one({"id": checkin_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Check-in not found")
+    return {"message": "Checked out successfully"}
+
+@api_router.get("/checkin/count/{location_slug}")
+async def get_checkin_count(location_slug: str):
+    """Get the count of people checked in at a location"""
+    # Clean up expired check-ins
+    await db.checkins.delete_many({
+        "expires_at": {"$lt": datetime.now(timezone.utc)}
+    })
+    
+    count = await db.checkins.count_documents({"location_slug": location_slug})
+    return {"location_slug": location_slug, "count": count}
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
