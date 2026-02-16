@@ -147,7 +147,7 @@ const LinkTreeHomePage = () => {
           </Button>
 
           <Button
-            onClick={() => window.open('https://finandfeathersrestaurants.com/order-online/', '_blank')}
+            onClick={() => navigate('/locations')}
             className="w-full bg-slate-800 hover:bg-slate-700 text-white border-2 border-slate-700 h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
           >
             <ExternalLink className="w-5 h-5 mr-2" />
@@ -155,7 +155,7 @@ const LinkTreeHomePage = () => {
           </Button>
 
           <Button
-            onClick={() => window.open('https://finandfeathersrestaurants.com/', '_blank')}
+            onClick={() => window.open('https://www.instagram.com/finandfeathers/', '_blank')}
             className="w-full bg-slate-800 hover:bg-slate-700 text-white border-2 border-slate-700 h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
           >
             <Instagram className="w-5 h-5 mr-2" />
