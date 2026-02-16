@@ -302,48 +302,84 @@ const LinkTreeHomePage = () => {
           </Card>
         )}
 
-        {/* Instagram Feed */}
-        {instagramFeed.length > 0 && (
-          <Card className="mb-6 bg-slate-800/80 border-slate-700/50">
-            <CardContent className="p-6">
-              <h2 className="text-xl font-bold text-white mb-4 text-center flex items-center justify-center gap-2">
-                <Instagram className="w-5 h-5 text-pink-500" /> Follow Us on Instagram
-              </h2>
-              <div className="grid grid-cols-3 gap-2">
-                {instagramFeed.slice(0, 6).map((post) => (
-                  <a 
-                    key={post.id} 
-                    href={post.instagram_url || '#'} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="aspect-square overflow-hidden rounded-lg group"
-                  >
-                    {post.image_url ? (
-                      <img 
-                        src={post.image_url} 
-                        alt={post.caption || 'Instagram post'} 
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-purple-600 to-pink-500 flex items-center justify-center">
-                        <Instagram className="w-8 h-8 text-white opacity-50" />
-                      </div>
-                    )}
-                  </a>
-                ))}
+        {/* Social Media Feed - 4 Column Grid */}
+        <Card className="mb-6 bg-slate-800/80 border-slate-700/50">
+          <CardContent className="p-6">
+            <h2 className="text-xl font-bold text-white mb-6 text-center flex items-center justify-center gap-2">
+              <Instagram className="w-5 h-5 text-pink-500" /> Follow Us on Social Media
+            </h2>
+            
+            {/* 4 Column Social Feed Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {/* Instagram Embed 1 */}
+              <div className="bg-white rounded-lg overflow-hidden" style={{ minHeight: '300px' }}>
+                <iframe 
+                  src="https://www.instagram.com/finandfeathers/embed" 
+                  className="w-full h-full"
+                  style={{ minHeight: '300px', border: 'none' }}
+                  scrolling="no"
+                  allowTransparency="true"
+                  title="Instagram Feed 1"
+                ></iframe>
               </div>
-              {displaySocialLinks.find(l => l.platform === 'instagram') && (
-                <Button
-                  onClick={() => window.open(displaySocialLinks.find(l => l.platform === 'instagram').url, '_blank')}
-                  className="w-full mt-4 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600"
-                >
-                  <Instagram className="w-4 h-4 mr-2" />
-                  Follow @finandfeathers
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-        )}
+              
+              {/* Instagram Embed 2 */}
+              <div className="bg-white rounded-lg overflow-hidden" style={{ minHeight: '300px' }}>
+                <iframe 
+                  src="https://www.instagram.com/finandfeathers/embed" 
+                  className="w-full h-full"
+                  style={{ minHeight: '300px', border: 'none' }}
+                  scrolling="no"
+                  allowTransparency="true"
+                  title="Instagram Feed 2"
+                ></iframe>
+              </div>
+              
+              {/* Facebook Embed */}
+              <div className="bg-white rounded-lg overflow-hidden" style={{ minHeight: '300px' }}>
+                <iframe 
+                  src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ffinandfeathersrestaurants&tabs=timeline&width=340&height=300&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false" 
+                  className="w-full h-full"
+                  style={{ minHeight: '300px', border: 'none', overflow: 'hidden' }}
+                  scrolling="no"
+                  allowFullScreen={true}
+                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                  title="Facebook Feed"
+                ></iframe>
+              </div>
+              
+              {/* Instagram Embed 3 */}
+              <div className="bg-white rounded-lg overflow-hidden" style={{ minHeight: '300px' }}>
+                <iframe 
+                  src="https://www.instagram.com/finandfeathers/embed" 
+                  className="w-full h-full"
+                  style={{ minHeight: '300px', border: 'none' }}
+                  scrolling="no"
+                  allowTransparency="true"
+                  title="Instagram Feed 3"
+                ></iframe>
+              </div>
+            </div>
+            
+            {/* Follow Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 mt-6">
+              <Button
+                onClick={() => window.open('https://www.instagram.com/finandfeathers/', '_blank')}
+                className="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600"
+              >
+                <Instagram className="w-4 h-4 mr-2" />
+                Follow on Instagram
+              </Button>
+              <Button
+                onClick={() => window.open('https://www.facebook.com/finandfeathersrestaurants', '_blank')}
+                className="flex-1 bg-blue-600 hover:bg-blue-700"
+              >
+                <Facebook className="w-4 h-4 mr-2" />
+                Follow on Facebook
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Social Media Links */}
         <div className="flex justify-center gap-4 mb-8">
