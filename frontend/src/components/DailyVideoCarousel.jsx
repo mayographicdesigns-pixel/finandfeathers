@@ -29,12 +29,12 @@ const DailyVideoCarousel = () => {
   // Handle video loading and autoplay
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !currentVideo) return;
 
     setIsLoading(true);
     setShowPlayButton(false);
 
-    const handleCanPlay = () => {
+    const handleCanPlayThrough = () => {
       setIsLoading(false);
       // Attempt to play the video
       const playPromise = video.play();
@@ -46,19 +46,39 @@ const DailyVideoCarousel = () => {
       }
     };
 
+    const handleLoadedData = () => {
+      setIsLoading(false);
+      // Try to autoplay
+      video.play().catch(() => {
+        setShowPlayButton(true);
+      });
+    };
+
     const handleError = () => {
       setIsLoading(false);
       setShowPlayButton(true);
     };
 
-    video.addEventListener('canplay', handleCanPlay);
+    // Add a timeout fallback in case the video takes too long
+    const timeoutId = setTimeout(() => {
+      setIsLoading(false);
+      setShowPlayButton(true);
+    }, 10000);
+
+    video.addEventListener('loadeddata', handleLoadedData);
+    video.addEventListener('canplaythrough', handleCanPlayThrough);
     video.addEventListener('error', handleError);
 
+    // Force load
+    video.load();
+
     return () => {
-      video.removeEventListener('canplay', handleCanPlay);
+      clearTimeout(timeoutId);
+      video.removeEventListener('loadeddata', handleLoadedData);
+      video.removeEventListener('canplaythrough', handleCanPlayThrough);
       video.removeEventListener('error', handleError);
     };
-  }, [currentDay, currentVideoIndex]);
+  }, [currentVideo]);
 
   const videos = weeklyVideos[currentDay] || [];
   const currentVideo = videos[currentVideoIndex];
