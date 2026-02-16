@@ -626,3 +626,51 @@ export async function deleteInstagramPost(postId) {
   if (!response.ok) throw new Error('Failed to delete Instagram post');
   return await response.json();
 }
+
+
+// ==================== LOCATION CHECK-IN API ====================
+
+// Check in at a location
+export async function checkInAtLocation(checkInData) {
+  const response = await fetch(`${API_URL}/checkin`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(checkInData)
+  });
+  if (!response.ok) throw new Error('Failed to check in');
+  return await response.json();
+}
+
+// Get users checked in at a location
+export async function getCheckedInUsers(locationSlug) {
+  try {
+    const response = await fetch(`${API_URL}/checkin/${locationSlug}`);
+    if (!response.ok) throw new Error('Failed to get check-ins');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching check-ins:', error);
+    return [];
+  }
+}
+
+// Check out from a location
+export async function checkOut(checkInId) {
+  const response = await fetch(`${API_URL}/checkin/${checkInId}`, {
+    method: 'DELETE'
+  });
+  if (!response.ok) throw new Error('Failed to check out');
+  return await response.json();
+}
+
+// Get check-in count for a location
+export async function getCheckInCount(locationSlug) {
+  try {
+    const response = await fetch(`${API_URL}/checkin/count/${locationSlug}`);
+    if (!response.ok) throw new Error('Failed to get count');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching check-in count:', error);
+    return { count: 0 };
+  }
+}
+
