@@ -220,14 +220,64 @@ const LinkTreeHomePage = () => {
               Be the first to receive updates on special events, new menu items, exclusive offers, and more!
             </p>
             
-            <Button
-              onClick={() => window.open('https://www.toasttab.com/fins-feathers-douglasville-7430-douglas-blvd-zmrgr/rewardsSignup', '_blank')}
-              className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
-              data-testid="loyalty-signup-btn"
-            >
-              <ExternalLink className="w-5 h-5 mr-2" />
-              Join Now
-            </Button>
+            <form onSubmit={handleLoyaltySignup} className="space-y-4">
+              <div>
+                <Input
+                  type="text"
+                  placeholder="Full Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  className="bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-500 h-12"
+                  data-testid="loyalty-name-input"
+                />
+              </div>
+              
+              <div>
+                <Input
+                  type="email"
+                  placeholder="Email Address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-500 h-12"
+                  data-testid="loyalty-email-input"
+                />
+              </div>
+              
+              <div>
+                <Input
+                  type="tel"
+                  placeholder="Phone Number (Optional)"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-500 h-12"
+                  data-testid="loyalty-phone-input"
+                />
+              </div>
+
+              <div className="flex items-start gap-2">
+                <input
+                  type="checkbox"
+                  id="marketing"
+                  checked={agreeToMarketing}
+                  onChange={(e) => setAgreeToMarketing(e.target.checked)}
+                  className="mt-1 w-4 h-4 rounded border-slate-700 bg-slate-900 text-red-600 focus:ring-red-500"
+                  data-testid="loyalty-marketing-checkbox"
+                />
+                <label htmlFor="marketing" className="text-slate-300 text-xs">
+                  By checking this box, you agree to receive marketing communications from Fin & Feathers Restaurants via email, SMS, and push notifications
+                </label>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full bg-red-600 hover:bg-red-700 text-white h-12 text-base font-semibold rounded-lg"
+                data-testid="loyalty-submit-btn"
+              >
+                Join Now
+              </Button>
+            </form>
           </CardContent>
         </Card>
 
