@@ -8,7 +8,7 @@ import os
 import logging
 from pathlib import Path
 from typing import List, Optional
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import shutil
 from models import (
     LoyaltyMember, LoyaltyMemberCreate, PushSubscription,
@@ -18,7 +18,8 @@ from models import (
     UserLogin, Token, UserResponse,
     Special, SpecialCreate, SpecialUpdate,
     SocialLink, SocialLinkCreate, SocialLinkUpdate,
-    InstagramPost, InstagramPostCreate, InstagramPostUpdate
+    InstagramPost, InstagramPostCreate, InstagramPostUpdate,
+    CheckIn, CheckInCreate, CheckInResponse
 )
 from push_service import PushNotificationService
 from auth import verify_password, get_password_hash, create_access_token, decode_access_token
