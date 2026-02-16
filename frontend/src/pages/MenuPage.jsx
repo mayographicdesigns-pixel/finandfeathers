@@ -15,6 +15,21 @@ const MenuPage = () => {
   const [loading, setLoading] = useState(true);
   const [usingMockData, setUsingMockData] = useState(false);
 
+  // Category display names - moved to top
+  const categoryNames = {
+    'daily-specials': '$5 Daily Specials',
+    'starters': 'Starters',
+    'sides': 'Sides',
+    'entrees': 'Entrees',
+    'seafood-grits': 'Seafood & Grits',
+    'sandwiches': 'Sandwiches',
+    'salads': 'Salads',
+    'cocktails': 'Signature Cocktails',
+    'brunch': 'Brunch',
+    'brunch-drinks': 'Brunch Drinks',
+    'brunch-sides': 'Brunch Sides'
+  };
+
   // Fetch menu items from API on mount
   useEffect(() => {
     const fetchMenuItems = async () => {
