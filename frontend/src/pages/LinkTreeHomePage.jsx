@@ -302,63 +302,70 @@ const LinkTreeHomePage = () => {
           </Card>
         )}
 
-        {/* Social Media Feed - 4 Column Grid */}
+        {/* Social Media Feed - 4 Column Square Grid */}
         <Card className="mb-6 bg-slate-800/80 border-slate-700/50">
           <CardContent className="p-6">
             <h2 className="text-xl font-bold text-white mb-6 text-center flex items-center justify-center gap-2">
               <Instagram className="w-5 h-5 text-pink-500" /> Follow Us on Social Media
             </h2>
             
-            {/* 4 Column Social Feed Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {/* Instagram Embed 1 */}
-              <div className="bg-white rounded-lg overflow-hidden" style={{ minHeight: '300px' }}>
-                <iframe 
-                  src="https://www.instagram.com/finandfeathers/embed" 
-                  className="w-full h-full"
-                  style={{ minHeight: '300px', border: 'none' }}
-                  scrolling="no"
-                  allowTransparency="true"
-                  title="Instagram Feed 1"
-                ></iframe>
-              </div>
+            {/* 4 Column Square Image Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {/* Instagram Post 1 */}
+              <a 
+                href="https://www.instagram.com/finandfeathers/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="aspect-square rounded-lg overflow-hidden group cursor-pointer"
+              >
+                <img 
+                  src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=400&fit=crop" 
+                  alt="Fin & Feathers Food"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+              </a>
               
-              {/* Instagram Embed 2 */}
-              <div className="bg-white rounded-lg overflow-hidden" style={{ minHeight: '300px' }}>
-                <iframe 
-                  src="https://www.instagram.com/finandfeathers/embed" 
-                  className="w-full h-full"
-                  style={{ minHeight: '300px', border: 'none' }}
-                  scrolling="no"
-                  allowTransparency="true"
-                  title="Instagram Feed 2"
-                ></iframe>
-              </div>
+              {/* Instagram Post 2 */}
+              <a 
+                href="https://www.instagram.com/finandfeathers/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="aspect-square rounded-lg overflow-hidden group cursor-pointer"
+              >
+                <img 
+                  src="https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=400&h=400&fit=crop" 
+                  alt="Fin & Feathers Seafood"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+              </a>
               
-              {/* Facebook Embed */}
-              <div className="bg-white rounded-lg overflow-hidden" style={{ minHeight: '300px' }}>
-                <iframe 
-                  src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ffinandfeathersrestaurants&tabs=timeline&width=340&height=300&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false" 
-                  className="w-full h-full"
-                  style={{ minHeight: '300px', border: 'none', overflow: 'hidden' }}
-                  scrolling="no"
-                  allowFullScreen={true}
-                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                  title="Facebook Feed"
-                ></iframe>
-              </div>
+              {/* Facebook Post */}
+              <a 
+                href="https://www.facebook.com/finandfeathersrestaurants" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="aspect-square rounded-lg overflow-hidden group cursor-pointer"
+              >
+                <img 
+                  src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=400&fit=crop" 
+                  alt="Fin & Feathers Dishes"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+              </a>
               
-              {/* Instagram Embed 3 */}
-              <div className="bg-white rounded-lg overflow-hidden" style={{ minHeight: '300px' }}>
-                <iframe 
-                  src="https://www.instagram.com/finandfeathers/embed" 
-                  className="w-full h-full"
-                  style={{ minHeight: '300px', border: 'none' }}
-                  scrolling="no"
-                  allowTransparency="true"
-                  title="Instagram Feed 3"
-                ></iframe>
-              </div>
+              {/* Instagram Post 3 */}
+              <a 
+                href="https://www.instagram.com/finandfeathers/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="aspect-square rounded-lg overflow-hidden group cursor-pointer"
+              >
+                <img 
+                  src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=400&fit=crop" 
+                  alt="Fin & Feathers Wings"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+              </a>
             </div>
             
             {/* Follow Buttons */}
