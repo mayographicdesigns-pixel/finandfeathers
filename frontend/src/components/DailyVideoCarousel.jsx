@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 
 // Organize videos by day of the week using uploaded promotional videos
 const weeklyVideos = {
@@ -17,11 +17,48 @@ const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Frida
 const DailyVideoCarousel = () => {
   const [currentDay, setCurrentDay] = useState(new Date().getDay());
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showPlayButton, setShowPlayButton] = useState(false);
+  const videoRef = useRef(null);
 
   useEffect(() => {
     // Update to current day on mount
     setCurrentDay(new Date().getDay());
   }, []);
+
+  // Handle video loading and autoplay
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    setIsLoading(true);
+    setShowPlayButton(false);
+
+    const handleCanPlay = () => {
+      setIsLoading(false);
+      // Attempt to play the video
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Autoplay was prevented, show play button
+          setShowPlayButton(true);
+        });
+      }
+    };
+
+    const handleError = () => {
+      setIsLoading(false);
+      setShowPlayButton(true);
+    };
+
+    video.addEventListener('canplay', handleCanPlay);
+    video.addEventListener('error', handleError);
+
+    return () => {
+      video.removeEventListener('canplay', handleCanPlay);
+      video.removeEventListener('error', handleError);
+    };
+  }, [currentDay, currentVideoIndex]);
 
   const videos = weeklyVideos[currentDay] || [];
   const currentVideo = videos[currentVideoIndex];
@@ -39,6 +76,14 @@ const DailyVideoCarousel = () => {
     setCurrentVideoIndex(0);
   };
 
+  const handlePlayClick = () => {
+    const video = videoRef.current;
+    if (video) {
+      video.play();
+      setShowPlayButton(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* Day Selector */}
@@ -47,6 +92,7 @@ const DailyVideoCarousel = () => {
           <button
             key={index}
             onClick={() => changeDay(index)}
+            data-testid={`day-btn-${day.toLowerCase()}`}
             className={`px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition-all duration-300 ${
               currentDay === index
                 ? 'bg-red-600 text-white'
@@ -65,13 +111,35 @@ const DailyVideoCarousel = () => {
       <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
         {currentVideo ? (
           <>
+            {/* Loading Spinner */}
+            {isLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
+                <div className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            )}
+
+            {/* Play Button Overlay */}
+            {showPlayButton && !isLoading && (
+              <button
+                onClick={handlePlayClick}
+                className="absolute inset-0 flex items-center justify-center bg-black/50 z-10 cursor-pointer"
+                data-testid="play-video-btn"
+              >
+                <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center hover:bg-red-700 transition-colors">
+                  <Play className="w-10 h-10 text-white ml-1" fill="white" />
+                </div>
+              </button>
+            )}
+
             <video
+              ref={videoRef}
               key={currentVideo}
               className="w-full h-full object-cover"
-              autoPlay
               muted
               loop
               playsInline
+              preload="auto"
+              data-testid="promo-video"
             >
               <source src={currentVideo} type="video/mp4" />
               Your browser does not support the video tag.
@@ -82,21 +150,21 @@ const DailyVideoCarousel = () => {
               <>
                 <button
                   onClick={prevVideo}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full transition-all duration-300"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full transition-all duration-300 z-20"
                   aria-label="Previous video"
                 >
                   <ChevronLeft className="w-6 h-6" />
                 </button>
                 <button
                   onClick={nextVideo}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full transition-all duration-300"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full transition-all duration-300 z-20"
                   aria-label="Next video"
                 >
                   <ChevronRight className="w-6 h-6" />
                 </button>
 
                 {/* Video Counter */}
-                <div className="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm">
+                <div className="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm z-20">
                   {currentVideoIndex + 1} / {videos.length}
                 </div>
               </>
@@ -104,7 +172,7 @@ const DailyVideoCarousel = () => {
           </>
         ) : (
           <div className="w-full h-full flex items-center justify-center text-slate-400">
-            No videos available for this day
+            No video available for {dayNames[currentDay]}
           </div>
         )}
       </div>
