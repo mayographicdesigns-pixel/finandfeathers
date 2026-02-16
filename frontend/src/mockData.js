@@ -862,10 +862,10 @@ export const locations = [
       saturday: '10am-3am',
       sunday: '10am-12am'
     },
-    locationUrl: 'https://finandfeathersrestaurants.com/edgewood/',
-    onlineOrdering: 'https://finandfeathersrestaurants.com/edgewood/',
+    locationUrl: '/location/edgewood/',
+    onlineOrdering: '/location/edgewood/',
     reservations: 'sms:14046921252?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: 'https://finandfeathersrestaurants.com/edgewood/',
+    delivery: '/location/edgewood/',
     socialMedia: {
       instagram: 'https://instagram.com/finandfeathers_edgewood',
       facebook: 'https://facebook.com/finandfeathers',
@@ -899,10 +899,10 @@ export const locations = [
       saturday: '10am-12am',
       sunday: '10am-10pm'
     },
-    locationUrl: 'https://finandfeathersrestaurants.com/midtown-atlanta/',
-    onlineOrdering: 'https://finandfeathersrestaurants.com/midtown-atlanta/',
+    locationUrl: '/location/midtown-atlanta/',
+    onlineOrdering: '/location/midtown-atlanta/',
     reservations: 'sms:16784214083?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: 'https://finandfeathersrestaurants.com/midtown-atlanta/',
+    delivery: '/location/midtown-atlanta/',
     socialMedia: {
       instagram: 'https://instagram.com/finandfeathers_midtown',
       facebook: 'https://facebook.com/finandfeathers',
@@ -936,10 +936,10 @@ export const locations = [
       saturday: '11am-12am',
       sunday: '11am-9pm'
     },
-    locationUrl: 'https://finandfeathersrestaurants.com/douglasville/',
-    onlineOrdering: 'https://finandfeathersrestaurants.com/douglasville/',
+    locationUrl: '/location/douglasville/',
+    onlineOrdering: '/location/douglasville/',
     reservations: 'sms:14044581958?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: 'https://finandfeathersrestaurants.com/douglasville/',
+    delivery: '/location/douglasville/',
     socialMedia: {
       instagram: 'https://instagram.com/finandfeathers_douglasville',
       facebook: 'https://facebook.com/finandfeathers',
@@ -973,10 +973,10 @@ export const locations = [
       saturday: '10am-12am',
       sunday: '10am-10pm'
     },
-    locationUrl: 'https://finandfeathersrestaurants.com/riverdale/',
-    onlineOrdering: 'https://finandfeathersrestaurants.com/riverdale/',
+    locationUrl: '/location/riverdale/',
+    onlineOrdering: '/location/riverdale/',
     reservations: 'sms:16783048191?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: 'https://finandfeathersrestaurants.com/riverdale/',
+    delivery: '/location/riverdale/',
     socialMedia: {
       instagram: 'https://instagram.com/finandfeathers_riverdale',
       facebook: 'https://facebook.com/finandfeathers',
@@ -1010,10 +1010,10 @@ export const locations = [
       saturday: '11am-11pm',
       sunday: '11am-9pm'
     },
-    locationUrl: 'https://finandfeathersrestaurants.com/valdosta/',
-    onlineOrdering: 'https://finandfeathersrestaurants.com/valdosta/',
+    locationUrl: '/location/valdosta/',
+    onlineOrdering: '/location/valdosta/',
     reservations: 'sms:2292314653?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: 'https://finandfeathersrestaurants.com/valdosta/',
+    delivery: '/location/valdosta/',
     socialMedia: {
       instagram: 'https://instagram.com/finandfeathers_valdosta',
       facebook: 'https://facebook.com/finandfeathers',
@@ -1047,10 +1047,10 @@ export const locations = [
       saturday: '10am-11pm',
       sunday: '10am-9pm'
     },
-    locationUrl: 'https://finandfeathersrestaurants.com/albany/',
-    onlineOrdering: 'https://finandfeathersrestaurants.com/albany/',
+    locationUrl: '/location/albany/',
+    onlineOrdering: '/location/albany/',
     reservations: 'sms:12292312101?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: 'https://finandfeathersrestaurants.com/albany/',
+    delivery: '/location/albany/',
     socialMedia: {
       instagram: 'https://instagram.com/finandfeathers_albany',
       facebook: 'https://facebook.com/finandfeathers',
@@ -1084,10 +1084,10 @@ export const locations = [
       saturday: '10am-12am',
       sunday: '10am-10pm'
     },
-    locationUrl: 'https://finandfeathersrestaurants.com/stone-mountain/',
-    onlineOrdering: 'https://finandfeathersrestaurants.com/stone-mountain/',
+    locationUrl: '/location/stone-mountain/',
+    onlineOrdering: '/location/stone-mountain/',
     reservations: 'sms:14703348255?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: 'https://finandfeathersrestaurants.com/stone-mountain/',
+    delivery: '/location/stone-mountain/',
     socialMedia: {
       instagram: 'https://instagram.com/finandfeathers_stonemountain',
       facebook: 'https://facebook.com/finandfeathers',
@@ -1121,10 +1121,10 @@ export const locations = [
       saturday: '10am-2am',
       sunday: '10am-12am'
     },
-    locationUrl: 'https://finandfeathersrestaurants.com/las-vegas/',
-    onlineOrdering: 'https://finandfeathersrestaurants.com/las-vegas/',
+    locationUrl: '/location/las-vegas/',
+    onlineOrdering: '/location/las-vegas/',
     reservations: 'sms:17025466394?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: 'https://finandfeathersrestaurants.com/las-vegas/',
+    delivery: '/location/las-vegas/',
     socialMedia: {
       instagram: 'https://instagram.com/finandfeathersrestaurants',
       facebook: 'https://facebook.com/finandfeathersrestaurants',
