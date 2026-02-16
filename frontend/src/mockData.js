@@ -1107,27 +1107,27 @@ export const locations = [
     id: 8,
     slug: 'las-vegas',
     name: 'Fin & Feathers - Las Vegas',
-    address: '1229 S Casino Center Blvd, Las Vegas, NV 89104',
+    address: '1229 S. Casino Center Blvd, Las Vegas, NV 89104',
     phone: '(725) 204-9655',
     reservationPhone: '(702) 546-6394',
     coordinates: { lat: 36.1622, lng: -115.1505 },
     image: 'https://images.unsplash.com/photo-1514683877543-bffef8e73001?w=800&q=80',
     hours: {
-      monday: '10am-2am',
-      tuesday: '10am-2am',
-      wednesday: '10am-2am',
-      thursday: '10am-3am',
-      friday: '10am-4am',
-      saturday: '10am-4am',
-      sunday: '10am-2am'
+      monday: '11am-12am',
+      tuesday: '11am-12am',
+      wednesday: '11am-12am',
+      thursday: '11am-12am',
+      friday: '11am-2am',
+      saturday: '10am-2am',
+      sunday: '10am-12am'
     },
     locationUrl: 'https://finandfeathersrestaurants.com/las-vegas/',
     onlineOrdering: 'https://finandfeathersrestaurants.com/las-vegas/',
-    reservations: 'sms:7025466394?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
+    reservations: 'sms:17025466394?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
     delivery: 'https://finandfeathersrestaurants.com/las-vegas/',
     socialMedia: {
-      instagram: 'https://instagram.com/finandfeathers_vegas',
-      facebook: 'https://facebook.com/finandfeathers',
+      instagram: 'https://instagram.com/finandfeathersrestaurants',
+      facebook: 'https://facebook.com/finandfeathersrestaurants',
       twitter: 'https://twitter.com/finandfeathers'
     },
     weeklySpecials: [
