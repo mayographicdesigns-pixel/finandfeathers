@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ExternalLink, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Clock, X } from 'lucide-react';
+import { ExternalLink, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Clock, X, Image as ImageIcon } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
