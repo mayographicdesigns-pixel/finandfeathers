@@ -74,10 +74,15 @@ const LinkTreeHomePage = () => {
         setInstagramFeed(feed);
         setSpecials(activeSpecials);
         
-        // Set homepage content
+        // Set homepage content - merge with defaults to ensure all fields exist
         if (homepageContent) {
-          setContent(homepageContent);
-          setEditingContent(homepageContent);
+          const mergedContent = { ...defaultContent, ...homepageContent };
+          // Ensure social_feed_images is always an array
+          if (!mergedContent.social_feed_images || !Array.isArray(mergedContent.social_feed_images)) {
+            mergedContent.social_feed_images = defaultContent.social_feed_images;
+          }
+          setContent(mergedContent);
+          setEditingContent(mergedContent);
         }
       } catch (err) {
         console.error('Failed to fetch data:', err);
