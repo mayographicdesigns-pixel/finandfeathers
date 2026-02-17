@@ -23,9 +23,13 @@ class PushNotificationService:
         self.vapid_private_key = VAPID_PRIVATE_KEY
         self.vapid_public_key = VAPID_PUBLIC_KEY
         self.vapid_claims = VAPID_CLAIMS
+        self.enabled = VAPID_PRIVATE_KEY is not None and VAPID_PUBLIC_KEY is not None
 
     async def send_notification(self, subscription: Dict, notification_data: Dict) -> bool:
         """Send a push notification to a single subscription"""
+        if not self.enabled:
+            print("Push notifications disabled - VAPID keys not configured")
+            return False
         try:
             webpush(
                 subscription_info=subscription,
