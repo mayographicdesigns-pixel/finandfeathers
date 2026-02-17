@@ -933,9 +933,9 @@ export const locations = [
       sunday: '10am-12am'
     },
     locationUrl: '/location/edgewood-atlanta',
-    onlineOrdering: '/location/edgewood-atlanta',
+    onlineOrdering: 'https://order.toasttab.com/online/fin-feathers-edgewood-2nd-location-345-edgewood-ave-se',
     reservations: 'sms:14046921252?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: '/location/edgewood-atlanta',
+    delivery: 'https://order.toasttab.com/online/fin-feathers-edgewood-2nd-location-345-edgewood-ave-se',
     socialMedia: {
       instagram: 'https://instagram.com/finandfeathers_edgewood',
       facebook: 'https://facebook.com/finandfeathers',
