@@ -674,3 +674,75 @@ export async function getCheckInCount(locationSlug) {
   }
 }
 
+
+// ==================== GALLERY API ====================
+
+// Get public gallery items (no auth)
+export async function getPublicGallery() {
+  try {
+    const response = await fetch(`${API_URL}/gallery`);
+    if (!response.ok) throw new Error('Failed to fetch gallery');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching gallery:', error);
+    return [];
+  }
+}
+
+// Get all gallery items (admin)
+export async function getAdminGallery() {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/gallery`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  if (!response.ok) throw new Error('Failed to fetch gallery');
+  return await response.json();
+}
+
+// Create gallery item (admin)
+export async function createGalleryItem(item) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/gallery`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(item)
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to create gallery item');
+  }
+  return await response.json();
+}
+
+// Update gallery item (admin)
+export async function updateGalleryItem(itemId, update) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/gallery/${itemId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(update)
+  });
+  if (!response.ok) throw new Error('Failed to update gallery item');
+  return await response.json();
+}
+
+// Delete gallery item (admin)
+export async function deleteGalleryItem(itemId) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/gallery/${itemId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  if (!response.ok) throw new Error('Failed to delete gallery item');
+  return await response.json();
+}
