@@ -311,70 +311,34 @@ const LinkTreeHomePage = () => {
           </Card>
         )}
 
-        {/* Social Media Feed - 4 Column Square Grid */}
+        {/* Social Media Feed - 4 Latest Photos with Lightbox */}
         <Card className="mb-6 bg-slate-800/80 border-slate-700/50">
           <CardContent className="p-6">
             <h2 className="text-xl font-bold text-white mb-6 text-center flex items-center justify-center gap-2">
-              <Instagram className="w-5 h-5 text-pink-500" /> Follow Us on Social Media
+              <Instagram className="w-5 h-5 text-pink-500" /> Latest from Our Feed
             </h2>
             
             {/* 4 Column Square Image Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {/* Instagram Post 1 */}
-              <a 
-                href="https://www.instagram.com/finandfeathers/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="aspect-square rounded-lg overflow-hidden group cursor-pointer"
-              >
-                <img 
-                  src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=400&fit=crop" 
-                  alt="Fin & Feathers Food"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-              </a>
-              
-              {/* Instagram Post 2 */}
-              <a 
-                href="https://www.instagram.com/finandfeathers/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="aspect-square rounded-lg overflow-hidden group cursor-pointer"
-              >
-                <img 
-                  src="https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=400&h=400&fit=crop" 
-                  alt="Fin & Feathers Seafood"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-              </a>
-              
-              {/* Facebook Post */}
-              <a 
-                href="https://www.facebook.com/finandfeathersrestaurants" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="aspect-square rounded-lg overflow-hidden group cursor-pointer"
-              >
-                <img 
-                  src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=400&fit=crop" 
-                  alt="Fin & Feathers Dishes"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-              </a>
-              
-              {/* Instagram Post 3 */}
-              <a 
-                href="https://www.instagram.com/finandfeathers/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="aspect-square rounded-lg overflow-hidden group cursor-pointer"
-              >
-                <img 
-                  src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=400&fit=crop" 
-                  alt="Fin & Feathers Wings"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-              </a>
+              {socialFeedImages.map((image, index) => (
+                <button
+                  key={index}
+                  onClick={() => setLightboxImage(image)}
+                  className="aspect-square rounded-lg overflow-hidden group cursor-pointer relative"
+                  data-testid={`social-feed-image-${index}`}
+                >
+                  <img 
+                    src={image.url}
+                    alt={image.caption || `Social post ${index + 1}`}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
+                    <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white text-2xl">
+                      🔍
+                    </span>
+                  </div>
+                </button>
+              ))}
             </div>
             
             {/* Follow Buttons */}
@@ -396,6 +360,39 @@ const LinkTreeHomePage = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Lightbox Modal for Enlarged Image */}
+        {lightboxImage && (
+          <div 
+            className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+            onClick={() => setLightboxImage(null)}
+          >
+            <button
+              onClick={() => setLightboxImage(null)}
+              className="absolute top-4 right-4 text-white hover:text-red-500 transition-colors"
+              data-testid="lightbox-close-btn"
+            >
+              <X className="w-8 h-8" />
+            </button>
+            <div className="max-w-4xl max-h-[90vh] relative" onClick={(e) => e.stopPropagation()}>
+              <img 
+                src={lightboxImage.url}
+                alt={lightboxImage.caption || 'Social media post'}
+                className="max-w-full max-h-[85vh] object-contain rounded-lg"
+              />
+              {lightboxImage.caption && (
+                <p className="text-white text-center mt-4 text-lg">{lightboxImage.caption}</p>
+              )}
+              <Button
+                onClick={() => window.open('https://www.instagram.com/finandfeathers/', '_blank')}
+                className="mt-4 w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600"
+              >
+                <Instagram className="w-4 h-4 mr-2" />
+                View on Instagram
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Social Media Links */}
         <div className="flex justify-center gap-4 mb-8">
