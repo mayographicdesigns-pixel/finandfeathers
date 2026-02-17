@@ -15,7 +15,7 @@ const defaultGalleryItems = [
   { type: 'image', url: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&h=800&fit=crop', caption: 'Bar & Lounge', category: 'ambiance' },
   { type: 'image', url: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=800&h=800&fit=crop', caption: 'Premium Steak', category: 'food' },
   { type: 'image', url: 'https://images.unsplash.com/photo-1551218808-94e220e084d2?w=800&h=800&fit=crop', caption: 'Dessert Selection', category: 'food' },
-  { type: 'image', url: 'https://images.unsplash.com/photo-1482049016gy85-7d3e86aa738d?w=800&h=800&fit=crop', caption: 'Cocktails & Spirits', category: 'drinks' },
+  { type: 'image', url: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&h=800&fit=crop', caption: 'Cocktails & Spirits', category: 'drinks' },
   { type: 'image', url: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=800&h=800&fit=crop', caption: 'Signature Cocktails', category: 'drinks' },
   { type: 'image', url: 'https://images.unsplash.com/photo-1560512823-829485b8bf24?w=800&h=800&fit=crop', caption: 'Brunch Favorites', category: 'food' },
   // Videos (placeholders - these would be actual video URLs in production)
