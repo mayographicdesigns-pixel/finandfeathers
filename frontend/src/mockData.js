@@ -1155,9 +1155,9 @@ export const locations = [
       sunday: '10am-10pm'
     },
     locationUrl: '/location/stone-mountain',
-    onlineOrdering: '/location/stone-mountain',
+    onlineOrdering: 'https://www.toasttab.com/local/order/fin-feathers-stone-mountain-5469-memorial-drive',
     reservations: 'sms:14703348255?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: '/location/stone-mountain',
+    delivery: 'https://www.toasttab.com/local/order/fin-feathers-stone-mountain-5469-memorial-drive',
     socialMedia: {
       instagram: 'https://instagram.com/finandfeathers_stonemountain',
       facebook: 'https://facebook.com/finandfeathers',
@@ -1192,9 +1192,9 @@ export const locations = [
       sunday: '10am-12am'
     },
     locationUrl: '/location/las-vegas',
-    onlineOrdering: '/location/las-vegas',
+    onlineOrdering: 'https://www.toasttab.com/local/order/fin-feathers-las-vegas-1229-s-casino-center-blvd',
     reservations: 'sms:17025466394?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: '/location/las-vegas',
+    delivery: 'https://www.toasttab.com/local/order/fin-feathers-las-vegas-1229-s-casino-center-blvd',
     socialMedia: {
       instagram: 'https://instagram.com/finandfeathersrestaurants',
       facebook: 'https://facebook.com/finandfeathersrestaurants',
