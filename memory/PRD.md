@@ -15,7 +15,7 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 
 ## Core Requirements
 
-### Completed Features (December 2025)
+### Completed Features (December 2025 - February 2026)
 
 #### Homepage (LinkTreeHomePage.jsx)
 - [x] Official Fin & Feathers logo
@@ -24,7 +24,7 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Contact information section
 - [x] Loyalty program signup form
 - [x] Social media links (Instagram, Facebook, Twitter)
-- [x] Social feed grid with lightbox view
+- [x] Social feed grid with lightbox view (now using actual F&F images)
 
 #### Gallery Page (GalleryPage.jsx) - Added February 2026
 - [x] Photo and video gallery with category filters (All, Photos, Videos, Food, Ambiance, Drinks)
@@ -32,11 +32,14 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Lightbox modal for full-screen viewing
 - [x] Video playback in lightbox with controls
 - [x] Navigation back to homepage
+- [x] Updated with actual Fin & Feathers restaurant images
 
-#### Menu Page (MenuPage.jsx)
+#### Menu Page (MenuPage.jsx) - Updated February 2026
 - [x] Category-based filtering
 - [x] Multiple layout types per category (large cards, compact cards, line items)
-- [x] All menu items from PDF categorized correctly
+- [x] **Actual Fin & Feathers images** from finandfeathersrestaurants.com
+- [x] Line items for items without images (Daily Specials, Sides, Cocktails, Brunch Sides)
+- [x] Market price (MKT) display for Lobster items
 - [x] Badge system (Spicy, Vegetarian, Chef's Special)
 
 #### Locations Page (LocationsPage.jsx)
