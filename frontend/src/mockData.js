@@ -1081,9 +1081,9 @@ export const locations = [
       sunday: '11am-9pm'
     },
     locationUrl: '/location/valdosta',
-    onlineOrdering: '/location/valdosta',
+    onlineOrdering: 'https://www.toasttab.com/local/order/fin-feathers-valdosta-1700-norman-drive/r-2f4566e8-677d-42d2-93d3-9aa6d2687fcd',
     reservations: 'sms:2292314653?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: '/location/valdosta',
+    delivery: 'https://www.toasttab.com/local/order/fin-feathers-valdosta-1700-norman-drive/r-2f4566e8-677d-42d2-93d3-9aa6d2687fcd',
     socialMedia: {
       instagram: 'https://instagram.com/finandfeathers_valdosta',
       facebook: 'https://facebook.com/finandfeathers',
@@ -1118,9 +1118,9 @@ export const locations = [
       sunday: '10am-9pm'
     },
     locationUrl: '/location/albany',
-    onlineOrdering: '/location/albany',
+    onlineOrdering: 'https://www.toasttab.com/local/order/fin-and-feathers-albany-llc',
     reservations: 'sms:12292312101?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: '/location/albany',
+    delivery: 'https://www.toasttab.com/local/order/fin-and-feathers-albany-llc',
     socialMedia: {
       instagram: 'https://instagram.com/finandfeathers_albany',
       facebook: 'https://facebook.com/finandfeathers',
