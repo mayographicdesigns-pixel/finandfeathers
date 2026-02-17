@@ -25,7 +25,8 @@ from models import (
     SocialLink, SocialLinkCreate, SocialLinkUpdate,
     InstagramPost, InstagramPostCreate, InstagramPostUpdate,
     CheckIn, CheckInCreate, CheckInResponse,
-    GalleryItem, GalleryItemCreate, GalleryItemUpdate
+    GalleryItem, GalleryItemCreate, GalleryItemUpdate,
+    HomepageContent, HomepageContentUpdate
 )
 from push_service import PushNotificationService
 from auth import verify_password, get_password_hash, create_access_token, decode_access_token
