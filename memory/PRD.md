@@ -152,7 +152,6 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Admin dashboard with authentication
 
 ### P1 (High Priority)
-- [ ] Add admin panel functionality to manage Gallery content
 - [ ] Migrate locations data from mockData.js to backend/admin panel
 - [ ] Connect MenuPage.jsx to backend API (replace mockData.js)
 - [ ] Upload and manage promo videos via admin panel
