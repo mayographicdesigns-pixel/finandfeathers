@@ -452,7 +452,7 @@ const LocationDetailPage = () => {
           </Button>
           
           <Button
-            onClick={() => navigate(`/location/${slug}`)}
+            onClick={() => window.open(location.onlineOrdering, '_blank')}
             variant="outline"
             className="border-slate-600 text-slate-300 hover:bg-slate-700 h-12"
           >
