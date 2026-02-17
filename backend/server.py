@@ -760,6 +760,66 @@ async def get_checkin_count(location_slug: str):
     return {"location_slug": location_slug, "count": count}
 
 
+# =====================================================
+# GALLERY ENDPOINTS
+# =====================================================
+
+# Public: Get active gallery items
+@api_router.get("/gallery")
+async def get_public_gallery():
+    """Get all active gallery items for public display"""
+    items = await db.gallery_items.find(
+        {"is_active": True},
+        {"_id": 0}
+    ).sort("display_order", 1).to_list(100)
+    return items
+
+
+# Admin: Get all gallery items
+@api_router.get("/admin/gallery")
+async def admin_get_gallery(username: str = Depends(get_current_admin)):
+    """Get all gallery items (including inactive)"""
+    items = await db.gallery_items.find({}, {"_id": 0}).sort("display_order", 1).to_list(100)
+    return items
+
+
+# Admin: Create gallery item
+@api_router.post("/admin/gallery")
+async def admin_create_gallery_item(item: GalleryItemCreate, username: str = Depends(get_current_admin)):
+    """Add a new gallery item"""
+    item_dict = item.dict()
+    item_dict["id"] = str(uuid.uuid4())
+    item_dict["is_active"] = True
+    item_dict["created_at"] = datetime.now(timezone.utc)
+    await db.gallery_items.insert_one(item_dict)
+    item_dict.pop("_id", None)
+    return item_dict
+
+
+# Admin: Update gallery item
+@api_router.put("/admin/gallery/{item_id}")
+async def admin_update_gallery_item(item_id: str, update: GalleryItemUpdate, username: str = Depends(get_current_admin)):
+    """Update a gallery item"""
+    update_dict = {k: v for k, v in update.dict().items() if v is not None}
+    if not update_dict:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    result = await db.gallery_items.update_one({"id": item_id}, {"$set": update_dict})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Gallery item not found")
+    return {"message": "Gallery item updated"}
+
+
+# Admin: Delete gallery item
+@api_router.delete("/admin/gallery/{item_id}")
+async def admin_delete_gallery_item(item_id: str, username: str = Depends(get_current_admin)):
+    """Delete a gallery item"""
+    result = await db.gallery_items.delete_one({"id": item_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Gallery item not found")
+    return {"message": "Gallery item deleted"}
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
