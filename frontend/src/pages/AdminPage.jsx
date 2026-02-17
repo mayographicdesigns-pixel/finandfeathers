@@ -1076,6 +1076,7 @@ const GalleryTab = () => {
   const [showForm, setShowForm] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [saving, setSaving] = useState(false);
   const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     title: '',
@@ -1084,6 +1085,12 @@ const GalleryTab = () => {
     display_order: 0
   });
 
+  // DnD sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
   useEffect(() => {
     fetchGallery();
   }, []);
@@ -1091,11 +1098,41 @@ const GalleryTab = () => {
   const fetchGallery = async () => {
     try {
       const data = await getAdminGallery();
-      setGalleryItems(data);
+      // Sort by display_order
+      const sorted = [...data].sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+      setGalleryItems(sorted);
     } catch (err) {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = galleryItems.findIndex(item => item.id === active.id);
+    const newIndex = galleryItems.findIndex(item => item.id === over.id);
+    
+    // Optimistic update
+    const newItems = arrayMove(galleryItems, oldIndex, newIndex);
+    setGalleryItems(newItems);
+
+    // Update all display orders in the database
+    setSaving(true);
+    try {
+      const updates = newItems.map((item, index) => 
+        updateGalleryItem(item.id, { display_order: index })
+      );
+      await Promise.all(updates);
+      toast({ title: 'Success', description: 'Gallery order saved' });
+    } catch (err) {
+      // Revert on error
+      fetchGallery();
+      toast({ title: 'Error', description: 'Failed to save order', variant: 'destructive' });
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -1144,7 +1181,8 @@ const GalleryTab = () => {
         ));
         toast({ title: 'Success', description: 'Gallery item updated' });
       } else {
-        const newItem = await createGalleryItem(formData);
+        const newItemData = { ...formData, display_order: galleryItems.length };
+        const newItem = await createGalleryItem(newItemData);
         setGalleryItems([...galleryItems, newItem]);
         toast({ title: 'Success', description: 'Gallery item added' });
       }
@@ -1221,12 +1259,21 @@ const GalleryTab = () => {
           </h3>
           <p className="text-slate-400 text-sm mt-1">
             Manage images displayed on the Gallery page ({galleryItems.length} items)
+            {saving && <span className="ml-2 text-yellow-500">(Saving order...)</span>}
           </p>
         </div>
         <Button onClick={() => setShowForm(true)} className="bg-red-600 hover:bg-red-700" data-testid="add-gallery-item-btn">
           <ImagePlus className="w-4 h-4 mr-2" /> Add Image
         </Button>
       </div>
+
+      {/* Drag & Drop Instructions */}
+      {galleryItems.length > 1 && (
+        <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-3 flex items-center gap-2">
+          <GripVertical className="w-4 h-4 text-slate-500" />
+          <span className="text-slate-400 text-sm">Drag images to reorder. Changes are saved automatically.</span>
+        </div>
+      )}
 
       {/* Add/Edit Form */}
       {showForm && (
@@ -1316,7 +1363,7 @@ const GalleryTab = () => {
         </Card>
       )}
 
-      {/* Gallery Grid */}
+      {/* Gallery Grid with Drag & Drop */}
       {galleryItems.length === 0 ? (
         <Card className="bg-slate-800/50 border-slate-700">
           <CardContent className="p-12 text-center">
@@ -1326,47 +1373,100 @@ const GalleryTab = () => {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {galleryItems.map((item) => (
-            <Card 
-              key={item.id} 
-              className={`overflow-hidden ${item.is_active ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-900/50 border-slate-800 opacity-60'}`}
-              data-testid={`gallery-item-${item.id}`}
-            >
-              <div className="relative aspect-square">
-                <img 
-                  src={item.image_url} 
-                  alt={item.title}
-                  className="w-full h-full object-cover"
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={galleryItems.map(item => item.id)}
+            strategy={rectSortingStrategy}
+          >
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {galleryItems.map((item) => (
+                <SortableGalleryCard
+                  key={item.id}
+                  item={item}
+                  categoryLabels={categoryLabels}
+                  categoryColors={categoryColors}
+                  onEdit={handleEdit}
+                  onToggleActive={handleToggleActive}
+                  onDelete={handleDelete}
                 />
-                <div className={`absolute top-2 left-2 px-2 py-1 rounded text-xs border ${categoryColors[item.category]}`}>
-                  {categoryLabels[item.category]}
-                </div>
-                {!item.is_active && (
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                    <span className="text-slate-400 text-sm font-medium">Hidden</span>
-                  </div>
-                )}
-              </div>
-              <CardContent className="p-3">
-                <p className="text-white font-medium text-sm truncate">{item.title}</p>
-                <div className="flex items-center justify-end gap-1 mt-2">
-                  <Button size="sm" variant="ghost" onClick={() => handleEdit(item)} className="text-slate-400 hover:text-white h-8 w-8 p-0">
-                    <Edit2 className="w-3.5 h-3.5" />
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={() => handleToggleActive(item)} className="text-slate-400 h-8 w-8 p-0">
-                    {item.is_active ? <ToggleRight className="w-4 h-4 text-green-500" /> : <ToggleLeft className="w-4 h-4" />}
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={() => handleDelete(item.id)} className="text-red-400 hover:bg-red-900/30 h-8 w-8 p-0">
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       )}
     </div>
+  );
+};
+
+// Sortable Gallery Card Component
+const SortableGalleryCard = ({ item, categoryLabels, categoryColors, onEdit, onToggleActive, onDelete }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: item.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 'auto',
+  };
+
+  return (
+    <Card 
+      ref={setNodeRef}
+      style={style}
+      className={`overflow-hidden ${item.is_active ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-900/50 border-slate-800 opacity-60'} ${isDragging ? 'shadow-2xl ring-2 ring-red-500' : ''}`}
+      data-testid={`gallery-item-${item.id}`}
+    >
+      <div className="relative aspect-square">
+        {/* Drag Handle */}
+        <div 
+          {...attributes} 
+          {...listeners}
+          className="absolute top-2 right-2 z-10 bg-black/50 rounded p-1.5 cursor-grab active:cursor-grabbing hover:bg-black/70 transition-colors"
+          data-testid={`drag-handle-${item.id}`}
+        >
+          <GripVertical className="w-4 h-4 text-white" />
+        </div>
+        
+        <img 
+          src={item.image_url} 
+          alt={item.title}
+          className="w-full h-full object-cover"
+        />
+        <div className={`absolute top-2 left-2 px-2 py-1 rounded text-xs border ${categoryColors[item.category]}`}>
+          {categoryLabels[item.category]}
+        </div>
+        {!item.is_active && (
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center pointer-events-none">
+            <span className="text-slate-400 text-sm font-medium">Hidden</span>
+          </div>
+        )}
+      </div>
+      <CardContent className="p-3">
+        <p className="text-white font-medium text-sm truncate">{item.title}</p>
+        <div className="flex items-center justify-end gap-1 mt-2">
+          <Button size="sm" variant="ghost" onClick={() => onEdit(item)} className="text-slate-400 hover:text-white h-8 w-8 p-0">
+            <Edit2 className="w-3.5 h-3.5" />
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => onToggleActive(item)} className="text-slate-400 h-8 w-8 p-0">
+            {item.is_active ? <ToggleRight className="w-4 h-4 text-green-500" /> : <ToggleLeft className="w-4 h-4" />}
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => onDelete(item.id)} className="text-red-400 hover:bg-red-900/30 h-8 w-8 p-0">
+            <Trash2 className="w-3.5 h-3.5" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
