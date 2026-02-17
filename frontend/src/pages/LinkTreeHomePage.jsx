@@ -189,11 +189,12 @@ const LinkTreeHomePage = () => {
           </Button>
 
           <Button
-            onClick={() => window.open('https://www.instagram.com/finandfeathers/', '_blank')}
+            onClick={() => navigate('/gallery')}
             className="w-full bg-slate-800 hover:bg-slate-700 text-white border-2 border-slate-700 h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+            data-testid="gallery-btn"
           >
-            <Instagram className="w-5 h-5 mr-2" />
-            Social Media
+            <ImageIcon className="w-5 h-5 mr-2" />
+            Gallery
           </Button>
 
           <Button
