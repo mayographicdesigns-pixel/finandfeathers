@@ -746,3 +746,68 @@ export async function deleteGalleryItem(itemId) {
   if (!response.ok) throw new Error('Failed to delete gallery item');
   return await response.json();
 }
+
+
+// ==================== HOMEPAGE CONTENT API ====================
+
+// Get public homepage content (no auth)
+export async function getHomepageContent() {
+  try {
+    const response = await fetch(`${API_URL}/homepage/content`);
+    if (!response.ok) throw new Error('Failed to fetch homepage content');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching homepage content:', error);
+    return null;
+  }
+}
+
+// Get homepage content (admin)
+export async function getAdminHomepageContent() {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/homepage/content`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  if (!response.ok) throw new Error('Failed to fetch homepage content');
+  return await response.json();
+}
+
+// Update homepage content (admin)
+export async function updateHomepageContent(update) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/homepage/content`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(update)
+  });
+  if (!response.ok) throw new Error('Failed to update homepage content');
+  return await response.json();
+}
+
+// Check if user is admin
+export function isAdminLoggedIn() {
+  const token = localStorage.getItem('adminToken');
+  return !!token;
+}
+
+// Verify admin token is still valid
+export async function verifyAdminToken() {
+  const token = localStorage.getItem('adminToken');
+  if (!token) return false;
+  
+  try {
+    const response = await fetch(`${API_URL}/auth/me`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
