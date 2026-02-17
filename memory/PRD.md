@@ -20,10 +20,18 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 #### Homepage (LinkTreeHomePage.jsx)
 - [x] Official Fin & Feathers logo
 - [x] Daily video carousel for weekly specials
-- [x] Navigation buttons: View Full Menu, Find a Location, Order Online, Social Media, Leave a Review
+- [x] Navigation buttons: View Full Menu, Find a Location, Order Online, Gallery, Leave a Review
 - [x] Contact information section
 - [x] Loyalty program signup form
 - [x] Social media links (Instagram, Facebook, Twitter)
+- [x] Social feed grid with lightbox view
+
+#### Gallery Page (GalleryPage.jsx) - Added February 2026
+- [x] Photo and video gallery with category filters (All, Photos, Videos, Food, Ambiance, Drinks)
+- [x] Responsive 4-column grid layout
+- [x] Lightbox modal for full-screen viewing
+- [x] Video playback in lightbox with controls
+- [x] Navigation back to homepage
 
 #### Menu Page (MenuPage.jsx)
 - [x] Category-based filtering
@@ -124,6 +132,8 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Admin dashboard with authentication
 
 ### P1 (High Priority)
+- [ ] Add admin panel functionality to manage Gallery content
+- [ ] Migrate locations data from mockData.js to backend/admin panel
 - [ ] Connect MenuPage.jsx to backend API (replace mockData.js)
 - [ ] Upload and manage promo videos via admin panel
 
