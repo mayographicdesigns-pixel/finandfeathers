@@ -33,6 +33,15 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Video playback in lightbox with controls
 - [x] Navigation back to homepage
 - [x] Updated with actual Fin & Feathers restaurant images
+- [x] **Admin-managed gallery** - Fetches from API with fallback to default images
+
+#### Admin Panel - Gallery Management (Added February 2026)
+- [x] Gallery tab in admin navigation
+- [x] Add Image form with title, category, image URL fields
+- [x] Image upload support (5MB max, JPG/PNG/GIF/WEBP)
+- [x] Edit existing gallery items
+- [x] Toggle visibility (show/hide from public gallery)
+- [x] Delete gallery items with confirmation
 
 #### Menu Page (MenuPage.jsx) - Updated February 2026
 - [x] Category-based filtering
