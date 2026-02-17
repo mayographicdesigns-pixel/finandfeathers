@@ -970,9 +970,9 @@ export const locations = [
       sunday: '10am-10pm'
     },
     locationUrl: '/location/midtown-atlanta',
-    onlineOrdering: '/location/midtown-atlanta',
+    onlineOrdering: 'https://www.toasttab.com/local/order/fin-feathers-midtown-1136-crescent-ave-ne/r-94f8c8b0-51bd-4f67-a787-68f7f39f0eb9',
     reservations: 'sms:16784214083?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: '/location/midtown-atlanta',
+    delivery: 'https://www.toasttab.com/local/order/fin-feathers-midtown-1136-crescent-ave-ne/r-94f8c8b0-51bd-4f67-a787-68f7f39f0eb9',
     socialMedia: {
       instagram: 'https://instagram.com/finandfeathers_midtown',
       facebook: 'https://facebook.com/finandfeathers',
@@ -1007,9 +1007,9 @@ export const locations = [
       sunday: '11am-9pm'
     },
     locationUrl: '/location/douglasville',
-    onlineOrdering: '/location/douglasville',
+    onlineOrdering: 'https://order.toasttab.com/online/fins-feathers-douglasville-7430-douglas-blvd-zmrgr',
     reservations: 'sms:14044581958?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: '/location/douglasville',
+    delivery: 'https://order.toasttab.com/online/fins-feathers-douglasville-7430-douglas-blvd-zmrgr',
     socialMedia: {
       instagram: 'https://instagram.com/finandfeathers_douglasville',
       facebook: 'https://facebook.com/finandfeathers',
@@ -1044,9 +1044,9 @@ export const locations = [
       sunday: '10am-10pm'
     },
     locationUrl: '/location/riverdale',
-    onlineOrdering: '/location/riverdale',
+    onlineOrdering: 'https://www.toasttab.com/local/order/fin-feathers-riverdale-6340-ga-85',
     reservations: 'sms:16783048191?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
-    delivery: '/location/riverdale',
+    delivery: 'https://www.toasttab.com/local/order/fin-feathers-riverdale-6340-ga-85',
     socialMedia: {
       instagram: 'https://instagram.com/finandfeathers_riverdale',
       facebook: 'https://facebook.com/finandfeathers',
