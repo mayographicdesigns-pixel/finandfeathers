@@ -8,12 +8,12 @@ import { toast } from '../hooks/use-toast';
 import DailyVideoCarousel from '../components/DailyVideoCarousel';
 import { signupLoyalty, subscribeToPush, getPublicSocialLinks, getPublicInstagramFeed, getPublicSpecials } from '../services/api';
 
-// Default social feed images (can be managed via admin panel)
+// Default social feed images using actual Fin & Feathers photos
 const defaultSocialFeedImages = [
-  { url: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&h=800&fit=crop', caption: 'Fresh & Hot Pizza' },
-  { url: 'https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=800&h=800&fit=crop', caption: 'Seafood Delight' },
-  { url: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&h=800&fit=crop', caption: 'Chef\'s Special' },
-  { url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&h=800&fit=crop', caption: 'Wings & Things' },
+  { url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6608.jpg', caption: 'F&F Signature Wings' },
+  { url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Shrimp-Grits-scaled.jpg', caption: 'Shrimp & Grits' },
+  { url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Malibu-Ribeye-scaled.jpg', caption: 'Malibu Ribeye' },
+  { url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/a3e08521f140462cbedf10dedd32f879.jpeg', caption: 'Chicken & Waffle' },
 ];
 
 const LinkTreeHomePage = () => {
