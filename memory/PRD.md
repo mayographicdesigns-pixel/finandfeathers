@@ -42,6 +42,19 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Edit existing gallery items
 - [x] Toggle visibility (show/hide from public gallery)
 - [x] Delete gallery items with confirmation
+- [x] **Drag-and-drop reordering** with @dnd-kit library
+- [x] Auto-save order on drag end
+
+#### Location Ordering (Updated February 2026)
+- [x] All 8 locations have **ToastTab Order Online URLs**:
+  - Edgewood: https://order.toasttab.com/online/fin-feathers-edgewood-2nd-location-345-edgewood-ave-se
+  - Midtown: https://www.toasttab.com/local/order/fin-feathers-midtown-1136-crescent-ave-ne
+  - Douglasville: https://order.toasttab.com/online/fins-feathers-douglasville-7430-douglas-blvd-zmrgr
+  - Riverdale: https://www.toasttab.com/local/order/fin-feathers-riverdale-6340-ga-85
+  - Valdosta: https://www.toasttab.com/local/order/fin-feathers-valdosta-1700-norman-drive
+  - Albany: https://www.toasttab.com/local/order/fin-and-feathers-albany-llc
+  - Stone Mountain: https://www.toasttab.com/local/order/fin-feathers-stone-mountain-5469-memorial-drive
+  - Las Vegas: https://www.toasttab.com/local/order/fin-feathers-las-vegas-1229-s-casino-center-blvd
 
 #### Menu Page (MenuPage.jsx) - Updated February 2026
 - [x] Category-based filtering
