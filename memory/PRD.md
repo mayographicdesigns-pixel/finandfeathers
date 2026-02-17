@@ -183,4 +183,4 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - **Admin Login**: username=`admin`, password=`admin`
 
 ## Preview URL
-https://dine-and-link.preview.emergentagent.com
+https://resto-portal-12.preview.emergentagent.com
