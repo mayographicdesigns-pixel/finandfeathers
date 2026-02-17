@@ -270,3 +270,23 @@ class GalleryItemUpdate(BaseModel):
     category: Optional[str] = None
     is_active: Optional[bool] = None
     display_order: Optional[int] = None
+
+
+# Homepage Content Model
+class HomepageContent(BaseModel):
+    id: str = "homepage"  # Single document for homepage
+    tagline: str = "Elevated dining meets Southern soul"
+    logo_url: str = ""
+    contact_phone: str = "(404) 855-5524"
+    contact_email: str = "info@finandfeathersrestaurants.com"
+    contact_address: str = "Multiple Locations across Georgia & Las Vegas"
+    social_feed_images: List[dict] = []  # [{url, caption}]
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class HomepageContentUpdate(BaseModel):
+    tagline: Optional[str] = None
+    logo_url: Optional[str] = None
+    contact_phone: Optional[str] = None
+    contact_email: Optional[str] = None
+    contact_address: Optional[str] = None
+    social_feed_images: Optional[List[dict]] = None
