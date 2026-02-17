@@ -94,6 +94,71 @@ async def get_menu_categories():
     return categories
 
 
+# Homepage Content Endpoints
+@api_router.get("/homepage/content")
+async def get_homepage_content():
+    """Get homepage content for public display"""
+    content = await db.homepage_content.find_one({"id": "homepage"}, {"_id": 0})
+    if not content:
+        # Return default content
+        return {
+            "id": "homepage",
+            "tagline": "Elevated dining meets Southern soul",
+            "logo_url": "https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png",
+            "contact_phone": "(404) 855-5524",
+            "contact_email": "info@finandfeathersrestaurants.com",
+            "contact_address": "Multiple Locations across Georgia & Las Vegas",
+            "social_feed_images": [
+                {"url": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6608.jpg", "caption": "F&F Signature Wings"},
+                {"url": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Shrimp-Grits-scaled.jpg", "caption": "Shrimp & Grits"},
+                {"url": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Malibu-Ribeye-scaled.jpg", "caption": "Malibu Ribeye"},
+                {"url": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/a3e08521f140462cbedf10dedd32f879.jpeg", "caption": "Chicken & Waffle"}
+            ]
+        }
+    return content
+
+
+@api_router.put("/admin/homepage/content")
+async def update_homepage_content(update: HomepageContentUpdate, username: str = Depends(get_current_admin)):
+    """Update homepage content (admin only)"""
+    update_dict = {k: v for k, v in update.dict().items() if v is not None}
+    if not update_dict:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    update_dict["updated_at"] = datetime.now(timezone.utc)
+    
+    result = await db.homepage_content.update_one(
+        {"id": "homepage"},
+        {"$set": update_dict},
+        upsert=True
+    )
+    
+    return {"message": "Homepage content updated"}
+
+
+@api_router.get("/admin/homepage/content")
+async def admin_get_homepage_content(username: str = Depends(get_current_admin)):
+    """Get homepage content (admin)"""
+    content = await db.homepage_content.find_one({"id": "homepage"}, {"_id": 0})
+    if not content:
+        # Return default content for editing
+        return {
+            "id": "homepage",
+            "tagline": "Elevated dining meets Southern soul",
+            "logo_url": "https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png",
+            "contact_phone": "(404) 855-5524",
+            "contact_email": "info@finandfeathersrestaurants.com",
+            "contact_address": "Multiple Locations across Georgia & Las Vegas",
+            "social_feed_images": [
+                {"url": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6608.jpg", "caption": "F&F Signature Wings"},
+                {"url": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Shrimp-Grits-scaled.jpg", "caption": "Shrimp & Grits"},
+                {"url": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Malibu-Ribeye-scaled.jpg", "caption": "Malibu Ribeye"},
+                {"url": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/a3e08521f140462cbedf10dedd32f879.jpeg", "caption": "Chicken & Waffle"}
+            ]
+        }
+    return content
+
+
 # VAPID Public Key endpoint
 @api_router.get("/push/public-key")
 async def get_vapid_public_key():
