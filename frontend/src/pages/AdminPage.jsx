@@ -1808,6 +1808,7 @@ const AdminPage = () => {
         )}
 
         {activeTab === 'specials' && <SpecialsTab />}
+        {activeTab === 'gallery' && <GalleryTab />}
         {activeTab === 'social' && <SocialTab />}
         {activeTab === 'members' && <LoyaltyMembersTab />}
         {activeTab === 'contacts' && <ContactsTab />}
