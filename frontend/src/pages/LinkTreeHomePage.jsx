@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ExternalLink, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Clock } from 'lucide-react';
+import { ExternalLink, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Clock, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { toast } from '../hooks/use-toast';
 import DailyVideoCarousel from '../components/DailyVideoCarousel';
 import { signupLoyalty, subscribeToPush, getPublicSocialLinks, getPublicInstagramFeed, getPublicSpecials } from '../services/api';
+
+// Default social feed images (can be managed via admin panel)
+const defaultSocialFeedImages = [
+  { url: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&h=800&fit=crop', caption: 'Fresh & Hot Pizza' },
+  { url: 'https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=800&h=800&fit=crop', caption: 'Seafood Delight' },
+  { url: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&h=800&fit=crop', caption: 'Chef\'s Special' },
+  { url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&h=800&fit=crop', caption: 'Wings & Things' },
+];
 
 const LinkTreeHomePage = () => {
   const navigate = useNavigate();
@@ -17,6 +25,8 @@ const LinkTreeHomePage = () => {
   const [socialLinks, setSocialLinks] = useState([]);
   const [instagramFeed, setInstagramFeed] = useState([]);
   const [specials, setSpecials] = useState([]);
+  const [lightboxImage, setLightboxImage] = useState(null);
+  const [socialFeedImages, setSocialFeedImages] = useState(defaultSocialFeedImages);
 
   useEffect(() => {
     // Fetch social data
@@ -30,11 +40,31 @@ const LinkTreeHomePage = () => {
         setSocialLinks(links);
         setInstagramFeed(feed);
         setSpecials(activeSpecials);
+        
+        // If we have Instagram feed images from the database, use those
+        if (feed && feed.length > 0) {
+          const feedImages = feed.slice(0, 4).map(post => ({
+            url: post.image_url,
+            caption: post.caption || ''
+          }));
+          if (feedImages.length > 0) {
+            setSocialFeedImages(feedImages);
+          }
+        }
       } catch (err) {
         console.error('Failed to fetch social data:', err);
       }
     };
     fetchSocialData();
+  }, []);
+
+  // Close lightbox on Escape key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') setLightboxImage(null);
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
   }, []);
 
   const handleLoyaltySignup = async (e) => {
