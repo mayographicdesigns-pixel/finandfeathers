@@ -20,7 +20,8 @@ import {
   uploadImage, listUploads, deleteUpload,
   getAdminSpecials, createSpecial, updateSpecial, deleteSpecial, resendSpecialNotification,
   getAdminSocialLinks, createSocialLink, updateSocialLink, deleteSocialLink,
-  getAdminInstagramPosts, createInstagramPost, updateInstagramPost, deleteInstagramPost
+  getAdminInstagramPosts, createInstagramPost, updateInstagramPost, deleteInstagramPost,
+  getAdminGallery, createGalleryItem, updateGalleryItem, deleteGalleryItem
 } from '../services/api';
 
 // Login Component
