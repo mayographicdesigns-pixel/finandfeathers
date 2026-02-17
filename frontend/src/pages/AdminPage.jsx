@@ -5,7 +5,7 @@ import {
   LogOut, BarChart3, Trash2, Eye, Check, X, Plus, Edit2, 
   Lock, User, AlertCircle, RefreshCw, Upload, Image, Megaphone, 
   Calendar, ToggleLeft, ToggleRight, Share2, Instagram, Facebook, ExternalLink,
-  ImagePlus, Grid3X3
+  ImagePlus, Grid3X3, GripVertical
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -24,6 +24,22 @@ import {
   getAdminInstagramPosts, createInstagramPost, updateInstagramPost, deleteInstagramPost,
   getAdminGallery, createGalleryItem, updateGalleryItem, deleteGalleryItem
 } from '../services/api';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  rectSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 // Login Component
 const LoginForm = ({ onLogin }) => {
