@@ -49,6 +49,111 @@ const defaultContent = {
   ]
 };
 
+// Sortable Image Component for drag-and-drop reordering
+const SortableImage = ({ image, index, editMode, editingImageIndex, setEditingImageIndex, setLightboxImage, editingContent, setEditingContent, fileInputRef, handleImageUpload }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: `image-${index}` });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 'auto',
+  };
+
+  return (
+    <div 
+      ref={setNodeRef} 
+      style={style} 
+      className={`relative group ${isDragging ? 'ring-2 ring-yellow-400 rounded-lg' : ''}`}
+    >
+      {/* Drag Handle - only in edit mode */}
+      {editMode && (
+        <div 
+          {...attributes} 
+          {...listeners}
+          className="absolute top-1 left-1 z-10 bg-black/70 rounded p-1 cursor-grab active:cursor-grabbing hover:bg-black/90 transition-colors"
+          data-testid={`drag-handle-image-${index}`}
+        >
+          <GripVertical className="w-3 h-3 text-white" />
+        </div>
+      )}
+      
+      <button
+        onClick={() => editMode ? setEditingImageIndex(index) : setLightboxImage(image)}
+        className={`aspect-square rounded-lg overflow-hidden cursor-pointer block w-full ${editMode ? 'ring-2 ring-red-500 ring-dashed' : ''}`}
+        data-testid={`social-feed-image-${index}`}
+      >
+        <img 
+          src={image.url}
+          alt={image.caption || `Feed image ${index + 1}`}
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+        />
+        {editMode && (
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <Edit2 className="w-6 h-6 text-white" />
+          </div>
+        )}
+      </button>
+      
+      {/* Edit Modal for Image */}
+      {editMode && editingImageIndex === index && (
+        <div className="absolute top-full left-0 mt-2 z-20 bg-slate-800 border border-slate-600 rounded-lg p-3 w-64 shadow-xl">
+          <Input
+            placeholder="Image URL"
+            value={editingContent.social_feed_images[index]?.url || ''}
+            onChange={(e) => {
+              const newImages = [...editingContent.social_feed_images];
+              newImages[index] = { ...newImages[index], url: e.target.value };
+              setEditingContent({ ...editingContent, social_feed_images: newImages });
+            }}
+            className="bg-slate-900 border-slate-700 text-white text-sm mb-2"
+          />
+          <Input
+            placeholder="Caption"
+            value={editingContent.social_feed_images[index]?.caption || ''}
+            onChange={(e) => {
+              const newImages = [...editingContent.social_feed_images];
+              newImages[index] = { ...newImages[index], caption: e.target.value };
+              setEditingContent({ ...editingContent, social_feed_images: newImages });
+            }}
+            className="bg-slate-900 border-slate-700 text-white text-sm mb-2"
+          />
+          <div className="flex gap-2">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={(e) => handleImageUpload(e, index)}
+              accept="image/*"
+              className="hidden"
+            />
+            <Button 
+              size="sm" 
+              onClick={() => fileInputRef.current?.click()}
+              className="bg-slate-700 hover:bg-slate-600 text-xs"
+            >
+              Upload
+            </Button>
+            <Button 
+              size="sm" 
+              onClick={() => setEditingImageIndex(null)}
+              className="bg-red-600 hover:bg-red-700 text-xs"
+            >
+              Done
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const LinkTreeHomePage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -68,6 +173,25 @@ const LinkTreeHomePage = () => {
   const [saving, setSaving] = useState(false);
   const [editingImageIndex, setEditingImageIndex] = useState(null);
   const fileInputRef = useRef(null);
+
+  // DnD sensors for image reordering
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  // Handle drag end for image reordering
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = parseInt(active.id.replace('image-', ''));
+    const newIndex = parseInt(over.id.replace('image-', ''));
+    
+    const newImages = arrayMove(editingContent.social_feed_images, oldIndex, newIndex);
+    setEditingContent({ ...editingContent, social_feed_images: newImages });
+    toast({ title: 'Reordered', description: 'Image order updated. Click "Save Changes" to persist.' });
+  };
 
   useEffect(() => {
     // Check if admin is logged in
