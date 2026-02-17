@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, X, Play, Image as ImageIcon, Video } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { getPublicGallery } from '../services/api';
 
-// Default gallery content using actual Fin & Feathers images
+// Default gallery content using actual Fin & Feathers images (fallback)
 const defaultGalleryItems = [
   // Food Images from F&F website
   { type: 'image', url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6608.jpg', caption: 'F&F Signature Wings', category: 'food' },
@@ -32,9 +33,39 @@ const defaultGalleryItems = [
 
 const GalleryPage = () => {
   const navigate = useNavigate();
-  const [galleryItems, setGalleryItems] = useState(defaultGalleryItems);
+  const [galleryItems, setGalleryItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
   const [activeFilter, setActiveFilter] = useState('all');
+
+  // Fetch gallery items from API with fallback to defaults
+  useEffect(() => {
+    const fetchGallery = async () => {
+      try {
+        const data = await getPublicGallery();
+        if (data && data.length > 0) {
+          // Transform API data to match our format
+          const transformedData = data.map(item => ({
+            type: 'image',
+            url: item.image_url,
+            caption: item.title,
+            category: item.category
+          }));
+          setGalleryItems(transformedData);
+        } else {
+          // Use default items if API returns empty
+          setGalleryItems(defaultGalleryItems);
+        }
+      } catch (error) {
+        console.error('Error fetching gallery:', error);
+        // Fallback to defaults on error
+        setGalleryItems(defaultGalleryItems);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGallery();
+  }, []);
 
   // Close modal on Escape key
   useEffect(() => {
@@ -58,6 +89,14 @@ const GalleryPage = () => {
     { id: 'ambiance', label: 'Ambiance', icon: null },
     { id: 'drinks', label: 'Drinks', icon: null },
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white">Loading gallery...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black py-6 px-4">
