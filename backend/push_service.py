@@ -3,10 +3,16 @@ import json
 import os
 from typing import List, Dict
 
-# VAPID keys for web push - Generate these in production
-# You can generate them using: python -c "from pywebpush import Vapid; v = Vapid(); v.generate_keys(); print('Private:', v.private_key.saveToString()); print('Public:', v.public_key.saveToString())"
-VAPID_PRIVATE_KEY = os.environ.get('VAPID_PRIVATE_KEY', 'YOUR_PRIVATE_KEY_HERE')
-VAPID_PUBLIC_KEY = os.environ.get('VAPID_PUBLIC_KEY', 'BNxsqmY9f0nqvQnvVHs4Ks4j3vE9vQxh_1X-2Y3Z4A5B6C7D8E9F0G1H2I3J4K5L6M7N8O9P0Q1R2S3T4U5V6W7X8Y9Z0')
+# VAPID keys for web push - must be set in environment
+VAPID_PRIVATE_KEY = os.environ.get('VAPID_PRIVATE_KEY')
+VAPID_PUBLIC_KEY = os.environ.get('VAPID_PUBLIC_KEY')
+
+# Validate VAPID keys at startup
+if not VAPID_PRIVATE_KEY or not VAPID_PUBLIC_KEY:
+    print("WARNING: VAPID keys not set. Push notifications will be disabled.")
+    VAPID_PRIVATE_KEY = None
+    VAPID_PUBLIC_KEY = None
+
 VAPID_CLAIMS = {
     "sub": "mailto:notifications@finandfeathers.com"
 }
