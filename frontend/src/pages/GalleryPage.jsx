@@ -3,24 +3,31 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, X, Play, Image as ImageIcon, Video } from 'lucide-react';
 import { Button } from '../components/ui/button';
 
-// Default gallery content (can be managed via admin panel later)
+// Default gallery content using actual Fin & Feathers images
 const defaultGalleryItems = [
-  // Images
-  { type: 'image', url: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&h=800&fit=crop', caption: 'Fresh & Hot Pizza', category: 'food' },
-  { type: 'image', url: 'https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=800&h=800&fit=crop', caption: 'Seafood Delight', category: 'food' },
-  { type: 'image', url: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&h=800&fit=crop', caption: "Chef's Special", category: 'food' },
-  { type: 'image', url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&h=800&fit=crop', caption: 'Wings & Things', category: 'food' },
-  { type: 'image', url: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=800&fit=crop', caption: 'Fine Dining Experience', category: 'ambiance' },
-  { type: 'image', url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=800&fit=crop', caption: 'Restaurant Interior', category: 'ambiance' },
-  { type: 'image', url: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&h=800&fit=crop', caption: 'Bar & Lounge', category: 'ambiance' },
-  { type: 'image', url: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=800&h=800&fit=crop', caption: 'Premium Steak', category: 'food' },
-  { type: 'image', url: 'https://images.unsplash.com/photo-1551218808-94e220e084d2?w=800&h=800&fit=crop', caption: 'Dessert Selection', category: 'food' },
-  { type: 'image', url: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&h=800&fit=crop', caption: 'Cocktails & Spirits', category: 'drinks' },
-  { type: 'image', url: 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=800&h=800&fit=crop', caption: 'Signature Cocktails', category: 'drinks' },
-  { type: 'image', url: 'https://images.unsplash.com/photo-1560512823-829485b8bf24?w=800&h=800&fit=crop', caption: 'Brunch Favorites', category: 'food' },
-  // Videos (placeholders - these would be actual video URLs in production)
-  { type: 'video', url: 'https://customer-assets.emergentagent.com/videos/restaurant-promo.mp4', thumbnail: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=450&fit=crop', caption: 'Welcome to Fin & Feathers', category: 'promo' },
-  { type: 'video', url: 'https://customer-assets.emergentagent.com/videos/kitchen-tour.mp4', thumbnail: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=450&fit=crop', caption: 'Behind the Scenes', category: 'promo' },
+  // Food Images from F&F website
+  { type: 'image', url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6608.jpg', caption: 'F&F Signature Wings', category: 'food' },
+  { type: 'image', url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC05965_edited-1.jpg', caption: "Fin's Tacos", category: 'food' },
+  { type: 'image', url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC05963_edited-1.jpg', caption: 'Dynamite Pepper Shrimp', category: 'food' },
+  { type: 'image', url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Malibu-Ribeye-scaled.jpg', caption: 'Marinated Malibu Ribeye', category: 'food' },
+  { type: 'image', url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Honey-Bourbon-Salmon-scaled.jpg', caption: 'Honey Bourbon Salmon', category: 'food' },
+  { type: 'image', url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/IMG_1574-e1666013652186.jpg', caption: 'New Zealand Lamb Chops', category: 'food' },
+  { type: 'image', url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6624.jpg', caption: 'Lobster Tails', category: 'food' },
+  { type: 'image', url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Shrimp-Grits-scaled.jpg', caption: 'Shrimp & Grits', category: 'food' },
+  { type: 'image', url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/a3e08521f140462cbedf10dedd32f879.jpeg', caption: 'Chicken & Waffle', category: 'food' },
+  { type: 'image', url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Jerk-Turkey-Burger-scaled.jpg', caption: 'F&F Jerk Turkey Burger', category: 'food' },
+  { type: 'image', url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Fire-Chicken-Sandwhich-scaled.jpg', caption: 'Fire Chicken Sandwich', category: 'food' },
+  { type: 'image', url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6577.jpg', caption: 'Fried Pickles', category: 'food' },
+  // Brunch Images
+  { type: 'image', url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/3.png', caption: 'French Toast', category: 'food' },
+  { type: 'image', url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-The-Ultimate-scaled.jpg', caption: 'Ultimate French Toast Sandwich', category: 'food' },
+  { type: 'image', url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Breakfast-Burrito-1-scaled.jpg', caption: 'Breakfast Burrito', category: 'food' },
+  // Ambiance Images
+  { type: 'image', url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6657.jpg', caption: 'Restaurant Ambiance', category: 'ambiance' },
+  { type: 'image', url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6656.jpg', caption: 'Dining Experience', category: 'ambiance' },
+  { type: 'image', url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/augies_cafe_smb_parent__atlanta__new_business__86_hero-e1666179925108.jpg', caption: 'Brunch Setting', category: 'ambiance' },
+  // Drinks
+  { type: 'image', url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2025/06/Patron-1.webp', caption: 'Margarita Special', category: 'drinks' },
 ];
 
 const GalleryPage = () => {
