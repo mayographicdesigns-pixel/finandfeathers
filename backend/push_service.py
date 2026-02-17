@@ -49,7 +49,7 @@ class PushNotificationService:
         """Send push notification to all subscribers"""
         members = await self.db.loyalty_members.find(
             {"push_subscription": {"$exists": True, "$ne": None}}
-        ).to_list(None)
+        ).to_list(10000)  # Limit to prevent memory issues
         
         sent_count = 0
         failed_count = 0
