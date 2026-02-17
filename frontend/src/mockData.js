@@ -13,832 +13,902 @@ export const categories = [
 ];
 
 export const menuItems = [
-  // $5 DAILY SPECIALS - FOOD
+  // $5 DAILY SPECIALS - FOOD (Line items - no images)
   {
     id: 'ds1',
     name: '4 Party Wings & Fries',
-    description: 'Four wings in your choice of flavor: lemon pepper, BBQ, mild, or fire. Served with fries',
+    description: 'Four wings in your choice of flavor: lemon pepper, BBQ, mild, hot, or honey hot. Served with fries',
     price: 5,
-    image: 'https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=800&q=80',
     category: 'daily-specials',
     badges: [],
-    type: 'food'
+    type: 'food',
+    layout: 'line'
   },
   {
     id: 'ds2',
     name: '2 Chicken Tenders & Fries',
     description: 'Two crispy chicken tenders served with fries',
     price: 5,
-    image: 'https://images.unsplash.com/photo-1562967914-608f82629710?w=800&q=80',
     category: 'daily-specials',
     badges: [],
-    type: 'food'
+    type: 'food',
+    layout: 'line'
   },
   {
     id: 'ds3',
     name: 'Chicken Caesar Wrap',
     description: 'Grilled chicken, romaine lettuce, parmesan cheese, and Caesar dressing wrapped in a flour tortilla',
     price: 5,
-    image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&q=80',
     category: 'daily-specials',
     badges: [],
-    type: 'food'
+    type: 'food',
+    layout: 'line'
   },
   {
     id: 'ds4',
-    name: 'Thigh Nuggets & Fries',
+    name: 'Chicken Thigh Nuggets & Fries',
     description: 'Crispy chicken thigh nuggets served with fries',
     price: 5,
-    image: 'https://images.unsplash.com/photo-1562967914-608f82629710?w=800&q=80',
     category: 'daily-specials',
     badges: [],
-    type: 'food'
+    type: 'food',
+    layout: 'line'
   },
   {
     id: 'ds5',
     name: '2 Tacos',
-    description: 'Two tacos with your choice of chicken, fish, veggie, or shrimp (+$1)',
+    description: 'Two tacos with your choice of chicken, fish, or veggie',
     price: 5,
-    image: 'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?w=800&q=80',
     category: 'daily-specials',
     badges: [],
-    type: 'food'
+    type: 'food',
+    layout: 'line'
   },
   {
     id: 'ds6',
     name: 'Catfish Nuggets & Fries',
     description: 'Crispy catfish nuggets served with fries',
     price: 5,
-    image: 'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?w=800&q=80',
     category: 'daily-specials',
     badges: [],
-    type: 'food'
+    type: 'food',
+    layout: 'line'
   },
   
-  // $5 DAILY SPECIALS - DRINKS
+  // $5 DAILY SPECIALS - DRINKS (Line items)
   {
     id: 'ds7',
-    name: 'Whiskey Sour',
-    description: 'Classic whiskey sour cocktail',
+    name: 'Margarita',
+    description: 'Tequila Blanco, fresh lime juice, agave nectar with sugar, salt or tajin rim',
     price: 5,
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
     category: 'daily-specials',
     badges: [],
-    type: 'drink'
+    type: 'drink',
+    layout: 'line'
   },
   {
     id: 'ds8',
-    name: 'Long Island Iced Tea',
-    description: 'Classic Long Island Iced Tea cocktail',
+    name: 'Rum Punch',
+    description: 'White rum, pineapple juice, grenadine & a splash of club soda',
     price: 5,
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
     category: 'daily-specials',
     badges: [],
-    type: 'drink'
+    type: 'drink',
+    layout: 'line'
   },
   {
     id: 'ds9',
-    name: 'Rum Punch',
-    description: 'Refreshing rum punch',
+    name: 'Whiskey Sour',
+    description: 'Whiskey, lemon juice, and simple syrup served over ice with a cherry garnish',
     price: 5,
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
     category: 'daily-specials',
     badges: [],
-    type: 'drink'
+    type: 'drink',
+    layout: 'line'
   },
   {
     id: 'ds10',
-    name: 'Margarita',
-    description: 'Classic margarita cocktail',
+    name: 'Long Island Iced Tea',
+    description: 'Vodka, rum, gin, tequila, triple sec, and sour mix over ice with a splash of cola',
     price: 5,
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
     category: 'daily-specials',
     badges: [],
-    type: 'drink'
+    type: 'drink',
+    layout: 'line'
   },
   {
     id: 'ds11',
-    name: 'CK Mondavi White Wines',
+    name: 'White Wine',
     description: 'Chardonnay, Moscato, or Pinot Grigio',
     price: 5,
-    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800&q=80',
     category: 'daily-specials',
     badges: [],
-    type: 'drink'
+    type: 'drink',
+    layout: 'line'
   },
   {
     id: 'ds12',
-    name: 'CK Mondavi Red Wine',
+    name: 'Red Wine',
     description: 'Cabernet or Merlot',
     price: 5,
-    image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800&q=80',
     category: 'daily-specials',
     badges: [],
-    type: 'drink'
+    type: 'drink',
+    layout: 'line'
   },
   
-  // STARTERS
+  // STARTERS (With actual F&F images)
   {
     id: '1',
     name: 'F&F Signature Wings',
-    description: 'Our special fried wings come in five unique flavors: plain, lemon pepper, BBQ, mild, or fire. You can enjoy them with your choice of ranch or blue cheese dressing',
-    price: 15,
-    image: 'https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=800&q=80',
+    description: 'Our delicious fried wings in five different flavors (plain, lemon pepper, BBQ, honey hot, mild, fire) with the option of ranch or bleu cheese dressing',
+    price: 14,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6608.jpg',
     category: 'starters',
     badges: []
   },
   {
     id: '2',
     name: 'Chicken Thigh Nuggets',
-    description: 'Perfectly cooked and delicious deep-fried chicken thigh nuggets, seasoned for your enjoyment with a selection of BBQ, honey mustard, ranch, or blue cheese dressing',
-    price: 13,
-    image: 'https://images.unsplash.com/photo-1562967914-608f82629710?w=800&q=80',
+    description: 'Delicious deep-fried thigh nuggets cooked perfectly. Toss in lemon pepper, BBQ, mild, hot, or honey hot for $1',
+    price: 12,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2023/05/d5a5b6d60bb345848208733aad759bad.jpeg',
     category: 'starters',
     badges: []
   },
   {
     id: '3',
-    name: 'Twisted Tacos',
-    description: 'Three corn tortillas come with pickled cabbage, our signature peach and pineapple salsa, jack cheese and topped with herb sour cream. Choose between chicken, catfish, sautéed veggies or shrimp (+$4) as your filling',
-    price: 15,
-    image: 'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?w=800&q=80',
+    name: "Fin's Tacos",
+    description: 'Corn tortillas, pickled cabbage salad, house made peach & pineapple salsa, jack cheese, topped with herb sour cream. Sautéed veggies, chicken, catfish, shrimp (+$4) or steak (+$4)',
+    price: 14,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC05965_edited-1.jpg',
     category: 'starters',
     badges: ['Spicy']
   },
   {
     id: '4',
     name: 'Catfish Nuggets',
-    description: 'Freshly caught catfish nuggets fried to perfection and accompanied by your choice of signature rémoulade, tartar or hot sauce',
-    price: 15,
-    image: 'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?w=800&q=80',
+    description: 'Fresh caught deep-fried catfish nuggets, served with your choice of our homemade remoulade sauce, tartar sauce or hot sauce',
+    price: 14,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/72c955de55dd4c3996e3fe0039742714-1.jpeg',
     category: 'starters',
     badges: []
   },
   {
     id: '5',
     name: 'Jerk Chicken Egg Rolls',
-    description: 'Savory jerk chicken combined with seasoned vegetables, wrapped, fried to a crisp perfection, and served with a pineapple sweet chili sauce',
-    price: 15,
-    image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&q=80',
+    description: 'Jerk chicken egg rolls filled with jerk chicken, veggies, and deep-fried to crispy perfection. Served with a sweet chili pineapple sauce',
+    price: 14,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Jerk-Chicken-Egg-Roll-scaled.jpg',
     category: 'starters',
     badges: ['Spicy']
   },
   {
     id: '6',
-    name: 'Chicken Tenders & Fries',
-    description: 'Our signature seasoned chicken tenders come with fries and your choice of honey mustard, BBQ sauce, ranch or blue cheese',
-    price: 16,
-    image: 'https://images.unsplash.com/photo-1562967914-608f82629710?w=800&q=80',
+    name: 'Dynamite Pepper Shrimp',
+    description: 'Hand-battered deep-fried shrimp tossed in homemade sweet pepper sauce with jalapeño and tropical banana peppers. Served with chipotle ranch dipping sauce',
+    price: 17,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC05963_edited-1.jpg',
     category: 'starters',
-    badges: []
+    badges: ['Spicy', "Chef's Special"]
   },
   {
     id: '7',
-    name: 'Fried Pickles',
-    description: 'Hand-battered dill pickles, fried to perfection and served with chipotle ranch dressing',
-    price: 12,
-    image: 'https://images.unsplash.com/photo-1541529086526-db283c563270?w=800&q=80',
+    name: 'Chicken Tenders & Fries',
+    description: 'Chicken tenders battered in our in-house seasoning served with fries and your choice of ranch, honey mustard or BBQ sauce',
+    price: 15,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/FinsAndFeathers-24_edited-1.jpg',
     category: 'starters',
     badges: []
   },
   {
     id: '8',
-    name: 'Chicken Caesar Wrap',
-    description: 'Grilled hibachi chicken, romaine lettuce, parmesan cheese, Caesar dressing, wrapped and lightly grilled in a flour tortilla',
-    price: 16,
-    image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&q=80',
+    name: 'Fried Pickles',
+    description: 'Dill pickles, hand battered and deep fried served with chipotle ranch',
+    price: 11,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6577.jpg',
     category: 'starters',
     badges: []
   },
   {
     id: '9',
-    name: 'Dynamite Pepper Shrimp',
-    description: 'Fresh shrimp are hand-battered, deep-fried and coated in a signature sauce featuring sweet peppers, jalapeños and banana peppers served with chipotle ranch dressing',
-    price: 18,
-    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80',
+    name: 'Chicken Caesar Wrap',
+    description: 'Grilled chicken romaine lettuce, parmesan cheese, & Caesar dressing, wrapped in a flour tortilla',
+    price: 15,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6590.jpg',
     category: 'starters',
-    badges: ['Spicy', 'Chef\'s Special']
+    badges: []
   },
   
-  // ENTREES
+  // ENTREES (With actual F&F images)
   {
     id: '10',
-    name: 'Fried Catfish',
-    description: 'Fresh caught catfish, fried to perfection and served with your choice of our signature rémoulade sauce, tartar sauce or hot sauce. Served with two sides',
-    price: 22,
-    image: 'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?w=800&q=80',
+    name: 'New Zealand Lamb Chops',
+    description: 'Four perfectly grilled chops, covered in our one-of-a-kind lamb sauce. Pick any two delicious side dishes',
+    price: 43,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/IMG_1574-e1666013652186.jpg',
     category: 'entrees',
-    badges: []
+    badges: ["Chef's Special"]
   },
   {
     id: '11',
-    name: 'Grilled Blackened Catfish',
-    description: 'Grilled catfish, perfectly seasoned and served with your choice of our signature rémoulade sauce, tartar sauce or hot sauce. Served with two sides',
-    price: 22,
-    image: 'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?w=800&q=80',
+    name: 'Marinated Malibu Ribeye',
+    description: '10 oz hand-cut ribeye steak marinated in the essence of California, grilled to order and served with two sides',
+    price: 41,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Malibu-Ribeye-scaled.jpg',
+    category: 'entrees',
+    badges: ["Chef's Special"]
+  },
+  {
+    id: '12',
+    name: 'Deep Fried Catfish',
+    description: 'Seasoned deep fried catfish, served with your choice of our homemade remoulade sauce, tartar sauce or hot sauce and served with two sides',
+    price: 21,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/8f476b4bb04a4bb0b30b75a0e8271189-e1665919417568.jpeg',
     category: 'entrees',
     badges: []
   },
   {
-    id: '12',
-    name: 'Grilled Honey Bourbon Salmon',
-    description: 'Freshly cooked Atlantic salmon, glazed with our signature honey bourbon sauce. Served with two sides',
-    price: 31,
-    image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=800&q=80',
-    category: 'entrees',
-    badges: ['Chef\'s Special']
-  },
-  {
     id: '13',
-    name: 'Grilled Lobster Tails',
-    description: 'Indulge in two delicious lobster tails grilled to perfection and accompanied by our special signature lemon garlic butter. Served with two sides',
-    price: 65,
-    image: 'https://images.unsplash.com/photo-1633237308525-cd587cf71926?w=800&q=80',
+    name: 'Grilled Blackened Catfish',
+    description: 'Fresh caught catfish, grilled and served with your choice of our homemade remoulade sauce, tartar sauce or hot sauce and served with two sides',
+    price: 21,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Grilled-Catfish-scaled.jpg',
     category: 'entrees',
-    badges: ['Chef\'s Special']
+    badges: []
   },
   {
     id: '14',
-    name: 'New Zealand Lamb Chops',
-    description: 'Four grilled chops, perfectly cooked and accompanied by our special balsamic ginger sauce made in-house. Served with two sides',
-    price: 44,
-    image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800&q=80',
+    name: 'Stuffed Chicken Breast',
+    description: 'Boneless chicken breasts with herb-filled roasted vegetables, topped with a special cheese blend, homemade lemon cream sauce, and garnished with broccoli and diced tomatoes. Served with two sides',
+    price: 25,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/fin_and_feathers_fried_stuffed_chicken_breast_3-e1665919636508.jpg',
     category: 'entrees',
-    badges: ['Chef\'s Special']
+    badges: []
   },
   {
     id: '15',
-    name: 'Marinated Malibu Ribeye',
-    description: 'Hand-cut ribeye steak marinated in the essence of California and grilled to perfection according to your preference. Served with two sides',
-    price: 42,
-    image: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=800&q=80',
+    name: 'Roasted Chicken Thighs',
+    description: 'Juicy Roasted Chicken Thighs pan-seared to lock in natural flavors and drizzled with savory orange au jus sauce. Served with two sides',
+    price: 21,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Roasted-Chicken-Thighs-scaled.jpg',
     category: 'entrees',
-    badges: ['Chef\'s Special']
+    badges: []
   },
   {
     id: '16',
-    name: 'Stuffed Chicken Breast',
-    description: 'Sliced chicken breast stuffed with a blend of herbs, distinct cheeses, and roasted broccoli, topped with a homemade lemon cream sauce and diced tomatoes. Served with two sides',
-    price: 26,
-    image: 'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=800&q=80',
+    name: 'Southern Fried Chicken',
+    description: 'Three whole wings or one thigh prepared with our own seasoned battered and fried to perfection and served with two sides',
+    price: 21,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC06011_edited.jpg',
     category: 'entrees',
     badges: []
   },
   {
     id: '17',
-    name: 'Roasted Chicken Thighs',
-    description: 'Juicy pan-seared chicken thighs topped with our flavorful orange au jus sauce. Served with two sides',
-    price: 22,
-    image: 'https://images.unsplash.com/photo-1562967914-608f82629710?w=800&q=80',
+    name: 'Honey Bourbon Salmon',
+    description: '8 oz fresh Atlantic salmon glazed in a house made honey bourbon sauce served with choice of two sides',
+    price: 30,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Honey-Bourbon-Salmon-scaled.jpg',
     category: 'entrees',
-    badges: []
+    badges: ["Chef's Special"]
   },
   {
     id: '18',
-    name: 'Southern Fried Chicken',
-    description: 'Three whole wings or two thighs, skillfully seasoned, coated and fried to absolute perfection. Served with two sides',
-    price: 22,
-    image: 'https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=800&q=80',
+    name: 'Lobster Tails',
+    description: 'Two succulent Lobster Tails perfectly cooked to order with 2 sides of your choice',
+    price: null,
+    priceLabel: 'MKT',
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6624.jpg',
     category: 'entrees',
-    badges: []
+    badges: ["Chef's Special"]
   },
   {
     id: '19',
-    name: 'Veggie Rice Bowl',
-    description: 'A mixture of broccoli, carrots, tomatoes, spinach and mixed peppers sautéed in sweet Thai garlic, served on a bed of rice pilaf',
-    price: 20,
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80',
-    category: 'entrees',
-    badges: ['Vegetarian']
-  },
-  {
-    id: '20',
     name: 'Chicken & Waffle',
-    description: 'Three whole wings or two thighs, expertly seasoned, coated and fried to perfection. Served with a buttermilk waffle and garnished with a dusting of powdered sugar',
-    price: 19,
-    image: 'https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=800&q=80',
+    description: 'Golden-brown buttermilk waffle with your choice of crispy fried chicken: three juicy wings OR one tender thigh. Served with your favorite syrup (No sides included)',
+    price: 18,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/a3e08521f140462cbedf10dedd32f879.jpeg',
     category: 'entrees',
     badges: []
   },
+  {
+    id: '20',
+    name: 'Veggie Bowl',
+    description: 'Sautéed vegetables with sweet chili glaze - tender broccoli, carrots, tomatoes, and spinach sautéed in garlic butter, served over rice pilaf (No sides included)',
+    price: 19,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Veggie-Bowl-scaled.jpg',
+    category: 'entrees',
+    badges: ['Vegetarian']
+  },
   
-  // SEAFOOD & GRITS
+  // SEAFOOD & GRITS (With actual F&F images)
   {
     id: '21',
     name: 'Catfish & Grits',
-    description: 'Fried catfish expertly cooked and served on a bed of cheese grits. It\'s topped with spinach, roasted peppers and drizzled with our signature parmesan cheese sauce',
-    price: 22,
-    image: 'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?w=800&q=80',
+    description: 'Fried Catfish & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce',
+    price: 21,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/7-1.png',
     category: 'seafood-grits',
-    badges: ['Chef\'s Special']
+    badges: ["Chef's Special"]
   },
   {
     id: '22',
     name: 'Shrimp & Grits',
-    description: 'Grilled shrimp expertly cooked and served on a bed of cheese grits. It\'s topped with spinach, roasted peppers and drizzled with our signature parmesan cheese sauce',
-    price: 26,
-    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80',
+    description: 'Grilled Shrimp & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce',
+    price: 25,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Shrimp-Grits-scaled.jpg',
     category: 'seafood-grits',
-    badges: ['Chef\'s Special']
+    badges: ["Chef's Special"]
   },
   {
     id: '23',
     name: 'Salmon & Grits',
-    description: 'Grilled salmon expertly cooked and served on a bed of cheese grits. It\'s topped with spinach, roasted peppers and drizzled with our signature parmesan cheese sauce',
-    price: 28,
-    image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=800&q=80',
+    description: 'Grilled Salmon & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce',
+    price: 27,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/salmon-grits.png',
     category: 'seafood-grits',
-    badges: ['Chef\'s Special']
+    badges: ["Chef's Special"]
   },
   {
     id: '24',
     name: 'Lobster & Grits',
-    description: 'Grilled lobster expertly cooked and served on a bed of cheese grits. It\'s topped with spinach, roasted peppers and drizzled with our signature parmesan cheese sauce',
-    price: 75,
-    image: 'https://images.unsplash.com/photo-1633237308525-cd587cf71926?w=800&q=80',
+    description: 'Grilled Lobster & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce',
+    price: null,
+    priceLabel: 'MKT',
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/100_0223-scaled-e1696349523450.jpg',
     category: 'seafood-grits',
-    badges: ['Chef\'s Special']
+    badges: ["Chef's Special"]
   },
   
-  // SANDWICHES
+  // SANDWICHES (With actual F&F images)
   {
     id: '25',
     name: 'F&F Jerk Turkey Burger',
-    description: 'Our signature jerk turkey patty is served with pickled cabbage, garlic aioli, melted jack cheese and tomato, drizzled with jerk aioli and topped with our signature peach and pineapple salsa',
-    price: 16,
-    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&q=80',
+    description: 'Our signature jerk patty with pickled cabbage, garlic aioli, Monterey jack cheese & topped with house made peach and pineapple salsa',
+    price: 15,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Jerk-Turkey-Burger-scaled.jpg',
     category: 'sandwiches',
     badges: ['Spicy']
   },
   {
     id: '26',
-    name: 'BBQ Chicken Sandwich',
-    description: 'Hibachi-grilled or deep-fried chicken breast, garnished with BBQ sauce and melted jack cheese, topped with lettuce, tomatoes and pickles',
-    price: 16,
-    image: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=800&q=80',
-    category: 'sandwiches',
-    badges: []
-  },
-  {
-    id: '27',
     name: 'Fire Chicken Sandwich',
-    description: 'Grilled or fried chicken breast served with our signature fire sauce, melted jack cheese, sautéed jalapeños',
-    price: 16,
-    image: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=800&q=80',
+    description: 'Grilled or deep-fried chicken breast, drizzled with our housemade fire sauce with melted jack cheese, sautéed jalapeños and blue cheese',
+    price: 15,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Fire-Chicken-Sandwhich-scaled.jpg',
     category: 'sandwiches',
     badges: ['Spicy']
   },
   {
+    id: '27',
+    name: 'BBQ Chicken Sandwich',
+    description: 'Grilled or deep-fried chicken breast topped with BBQ sauce & melted jack cheese with romaine lettuce, tomatoes and pickles',
+    price: 15,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-BBQ-Chicken-Sandwich-1-scaled.jpg',
+    category: 'sandwiches',
+    badges: []
+  },
+  {
     id: '28',
-    name: 'Catfish Filet',
-    description: 'Deep-fried catfish served with lettuce, tomatoes, and pickles. Paired with your choice of parmesan sauce, tartar sauce or signature rémoulade',
-    price: 17,
-    image: 'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?w=800&q=80',
+    name: 'Catfish Filet Sandwich',
+    description: 'Deep-fried catfish topped with option of parmesan sauce, tartar or rémoulade sauce & romaine lettuce, tomatoes and pickles. Add cheese +$1',
+    price: 16,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/12/b810a1585baa482a8a40aa2fba4111e9-e1671233952540.jpeg',
     category: 'sandwiches',
     badges: []
   },
   {
     id: '29',
     name: 'Salmon Burger',
-    description: 'Skinless salmon fillet with a zesty parmesan sauce, lettuce, tomatoes and pickles',
-    price: 19,
-    image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=800&q=80',
+    description: 'Perfectly cooked 4oz salmon fillet, seasoned and garnished with your choice of parmesan, tartar, or rémoulade sauce. Served with romaine lettuce, tomatoes, and pickles. Add cheese +$1',
+    price: 18,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/Screenshot_7-e1666177138547.jpg',
     category: 'sandwiches',
     badges: []
   },
+  // Sandwich Add-ons (Line items)
   {
     id: '30',
-    name: 'Kick\'n Chick\'n Sandwich',
-    description: 'Deep-fried maitake mushroom served on a toasted bun, topped with fresh lettuce, tomatoes, and pickles. Choose between BBQ or mango habanero sauce',
-    price: 16,
-    image: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=800&q=80',
+    name: 'Add Bacon to Any Sandwich',
+    description: 'Crispy bacon strips',
+    price: 4,
     category: 'sandwiches',
-    badges: ['Vegetarian']
+    badges: [],
+    layout: 'line'
   },
-  
-  // SALADS
   {
     id: '31',
-    name: 'Chef Salad',
-    description: 'Spring mix and romaine lettuce, combined with carrots, cucumbers, tomatoes, jack cheese and croutons',
-    price: 16,
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80',
-    category: 'salads',
-    badges: []
-  },
-  {
-    id: '32',
-    name: 'Caesar Salad',
-    description: 'Romaine lettuce, parmesan cheese, and croutons',
-    price: 15,
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=800&q=80',
-    category: 'salads',
-    badges: []
+    name: 'Add Cheese to Any Sandwich',
+    description: 'Your choice of cheese',
+    price: 2,
+    category: 'sandwiches',
+    badges: [],
+    layout: 'line'
   },
   
-  // SIDES
+  // SALADS (With actual F&F images)
   {
-    id: '33',
-    name: 'Mac & Cheese',
-    description: 'Creamy, rich macaroni and cheese',
-    price: 9,
-    image: 'https://images.unsplash.com/photo-1543339494-b4cd4f7ba686?w=800&q=80',
-    category: 'sides',
+    id: '32',
+    name: 'Chef Salad',
+    description: 'An all-American salad with lettuce, tomatoes, cucumbers, croutons, cheese and topped with dressing',
+    price: 15,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Chef-Salad-1-scaled.jpg',
+    category: 'salads',
     badges: []
   },
   {
-    id: '34',
-    name: 'Whipped Red Potatoes',
-    description: 'Creamy whipped red potatoes',
-    price: 8,
-    image: 'https://images.unsplash.com/photo-1585307833696-98baee8f8fc9?w=800&q=80',
-    category: 'sides',
+    id: '33',
+    name: 'Caesar Salad',
+    description: 'A green salad of romaine lettuce and croutons dressed with Parmesan cheese, black pepper and Caesar salad dressing',
+    price: 14,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Caesar-Salad-scaled.jpg',
+    category: 'salads',
     badges: []
+  },
+  // Side Salads (Line items)
+  {
+    id: '34',
+    name: 'Side Chef Salad',
+    description: 'Lettuce, tomatoes, cucumbers, croutons, cheese and dressing',
+    price: 8,
+    category: 'salads',
+    badges: [],
+    layout: 'line'
   },
   {
     id: '35',
-    name: 'Sautéed Garlic Spinach',
-    description: 'Fresh spinach sautéed with garlic',
+    name: 'Side Caesar Salad',
+    description: 'Romaine lettuce, croutons, Parmesan cheese and Caesar dressing',
     price: 8,
-    image: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800&q=80',
-    category: 'sides',
-    badges: ['Vegetarian']
+    category: 'salads',
+    badges: [],
+    layout: 'line'
   },
+  
+  // SIDES (Line items - no images)
   {
     id: '36',
-    name: 'Lemon Butter Broccoli',
-    description: 'Fresh broccoli with lemon butter',
+    name: 'Mac & Cheese',
+    description: 'Creamy, rich macaroni and cheese',
     price: 8,
-    image: 'https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?w=800&q=80',
     category: 'sides',
-    badges: ['Vegetarian']
+    badges: [],
+    layout: 'line'
   },
   {
     id: '37',
-    name: 'Jalapeño Roasted Corn',
-    description: 'Roasted corn with jalapeños',
-    price: 8,
-    image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=800&q=80',
+    name: 'Whipped Potatoes',
+    description: 'Creamy whipped potatoes',
+    price: 7,
     category: 'sides',
-    badges: ['Vegetarian', 'Spicy']
+    badges: [],
+    layout: 'line'
   },
   {
     id: '38',
-    name: 'Crispy Fries',
-    description: 'Golden crispy fries',
+    name: 'Sautéed Garlic Spinach',
+    description: 'Fresh spinach sautéed with garlic',
     price: 7,
-    image: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?w=800&q=80',
     category: 'sides',
-    badges: ['Vegetarian']
+    badges: ['Vegetarian'],
+    layout: 'line'
   },
   {
     id: '39',
-    name: 'Cheese Grits',
-    description: 'Creamy cheese grits',
+    name: 'Lemon Butter Broccoli',
+    description: 'Fresh broccoli with lemon butter',
     price: 7,
-    image: 'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?w=800&q=80',
     category: 'sides',
-    badges: ['Vegetarian']
+    badges: ['Vegetarian'],
+    layout: 'line'
   },
   {
     id: '40',
-    name: 'Chef Salad',
-    description: 'Spring mix and romaine lettuce, combined with carrots, cucumbers, tomatoes, jack cheese and croutons',
+    name: 'Jalapeño Roasted Corn',
+    description: 'Roasted corn with jalapeños',
     price: 7,
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80',
     category: 'sides',
-    badges: []
+    badges: ['Vegetarian', 'Spicy'],
+    layout: 'line'
   },
   {
     id: '41',
-    name: 'Caesar Salad',
-    description: 'Romaine lettuce, parmesan cheese, and croutons',
-    price: 7,
-    image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=800&q=80',
+    name: 'Crispy Fries',
+    description: 'Golden crispy fries',
+    price: 6,
     category: 'sides',
-    badges: []
+    badges: ['Vegetarian'],
+    layout: 'line'
   },
   {
     id: '42',
     name: 'Rice Pilaf',
     description: 'Seasoned rice pilaf',
-    price: 8,
-    image: 'https://images.unsplash.com/photo-1516684732162-798a0062be99?w=800&q=80',
+    price: 7,
     category: 'sides',
-    badges: ['Vegetarian']
+    badges: ['Vegetarian'],
+    layout: 'line'
+  },
+  {
+    id: '43',
+    name: 'Cheese Grits',
+    description: 'Creamy cheese grits',
+    price: 6,
+    category: 'sides',
+    badges: ['Vegetarian'],
+    layout: 'line'
   },
   
-  // SIGNATURE COCKTAILS
+  // SIGNATURE COCKTAILS (Line items - no images)
   {
     id: 'c1',
     name: 'California Dreaming',
-    description: 'A colorful punch that gives you island vibes. Made with Malibu rum, Captain Morgan spiced rum, pineapple juice, melon liqueur, sour mix and a splash of blue curaçao',
+    description: 'A colorful punch with island vibes. Made with Malibu Rum, Captain Morgan Spiced Rum, pineapple juice, melon liqueur, sour mix & a splash of blue curaçao',
     price: 15,
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
     category: 'cocktails',
-    badges: []
+    badges: [],
+    layout: 'line'
   },
   {
     id: 'c2',
     name: 'Sunset Blvd',
-    description: 'F&F\'s best selling beverage! Hennessey, agave, freshly muddled lime and simple syrup',
+    description: "F&F's most popular drink! Hennessey, agave, muddled lemon, & simple syrup",
     price: 15,
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
     category: 'cocktails',
-    badges: ['Chef\'s Special']
+    badges: ["Chef's Special"],
+    layout: 'line'
   },
   {
     id: 'c3',
     name: 'LAX Sidecar',
-    description: 'A delightfully sweet variation of the traditional sidecar martini! Crafted with Remy Martin VSOP, freshly muddled citrus and a hint of simple syrup',
+    description: 'A slightly sweet twist on the classic sidecar martini! Made with Remy Martin VSOP, muddled citrus & a dash of simple syrup',
     price: 15,
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
     category: 'cocktails',
-    badges: []
+    badges: [],
+    layout: 'line'
   },
   {
     id: 'c4',
     name: 'Marina Del Rey',
-    description: 'Our rum punch includes Malibu rum, pineapple juice, cranberry juice, lime juice and grenadine',
+    description: 'Our version of rum punch made with Malibu Rum, pineapple juice, cranberry juice, lime juice, & grenadine',
     price: 15,
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
     category: 'cocktails',
-    badges: []
+    badges: [],
+    layout: 'line'
   },
   {
     id: 'c5',
     name: 'The 405',
-    description: 'A popular boozy delight! Uncle Nearest 100-proof whiskey mixed with a hint of lemon juice and agave',
+    description: 'A boozy drink everyone loves! Uncle Nearest 100-proof whiskey blended with a splash of lemon juice & agave',
     price: 15,
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
     category: 'cocktails',
-    badges: []
+    badges: [],
+    layout: 'line'
   },
   {
     id: 'c6',
     name: 'Baldwin Hills',
-    description: 'A unique cocktail exclusive to our establishment! Crafted with Island Jon Apple Guava Vodka, strawberry puree and pineapple juice',
+    description: 'An exotic cocktail only found here! Made with Island Jon Apple Guava Vodka, strawberry puree, & pineapple juice',
     price: 15,
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
     category: 'cocktails',
-    badges: []
+    badges: [],
+    layout: 'line'
   },
   {
     id: 'c7',
     name: 'East LA',
-    description: 'A bit sweet, a bit tart, and absolutely delightful! Crafted with Gran Coramino Reposado tequila, fresh lime, simple syrup and a red wine float',
+    description: 'A little sweet, a little tart and totally delicious! Made with Coramino Blanco tequila, fresh lime & a red wine float',
     price: 15,
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
     category: 'cocktails',
-    badges: []
+    badges: [],
+    layout: 'line'
   },
   {
     id: 'c8',
     name: 'Melrose Ave',
-    description: 'A refreshing summer cocktail crafted with Peach Cîroc, pineapple juice and a hint of grenadine',
+    description: 'A fruity summer cocktail made with Peach Cîroc, pineapple juice, & a splash of grenadine',
     price: 15,
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
     category: 'cocktails',
-    badges: []
+    badges: [],
+    layout: 'line'
   },
   {
     id: 'c9',
     name: 'Pacific Coast Hwy',
-    description: 'A sophisticated margarita crafted with Rémy Martin 1738 Cognac—a favorite among the socialites at Fin & Feathers',
+    description: "A sophisticated Hennessy Margarita. A popular cocktail & a favorite of Fin & Feathers' socialites!",
     price: 17,
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
     category: 'cocktails',
-    badges: ['Chef\'s Special']
+    badges: ["Chef's Special"],
+    layout: 'line'
   },
   
-  // BRUNCH
+  // BRUNCH (With actual F&F images)
   {
     id: 'b1',
-    name: 'All Star Breakfast',
-    description: 'Two eggs prepared in any style, served with breakfast potatoes or cheese grits, accompanied by a choice of bacon or chicken sausage and a biscuit',
-    price: 15,
-    image: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=800&q=80',
+    name: 'Chicken & Waffle',
+    description: 'Three whole wings or one thigh seasoned, battered & fried to perfection served with a buttermilk waffle topped with powder sugar, blueberries & strawberries',
+    price: 18,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/5.png',
     category: 'brunch',
     badges: []
   },
   {
     id: 'b2',
-    name: 'Edgewood Breakfast',
-    description: 'Two eggs prepared in any style, along with a selection of bacon or chicken sausage. Enjoy two pancakes or a waffle garnished with powdered sugar, blueberries and strawberries',
-    price: 17,
-    image: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=800&q=80',
+    name: 'Breakfast Burrito',
+    description: 'Flour tortilla filled with three eggs, green peppers, red peppers, mushrooms, spinach, tomatoes & cheese with bacon or chicken sausage',
+    price: 16,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Breakfast-Burrito-1-scaled.jpg',
     category: 'brunch',
     badges: []
   },
   {
     id: 'b3',
-    name: 'French Toast Breakfast',
-    description: 'Delicious French toast topped with powdered sugar, a triple sec sugar glaze, fresh blueberries, and strawberries. Enjoy it with two eggs and your choice of bacon or chicken sausage, or three wings for an additional $6',
-    price: 18,
-    image: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=800&q=80',
+    name: 'Edgewood Breakfast',
+    description: 'Two eggs (any style), choice of bacon or chicken sausage & pancakes or a waffle topped with powder sugar, blueberries & strawberries',
+    price: 16,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/1.png',
     category: 'brunch',
     badges: []
   },
   {
     id: 'b4',
-    name: 'Chicken & Waffle',
-    description: 'Three whole wings or a boneless thigh, seasoned, battered and fried to perfection, served with a waffle dusted with powdered sugar and garnished with blueberries and strawberries',
-    price: 19,
-    image: 'https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=800&q=80',
+    name: 'All Star Breakfast',
+    description: 'Two eggs (any style), breakfast potatoes or cheese grits, choice of bacon or sausage and a biscuit',
+    price: 14,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/All-star-break.png',
     category: 'brunch',
     badges: []
   },
   {
     id: 'b5',
-    name: 'Ultimate French Toast Sandwich',
-    description: 'Frosted French toast sandwich stuffed with scrambled cheesy eggs, bacon, or chicken sausage, topped with a triple sec sugar glaze and a dusting of powdered sugar',
-    price: 20,
-    image: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=800&q=80',
+    name: 'French Toast',
+    description: 'Fresh challah bread, drizzled with a triple sec sugar glaze topped with powdered sugar, blueberries & strawberries with your choice of bacon, chicken sausage or 3 whole wings (+$6)',
+    price: 16,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/3.png',
     category: 'brunch',
     badges: []
   },
   {
     id: 'b6',
-    name: 'Breakfast Burrito',
-    description: 'A flour tortilla filled with three eggs, bacon or chicken sausage, green peppers, red peppers, mushrooms, spinach, tomatoes and cheese',
-    price: 17,
-    image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&q=80',
+    name: 'Steak & Eggs',
+    description: 'Our Malibu ribeye, two eggs (any style) with your choice of breakfast potatoes or grits & a biscuit',
+    price: 29,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/steak-eggs.png',
     category: 'brunch',
-    badges: []
+    badges: ["Chef's Special"]
   },
   {
     id: 'b7',
-    name: 'Lamb Chops & Eggs',
-    description: 'Three New Zealand lamb chops grilled and served with a balsamic ginger sauce, two eggs cooked to your liking and a choice of breakfast potatoes or cheese grits and a biscuit',
-    price: 32,
-    image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800&q=80',
-    category: 'brunch',
-    badges: ['Chef\'s Special']
-  },
-  {
-    id: 'b8',
-    name: 'Malibu Ribeye & Eggs',
-    description: 'Hand-cut ribeye steak marinated in the essence of California and grilled to perfection according to your preference, served with two eggs and a choice of breakfast potatoes or cheese grits and a biscuit',
-    price: 30,
-    image: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=800&q=80',
-    category: 'brunch',
-    badges: ['Chef\'s Special']
-  },
-  {
-    id: 'b9',
     name: 'California Omelette',
-    description: 'Three eggs, green peppers, red peppers, mushrooms, spinach, tomatoes and cheese with bacon or chicken sausage served with a biscuit',
-    price: 18,
-    image: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=800&q=80',
+    description: 'Three eggs, green peppers, red peppers, mushrooms, spinach, tomatoes & cheese with bacon or chicken sausage',
+    price: 17,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/Untitled-design-1.png',
     category: 'brunch',
     badges: []
   },
   {
-    id: 'b10',
+    id: 'b8',
+    name: 'Ultimate French Toast Sandwich',
+    description: 'Fluffy frosted French toast sandwich stuffed with cheesy eggs, bacon or chicken sausage, drizzled with a triple sec sugar glaze & topped with powder sugar',
+    price: 19,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-The-Ultimate-scaled.jpg',
+    category: 'brunch',
+    badges: []
+  },
+  {
+    id: 'b9',
     name: 'Veggie Breakfast Bowl',
-    description: 'Choice of cheese grits or breakfast potatoes topped with spinach, mushroom, tomatoes, red peppers, green peppers and two eggs scrambled with cheese',
-    price: 18,
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80',
+    description: 'Choose from spinach, mushroom, tomatoes, red peppers, green peppers & cheese scrambled in two eggs over your choice of grits or breakfast potatoes',
+    price: 17,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Breakfast-Bowl-1-scaled.jpg',
     category: 'brunch',
     badges: ['Vegetarian']
   },
   {
+    id: 'b10',
+    name: 'Lamb Chops & Eggs',
+    description: 'Three Lamb Chops with signature lamb sauce, paired with eggs cooked to your preference and choice of potatoes or grits. Served with a fluffy biscuit',
+    price: 31,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/IMG_1574.jpg',
+    category: 'brunch',
+    badges: ["Chef's Special"]
+  },
+  // Brunch Seafood & Grits (With images)
+  {
     id: 'b11',
-    name: 'Seafood & Grits (Brunch)',
-    description: 'Choice of one: Catfish $22, Shrimp $26, Salmon $28, Lobster MKT. A delightful seafood dish of your choosing, expertly cooked and served on a bed of cheese grits. It\'s topped with spinach, roasted peppers and drizzled with a zesty parmesan cheese sauce',
-    price: 22,
-    image: 'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?w=800&q=80',
+    name: 'Catfish & Grits (Brunch)',
+    description: 'Fried Catfish & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce. *No sides included',
+    price: 21,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/7-1.png',
+    category: 'brunch',
+    badges: []
+  },
+  {
+    id: 'b12',
+    name: 'Shrimp & Grits (Brunch)',
+    description: 'Grilled Shrimp & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce. *No sides included',
+    price: 25,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Shrimp-Grits-scaled.jpg',
+    category: 'brunch',
+    badges: []
+  },
+  {
+    id: 'b13',
+    name: 'Salmon & Grits (Brunch)',
+    description: 'Grilled Salmon & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce. *No sides included',
+    price: 27,
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Salmon-Grits-scaled.jpg',
+    category: 'brunch',
+    badges: []
+  },
+  {
+    id: 'b14',
+    name: 'Lobster & Grits (Brunch)',
+    description: 'Grilled Lobster & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce. *No sides included',
+    price: null,
+    priceLabel: 'MKT',
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/100_0223-scaled-e1696349523450.jpg',
     category: 'brunch',
     badges: []
   },
   
-  // BRUNCH DRINKS
+  // BRUNCH DRINKS (Line items)
   {
     id: 'bd1',
     name: 'Mimosa',
-    description: 'Champagne & orange juice offered in various flavors: peach, strawberry, pineapple, cranberry or mango',
+    description: 'Champagne & orange juice. Available in peach, strawberry, pineapple, cranberry or mango',
     price: 10,
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
-    category: 'brunch-drinks',
-    badges: []
+    category: 'brunch',
+    badges: [],
+    layout: 'line'
   },
   {
     id: 'bd2',
     name: 'Bellini',
-    description: 'A bellini is a cocktail crafted from Prosecco and peach schnapps',
-    price: 12,
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
-    category: 'brunch-drinks',
-    badges: []
+    description: 'A cocktail made with Prosecco and peach purée',
+    price: 10,
+    category: 'brunch',
+    badges: [],
+    layout: 'line'
   },
   {
     id: 'bd3',
     name: 'Tequila Sunrise',
-    description: 'Casamigos Blanco tequila, orange juice, and a splash of grenadine, served in a glass with a Tajín or salted rim',
+    description: 'Coramino Blanco Tequila, orange juice, & a dash of grenadine. Available with tajin or salted rim',
     price: 15,
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
-    category: 'brunch-drinks',
-    badges: []
+    category: 'brunch',
+    badges: [],
+    layout: 'line'
   },
   {
     id: 'bd4',
     name: 'Vodka Sunrise',
-    description: 'Ciroc vodka, orange juice, and a splash of grenadine in a glass with a Tajín or salted rim',
+    description: 'Ciroc Vodka, orange juice, & a dash of grenadine. Available with tajin or salted rim',
     price: 15,
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
-    category: 'brunch-drinks',
-    badges: []
+    category: 'brunch',
+    badges: [],
+    layout: 'line'
   },
   {
     id: 'bd5',
     name: 'French 75',
-    description: 'Tanqueray gin, champagne, lemon muddled and simple syrup',
+    description: 'Tanqueray Gin, champagne, muddled lemon & simple syrup',
     price: 15,
-    image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80',
-    category: 'brunch-drinks',
-    badges: []
+    category: 'brunch',
+    badges: [],
+    layout: 'line'
   },
   
-  // BRUNCH SIDES
+  // BRUNCH SIDES (Line items)
   {
     id: 'bs1',
-    name: 'Two Eggs (Any Style)',
-    description: 'Two eggs cooked to your preference',
-    price: 7,
-    image: 'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=800&q=80',
+    name: '2 Eggs',
+    description: 'Two eggs cooked any style',
+    price: 6,
     category: 'brunch-sides',
-    badges: []
+    badges: [],
+    layout: 'line'
   },
   {
     id: 'bs2',
-    name: 'Chicken Sausage (3)',
-    description: 'Three chicken sausage links',
-    price: 7,
-    image: 'https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=800&q=80',
+    name: 'Bacon',
+    description: 'Crispy bacon strips',
+    price: 6,
     category: 'brunch-sides',
-    badges: []
+    badges: [],
+    layout: 'line'
   },
   {
     id: 'bs3',
-    name: 'Breakfast Potatoes',
-    description: 'Seasoned breakfast potatoes',
-    price: 7,
-    image: 'https://images.unsplash.com/photo-1585307833696-98baee8f8fc9?w=800&q=80',
+    name: 'Biscuit',
+    description: 'Freshly baked biscuit',
+    price: 4,
     category: 'brunch-sides',
-    badges: []
+    badges: [],
+    layout: 'line'
   },
   {
     id: 'bs4',
-    name: 'Waffle',
-    description: 'Golden Belgian waffle',
-    price: 9,
-    image: 'https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=800&q=80',
+    name: 'Pancakes',
+    description: 'Fluffy pancakes',
+    price: 8,
     category: 'brunch-sides',
-    badges: []
+    badges: [],
+    layout: 'line'
   },
   {
     id: 'bs5',
-    name: 'Cheese Grits',
-    description: 'Creamy cheese grits',
-    price: 7,
-    image: 'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?w=800&q=80',
+    name: 'Breakfast Potatoes',
+    description: 'Seasoned breakfast potatoes',
+    price: 6,
     category: 'brunch-sides',
-    badges: []
+    badges: [],
+    layout: 'line'
   },
   {
     id: 'bs6',
-    name: 'Biscuit',
-    description: 'Freshly baked biscuit',
-    price: 5,
-    image: 'https://images.unsplash.com/photo-1585238341710-7a9b68c097b5?w=800&q=80',
+    name: 'Waffle',
+    description: 'Golden buttermilk waffle',
+    price: 8,
     category: 'brunch-sides',
-    badges: []
+    badges: [],
+    layout: 'line'
   },
   {
     id: 'bs7',
-    name: 'Bacon (3)',
-    description: 'Three crispy bacon strips',
-    price: 7,
-    image: 'https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=800&q=80',
+    name: 'French Toast Only',
+    description: 'Classic French toast with triple sec glaze',
+    price: 12,
     category: 'brunch-sides',
-    badges: []
+    badges: [],
+    layout: 'line'
   },
   {
     id: 'bs8',
-    name: 'French Toast',
-    description: 'Classic French toast',
-    price: 13,
-    image: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=800&q=80',
+    name: 'Cheese Grits',
+    description: 'Creamy cheese grits',
+    price: 6,
     category: 'brunch-sides',
-    badges: []
+    badges: [],
+    layout: 'line'
   },
   {
     id: 'bs9',
-    name: 'Whole Wings (3)',
-    description: 'Three whole chicken wings',
-    price: 14,
-    image: 'https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=800&q=80',
+    name: 'Chicken Sausage',
+    description: 'Savory chicken sausage links',
+    price: 6,
     category: 'brunch-sides',
-    badges: []
+    badges: [],
+    layout: 'line'
+  },
+  {
+    id: 'bs10',
+    name: '3 Whole Wings',
+    description: 'Three crispy fried wings',
+    price: 13,
+    category: 'brunch-sides',
+    badges: [],
+    layout: 'line'
+  },
+  {
+    id: 'bs11',
+    name: 'Shrimp',
+    description: 'Grilled shrimp',
+    price: 15,
+    category: 'brunch-sides',
+    badges: [],
+    layout: 'line'
+  },
+  {
+    id: 'bs12',
+    name: 'Lobster Tail',
+    description: 'Grilled lobster tail',
+    price: null,
+    priceLabel: 'MKT',
+    category: 'brunch-sides',
+    badges: [],
+    layout: 'line'
   }
 ];
 
@@ -852,7 +922,7 @@ export const locations = [
     phone: '(404) 855-5524',
     reservationPhone: '(404) 692-1252',
     coordinates: { lat: 33.7547, lng: -84.3733 },
-    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80',
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6657.jpg',
     hours: {
       monday: '11am-1am',
       tuesday: '11am-1am',
@@ -889,7 +959,7 @@ export const locations = [
     phone: '(404) 549-7555',
     reservationPhone: '(678) 421-4083',
     coordinates: { lat: 33.7812, lng: -84.3838 },
-    image: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=800&q=80',
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6656.jpg',
     hours: {
       monday: '11am-10pm',
       tuesday: '11am-10pm',
@@ -926,7 +996,7 @@ export const locations = [
     phone: '(678) 653-9577',
     reservationPhone: '(404) 458-1958',
     coordinates: { lat: 33.7515, lng: -84.7477 },
-    image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80',
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/fin_and_feathers_shrimp_and_grits_2-e1666107985403.jpg',
     hours: {
       monday: '12pm-10pm',
       tuesday: '12pm-10pm',
@@ -963,7 +1033,7 @@ export const locations = [
     phone: '(770) 703-2282',
     reservationPhone: '(678) 304-8191',
     coordinates: { lat: 33.5726, lng: -84.4132 },
-    image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80',
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/augies_cafe_smb_parent__atlanta__new_business__86_hero-e1666179925108.jpg',
     hours: {
       monday: '11am-10pm',
       tuesday: '11am-10pm',
@@ -1000,7 +1070,7 @@ export const locations = [
     phone: '(229) 474-4049',
     reservationPhone: '(229) 231-4653',
     coordinates: { lat: 30.8327, lng: -83.2785 },
-    image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80',
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Catfish-Grits-scaled.jpg',
     hours: {
       monday: '12pm-9pm',
       tuesday: '12pm-9pm',
@@ -1037,7 +1107,7 @@ export const locations = [
     phone: '(229) 231-2101',
     reservationPhone: '(229) 231-2101',
     coordinates: { lat: 31.5785, lng: -84.1558 },
-    image: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=800&q=80',
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/1ddbe3ac887b406aa6277a86d551faae-1024x1024.jpeg',
     hours: {
       monday: '11am-9pm',
       tuesday: '11am-9pm',
@@ -1074,7 +1144,7 @@ export const locations = [
     phone: '(470) 334-8255',
     reservationPhone: '(470) 334-8255',
     coordinates: { lat: 33.8081, lng: -84.1458 },
-    image: 'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=800&q=80',
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC06011_edited.jpg',
     hours: {
       monday: '11am-10pm',
       tuesday: '11am-10pm',
@@ -1111,7 +1181,7 @@ export const locations = [
     phone: '(725) 204-9655',
     reservationPhone: '(702) 546-6394',
     coordinates: { lat: 36.1622, lng: -115.1505 },
-    image: 'https://images.unsplash.com/photo-1514683877543-bffef8e73001?w=800&q=80',
+    image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Malibu-Ribeye-scaled.jpg',
     hours: {
       monday: '11am-12am',
       tuesday: '11am-12am',
@@ -1141,4 +1211,3 @@ export const locations = [
     ]
   }
 ];
-
