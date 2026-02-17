@@ -111,6 +111,13 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - `POST /api/admin/instagram-posts` - Add Instagram post
 - `PUT /api/admin/instagram-posts/{id}` - Update Instagram post
 - `DELETE /api/admin/instagram-posts/{id}` - Delete Instagram post
+- `GET /api/admin/gallery` - List all gallery items (including hidden)
+- `POST /api/admin/gallery` - Add gallery item
+- `PUT /api/admin/gallery/{id}` - Update gallery item
+- `DELETE /api/admin/gallery/{id}` - Delete gallery item
+
+#### Public Gallery Endpoint
+- `GET /api/gallery` - Get active gallery items (is_active=true only)
 
 ## Tech Stack
 - **Frontend**: React, React Router, TailwindCSS, Shadcn UI
