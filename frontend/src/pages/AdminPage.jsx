@@ -1792,8 +1792,8 @@ const AdminPage = () => {
                   <Button onClick={() => setActiveTab('specials')} className="bg-red-600 hover:bg-red-700">
                     <Megaphone className="w-4 h-4 mr-2" /> Post Special
                   </Button>
-                  <Button onClick={() => setActiveTab('social')} className="bg-pink-600 hover:bg-pink-700">
-                    <Share2 className="w-4 h-4 mr-2" /> Social Links
+                  <Button onClick={() => setActiveTab('gallery')} className="bg-orange-600 hover:bg-orange-700">
+                    <Grid3X3 className="w-4 h-4 mr-2" /> Manage Gallery
                   </Button>
                   <Button onClick={() => setActiveTab('menu')} className="bg-yellow-600 hover:bg-yellow-700">
                     <UtensilsCrossed className="w-4 h-4 mr-2" /> Manage Menu
