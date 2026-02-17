@@ -548,86 +548,67 @@ const LinkTreeHomePage = () => {
           </CardContent>
         </Card>
 
-        {/* Social Feed - Editable */}
+        {/* Social Feed - Editable with Drag and Drop */}
         <Card className="mb-6 bg-slate-800/50 border-slate-700">
           <CardContent className="p-6">
             <div className="flex items-center justify-center gap-2 mb-4">
               <Instagram className="w-5 h-5 text-pink-500" />
               <h2 className="text-lg font-bold text-white">Latest from Our Feed</h2>
-              {editMode && <span className="bg-red-500 text-white text-xs px-2 py-1 rounded ml-2">Click images to edit</span>}
+              {editMode && (
+                <span className="bg-red-500 text-white text-xs px-2 py-1 rounded ml-2">
+                  Drag to reorder • Click to edit
+                </span>
+              )}
             </div>
             
-            <div className="grid grid-cols-4 gap-2 mb-4">
-              {displayContent.social_feed_images.map((image, index) => (
-                <div key={index} className="relative group">
-                  <button
-                    onClick={() => editMode ? setEditingImageIndex(index) : setLightboxImage(image)}
-                    className={`aspect-square rounded-lg overflow-hidden cursor-pointer block w-full ${editMode ? 'ring-2 ring-red-500 ring-dashed' : ''}`}
-                    data-testid={`social-feed-image-${index}`}
-                  >
-                    <img 
-                      src={image.url}
-                      alt={image.caption || `Feed image ${index + 1}`}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                    {editMode && (
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Edit2 className="w-6 h-6 text-white" />
-                      </div>
-                    )}
-                  </button>
-                  
-                  {/* Edit Modal for Image */}
-                  {editMode && editingImageIndex === index && (
-                    <div className="absolute top-full left-0 mt-2 z-20 bg-slate-800 border border-slate-600 rounded-lg p-3 w-64 shadow-xl">
-                      <Input
-                        placeholder="Image URL"
-                        value={editingContent.social_feed_images[index]?.url || ''}
-                        onChange={(e) => {
-                          const newImages = [...editingContent.social_feed_images];
-                          newImages[index] = { ...newImages[index], url: e.target.value };
-                          setEditingContent({ ...editingContent, social_feed_images: newImages });
-                        }}
-                        className="bg-slate-900 border-slate-700 text-white text-sm mb-2"
+            {editMode ? (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={displayContent.social_feed_images.map((_, index) => `image-${index}`)}
+                  strategy={rectSortingStrategy}
+                >
+                  <div className="grid grid-cols-4 gap-2 mb-4">
+                    {displayContent.social_feed_images.map((image, index) => (
+                      <SortableImage
+                        key={`image-${index}`}
+                        image={image}
+                        index={index}
+                        editMode={editMode}
+                        editingImageIndex={editingImageIndex}
+                        setEditingImageIndex={setEditingImageIndex}
+                        setLightboxImage={setLightboxImage}
+                        editingContent={editingContent}
+                        setEditingContent={setEditingContent}
+                        fileInputRef={fileInputRef}
+                        handleImageUpload={handleImageUpload}
                       />
-                      <Input
-                        placeholder="Caption"
-                        value={editingContent.social_feed_images[index]?.caption || ''}
-                        onChange={(e) => {
-                          const newImages = [...editingContent.social_feed_images];
-                          newImages[index] = { ...newImages[index], caption: e.target.value };
-                          setEditingContent({ ...editingContent, social_feed_images: newImages });
-                        }}
-                        className="bg-slate-900 border-slate-700 text-white text-sm mb-2"
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
+            ) : (
+              <div className="grid grid-cols-4 gap-2 mb-4">
+                {displayContent.social_feed_images.map((image, index) => (
+                  <div key={index} className="relative group">
+                    <button
+                      onClick={() => setLightboxImage(image)}
+                      className="aspect-square rounded-lg overflow-hidden cursor-pointer block w-full"
+                      data-testid={`social-feed-image-${index}`}
+                    >
+                      <img 
+                        src={image.url}
+                        alt={image.caption || `Feed image ${index + 1}`}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                       />
-                      <div className="flex gap-2">
-                        <input
-                          type="file"
-                          ref={fileInputRef}
-                          onChange={(e) => handleImageUpload(e, index)}
-                          accept="image/*"
-                          className="hidden"
-                        />
-                        <Button 
-                          size="sm" 
-                          onClick={() => fileInputRef.current?.click()}
-                          className="bg-slate-700 hover:bg-slate-600 text-xs"
-                        >
-                          Upload
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          onClick={() => setEditingImageIndex(null)}
-                          className="bg-red-600 hover:bg-red-700 text-xs"
-                        >
-                          Done
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
             
             {/* Social Follow Buttons */}
             <div className="grid grid-cols-2 gap-3">
