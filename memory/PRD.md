@@ -25,6 +25,8 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Loyalty program signup form
 - [x] Social media links (Instagram, Facebook, Twitter)
 - [x] Social feed grid with lightbox view (now using actual F&F images)
+- [x] **Admin inline editing** - Edit tagline, contact info, and social feed images directly on homepage
+- [x] **Drag-and-drop reordering** for social feed images in edit mode
 
 #### Gallery Page (GalleryPage.jsx) - Added February 2026
 - [x] Photo and video gallery with category filters (All, Photos, Videos, Food, Ambiance, Drinks)
