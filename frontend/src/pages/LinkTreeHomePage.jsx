@@ -1,20 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ExternalLink, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Clock, X, Image as ImageIcon } from 'lucide-react';
+import { ExternalLink, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Clock, X, Image as ImageIcon, Edit2, Save, LogOut, Settings } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { toast } from '../hooks/use-toast';
 import DailyVideoCarousel from '../components/DailyVideoCarousel';
-import { signupLoyalty, subscribeToPush, getPublicSocialLinks, getPublicInstagramFeed, getPublicSpecials } from '../services/api';
+import { 
+  signupLoyalty, 
+  subscribeToPush, 
+  getPublicSocialLinks, 
+  getPublicInstagramFeed, 
+  getPublicSpecials,
+  getHomepageContent,
+  updateHomepageContent,
+  verifyAdminToken,
+  uploadImage
+} from '../services/api';
 
-// Default social feed images using actual Fin & Feathers photos
-const defaultSocialFeedImages = [
-  { url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6608.jpg', caption: 'F&F Signature Wings' },
-  { url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Shrimp-Grits-scaled.jpg', caption: 'Shrimp & Grits' },
-  { url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Malibu-Ribeye-scaled.jpg', caption: 'Malibu Ribeye' },
-  { url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/a3e08521f140462cbedf10dedd32f879.jpeg', caption: 'Chicken & Waffle' },
-];
+// Default content
+const defaultContent = {
+  tagline: "Elevated dining meets Southern soul",
+  logo_url: "https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png",
+  contact_phone: "(404) 855-5524",
+  contact_email: "info@finandfeathersrestaurants.com",
+  contact_address: "Multiple Locations across Georgia & Las Vegas",
+  social_feed_images: [
+    { url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6608.jpg', caption: 'F&F Signature Wings' },
+    { url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Shrimp-Grits-scaled.jpg', caption: 'Shrimp & Grits' },
+    { url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Malibu-Ribeye-scaled.jpg', caption: 'Malibu Ribeye' },
+    { url: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/a3e08521f140462cbedf10dedd32f879.jpeg', caption: 'Chicken & Waffle' },
+  ]
+};
 
 const LinkTreeHomePage = () => {
   const navigate = useNavigate();
@@ -26,75 +43,72 @@ const LinkTreeHomePage = () => {
   const [instagramFeed, setInstagramFeed] = useState([]);
   const [specials, setSpecials] = useState([]);
   const [lightboxImage, setLightboxImage] = useState(null);
-  const [socialFeedImages, setSocialFeedImages] = useState(defaultSocialFeedImages);
+  
+  // Admin editing state
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [content, setContent] = useState(defaultContent);
+  const [editingContent, setEditingContent] = useState(defaultContent);
+  const [saving, setSaving] = useState(false);
+  const [editingImageIndex, setEditingImageIndex] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
-    // Fetch social data
-    const fetchSocialData = async () => {
+    // Check if admin is logged in
+    const checkAdmin = async () => {
+      const isValid = await verifyAdminToken();
+      setIsAdmin(isValid);
+    };
+    checkAdmin();
+    
+    // Fetch all data
+    const fetchData = async () => {
       try {
-        const [links, feed, activeSpecials] = await Promise.all([
+        const [links, feed, activeSpecials, homepageContent] = await Promise.all([
           getPublicSocialLinks(),
           getPublicInstagramFeed(),
-          getPublicSpecials()
+          getPublicSpecials(),
+          getHomepageContent()
         ]);
         setSocialLinks(links);
         setInstagramFeed(feed);
         setSpecials(activeSpecials);
         
-        // If we have Instagram feed images from the database, use those
-        if (feed && feed.length > 0) {
-          const feedImages = feed.slice(0, 4).map(post => ({
-            url: post.image_url,
-            caption: post.caption || ''
-          }));
-          if (feedImages.length > 0) {
-            setSocialFeedImages(feedImages);
-          }
+        // Set homepage content
+        if (homepageContent) {
+          setContent(homepageContent);
+          setEditingContent(homepageContent);
         }
       } catch (err) {
-        console.error('Failed to fetch social data:', err);
+        console.error('Failed to fetch data:', err);
       }
     };
-    fetchSocialData();
-  }, []);
-
-  // Close lightbox on Escape key
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === 'Escape') setLightboxImage(null);
-    };
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
+    fetchData();
   }, []);
 
   const handleLoyaltySignup = async (e) => {
     e.preventDefault();
-    if (!agreeToMarketing) {
+    
+    if (!name || !email) {
       toast({
-        title: "Agreement Required",
-        description: "Please agree to receive marketing communications to join our loyalty program.",
+        title: "Required Fields",
+        description: "Please enter your name and email address.",
         variant: "destructive"
       });
       return;
     }
 
     try {
-      // Sign up loyalty member
-      const member = await signupLoyalty({
-        name,
-        email,
-        phone: phone || null,
+      await signupLoyalty({
+        full_name: name,
+        email: email,
+        phone_number: phone || null,
         marketing_consent: agreeToMarketing
       });
 
-      // Subscribe to push notifications
-      const pushSubscribed = await subscribeToPush(member.id);
-
       toast({
-        title: "Welcome to Fin & Feathers Loyalty!",
-        description: pushSubscribed 
-          ? `Thank you ${name}! You'll receive exclusive offers and push notifications.`
-          : `Thank you ${name}! Check your email for exclusive offers.`,
+        title: "Welcome to Fin & Feathers!",
+        description: "You've been added to our loyalty program."
       });
 
       // Clear form
@@ -103,7 +117,7 @@ const LinkTreeHomePage = () => {
       setPhone('');
       setAgreeToMarketing(false);
 
-      // Redirect to Toast Tab rewards signup after successful registration
+      // Redirect to Toast Tab rewards signup
       window.open('https://www.toasttab.com/fins-feathers-douglasville-7430-douglas-blvd-zmrgr/rewardsSignup', '_blank');
     } catch (error) {
       toast({
@@ -114,6 +128,66 @@ const LinkTreeHomePage = () => {
     }
   };
 
+  // Admin functions
+  const handleSaveContent = async () => {
+    setSaving(true);
+    try {
+      await updateHomepageContent(editingContent);
+      setContent(editingContent);
+      setEditMode(false);
+      toast({ title: 'Success', description: 'Homepage content saved!' });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingContent(content);
+    setEditMode(false);
+    setEditingImageIndex(null);
+  };
+
+  const handleImageUpload = async (e, index) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ title: 'Error', description: 'Please upload a valid image', variant: 'destructive' });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: 'Error', description: 'Image must be less than 5MB', variant: 'destructive' });
+      return;
+    }
+
+    try {
+      const result = await uploadImage(file);
+      const backendUrl = process.env.REACT_APP_BACKEND_URL;
+      const fullUrl = `${backendUrl}${result.url}`;
+      
+      const newImages = [...editingContent.social_feed_images];
+      newImages[index] = { ...newImages[index], url: fullUrl };
+      setEditingContent({ ...editingContent, social_feed_images: newImages });
+      toast({ title: 'Success', description: 'Image uploaded!' });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+    
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    setEditingImageIndex(null);
+  };
+
+  const handleAdminLogout = () => {
+    localStorage.removeItem('adminToken');
+    setIsAdmin(false);
+    setEditMode(false);
+    toast({ title: 'Logged Out', description: 'Admin session ended' });
+  };
+
   // Default social links if none configured
   const defaultSocialLinks = [
     { platform: 'instagram', url: 'https://instagram.com/finandfeathers', username: '@finandfeathers' },
@@ -122,6 +196,7 @@ const LinkTreeHomePage = () => {
   ];
 
   const displaySocialLinks = socialLinks.length > 0 ? socialLinks : defaultSocialLinks;
+  const displayContent = editMode ? editingContent : content;
 
   const getSocialIcon = (platform) => {
     switch (platform) {
@@ -134,18 +209,90 @@ const LinkTreeHomePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black py-8 px-4">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-black py-8 px-4 relative">
+      {/* Admin Bar */}
+      {isAdmin && (
+        <div className="fixed top-0 left-0 right-0 bg-red-600 text-white py-2 px-4 z-50 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Settings className="w-4 h-4" />
+            <span className="text-sm font-medium">Admin Mode</span>
+          </div>
+          <div className="flex items-center gap-2">
+            {editMode ? (
+              <>
+                <Button 
+                  size="sm" 
+                  onClick={handleSaveContent}
+                  disabled={saving}
+                  className="bg-green-600 hover:bg-green-700 h-8"
+                  data-testid="save-homepage-btn"
+                >
+                  <Save className="w-3 h-3 mr-1" />
+                  {saving ? 'Saving...' : 'Save Changes'}
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={handleCancelEdit}
+                  className="border-white text-white hover:bg-white/20 h-8"
+                >
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              <Button 
+                size="sm" 
+                onClick={() => setEditMode(true)}
+                className="bg-white text-red-600 hover:bg-gray-100 h-8"
+                data-testid="edit-homepage-btn"
+              >
+                <Edit2 className="w-3 h-3 mr-1" />
+                Edit Page
+              </Button>
+            )}
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              onClick={() => navigate('/admin')}
+              className="text-white hover:bg-white/20 h-8"
+            >
+              Dashboard
+            </Button>
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              onClick={handleAdminLogout}
+              className="text-white hover:bg-white/20 h-8"
+            >
+              <LogOut className="w-3 h-3" />
+            </Button>
+          </div>
+        </div>
+      )}
+
+      <div className={`max-w-2xl mx-auto ${isAdmin ? 'pt-12' : ''}`}>
         {/* Logo/Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 relative group">
+          {editMode && (
+            <div className="absolute -top-2 -right-2 z-10">
+              <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">Editable</span>
+            </div>
+          )}
           <img 
-            src="https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png" 
+            src={displayContent.logo_url}
             alt="Fin & Feathers Restaurants"
-            className="max-h-32 md:max-h-40 w-auto mx-auto mb-4 object-contain"
+            className={`max-h-32 md:max-h-40 w-auto mx-auto mb-4 object-contain ${editMode ? 'ring-2 ring-red-500 ring-dashed rounded-lg p-2' : ''}`}
           />
-          <p className="text-slate-300 text-sm">
-            Elevated dining meets Southern soul
-          </p>
+          {editMode ? (
+            <Input
+              value={editingContent.tagline}
+              onChange={(e) => setEditingContent({ ...editingContent, tagline: e.target.value })}
+              className="bg-slate-800 border-red-500 text-white text-center max-w-md mx-auto"
+              data-testid="edit-tagline-input"
+            />
+          ) : (
+            <p className="text-slate-300 text-sm">{displayContent.tagline}</p>
+          )}
         </div>
 
         {/* Weekly Specials Section */}
@@ -155,12 +302,9 @@ const LinkTreeHomePage = () => {
               <Clock className="w-5 h-5 text-red-500" />
               <h2 className="text-xl font-bold text-white">This Week's Specials</h2>
             </div>
-            {/* Daily Video Carousel */}
             <DailyVideoCarousel />
           </CardContent>
         </Card>
-
-        {/* Advertising/Promo Section - Removed since videos are in weekly specials */}
 
         {/* Main Link Buttons */}
         <div className="space-y-3 mb-6">
@@ -181,7 +325,7 @@ const LinkTreeHomePage = () => {
           </Button>
 
           <Button
-            onClick={() => navigate('/locations')}
+            onClick={() => window.open('https://order.toasttab.com/online/fin-feathers-edgewood-2nd-location-345-edgewood-ave-se', '_blank')}
             className="w-full bg-slate-800 hover:bg-slate-700 text-white border-2 border-slate-700 h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
           >
             <ExternalLink className="w-5 h-5 mr-2" />
@@ -198,117 +342,60 @@ const LinkTreeHomePage = () => {
           </Button>
 
           <Button
-            onClick={() => window.open('https://www.google.com/search?q=Fin+%26+Feathers+Restaurants', '_blank')}
-            className="w-full bg-slate-800 hover:bg-slate-700 text-white border-2 border-red-700 h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+            onClick={() => window.open('https://g.page/r/CfinandfeathersReview', '_blank')}
+            className="w-full bg-slate-800 hover:bg-slate-700 text-white border-2 border-slate-700 h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
           >
             <ExternalLink className="w-5 h-5 mr-2" />
             Leave a Review
           </Button>
         </div>
 
-        {/* Contact Information */}
-        <Card className="mb-6 bg-slate-800/80 border-slate-700/50">
+        {/* Loyalty Signup Form */}
+        <Card className="mb-6 bg-gradient-to-br from-slate-800/80 to-slate-900/80 border-red-600/30">
           <CardContent className="p-6">
-            <h2 className="text-xl font-bold text-white mb-4 text-center">Contact Us</h2>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-red-500 flex-shrink-0" />
-                <div>
-                  <p className="text-white font-semibold text-sm">Main Line</p>
-                  <a href="tel:+14048555524" className="text-slate-300 text-sm hover:text-red-500 transition-colors">
-                    (404) 855-5524
-                  </a>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-red-500 flex-shrink-0" />
-                <div>
-                  <p className="text-white font-semibold text-sm">Email</p>
-                  <a href="mailto:info@finandfeathers.com" className="text-slate-300 text-sm hover:text-red-500 transition-colors">
-                    info@finandfeathers.com
-                  </a>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-red-500 flex-shrink-0" />
-                <div>
-                  <p className="text-white font-semibold text-sm">7 Locations</p>
-                  <button 
-                    onClick={() => navigate('/locations')}
-                    className="text-slate-300 text-sm hover:text-red-500 transition-colors underline"
-                  >
-                    View all locations
-                  </button>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Loyalty Program Signup */}
-        <Card className="mb-6 bg-gradient-to-br from-red-900/20 to-slate-800/80 border-red-600/30">
-          <CardContent className="p-6">
-            <h2 className="text-2xl font-bold text-white mb-2 text-center">Join Our Loyalty Program</h2>
-            <p className="text-slate-300 text-sm text-center mb-6">
-              Be the first to receive updates on special events, new menu items, exclusive offers, and more!
-            </p>
+            <h2 className="text-xl font-bold text-white mb-2 text-center">Join Our Loyalty Program</h2>
+            <p className="text-slate-400 text-sm mb-4 text-center">Get exclusive offers and rewards!</p>
             
-            <form onSubmit={handleLoyaltySignup} className="space-y-4">
-              <div>
-                <Input
-                  type="text"
-                  placeholder="Full Name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  className="bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-500 h-12"
-                  data-testid="loyalty-name-input"
-                />
-              </div>
+            <form onSubmit={handleLoyaltySignup} className="space-y-3">
+              <Input
+                type="text"
+                placeholder="Full Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="bg-slate-900 border-slate-700 text-white"
+                required
+              />
+              <Input
+                type="email"
+                placeholder="Email Address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-slate-900 border-slate-700 text-white"
+                required
+              />
+              <Input
+                type="tel"
+                placeholder="Phone Number (Optional)"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="bg-slate-900 border-slate-700 text-white"
+              />
               
-              <div>
-                <Input
-                  type="email"
-                  placeholder="Email Address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-500 h-12"
-                  data-testid="loyalty-email-input"
-                />
-              </div>
-              
-              <div>
-                <Input
-                  type="tel"
-                  placeholder="Phone Number (Optional)"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-500 h-12"
-                  data-testid="loyalty-phone-input"
-                />
-              </div>
-
-              <div className="flex items-start gap-2">
+              <label className="flex items-start gap-2 text-slate-400 text-xs cursor-pointer">
                 <input
                   type="checkbox"
-                  id="marketing"
                   checked={agreeToMarketing}
                   onChange={(e) => setAgreeToMarketing(e.target.checked)}
-                  className="mt-1 w-4 h-4 rounded border-slate-700 bg-slate-900 text-red-600 focus:ring-red-500"
-                  data-testid="loyalty-marketing-checkbox"
+                  className="mt-0.5"
                 />
-                <label htmlFor="marketing" className="text-slate-300 text-xs">
+                <span>
                   By checking this box, you agree to receive marketing communications from Fin & Feathers Restaurants via email, SMS, and push notifications
-                </label>
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full bg-red-600 hover:bg-red-700 text-white h-12 text-base font-semibold rounded-lg"
-                data-testid="loyalty-submit-btn"
+                </span>
+              </label>
+              
+              <Button 
+                type="submit" 
+                className="w-full bg-red-600 hover:bg-red-700 text-white h-12 text-lg font-semibold"
               >
                 Join Now
               </Button>
@@ -316,74 +403,99 @@ const LinkTreeHomePage = () => {
           </CardContent>
         </Card>
 
-        {/* Active Specials */}
-        {specials.length > 0 && (
-          <Card className="mb-6 bg-gradient-to-br from-yellow-900/20 to-slate-800/80 border-yellow-600/30">
-            <CardContent className="p-6">
-              <h2 className="text-xl font-bold text-white mb-4 text-center flex items-center justify-center gap-2">
-                <span className="text-2xl">🎉</span> Current Specials
-              </h2>
-              <div className="space-y-3">
-                {specials.slice(0, 3).map((special) => (
-                  <div key={special.id} className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
-                    <div className="flex gap-3">
-                      {special.image && (
-                        <img src={special.image} alt="" className="w-16 h-16 object-cover rounded" />
-                      )}
-                      <div>
-                        <h3 className="text-white font-semibold">{special.title}</h3>
-                        <p className="text-slate-300 text-sm">{special.description}</p>
+        {/* Social Feed - Editable */}
+        <Card className="mb-6 bg-slate-800/50 border-slate-700">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Instagram className="w-5 h-5 text-pink-500" />
+              <h2 className="text-lg font-bold text-white">Latest from Our Feed</h2>
+              {editMode && <span className="bg-red-500 text-white text-xs px-2 py-1 rounded ml-2">Click images to edit</span>}
+            </div>
+            
+            <div className="grid grid-cols-4 gap-2 mb-4">
+              {displayContent.social_feed_images.map((image, index) => (
+                <div key={index} className="relative group">
+                  <button
+                    onClick={() => editMode ? setEditingImageIndex(index) : setLightboxImage(image)}
+                    className={`aspect-square rounded-lg overflow-hidden cursor-pointer block w-full ${editMode ? 'ring-2 ring-red-500 ring-dashed' : ''}`}
+                    data-testid={`social-feed-image-${index}`}
+                  >
+                    <img 
+                      src={image.url}
+                      alt={image.caption || `Feed image ${index + 1}`}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    {editMode && (
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Edit2 className="w-6 h-6 text-white" />
+                      </div>
+                    )}
+                  </button>
+                  
+                  {/* Edit Modal for Image */}
+                  {editMode && editingImageIndex === index && (
+                    <div className="absolute top-full left-0 mt-2 z-20 bg-slate-800 border border-slate-600 rounded-lg p-3 w-64 shadow-xl">
+                      <Input
+                        placeholder="Image URL"
+                        value={editingContent.social_feed_images[index]?.url || ''}
+                        onChange={(e) => {
+                          const newImages = [...editingContent.social_feed_images];
+                          newImages[index] = { ...newImages[index], url: e.target.value };
+                          setEditingContent({ ...editingContent, social_feed_images: newImages });
+                        }}
+                        className="bg-slate-900 border-slate-700 text-white text-sm mb-2"
+                      />
+                      <Input
+                        placeholder="Caption"
+                        value={editingContent.social_feed_images[index]?.caption || ''}
+                        onChange={(e) => {
+                          const newImages = [...editingContent.social_feed_images];
+                          newImages[index] = { ...newImages[index], caption: e.target.value };
+                          setEditingContent({ ...editingContent, social_feed_images: newImages });
+                        }}
+                        className="bg-slate-900 border-slate-700 text-white text-sm mb-2"
+                      />
+                      <div className="flex gap-2">
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          onChange={(e) => handleImageUpload(e, index)}
+                          accept="image/*"
+                          className="hidden"
+                        />
+                        <Button 
+                          size="sm" 
+                          onClick={() => fileInputRef.current?.click()}
+                          className="bg-slate-700 hover:bg-slate-600 text-xs"
+                        >
+                          Upload
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          onClick={() => setEditingImageIndex(null)}
+                          className="bg-red-600 hover:bg-red-700 text-xs"
+                        >
+                          Done
+                        </Button>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Social Media Feed - 4 Latest Photos with Lightbox */}
-        <Card className="mb-6 bg-slate-800/80 border-slate-700/50">
-          <CardContent className="p-6">
-            <h2 className="text-xl font-bold text-white mb-6 text-center flex items-center justify-center gap-2">
-              <Instagram className="w-5 h-5 text-pink-500" /> Latest from Our Feed
-            </h2>
-            
-            {/* 4 Column Square Image Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {socialFeedImages.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => setLightboxImage(image)}
-                  className="aspect-square rounded-lg overflow-hidden group cursor-pointer relative"
-                  data-testid={`social-feed-image-${index}`}
-                >
-                  <img 
-                    src={image.url}
-                    alt={image.caption || `Social post ${index + 1}`}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
-                    <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white text-2xl">
-                      🔍
-                    </span>
-                  </div>
-                </button>
+                  )}
+                </div>
               ))}
             </div>
             
-            {/* Follow Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 mt-6">
+            {/* Social Follow Buttons */}
+            <div className="grid grid-cols-2 gap-3">
               <Button
-                onClick={() => window.open('https://www.instagram.com/finandfeathers/', '_blank')}
-                className="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600"
+                onClick={() => window.open('https://instagram.com/finandfeathers', '_blank')}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
               >
                 <Instagram className="w-4 h-4 mr-2" />
                 Follow on Instagram
               </Button>
               <Button
-                onClick={() => window.open('https://www.facebook.com/finandfeathersrestaurants', '_blank')}
-                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                onClick={() => window.open('https://facebook.com/finandfeathers', '_blank')}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 <Facebook className="w-4 h-4 mr-2" />
                 Follow on Facebook
@@ -392,61 +504,108 @@ const LinkTreeHomePage = () => {
           </CardContent>
         </Card>
 
-        {/* Lightbox Modal for Enlarged Image */}
-        {lightboxImage && (
-          <div 
-            className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
-            onClick={() => setLightboxImage(null)}
-          >
-            <button
-              onClick={() => setLightboxImage(null)}
-              className="absolute top-4 right-4 text-white hover:text-red-500 transition-colors"
-              data-testid="lightbox-close-btn"
-            >
-              <X className="w-8 h-8" />
-            </button>
-            <div className="max-w-4xl max-h-[90vh] relative" onClick={(e) => e.stopPropagation()}>
-              <img 
-                src={lightboxImage.url}
-                alt={lightboxImage.caption || 'Social media post'}
-                className="max-w-full max-h-[85vh] object-contain rounded-lg"
-              />
-              {lightboxImage.caption && (
-                <p className="text-white text-center mt-4 text-lg">{lightboxImage.caption}</p>
-              )}
-              <Button
-                onClick={() => window.open('https://www.instagram.com/finandfeathers/', '_blank')}
-                className="mt-4 w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600"
-              >
-                <Instagram className="w-4 h-4 mr-2" />
-                View on Instagram
-              </Button>
+        {/* Contact Info - Editable */}
+        <Card className="mb-6 bg-slate-800/50 border-slate-700">
+          <CardContent className="p-4">
+            <h3 className="text-white font-semibold mb-3 text-center">Contact Us</h3>
+            {editMode && <span className="block text-center text-xs bg-red-500 text-white px-2 py-1 rounded mb-3 mx-auto w-fit">Edit Contact Info</span>}
+            
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center gap-2 text-slate-300">
+                <Phone className="w-4 h-4 text-red-500 flex-shrink-0" />
+                {editMode ? (
+                  <Input
+                    value={editingContent.contact_phone}
+                    onChange={(e) => setEditingContent({ ...editingContent, contact_phone: e.target.value })}
+                    className="bg-slate-900 border-red-500 text-white h-8 text-sm"
+                    data-testid="edit-phone-input"
+                  />
+                ) : (
+                  <a href={`tel:${displayContent.contact_phone}`} className="hover:text-red-400">
+                    {displayContent.contact_phone}
+                  </a>
+                )}
+              </div>
+              <div className="flex items-center gap-2 text-slate-300">
+                <Mail className="w-4 h-4 text-red-500 flex-shrink-0" />
+                {editMode ? (
+                  <Input
+                    value={editingContent.contact_email}
+                    onChange={(e) => setEditingContent({ ...editingContent, contact_email: e.target.value })}
+                    className="bg-slate-900 border-red-500 text-white h-8 text-sm"
+                    data-testid="edit-email-input"
+                  />
+                ) : (
+                  <a href={`mailto:${displayContent.contact_email}`} className="hover:text-red-400">
+                    {displayContent.contact_email}
+                  </a>
+                )}
+              </div>
+              <div className="flex items-center gap-2 text-slate-300">
+                <MapPin className="w-4 h-4 text-red-500 flex-shrink-0" />
+                {editMode ? (
+                  <Input
+                    value={editingContent.contact_address}
+                    onChange={(e) => setEditingContent({ ...editingContent, contact_address: e.target.value })}
+                    className="bg-slate-900 border-red-500 text-white h-8 text-sm"
+                    data-testid="edit-address-input"
+                  />
+                ) : (
+                  <span>{displayContent.contact_address}</span>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          </CardContent>
+        </Card>
 
-        {/* Social Media Links */}
-        <div className="flex justify-center gap-4 mb-8">
-          {displaySocialLinks.map((social, index) => {
-            const Icon = getSocialIcon(social.platform);
+        {/* Social Links Footer */}
+        <div className="flex justify-center gap-4 mb-4">
+          {displaySocialLinks.map((link, index) => {
+            const Icon = getSocialIcon(link.platform);
             return (
-              <button
+              <a
                 key={index}
-                onClick={() => window.open(social.url, '_blank')}
-                className="w-12 h-12 rounded-full bg-slate-800 hover:bg-red-600 transition-all duration-300 flex items-center justify-center border border-slate-700 hover:border-red-500"
-                aria-label={social.platform}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-slate-700 transition-colors"
               >
-                {typeof Icon === 'function' && Icon.prototype ? <Icon className="w-5 h-5 text-white" /> : <Icon />}
-              </button>
+                <Icon className="w-5 h-5 text-slate-300" />
+              </a>
             );
           })}
         </div>
 
         {/* Footer */}
         <div className="text-center text-slate-500 text-xs">
-          <p>© 2024 Fin & Feathers Restaurants. All rights reserved.</p>
+          <p>&copy; 2024 Fin & Feathers Restaurants. All rights reserved.</p>
         </div>
       </div>
+
+      {/* Lightbox */}
+      {lightboxImage && !editMode && (
+        <div 
+          className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4"
+          onClick={() => setLightboxImage(null)}
+        >
+          <button
+            onClick={() => setLightboxImage(null)}
+            className="absolute top-4 right-4 text-white hover:text-red-500 transition-colors"
+          >
+            <X className="w-8 h-8" />
+          </button>
+          <div onClick={(e) => e.stopPropagation()}>
+            <img 
+              src={lightboxImage.url}
+              alt={lightboxImage.caption || 'Gallery image'}
+              className="max-w-full max-h-[80vh] object-contain rounded-lg"
+            />
+            {lightboxImage.caption && (
+              <p className="text-white text-center mt-4 text-lg">{lightboxImage.caption}</p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
