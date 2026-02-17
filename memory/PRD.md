@@ -83,6 +83,10 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Protected routes with Bearer token
 - [x] Dashboard with statistics overview
 - [x] **Post Special** - Create promotions that auto-send push notifications to all app users
+- [x] **Location-based Specials** - Filter and assign specials to specific locations
+- [x] **Edit Specials** - Update existing specials with title, description, location, image
+- [x] **Image Lightbox** - Click to view special images large
+- [x] **Specials by Location Summary** - Overview showing counts per location
 - [x] **Social Media Links** - Manage Instagram, Facebook, TikTok links
 - [x] **Instagram Feed** - Add posts to display on homepage
 - [x] Loyalty Members management (view, delete)
