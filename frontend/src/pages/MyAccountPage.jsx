@@ -150,16 +150,26 @@ const MyAccountPage = () => {
     }
   };
 
-  const loadAdditionalData = async (userId) => {
+  const loadAdditionalData = async (userId, userRole = 'customer') => {
     try {
-      const [historyData, visitsData, submissionsData] = await Promise.all([
+      const [historyData, visitsData, submissionsData, staffData, transferData] = await Promise.all([
         getTokenHistory(userId),
         getUserVisits(userId),
-        getUserGallerySubmissions(userId)
+        getUserGallerySubmissions(userId),
+        getStaffList(),
+        getTransferHistory(userId)
       ]);
       setTokenHistory(historyData);
       setVisits(visitsData);
       setSubmissions(submissionsData);
+      setStaffList(staffData);
+      setTransferHistory(transferData);
+      
+      // Load cashout history for staff
+      if (userRole === 'staff') {
+        const cashouts = await getCashoutHistory(userId);
+        setCashoutHistory(cashouts);
+      }
     } catch (error) {
       console.error('Error loading additional data:', error);
     }
