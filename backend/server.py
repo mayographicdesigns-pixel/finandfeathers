@@ -1150,7 +1150,12 @@ async def get_dj_tips(location_slug: str):
         {"_id": 0}
     ).sort("created_at", -1).limit(20).to_list(20)
     
-    return [DJTipResponse(**t) for t in tips]
+    # Ensure payment_method has default value for old records
+    result = []
+    for t in tips:
+        t["payment_method"] = t.get("payment_method", "cash_app")
+        result.append(DJTipResponse(**t))
+    return result
 
 
 @api_router.get("/social/dj-tips/{location_slug}/total")
