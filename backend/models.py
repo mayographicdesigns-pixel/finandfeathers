@@ -547,6 +547,8 @@ class UserProfileUpdate(BaseModel):
     email: Optional[str] = None
     avatar_emoji: Optional[str] = None
     profile_photo_url: Optional[str] = None
+    role: Optional[str] = None
+    staff_title: Optional[str] = None
     birthdate: Optional[str] = None
     anniversary: Optional[str] = None
     special_dates: Optional[List[dict]] = None
