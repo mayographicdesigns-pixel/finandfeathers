@@ -272,8 +272,9 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - `push_notifications`: id, title, body, icon, image, url, sent_to, sent_at
 - `gallery_items`: id, title, image_url, category, is_active, display_order, created_at, submitted_by_user
 - `user_profiles`: id, name, phone, email, avatar_emoji, birthdate, anniversary, special_dates[], social_handles, token_balance, total_visits, total_posts, total_photos, created_at, updated_at
-- `token_purchases`: id, user_id, amount_usd, tokens_purchased, payment_method (card/gift), gifted_by, message, created_at
+- `token_purchases`: id, user_id, amount_usd, tokens_purchased, payment_method (card/stripe/gift), stripe_session_id, gifted_by, message, created_at
 - `user_gallery_submissions`: id, user_id, user_name, image_url, caption, location_slug, created_at
+- `payment_transactions`: id, session_id, user_id, amount, currency, tokens, package_id, payment_status (pending/paid/expired), created_at, updated_at
 
 ## Known Limitations / Mocked Data
 1. **Menu Page uses Mock Data**: The public menu page (`MenuPage.jsx`) displays items from `mockData.js`, not from the database. Admin can manage items in MongoDB but they won't appear on the public menu.
