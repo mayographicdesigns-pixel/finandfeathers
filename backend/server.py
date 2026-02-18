@@ -1501,12 +1501,227 @@ async def upload_profile_photo(user_id: str, file: UploadFile = File(...)):
 
 
 # =====================================================
-# F&F TOKEN ENDPOINTS
+# F&F TOKEN ENDPOINTS (with Stripe Payment)
 # =====================================================
 
+# Fixed token packages - amounts defined server-side for security
+TOKEN_PACKAGES = {
+    "10": {"amount": 1.00, "tokens": 10},
+    "50": {"amount": 5.00, "tokens": 50},
+    "100": {"amount": 10.00, "tokens": 100},
+    "250": {"amount": 25.00, "tokens": 250},
+    "500": {"amount": 50.00, "tokens": 500},
+}
+
+
+@api_router.get("/tokens/packages")
+async def get_token_packages():
+    """Get available token packages for purchase"""
+    return TOKEN_PACKAGES
+
+
+@api_router.post("/tokens/checkout")
+async def create_token_checkout(request: Request, package_id: str, user_id: str, origin_url: str):
+    """Create Stripe checkout session for token purchase"""
+    # Validate package
+    if package_id not in TOKEN_PACKAGES:
+        raise HTTPException(status_code=400, detail="Invalid package")
+    
+    # Validate user exists
+    profile = await db.user_profiles.find_one({"id": user_id})
+    if not profile:
+        raise HTTPException(status_code=404, detail="User profile not found")
+    
+    package = TOKEN_PACKAGES[package_id]
+    amount = package["amount"]
+    tokens = package["tokens"]
+    
+    # Initialize Stripe
+    stripe_api_key = os.environ.get("STRIPE_API_KEY")
+    if not stripe_api_key:
+        raise HTTPException(status_code=500, detail="Stripe not configured")
+    
+    host_url = str(request.base_url).rstrip('/')
+    webhook_url = f"{host_url}/api/webhook/stripe"
+    stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+    
+    # Build success/cancel URLs from frontend origin
+    success_url = f"{origin_url}/my-account?payment=success&session_id={{CHECKOUT_SESSION_ID}}"
+    cancel_url = f"{origin_url}/my-account?payment=cancelled"
+    
+    # Create checkout session
+    checkout_request = CheckoutSessionRequest(
+        amount=float(amount),
+        currency="usd",
+        success_url=success_url,
+        cancel_url=cancel_url,
+        metadata={
+            "user_id": user_id,
+            "package_id": package_id,
+            "tokens": str(tokens),
+            "type": "token_purchase"
+        }
+    )
+    
+    session = await stripe_checkout.create_checkout_session(checkout_request)
+    
+    # Create pending payment transaction record
+    transaction = {
+        "id": str(uuid.uuid4()),
+        "session_id": session.session_id,
+        "user_id": user_id,
+        "amount": amount,
+        "currency": "usd",
+        "tokens": tokens,
+        "package_id": package_id,
+        "payment_status": "pending",
+        "created_at": datetime.now(timezone.utc),
+        "updated_at": datetime.now(timezone.utc)
+    }
+    await db.payment_transactions.insert_one(transaction)
+    
+    return {"checkout_url": session.url, "session_id": session.session_id}
+
+
+@api_router.get("/tokens/checkout/status/{session_id}")
+async def get_checkout_status(request: Request, session_id: str):
+    """Get the status of a token checkout session"""
+    # Find the transaction
+    transaction = await db.payment_transactions.find_one({"session_id": session_id})
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    
+    # If already completed, don't re-process
+    if transaction.get("payment_status") == "paid":
+        return {
+            "status": "complete",
+            "payment_status": "paid",
+            "tokens_credited": transaction.get("tokens", 0),
+            "already_processed": True
+        }
+    
+    # Check with Stripe
+    stripe_api_key = os.environ.get("STRIPE_API_KEY")
+    host_url = str(request.base_url).rstrip('/')
+    webhook_url = f"{host_url}/api/webhook/stripe"
+    stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+    
+    status = await stripe_checkout.get_checkout_status(session_id)
+    
+    # Update transaction based on status
+    if status.payment_status == "paid" and transaction.get("payment_status") != "paid":
+        # Credit tokens to user
+        user_id = transaction.get("user_id")
+        tokens_to_add = transaction.get("tokens", 0)
+        
+        profile = await db.user_profiles.find_one({"id": user_id})
+        if profile:
+            new_balance = profile.get("token_balance", 0) + tokens_to_add
+            await db.user_profiles.update_one(
+                {"id": user_id},
+                {"$set": {"token_balance": new_balance, "updated_at": datetime.now(timezone.utc)}}
+            )
+            
+            # Create purchase record
+            purchase_record = {
+                "id": str(uuid.uuid4()),
+                "user_id": user_id,
+                "amount_usd": transaction.get("amount"),
+                "tokens_purchased": tokens_to_add,
+                "payment_method": "stripe",
+                "stripe_session_id": session_id,
+                "gifted_by": None,
+                "created_at": datetime.now(timezone.utc)
+            }
+            await db.token_purchases.insert_one(purchase_record)
+        
+        # Update transaction status
+        await db.payment_transactions.update_one(
+            {"session_id": session_id},
+            {"$set": {"payment_status": "paid", "updated_at": datetime.now(timezone.utc)}}
+        )
+        
+        return {
+            "status": status.status,
+            "payment_status": "paid",
+            "tokens_credited": tokens_to_add,
+            "new_balance": new_balance if profile else 0
+        }
+    
+    elif status.status == "expired":
+        await db.payment_transactions.update_one(
+            {"session_id": session_id},
+            {"$set": {"payment_status": "expired", "updated_at": datetime.now(timezone.utc)}}
+        )
+    
+    return {
+        "status": status.status,
+        "payment_status": status.payment_status,
+        "amount_total": status.amount_total,
+        "currency": status.currency
+    }
+
+
+@api_router.post("/webhook/stripe")
+async def stripe_webhook(request: Request):
+    """Handle Stripe webhook events"""
+    try:
+        body = await request.body()
+        stripe_signature = request.headers.get("Stripe-Signature")
+        
+        stripe_api_key = os.environ.get("STRIPE_API_KEY")
+        host_url = str(request.base_url).rstrip('/')
+        webhook_url = f"{host_url}/api/webhook/stripe"
+        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+        
+        webhook_response = await stripe_checkout.handle_webhook(body, stripe_signature)
+        
+        # Handle successful payment
+        if webhook_response.payment_status == "paid":
+            session_id = webhook_response.session_id
+            transaction = await db.payment_transactions.find_one({"session_id": session_id})
+            
+            if transaction and transaction.get("payment_status") != "paid":
+                user_id = webhook_response.metadata.get("user_id")
+                tokens_to_add = int(webhook_response.metadata.get("tokens", 0))
+                
+                profile = await db.user_profiles.find_one({"id": user_id})
+                if profile:
+                    new_balance = profile.get("token_balance", 0) + tokens_to_add
+                    await db.user_profiles.update_one(
+                        {"id": user_id},
+                        {"$set": {"token_balance": new_balance, "updated_at": datetime.now(timezone.utc)}}
+                    )
+                    
+                    # Create purchase record
+                    purchase_record = {
+                        "id": str(uuid.uuid4()),
+                        "user_id": user_id,
+                        "amount_usd": transaction.get("amount"),
+                        "tokens_purchased": tokens_to_add,
+                        "payment_method": "stripe",
+                        "stripe_session_id": session_id,
+                        "gifted_by": None,
+                        "created_at": datetime.now(timezone.utc)
+                    }
+                    await db.token_purchases.insert_one(purchase_record)
+                
+                await db.payment_transactions.update_one(
+                    {"session_id": session_id},
+                    {"$set": {"payment_status": "paid", "updated_at": datetime.now(timezone.utc)}}
+                )
+        
+        return {"status": "ok"}
+    except Exception as e:
+        logging.error(f"Webhook error: {e}")
+        return {"status": "error", "message": str(e)}
+
+
+# Keep old endpoint for backwards compatibility (admin gifting still uses this)
 @api_router.post("/user/tokens/purchase/{user_id}")
 async def purchase_tokens(user_id: str, purchase: TokenPurchaseCreate):
-    """Purchase F&F tokens - $1 = 10 tokens"""
+    """Purchase F&F tokens - DEPRECATED: Use /tokens/checkout for Stripe payments"""
+    # This endpoint is now only used for admin gifting
     profile = await db.user_profiles.find_one({"id": user_id})
     if not profile:
         raise HTTPException(status_code=404, detail="User profile not found")
@@ -1522,7 +1737,7 @@ async def purchase_tokens(user_id: str, purchase: TokenPurchaseCreate):
         "user_id": user_id,
         "amount_usd": purchase.amount_usd,
         "tokens_purchased": tokens_to_add,
-        "payment_method": "card",
+        "payment_method": "gift",
         "gifted_by": None,
         "created_at": datetime.now(timezone.utc)
     }
