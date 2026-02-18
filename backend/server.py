@@ -1546,8 +1546,8 @@ async def create_token_checkout(request: Request, package_id: str, user_id: str,
     stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
     
     # Build success/cancel URLs from frontend origin
-    success_url = f"{origin_url}/my-account?payment=success&session_id={{CHECKOUT_SESSION_ID}}"
-    cancel_url = f"{origin_url}/my-account?payment=cancelled"
+    success_url = f"{origin_url}/account?payment=success&session_id={{CHECKOUT_SESSION_ID}}"
+    cancel_url = f"{origin_url}/account?payment=cancelled"
     
     # Create checkout session
     checkout_request = CheckoutSessionRequest(
