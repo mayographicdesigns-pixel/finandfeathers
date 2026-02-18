@@ -191,7 +191,7 @@ const LocationsPage = () => {
                   </Button>
                   
                   <Button
-                    onClick={() => window.open(location.locationUrl, '_blank')}
+                    onClick={(e) => { e.stopPropagation(); window.open(location.online_ordering, '_blank'); }}
                     variant="outline"
                     className="w-full border-slate-600 text-slate-300 hover:bg-slate-700"
                   >
