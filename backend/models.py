@@ -509,6 +509,13 @@ class UserProfile(BaseModel):
     email: Optional[str] = None
     avatar_emoji: str = "😊"
     profile_photo_url: Optional[str] = None  # URL to uploaded profile photo/selfie
+    # Role: customer, staff, management, admin
+    role: str = "customer"
+    # Staff-specific fields
+    staff_title: Optional[str] = None  # e.g., "Bartender", "DJ", "Server"
+    cashout_balance: float = 0.0  # Accumulated tips in USD for staff (before cashout)
+    total_earnings: float = 0.0  # Total lifetime earnings from tips
+    # Dates
     birthdate: Optional[str] = None  # YYYY-MM-DD format
     anniversary: Optional[str] = None  # YYYY-MM-DD format
     special_dates: List[dict] = []  # [{name, date}]
