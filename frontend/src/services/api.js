@@ -1217,3 +1217,115 @@ export async function getUserGallerySubmissions(userId) {
   if (!response.ok) throw new Error('Failed to fetch submissions');
   return await response.json();
 }
+
+
+// ==================== TOKEN TRANSFER API ====================
+
+// Transfer tokens to another user
+export async function transferTokens(fromUserId, toUserId, amount, transferType = 'transfer', message = null) {
+  const response = await fetch(`${API_URL}/user/tokens/transfer/${fromUserId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ to_user_id: toUserId, amount, transfer_type: transferType, message })
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to transfer tokens');
+  }
+  return await response.json();
+}
+
+// Get user's transfer history
+export async function getTransferHistory(userId) {
+  const response = await fetch(`${API_URL}/user/tokens/transfers/${userId}`);
+  if (!response.ok) throw new Error('Failed to fetch transfers');
+  return await response.json();
+}
+
+
+// ==================== STAFF API ====================
+
+// Get list of staff members (for tipping)
+export async function getStaffList() {
+  const response = await fetch(`${API_URL}/staff/list`);
+  if (!response.ok) throw new Error('Failed to fetch staff');
+  return await response.json();
+}
+
+// Staff: Request cashout (min $20, 80% rate)
+export async function requestCashout(userId, amountTokens, paymentMethod, paymentDetails) {
+  const response = await fetch(`${API_URL}/staff/cashout/${userId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ amount_tokens: amountTokens, payment_method: paymentMethod, payment_details: paymentDetails })
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to request cashout');
+  }
+  return await response.json();
+}
+
+// Staff: Get cashout history
+export async function getCashoutHistory(userId) {
+  const response = await fetch(`${API_URL}/staff/cashout/history/${userId}`);
+  if (!response.ok) throw new Error('Failed to fetch cashout history');
+  return await response.json();
+}
+
+// Staff: Transfer tips to personal token balance
+export async function transferTipsToPersonal(userId, amount) {
+  const response = await fetch(`${API_URL}/staff/transfer-to-personal/${userId}?amount=${amount}`, {
+    method: 'POST'
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to transfer tips');
+  }
+  return await response.json();
+}
+
+
+// ==================== ADMIN ROLE MANAGEMENT API ====================
+
+// Admin: Update user role
+export async function adminUpdateUserRole(userId, newRole, staffTitle = null) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/users/role`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ user_id: userId, new_role: newRole, staff_title: staffTitle })
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to update role');
+  }
+  return await response.json();
+}
+
+// Admin: Get all cashout requests
+export async function adminGetCashouts() {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/cashouts`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error('Failed to fetch cashouts');
+  return await response.json();
+}
+
+// Admin: Process cashout request
+export async function adminProcessCashout(cashoutId, status) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/cashouts/${cashoutId}?status=${status}`, {
+    method: 'PUT',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to process cashout');
+  }
+  return await response.json();
+}
