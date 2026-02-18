@@ -434,10 +434,51 @@ const MyAccountPage = () => {
                 )}
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Avatar Emoji */}
+                {/* Profile Photo */}
+                <div>
+                  <label className="text-sm text-slate-400 block mb-2">Profile Photo</label>
+                  <div className="flex items-center gap-4">
+                    {profile.profile_photo_url ? (
+                      <img 
+                        src={profile.profile_photo_url} 
+                        alt={profile.name}
+                        className="w-20 h-20 rounded-full object-cover border-2 border-red-500"
+                      />
+                    ) : (
+                      <div className="w-20 h-20 rounded-full bg-slate-800 flex items-center justify-center text-4xl border-2 border-slate-700">
+                        {profile.avatar_emoji}
+                      </div>
+                    )}
+                    <div className="flex flex-col gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => profilePhotoInputRef.current?.click()}
+                        disabled={uploadingProfilePhoto}
+                        className="border-slate-600 text-slate-300"
+                        data-testid="change-photo-btn"
+                      >
+                        {uploadingProfilePhoto ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-slate-300 border-t-transparent rounded-full animate-spin mr-2" />
+                            Uploading...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-4 h-4 mr-2" />
+                            {profile.profile_photo_url ? 'Change Photo' : 'Upload Photo'}
+                          </>
+                        )}
+                      </Button>
+                      <p className="text-xs text-slate-500">JPG, PNG, GIF, WebP up to 5MB</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Avatar Emoji (fallback) */}
                 {isEditing && (
                   <div>
-                    <label className="text-sm text-slate-400 block mb-2">Avatar</label>
+                    <label className="text-sm text-slate-400 block mb-2">Fallback Avatar (shown if no photo)</label>
                     <div className="flex gap-2 flex-wrap">
                       {emojiOptions.map(emoji => (
                         <button
