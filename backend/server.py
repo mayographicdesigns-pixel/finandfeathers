@@ -1383,6 +1383,10 @@ async def create_user_profile(profile: UserProfileCreate):
     profile_dict["birthdate"] = None
     profile_dict["anniversary"] = None
     profile_dict["profile_photo_url"] = None
+    profile_dict["role"] = "customer"  # Default role
+    profile_dict["staff_title"] = None
+    profile_dict["cashout_balance"] = 0.0
+    profile_dict["total_earnings"] = 0.0
     profile_dict["instagram_handle"] = None
     profile_dict["facebook_handle"] = None
     profile_dict["twitter_handle"] = None
