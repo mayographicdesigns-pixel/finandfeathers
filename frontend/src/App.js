@@ -8,6 +8,7 @@ import AdminPage from "./pages/AdminPage";
 import CheckInPage from "./pages/CheckInPage";
 import GalleryPage from "./pages/GalleryPage";
 import MyAccountPage from "./pages/MyAccountPage";
+import MerchandisePage from "./pages/MerchandisePage";
 import { Toaster } from "./components/ui/toaster";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 
@@ -20,6 +21,7 @@ function App() {
           <Route path="/locations" element={<LocationsPage />} />
           <Route path="/locations/:slug" element={<LocationDetailPage />} />
           <Route path="/menu" element={<MenuPage />} />
+          <Route path="/merch" element={<MerchandisePage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/checkin" element={<CheckInPage />} />
           <Route path="/gallery" element={<GalleryPage />} />
