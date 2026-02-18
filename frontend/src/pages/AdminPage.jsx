@@ -2179,7 +2179,16 @@ const UsersTab = () => {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="text-3xl">{user.avatar_emoji || '😊'}</span>
+                    {/* Profile Photo or Avatar */}
+                    {user.profile_photo_url ? (
+                      <img 
+                        src={user.profile_photo_url.startsWith('http') ? user.profile_photo_url : `${process.env.REACT_APP_BACKEND_URL}${user.profile_photo_url}`}
+                        alt={user.name}
+                        className="w-12 h-12 rounded-full object-cover border-2 border-red-500"
+                      />
+                    ) : (
+                      <span className="text-3xl">{user.avatar_emoji || '😊'}</span>
+                    )}
                     <div>
                       <p className="text-white font-medium">{user.name}</p>
                       <p className="text-slate-400 text-sm">{user.email || 'No email'}</p>
