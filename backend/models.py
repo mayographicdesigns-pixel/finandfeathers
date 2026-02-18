@@ -290,3 +290,110 @@ class HomepageContentUpdate(BaseModel):
     contact_email: Optional[str] = None
     contact_address: Optional[str] = None
     social_feed_images: Optional[List[dict]] = None
+
+
+# =====================================================
+# SOCIAL CHECK-IN MODELS
+# =====================================================
+
+# Social Wall Post (public messages at a location)
+class SocialPost(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    location_slug: str
+    checkin_id: str  # Reference to the check-in
+    author_name: str
+    author_emoji: str
+    message: str
+    image_url: Optional[str] = None
+    likes: List[str] = []  # List of checkin_ids that liked
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class SocialPostCreate(BaseModel):
+    location_slug: str
+    checkin_id: str
+    author_name: str
+    author_emoji: str
+    message: str
+    image_url: Optional[str] = None
+
+class SocialPostResponse(BaseModel):
+    id: str
+    location_slug: str
+    checkin_id: str
+    author_name: str
+    author_emoji: str
+    message: str
+    image_url: Optional[str]
+    likes_count: int
+    liked_by_me: bool = False
+    created_at: datetime
+
+
+# Direct Messages between checked-in users
+class DirectMessage(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    location_slug: str
+    from_checkin_id: str
+    from_name: str
+    from_emoji: str
+    to_checkin_id: str
+    to_name: str
+    to_emoji: str
+    message: str
+    read: bool = False
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class DirectMessageCreate(BaseModel):
+    location_slug: str
+    from_checkin_id: str
+    from_name: str
+    from_emoji: str
+    to_checkin_id: str
+    to_name: str
+    to_emoji: str
+    message: str
+
+class DirectMessageResponse(BaseModel):
+    id: str
+    location_slug: str
+    from_checkin_id: str
+    from_name: str
+    from_emoji: str
+    to_checkin_id: str
+    to_name: str
+    to_emoji: str
+    message: str
+    read: bool
+    created_at: datetime
+
+
+# DJ Tips
+class DJTip(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    location_slug: str
+    checkin_id: str
+    tipper_name: str
+    tipper_emoji: str
+    amount: float
+    message: Optional[str] = None
+    song_request: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class DJTipCreate(BaseModel):
+    location_slug: str
+    checkin_id: str
+    tipper_name: str
+    tipper_emoji: str
+    amount: float
+    message: Optional[str] = None
+    song_request: Optional[str] = None
+
+class DJTipResponse(BaseModel):
+    id: str
+    location_slug: str
+    tipper_name: str
+    tipper_emoji: str
+    amount: float
+    message: Optional[str]
+    song_request: Optional[str]
+    created_at: datetime
