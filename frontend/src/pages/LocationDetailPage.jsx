@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { MapPin, Phone, Clock, Home, Calendar, ShoppingBag, Instagram, Facebook, Twitter, ExternalLink, Navigation, Users, LogIn, LogOut, Smile, X, MessageCircle, Send, Heart, DollarSign, Music, Image as ImageIcon, ChevronLeft, Trash2 } from 'lucide-react';
+import { MapPin, Phone, Clock, Home, Calendar, ShoppingBag, Instagram, Facebook, Twitter, ExternalLink, Navigation, Users, LogIn, LogOut, Smile, X, MessageCircle, Send, Heart, DollarSign, Music, Image as ImageIcon, ChevronLeft, Trash2, Wine, CreditCard, Smartphone } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -10,13 +10,23 @@ import {
   checkInAtLocation, getCheckedInUsers, checkOut,
   createSocialPost, getSocialPosts, likePost, deleteSocialPost,
   sendDirectMessage, getConversations, getDMThread, getUnreadCount,
-  sendDJTip, getDJTips, getDJTipsTotal
+  sendDJTip, getDJTips, getDJTipsTotal, getDJAtLocation,
+  sendDrink, getDrinksAtLocation, getDrinksForUser
 } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 
 const AVATAR_EMOJIS = ['😊', '😎', '🤩', '🥳', '😋', '🍗', '🦐', '🍹', '🔥', '💯', '🎉', '✨'];
 const MOODS = ['Vibing', 'Hungry', 'Celebrating', 'Date Night', 'Girls Night', 'With Friends', 'Solo Dining', 'Business Dinner'];
-const TIP_AMOUNTS = [1, 3, 5, 10, 20];
+const TIP_AMOUNTS = [5, 10, 20, 50, 100];
+
+const DRINK_OPTIONS = [
+  { name: 'House Cocktail', emoji: '🍸', price: '$12' },
+  { name: 'Beer', emoji: '🍺', price: '$8' },
+  { name: 'Wine', emoji: '🍷', price: '$10' },
+  { name: 'Shot', emoji: '🥃', price: '$8' },
+  { name: 'Margarita', emoji: '🍹', price: '$14' },
+  { name: 'Champagne', emoji: '🥂', price: '$15' },
+];
 
 const LocationDetailPage = () => {
   const { slug } = useParams();
@@ -36,7 +46,7 @@ const LocationDetailPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   
   // Social Wall state
-  const [activeTab, setActiveTab] = useState('wall'); // 'wall', 'dm', 'dj'
+  const [activeTab, setActiveTab] = useState('wall'); // 'wall', 'dm', 'dj', 'drinks', 'info'
   const [socialPosts, setSocialPosts] = useState([]);
   const [newPostText, setNewPostText] = useState('');
   const [newPostImage, setNewPostImage] = useState('');
@@ -54,13 +64,23 @@ const LocationDetailPage = () => {
   const [dmRecipient, setDmRecipient] = useState(null);
   
   // DJ Tipping state
+  const [currentDJ, setCurrentDJ] = useState(null);
   const [djTips, setDjTips] = useState([]);
   const [djTipsTotal, setDjTipsTotal] = useState({ total: 0, count: 0 });
-  const [selectedTipAmount, setSelectedTipAmount] = useState(5);
+  const [selectedTipAmount, setSelectedTipAmount] = useState(10);
   const [customTipAmount, setCustomTipAmount] = useState('');
   const [tipMessage, setTipMessage] = useState('');
   const [songRequest, setSongRequest] = useState('');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('cash_app');
   const [sendingTip, setSendingTip] = useState(false);
+  
+  // Send a Drink state
+  const [drinks, setDrinks] = useState([]);
+  const [showDrinkModal, setShowDrinkModal] = useState(false);
+  const [drinkRecipient, setDrinkRecipient] = useState(null);
+  const [selectedDrink, setSelectedDrink] = useState(null);
+  const [drinkMessage, setDrinkMessage] = useState('');
+  const [sendingDrink, setSendingDrink] = useState(false);
 
   const location = useMemo(() => {
     return locations.find(loc => loc.slug === slug);
@@ -79,7 +99,8 @@ const LocationDetailPage = () => {
     if (slug) {
       loadCheckedInUsers();
       loadSocialPosts();
-      loadDJTips();
+      loadDJData();
+      loadDrinks();
       // Check if user already checked in (from localStorage)
       const savedCheckIn = localStorage.getItem(`checkin_${slug}`);
       if (savedCheckIn) {
@@ -97,7 +118,8 @@ const LocationDetailPage = () => {
       if (slug) {
         loadCheckedInUsers();
         loadSocialPosts();
-        loadDJTips();
+        loadDJData();
+        loadDrinks();
         if (myCheckIn) {
           loadUnreadCount(myCheckIn.id);
         }
@@ -138,16 +160,27 @@ const LocationDetailPage = () => {
     }
   };
 
-  const loadDJTips = async () => {
+  const loadDJData = async () => {
     try {
-      const [tips, total] = await Promise.all([
+      const [dj, tips, total] = await Promise.all([
+        getDJAtLocation(slug),
         getDJTips(slug),
         getDJTipsTotal(slug)
       ]);
+      setCurrentDJ(dj);
       setDjTips(tips);
       setDjTipsTotal(total);
     } catch (e) {
-      console.error('Error loading DJ tips:', e);
+      console.error('Error loading DJ data:', e);
+    }
+  };
+
+  const loadDrinks = async () => {
+    try {
+      const drinksData = await getDrinksAtLocation(slug);
+      setDrinks(drinksData);
+    } catch (e) {
+      console.error('Error loading drinks:', e);
     }
   };
 
@@ -156,7 +189,6 @@ const LocationDetailPage = () => {
     try {
       const thread = await getDMThread(myCheckIn.id, partnerId);
       setDmThread(thread);
-      // Refresh unread count after reading messages
       loadUnreadCount(myCheckIn.id);
     } catch (e) {
       console.error('Error loading DM thread:', e);
@@ -302,6 +334,32 @@ const LocationDetailPage = () => {
     }
   };
 
+  const openPaymentApp = (method, amount) => {
+    const tipAmount = customTipAmount ? parseFloat(customTipAmount) : amount;
+    if (!currentDJ) {
+      toast({ title: "No DJ", description: "No DJ is currently playing", variant: "destructive" });
+      return;
+    }
+
+    let url = '';
+    if (method === 'cash_app' && currentDJ.cash_app_username) {
+      // Cash App deep link format: https://cash.app/$username/amount
+      const username = currentDJ.cash_app_username.replace('$', '');
+      url = `https://cash.app/$${username}/${tipAmount}`;
+    } else if (method === 'venmo' && currentDJ.venmo_username) {
+      // Venmo deep link
+      const username = currentDJ.venmo_username.replace('@', '');
+      url = `https://venmo.com/${username}?txn=pay&amount=${tipAmount}&note=DJ%20Tip`;
+    } else if (method === 'apple_pay') {
+      toast({ title: "Apple Pay", description: `Tap to pay $${tipAmount} on the DJ's device`, variant: "default" });
+      return;
+    }
+
+    if (url) {
+      window.open(url, '_blank');
+    }
+  };
+
   const handleSendTip = async () => {
     if (!myCheckIn) return;
 
@@ -311,6 +369,10 @@ const LocationDetailPage = () => {
       return;
     }
 
+    // Open payment app
+    openPaymentApp(selectedPaymentMethod, amount);
+
+    // Record the tip in database
     setSendingTip(true);
     try {
       await sendDJTip({
@@ -320,17 +382,54 @@ const LocationDetailPage = () => {
         tipper_emoji: myCheckIn.avatar_emoji,
         amount: amount,
         message: tipMessage.trim() || null,
-        song_request: songRequest.trim() || null
+        song_request: songRequest.trim() || null,
+        payment_method: selectedPaymentMethod
       });
       setTipMessage('');
       setSongRequest('');
       setCustomTipAmount('');
-      await loadDJTips();
-      toast({ title: "Tip Sent! 🎵", description: `$${amount} sent to the DJ!` });
+      await loadDJData();
+      toast({ title: "Tip Recorded! 🎵", description: `$${amount} tip sent via ${selectedPaymentMethod.replace('_', ' ')}!` });
     } catch (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
       setSendingTip(false);
+    }
+  };
+
+  const openDrinkModalForUser = (user) => {
+    setDrinkRecipient(user);
+    setSelectedDrink(null);
+    setDrinkMessage('');
+    setShowDrinkModal(true);
+  };
+
+  const handleSendDrink = async () => {
+    if (!myCheckIn || !drinkRecipient || !selectedDrink) return;
+
+    setSendingDrink(true);
+    try {
+      await sendDrink({
+        location_slug: slug,
+        from_checkin_id: myCheckIn.id,
+        from_name: myCheckIn.display_name,
+        from_emoji: myCheckIn.avatar_emoji,
+        to_checkin_id: drinkRecipient.id,
+        to_name: drinkRecipient.display_name,
+        to_emoji: drinkRecipient.avatar_emoji,
+        drink_name: selectedDrink.name,
+        drink_emoji: selectedDrink.emoji,
+        message: drinkMessage.trim() || null
+      });
+      setShowDrinkModal(false);
+      setSelectedDrink(null);
+      setDrinkMessage('');
+      await loadDrinks();
+      toast({ title: "Drink Sent! 🍸", description: `${selectedDrink.emoji} sent to ${drinkRecipient.display_name}!` });
+    } catch (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setSendingDrink(false);
     }
   };
 
@@ -501,6 +600,76 @@ const LocationDetailPage = () => {
         </div>
       )}
 
+      {/* Send a Drink Modal */}
+      {showDrinkModal && drinkRecipient && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <Card className="bg-slate-900 border-pink-600/50 w-full max-w-md">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <Wine className="w-5 h-5 text-pink-500" />
+                  Send a Drink
+                </h2>
+                <Button variant="ghost" size="sm" onClick={() => setShowDrinkModal(false)} className="text-slate-400 hover:text-white">
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
+
+              <p className="text-slate-300 mb-4">
+                Sending to <span className="text-2xl">{drinkRecipient.avatar_emoji}</span> <span className="text-pink-400 font-semibold">{drinkRecipient.display_name}</span>
+              </p>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-slate-300 mb-2">Choose a Drink</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {DRINK_OPTIONS.map((drink) => (
+                    <button
+                      key={drink.name}
+                      onClick={() => setSelectedDrink(drink)}
+                      className={`p-3 rounded-lg text-left transition-all ${
+                        selectedDrink?.name === drink.name 
+                          ? 'bg-pink-600 text-white' 
+                          : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                      }`}
+                      data-testid={`drink-option-${drink.name.toLowerCase().replace(' ', '-')}`}
+                    >
+                      <span className="text-2xl">{drink.emoji}</span>
+                      <p className="text-sm font-medium mt-1">{drink.name}</p>
+                      <p className="text-xs opacity-70">{drink.price}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-slate-300 mb-2">Add a Message (optional)</label>
+                <Input
+                  placeholder="Cheers! 🥂"
+                  value={drinkMessage}
+                  onChange={(e) => setDrinkMessage(e.target.value)}
+                  className="bg-slate-800 border-slate-700 text-white"
+                  maxLength={100}
+                  data-testid="drink-message-input"
+                />
+              </div>
+
+              <Button
+                onClick={handleSendDrink}
+                disabled={sendingDrink || !selectedDrink}
+                className="w-full bg-pink-600 hover:bg-pink-700 h-12"
+                data-testid="send-drink-btn"
+              >
+                {sendingDrink ? 'Sending...' : `Send ${selectedDrink?.emoji || '🍸'} to ${drinkRecipient.display_name}`}
+              </Button>
+              
+              <p className="text-slate-500 text-xs text-center mt-3">
+                💳 Pay at the bar when your drink order is ready
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Image Lightbox */}
       {lightboxImage && (
         <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4" onClick={() => setLightboxImage(null)}>
@@ -569,7 +738,7 @@ const LocationDetailPage = () => {
             data-testid="tab-wall"
           >
             <MessageCircle className="w-4 h-4 mr-2" />
-            Social Wall
+            Wall
           </Button>
           <Button
             onClick={() => { setActiveTab('dm'); if (myCheckIn) loadConversations(myCheckIn.id); }}
@@ -578,7 +747,7 @@ const LocationDetailPage = () => {
             data-testid="tab-dm"
           >
             <Send className="w-4 h-4 mr-2" />
-            Messages
+            DMs
             {unreadCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                 {unreadCount}
@@ -586,9 +755,18 @@ const LocationDetailPage = () => {
             )}
           </Button>
           <Button
+            onClick={() => setActiveTab('drinks')}
+            variant={activeTab === 'drinks' ? 'default' : 'outline'}
+            className={activeTab === 'drinks' ? 'bg-pink-600' : 'border-slate-600 text-slate-300'}
+            data-testid="tab-drinks"
+          >
+            <Wine className="w-4 h-4 mr-2" />
+            Drinks
+          </Button>
+          <Button
             onClick={() => setActiveTab('dj')}
             variant={activeTab === 'dj' ? 'default' : 'outline'}
-            className={activeTab === 'dj' ? 'bg-red-600' : 'border-slate-600 text-slate-300'}
+            className={activeTab === 'dj' ? 'bg-purple-600' : 'border-slate-600 text-slate-300'}
             data-testid="tab-dj"
           >
             <Music className="w-4 h-4 mr-2" />
@@ -620,20 +798,31 @@ const LocationDetailPage = () => {
                 {checkedInUsers.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {checkedInUsers.map((user) => (
-                      <button
-                        key={user.id}
-                        onClick={() => user.id !== myCheckIn?.id && openDMWithUser(user)}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-full transition-all ${
-                          myCheckIn?.id === user.id 
-                            ? 'bg-green-900/30 border border-green-600/30' 
-                            : 'bg-slate-700/50 hover:bg-slate-600/50 cursor-pointer'
-                        }`}
-                        data-testid={`user-${user.id}`}
-                      >
-                        <span className="text-xl">{user.avatar_emoji}</span>
-                        <span className="text-white text-sm">{user.display_name}</span>
-                        {user.mood && <span className="text-red-400 text-xs">• {user.mood}</span>}
-                      </button>
+                      <div key={user.id} className="flex items-center gap-1">
+                        <button
+                          onClick={() => user.id !== myCheckIn?.id && openDMWithUser(user)}
+                          className={`flex items-center gap-2 px-3 py-2 rounded-full transition-all ${
+                            myCheckIn?.id === user.id 
+                              ? 'bg-green-900/30 border border-green-600/30' 
+                              : 'bg-slate-700/50 hover:bg-slate-600/50 cursor-pointer'
+                          }`}
+                          data-testid={`user-${user.id}`}
+                        >
+                          <span className="text-xl">{user.avatar_emoji}</span>
+                          <span className="text-white text-sm">{user.display_name}</span>
+                          {user.mood && <span className="text-red-400 text-xs">• {user.mood}</span>}
+                        </button>
+                        {myCheckIn && user.id !== myCheckIn.id && (
+                          <button
+                            onClick={() => openDrinkModalForUser(user)}
+                            className="p-1.5 bg-pink-600/30 hover:bg-pink-600/50 rounded-full transition-colors"
+                            title="Send a drink"
+                            data-testid={`send-drink-${user.id}`}
+                          >
+                            <Wine className="w-4 h-4 text-pink-400" />
+                          </button>
+                        )}
+                      </div>
                     ))}
                   </div>
                 ) : (
@@ -666,14 +855,12 @@ const LocationDetailPage = () => {
                         </div>
                       )}
                       <div className="flex items-center justify-between">
-                        <div className="flex gap-2">
-                          <Input
-                            placeholder="Image URL (optional)"
-                            value={newPostImage}
-                            onChange={(e) => setNewPostImage(e.target.value)}
-                            className="bg-slate-900 border-slate-700 text-white w-48 text-sm"
-                          />
-                        </div>
+                        <Input
+                          placeholder="Image URL (optional)"
+                          value={newPostImage}
+                          onChange={(e) => setNewPostImage(e.target.value)}
+                          className="bg-slate-900 border-slate-700 text-white w-48 text-sm"
+                        />
                         <Button 
                           onClick={handlePostMessage} 
                           disabled={postingMessage || !newPostText.trim()}
@@ -795,21 +982,164 @@ const LocationDetailPage = () => {
           </div>
         )}
 
+        {/* Drinks Tab */}
+        {activeTab === 'drinks' && (
+          <div className="space-y-4">
+            <Card className="bg-gradient-to-br from-pink-900/50 to-slate-800/50 border-pink-600/30">
+              <CardContent className="p-6 text-center">
+                <Wine className="w-12 h-12 text-pink-400 mx-auto mb-2" />
+                <h3 className="text-2xl font-bold text-white mb-1">Send a Drink</h3>
+                <p className="text-slate-300">Buy someone a drink at the bar!</p>
+              </CardContent>
+            </Card>
+
+            {!myCheckIn ? (
+              <Card className="bg-slate-800/50 border-slate-700">
+                <CardContent className="p-8 text-center text-slate-400">
+                  <Wine className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p>Check in to send drinks to other guests!</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <>
+                {/* Quick Send - People here */}
+                <Card className="bg-slate-800/50 border-slate-700">
+                  <CardContent className="p-4">
+                    <h3 className="text-white font-semibold mb-3">Send a drink to someone here</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {checkedInUsers.filter(u => u.id !== myCheckIn?.id).map((user) => (
+                        <button
+                          key={user.id}
+                          onClick={() => openDrinkModalForUser(user)}
+                          className="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-700/50 hover:bg-pink-600/30 transition-colors"
+                        >
+                          <span className="text-xl">{user.avatar_emoji}</span>
+                          <span className="text-white text-sm">{user.display_name}</span>
+                          <Wine className="w-4 h-4 text-pink-400" />
+                        </button>
+                      ))}
+                      {checkedInUsers.filter(u => u.id !== myCheckIn?.id).length === 0 && (
+                        <p className="text-slate-500 text-sm">No one else is checked in yet</p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Recent Drinks */}
+                <div>
+                  <h3 className="text-white font-semibold mb-3">Recent Drinks Sent 🍸</h3>
+                  <div className="space-y-2">
+                    {drinks.map((drink) => (
+                      <Card key={drink.id} className="bg-slate-800/50 border-slate-700">
+                        <CardContent className="p-3 flex items-center gap-3">
+                          <span className="text-2xl">{drink.drink_emoji}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white text-sm">
+                              <span className="font-medium">{drink.from_emoji} {drink.from_name}</span>
+                              <span className="text-slate-400"> sent </span>
+                              <span className="text-pink-400">{drink.drink_name}</span>
+                              <span className="text-slate-400"> to </span>
+                              <span className="font-medium">{drink.to_emoji} {drink.to_name}</span>
+                            </p>
+                            {drink.message && <p className="text-slate-400 text-xs mt-1">"{drink.message}"</p>}
+                          </div>
+                          <span className={`text-xs px-2 py-1 rounded ${
+                            drink.status === 'delivered' ? 'bg-green-600/30 text-green-400' :
+                            drink.status === 'accepted' ? 'bg-blue-600/30 text-blue-400' :
+                            'bg-yellow-600/30 text-yellow-400'
+                          }`}>
+                            {drink.status}
+                          </span>
+                        </CardContent>
+                      </Card>
+                    ))}
+                    {drinks.length === 0 && (
+                      <p className="text-center text-slate-500 py-4">No drinks sent yet tonight!</p>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
         {/* DJ Tipping Tab */}
         {activeTab === 'dj' && (
           <div className="space-y-4">
+            {/* DJ Profile Card */}
+            {currentDJ ? (
+              <Card className="bg-gradient-to-br from-purple-900/50 to-slate-800/50 border-purple-600/30">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-16 h-16 rounded-full bg-purple-600/30 flex items-center justify-center text-4xl">
+                      {currentDJ.avatar_emoji}
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-white">{currentDJ.stage_name || currentDJ.name}</h3>
+                      <p className="text-purple-300 text-sm">🎧 Now Playing</p>
+                      {currentDJ.bio && <p className="text-slate-400 text-xs mt-1">{currentDJ.bio}</p>}
+                    </div>
+                  </div>
+                  
+                  {/* Payment Links */}
+                  <div className="flex flex-wrap gap-2">
+                    {currentDJ.cash_app_username && (
+                      <Button
+                        onClick={() => setSelectedPaymentMethod('cash_app')}
+                        variant={selectedPaymentMethod === 'cash_app' ? 'default' : 'outline'}
+                        className={selectedPaymentMethod === 'cash_app' ? 'bg-green-600' : 'border-green-600/50 text-green-400'}
+                        data-testid="payment-cash-app"
+                      >
+                        <DollarSign className="w-4 h-4 mr-1" />
+                        Cash App
+                      </Button>
+                    )}
+                    {currentDJ.venmo_username && (
+                      <Button
+                        onClick={() => setSelectedPaymentMethod('venmo')}
+                        variant={selectedPaymentMethod === 'venmo' ? 'default' : 'outline'}
+                        className={selectedPaymentMethod === 'venmo' ? 'bg-blue-600' : 'border-blue-600/50 text-blue-400'}
+                        data-testid="payment-venmo"
+                      >
+                        <CreditCard className="w-4 h-4 mr-1" />
+                        Venmo
+                      </Button>
+                    )}
+                    {currentDJ.apple_pay_phone && (
+                      <Button
+                        onClick={() => setSelectedPaymentMethod('apple_pay')}
+                        variant={selectedPaymentMethod === 'apple_pay' ? 'default' : 'outline'}
+                        className={selectedPaymentMethod === 'apple_pay' ? 'bg-slate-600' : 'border-slate-600/50 text-slate-300'}
+                        data-testid="payment-apple-pay"
+                      >
+                        <Smartphone className="w-4 h-4 mr-1" />
+                        Apple Pay
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="bg-gradient-to-br from-purple-900/50 to-slate-800/50 border-purple-600/30">
+                <CardContent className="p-6 text-center">
+                  <Music className="w-12 h-12 text-purple-400 mx-auto mb-2" />
+                  <h3 className="text-xl font-bold text-white mb-1">No DJ Playing</h3>
+                  <p className="text-slate-400 text-sm">Check back later for live music!</p>
+                </CardContent>
+              </Card>
+            )}
+
             {/* DJ Tips Total */}
-            <Card className="bg-gradient-to-br from-purple-900/50 to-slate-800/50 border-purple-600/30">
-              <CardContent className="p-6 text-center">
-                <Music className="w-12 h-12 text-purple-400 mx-auto mb-2" />
-                <h3 className="text-2xl font-bold text-white mb-1">Tonight's DJ Tips</h3>
-                <p className="text-4xl font-bold text-green-400">${djTipsTotal.total.toFixed(2)}</p>
-                <p className="text-slate-400 text-sm">{djTipsTotal.count} tips received</p>
+            <Card className="bg-slate-800/50 border-slate-700">
+              <CardContent className="p-4 text-center">
+                <p className="text-slate-400 text-sm">Tonight's Tips</p>
+                <p className="text-3xl font-bold text-green-400">${djTipsTotal.total.toFixed(2)}</p>
+                <p className="text-slate-500 text-xs">{djTipsTotal.count} tips received</p>
               </CardContent>
             </Card>
 
             {/* Tip Form */}
-            {myCheckIn ? (
+            {myCheckIn && currentDJ ? (
               <Card className="bg-slate-800/50 border-slate-700">
                 <CardContent className="p-4">
                   <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
@@ -866,18 +1196,22 @@ const LocationDetailPage = () => {
                     className="w-full bg-green-600 hover:bg-green-700 h-12 text-lg"
                     data-testid="send-tip-btn"
                   >
-                    {sendingTip ? 'Sending...' : `Send $${customTipAmount || selectedTipAmount} Tip`}
+                    {sendingTip ? 'Opening Payment...' : `Tip $${customTipAmount || selectedTipAmount} via ${selectedPaymentMethod.replace('_', ' ')}`}
                   </Button>
+
+                  <p className="text-slate-500 text-xs text-center mt-2">
+                    This will open {selectedPaymentMethod.replace('_', ' ')} to complete the payment
+                  </p>
                 </CardContent>
               </Card>
-            ) : (
+            ) : !myCheckIn ? (
               <Card className="bg-slate-800/50 border-slate-700">
                 <CardContent className="p-8 text-center text-slate-400">
                   <DollarSign className="w-12 h-12 mx-auto mb-3 opacity-50" />
                   <p>Check in to tip the DJ!</p>
                 </CardContent>
               </Card>
-            )}
+            ) : null}
 
             {/* Recent Tips */}
             <div>
@@ -891,6 +1225,9 @@ const LocationDetailPage = () => {
                         <div className="flex items-center gap-2">
                           <span className="text-white font-medium">{tip.tipper_name}</span>
                           <span className="text-green-400 font-bold">${tip.amount}</span>
+                          <span className="text-slate-500 text-xs">
+                            via {tip.payment_method?.replace('_', ' ') || 'cash app'}
+                          </span>
                         </div>
                         {tip.message && <p className="text-slate-400 text-sm truncate">{tip.message}</p>}
                         {tip.song_request && <p className="text-purple-400 text-sm">🎵 {tip.song_request}</p>}
