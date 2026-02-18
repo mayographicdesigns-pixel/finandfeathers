@@ -524,6 +524,24 @@ const MyAccountPage = () => {
               Tokens
             </TabsTrigger>
             <TabsTrigger 
+              value="tip" 
+              className="flex-1 data-[state=active]:bg-red-600"
+              data-testid="tab-tip"
+            >
+              <Gift className="w-4 h-4 mr-2" />
+              Tip Staff
+            </TabsTrigger>
+            {profile.role === 'staff' && (
+              <TabsTrigger 
+                value="earnings" 
+                className="flex-1 data-[state=active]:bg-green-600"
+                data-testid="tab-earnings"
+              >
+                <DollarSign className="w-4 h-4 mr-2" />
+                Earnings
+              </TabsTrigger>
+            )}
+            <TabsTrigger 
               value="photos" 
               className="flex-1 data-[state=active]:bg-red-600"
               data-testid="tab-photos"
