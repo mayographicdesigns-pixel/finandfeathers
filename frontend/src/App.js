@@ -7,6 +7,7 @@ import MenuPage from "./pages/MenuPage";
 import AdminPage from "./pages/AdminPage";
 import CheckInPage from "./pages/CheckInPage";
 import GalleryPage from "./pages/GalleryPage";
+import MyAccountPage from "./pages/MyAccountPage";
 import { Toaster } from "./components/ui/toaster";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 
@@ -22,6 +23,7 @@ function App() {
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/checkin" element={<CheckInPage />} />
           <Route path="/gallery" element={<GalleryPage />} />
+          <Route path="/account" element={<MyAccountPage />} />
         </Routes>
       </BrowserRouter>
       <Toaster />
