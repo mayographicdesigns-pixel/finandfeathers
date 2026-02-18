@@ -130,7 +130,7 @@ async def update_homepage_content(update: HomepageContentUpdate, username: str =
     
     update_dict["updated_at"] = datetime.now(timezone.utc)
     
-    result = await db.homepage_content.update_one(
+    await db.homepage_content.update_one(
         {"id": "homepage"},
         {"$set": update_dict},
         upsert=True
