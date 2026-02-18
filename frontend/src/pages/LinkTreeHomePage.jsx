@@ -388,6 +388,9 @@ const LinkTreeHomePage = () => {
   const [specials, setSpecials] = useState([]);
   const [lightboxImage, setLightboxImage] = useState(null);
   
+  // Welcome popup state
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+  
   // Admin editing state
   const [isAdmin, setIsAdmin] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -415,6 +418,18 @@ const LinkTreeHomePage = () => {
     setEditingContent({ ...editingContent, social_feed_images: newImages });
     toast({ title: 'Reordered', description: 'Image order updated. Click "Save Changes" to persist.' });
   };
+
+  // Check if welcome popup should be shown
+  useEffect(() => {
+    const hasSeenWelcome = localStorage.getItem('ff_welcome_shown');
+    if (!hasSeenWelcome) {
+      // Small delay to let the page load first
+      const timer = setTimeout(() => {
+        setShowWelcomePopup(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   useEffect(() => {
     // Check if admin is logged in
