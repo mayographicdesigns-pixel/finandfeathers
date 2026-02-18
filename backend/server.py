@@ -1377,6 +1377,12 @@ async def create_user_profile(profile: UserProfileCreate):
     profile_dict["total_photos"] = 0
     profile_dict["special_dates"] = []
     profile_dict["allow_gallery_posts"] = True
+    profile_dict["birthdate"] = None
+    profile_dict["anniversary"] = None
+    profile_dict["instagram_handle"] = None
+    profile_dict["facebook_handle"] = None
+    profile_dict["twitter_handle"] = None
+    profile_dict["tiktok_handle"] = None
     profile_dict["created_at"] = datetime.now(timezone.utc)
     profile_dict["updated_at"] = datetime.now(timezone.utc)
     
