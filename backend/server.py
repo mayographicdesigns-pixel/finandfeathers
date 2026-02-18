@@ -1601,6 +1601,284 @@ async def admin_get_users(username: str = Depends(get_current_admin)):
     return users
 
 
+# Admin/Management: Update user role
+@api_router.post("/admin/users/role")
+async def update_user_role(role_update: RoleUpdate, username: str = Depends(get_current_admin)):
+    """Update a user's role (admin only)"""
+    valid_roles = ["customer", "staff", "management"]
+    if role_update.new_role not in valid_roles:
+        raise HTTPException(status_code=400, detail=f"Invalid role. Must be one of: {valid_roles}")
+    
+    user = await db.user_profiles.find_one({"id": role_update.user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    update_data = {
+        "role": role_update.new_role,
+        "updated_at": datetime.now(timezone.utc)
+    }
+    
+    if role_update.staff_title and role_update.new_role == "staff":
+        update_data["staff_title"] = role_update.staff_title
+    
+    await db.user_profiles.update_one(
+        {"id": role_update.user_id},
+        {"$set": update_data}
+    )
+    
+    return {"message": f"User role updated to {role_update.new_role}", "user_id": role_update.user_id}
+
+
+# =====================================================
+# TOKEN TRANSFER ENDPOINTS
+# =====================================================
+
+@api_router.post("/user/tokens/transfer/{from_user_id}")
+async def transfer_tokens(from_user_id: str, transfer: TokenTransferCreate):
+    """Transfer tokens from one user to another (tips, drinks, gifts)"""
+    # Get sender
+    sender = await db.user_profiles.find_one({"id": from_user_id})
+    if not sender:
+        raise HTTPException(status_code=404, detail="Sender not found")
+    
+    # Get receiver
+    receiver = await db.user_profiles.find_one({"id": transfer.to_user_id})
+    if not receiver:
+        raise HTTPException(status_code=404, detail="Receiver not found")
+    
+    # Check sender balance
+    sender_balance = sender.get("token_balance", 0)
+    if sender_balance < transfer.amount:
+        raise HTTPException(status_code=400, detail="Insufficient token balance")
+    
+    if transfer.amount < 1:
+        raise HTTPException(status_code=400, detail="Must transfer at least 1 token")
+    
+    # Create transfer record
+    transfer_record = {
+        "id": str(uuid.uuid4()),
+        "from_user_id": from_user_id,
+        "to_user_id": transfer.to_user_id,
+        "amount": transfer.amount,
+        "transfer_type": transfer.transfer_type,
+        "message": transfer.message,
+        "created_at": datetime.now(timezone.utc)
+    }
+    await db.token_transfers.insert_one(transfer_record)
+    
+    # Update sender balance
+    new_sender_balance = sender_balance - transfer.amount
+    await db.user_profiles.update_one(
+        {"id": from_user_id},
+        {"$set": {"token_balance": new_sender_balance, "updated_at": datetime.now(timezone.utc)}}
+    )
+    
+    # Update receiver - if staff, add to cashout_balance, else add to token_balance
+    receiver_role = receiver.get("role", "customer")
+    if receiver_role == "staff" and transfer.transfer_type == "tip":
+        # Staff receives tips in cashout_balance (USD value)
+        tip_usd_value = transfer.amount / 10  # 10 tokens = $1
+        new_cashout = receiver.get("cashout_balance", 0) + tip_usd_value
+        await db.user_profiles.update_one(
+            {"id": transfer.to_user_id},
+            {"$set": {
+                "cashout_balance": new_cashout,
+                "updated_at": datetime.now(timezone.utc)
+            }}
+        )
+    else:
+        # Non-staff or non-tip transfers go to token_balance
+        new_receiver_balance = receiver.get("token_balance", 0) + transfer.amount
+        await db.user_profiles.update_one(
+            {"id": transfer.to_user_id},
+            {"$set": {"token_balance": new_receiver_balance, "updated_at": datetime.now(timezone.utc)}}
+        )
+    
+    transfer_record.pop("_id", None)
+    return {
+        "transfer": transfer_record,
+        "sender_new_balance": new_sender_balance,
+        "receiver_name": receiver.get("name")
+    }
+
+
+@api_router.get("/user/tokens/transfers/{user_id}")
+async def get_user_transfers(user_id: str):
+    """Get user's token transfer history (sent and received)"""
+    transfers = await db.token_transfers.find(
+        {"$or": [{"from_user_id": user_id}, {"to_user_id": user_id}]},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(100).to_list(100)
+    return transfers
+
+
+# =====================================================
+# STAFF CASHOUT ENDPOINTS
+# =====================================================
+
+@api_router.post("/staff/cashout/{user_id}")
+async def request_cashout(user_id: str, cashout: CashoutRequestCreate):
+    """Staff: Request to cash out accumulated tips (min $20, 80% rate)"""
+    user = await db.user_profiles.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if user.get("role") != "staff":
+        raise HTTPException(status_code=403, detail="Only staff can request cashouts")
+    
+    cashout_balance = user.get("cashout_balance", 0)
+    
+    # Minimum $20 to cash out
+    if cashout_balance < 20:
+        raise HTTPException(status_code=400, detail=f"Minimum cashout is $20. Current balance: ${cashout_balance:.2f}")
+    
+    # Calculate tokens and USD (80% rate)
+    tokens_to_cashout = cashout.amount_tokens
+    usd_value = tokens_to_cashout / 10  # Token to USD
+    
+    if usd_value > cashout_balance:
+        raise HTTPException(status_code=400, detail=f"Requested amount exceeds balance. Max: ${cashout_balance:.2f}")
+    
+    payout_amount = usd_value * 0.8  # 80% payout rate
+    
+    # Create cashout request
+    cashout_record = {
+        "id": str(uuid.uuid4()),
+        "user_id": user_id,
+        "amount_tokens": tokens_to_cashout,
+        "amount_usd": payout_amount,
+        "status": "pending",
+        "payment_method": cashout.payment_method,
+        "payment_details": cashout.payment_details,
+        "created_at": datetime.now(timezone.utc),
+        "processed_at": None
+    }
+    await db.cashout_requests.insert_one(cashout_record)
+    
+    # Deduct from cashout balance
+    new_balance = cashout_balance - usd_value
+    total_earnings = user.get("total_earnings", 0) + payout_amount
+    
+    await db.user_profiles.update_one(
+        {"id": user_id},
+        {"$set": {
+            "cashout_balance": new_balance,
+            "total_earnings": total_earnings,
+            "updated_at": datetime.now(timezone.utc)
+        }}
+    )
+    
+    cashout_record.pop("_id", None)
+    return {
+        "cashout": cashout_record,
+        "new_balance": new_balance,
+        "payout_amount": payout_amount
+    }
+
+
+@api_router.get("/staff/cashout/history/{user_id}")
+async def get_cashout_history(user_id: str):
+    """Get staff's cashout request history"""
+    history = await db.cashout_requests.find(
+        {"user_id": user_id},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(50).to_list(50)
+    return history
+
+
+@api_router.post("/staff/transfer-to-personal/{user_id}")
+async def transfer_tips_to_personal(user_id: str, amount: float):
+    """Staff: Transfer cashout balance to personal token balance"""
+    user = await db.user_profiles.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if user.get("role") != "staff":
+        raise HTTPException(status_code=403, detail="Only staff can transfer tips")
+    
+    cashout_balance = user.get("cashout_balance", 0)
+    
+    if amount > cashout_balance:
+        raise HTTPException(status_code=400, detail=f"Amount exceeds balance. Available: ${cashout_balance:.2f}")
+    
+    if amount < 1:
+        raise HTTPException(status_code=400, detail="Minimum transfer is $1")
+    
+    # Convert USD to tokens
+    tokens_to_add = int(amount * 10)  # $1 = 10 tokens
+    
+    # Update balances
+    new_cashout = cashout_balance - amount
+    new_token_balance = user.get("token_balance", 0) + tokens_to_add
+    
+    await db.user_profiles.update_one(
+        {"id": user_id},
+        {"$set": {
+            "cashout_balance": new_cashout,
+            "token_balance": new_token_balance,
+            "updated_at": datetime.now(timezone.utc)
+        }}
+    )
+    
+    # Record the transfer
+    transfer_record = {
+        "id": str(uuid.uuid4()),
+        "from_user_id": user_id,
+        "to_user_id": user_id,
+        "amount": tokens_to_add,
+        "transfer_type": "tip_to_personal",
+        "message": f"Converted ${amount:.2f} tips to {tokens_to_add} tokens",
+        "created_at": datetime.now(timezone.utc)
+    }
+    await db.token_transfers.insert_one(transfer_record)
+    
+    return {
+        "new_cashout_balance": new_cashout,
+        "new_token_balance": new_token_balance,
+        "tokens_added": tokens_to_add
+    }
+
+
+# Admin: View all cashout requests
+@api_router.get("/admin/cashouts")
+async def admin_get_cashouts(username: str = Depends(get_current_admin)):
+    """Get all pending cashout requests (admin only)"""
+    requests = await db.cashout_requests.find(
+        {},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    return requests
+
+
+# Admin: Process cashout request
+@api_router.put("/admin/cashouts/{cashout_id}")
+async def admin_process_cashout(cashout_id: str, status: str, username: str = Depends(get_current_admin)):
+    """Admin: Approve or reject a cashout request"""
+    if status not in ["approved", "paid", "rejected"]:
+        raise HTTPException(status_code=400, detail="Invalid status")
+    
+    result = await db.cashout_requests.update_one(
+        {"id": cashout_id},
+        {"$set": {"status": status, "processed_at": datetime.now(timezone.utc)}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Cashout request not found")
+    
+    return {"message": f"Cashout request {status}", "cashout_id": cashout_id}
+
+
+# Get staff members (for tipping)
+@api_router.get("/staff/list")
+async def get_staff_list():
+    """Get list of all staff members (for customers to tip)"""
+    staff = await db.user_profiles.find(
+        {"role": "staff"},
+        {"_id": 0, "id": 1, "name": 1, "staff_title": 1, "avatar_emoji": 1, "profile_photo_url": 1}
+    ).to_list(100)
+    return staff
+
+
 # =====================================================
 # USER HISTORY ENDPOINTS
 # =====================================================
