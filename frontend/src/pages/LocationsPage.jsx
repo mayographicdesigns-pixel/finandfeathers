@@ -166,7 +166,7 @@ const LocationsPage = () => {
                 <div className="flex items-center gap-2 mb-3">
                   <Calendar className="w-4 h-4 text-red-500 flex-shrink-0" />
                   <div className="text-slate-400 text-xs">
-                    Reservations (Text): {location.reservationPhone}
+                    Reservations (Text): {location.reservation_phone}
                   </div>
                 </div>
 
