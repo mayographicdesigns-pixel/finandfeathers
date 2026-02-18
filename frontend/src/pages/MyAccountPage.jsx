@@ -467,11 +467,27 @@ const MyAccountPage = () => {
             </div>
             
             <div className="flex-1">
-              <h1 className="text-2xl font-bold text-white" data-testid="profile-name">
-                {profile.name}
-              </h1>
+              <div className="flex items-center gap-2 mb-1">
+                <h1 className="text-2xl font-bold text-white" data-testid="profile-name">
+                  {profile.name}
+                </h1>
+                <RoleBadge role={profile.role} staffTitle={profile.staff_title} />
+              </div>
               <p className="text-slate-400">{profile.email || 'No email set'}</p>
             </div>
+            
+            {/* Staff Earnings (only for staff) */}
+            {profile.role === 'staff' && (
+              <div className="bg-gradient-to-r from-green-600 to-green-500 rounded-xl px-4 py-2 text-center mr-2">
+                <div className="flex items-center gap-1.5">
+                  <DollarSign className="w-5 h-5 text-green-100" />
+                  <span className="text-2xl font-bold text-white" data-testid="cashout-balance">
+                    {(profile.cashout_balance || 0).toFixed(2)}
+                  </span>
+                </div>
+                <div className="text-xs text-green-100">Tips Earned</div>
+              </div>
+            )}
             
             {/* Token Balance */}
             <div className="bg-gradient-to-r from-amber-600 to-amber-500 rounded-xl px-4 py-2 text-center">
@@ -490,7 +506,7 @@ const MyAccountPage = () => {
       {/* Tabs */}
       <div className="max-w-2xl mx-auto px-4 pb-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="w-full bg-slate-800/50 border border-slate-700 mb-6">
+          <TabsList className={`w-full bg-slate-800/50 border border-slate-700 mb-6 ${profile.role === 'staff' ? 'grid-cols-5' : ''}`}>
             <TabsTrigger 
               value="profile" 
               className="flex-1 data-[state=active]:bg-red-600"
