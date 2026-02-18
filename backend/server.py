@@ -41,7 +41,8 @@ from models import (
     CashoutRequest, CashoutRequestCreate, CashoutRequestResponse,
     RoleUpdate,
     Location, LocationCreate, LocationUpdate, LocationResponse,
-    LocationHours, LocationCoordinates, LocationSocialMedia, WeeklySpecial
+    LocationHours, LocationCoordinates, LocationSocialMedia, WeeklySpecial,
+    PromoVideo, PromoVideoCreate, PromoVideoUpdate
 )
 from push_service import PushNotificationService
 from auth import verify_password, get_password_hash, create_access_token, decode_access_token
