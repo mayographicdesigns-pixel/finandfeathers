@@ -1406,6 +1406,18 @@ async def get_user_profile(user_id: str):
     profile = await db.user_profiles.find_one({"id": user_id}, {"_id": 0})
     if not profile:
         raise HTTPException(status_code=404, detail="User profile not found")
+    # Add default values for missing fields (for backwards compatibility)
+    profile.setdefault("role", "customer")
+    profile.setdefault("staff_title", None)
+    profile.setdefault("cashout_balance", 0.0)
+    profile.setdefault("total_earnings", 0.0)
+    profile.setdefault("profile_photo_url", None)
+    profile.setdefault("special_dates", [])
+    profile.setdefault("token_balance", 0)
+    profile.setdefault("total_visits", 0)
+    profile.setdefault("total_posts", 0)
+    profile.setdefault("total_photos", 0)
+    profile.setdefault("allow_gallery_posts", True)
     return UserProfileResponse(**profile)
 
 
@@ -1415,6 +1427,18 @@ async def get_user_profile_by_email(email: str):
     profile = await db.user_profiles.find_one({"email": email}, {"_id": 0})
     if not profile:
         return None
+    # Add default values for missing fields
+    profile.setdefault("role", "customer")
+    profile.setdefault("staff_title", None)
+    profile.setdefault("cashout_balance", 0.0)
+    profile.setdefault("total_earnings", 0.0)
+    profile.setdefault("profile_photo_url", None)
+    profile.setdefault("special_dates", [])
+    profile.setdefault("token_balance", 0)
+    profile.setdefault("total_visits", 0)
+    profile.setdefault("total_posts", 0)
+    profile.setdefault("total_photos", 0)
+    profile.setdefault("allow_gallery_posts", True)
     return UserProfileResponse(**profile)
 
 
