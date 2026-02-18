@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   User, Coins, Camera, History, Gift, Calendar, 
   Instagram, Twitter, Facebook, ArrowLeft, Edit2, 
-  Save, X, Plus, Trash2, CreditCard, Sparkles, Music, Wine
+  Save, X, Plus, Trash2, CreditCard, Sparkles, Music, Wine, Upload
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -21,7 +21,8 @@ import {
   getUserVisits,
   getUserGallerySubmissions,
   submitGalleryPhoto,
-  uploadImage
+  uploadImage,
+  uploadProfilePhoto
 } from '../services/api';
 
 const MyAccountPage = () => {
@@ -31,6 +32,7 @@ const MyAccountPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState(null);
   const [activeTab, setActiveTab] = useState('profile');
+  const profilePhotoInputRef = useRef(null);
   
   // Token state
   const [purchaseAmount, setPurchaseAmount] = useState(5);
@@ -44,6 +46,7 @@ const MyAccountPage = () => {
   // Photo upload state
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [photoCaption, setPhotoCaption] = useState('');
+  const [uploadingProfilePhoto, setUploadingProfilePhoto] = useState(false);
 
   useEffect(() => {
     loadUserProfile();
