@@ -114,6 +114,30 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] **Image Upload for menu items** (JPG, PNG, GIF, WebP up to 5MB)
 - [x] Push Notifications (send to all subscribers, view history)
 - [x] Logout functionality
+- [x] **Users Tab** - View all user profiles with token balances
+- [x] **Gift Tokens** - Admin can gift F&F tokens to any user with optional message
+
+#### My Account Feature (MyAccountPage.jsx) - COMPLETED February 2026
+- [x] **Profile Management:**
+  - [x] View/edit name, phone, email
+  - [x] Avatar emoji picker (12 options)
+  - [x] Birthdate and anniversary date fields
+  - [x] Special dates (add/remove with name + date)
+  - [x] Social media handles (Instagram, Facebook, Twitter, TikTok)
+- [x] **F&F Tokens System ($1 = 10 tokens):**
+  - [x] Token balance display in header
+  - [x] Quick purchase buttons ($1, $5, $10, $20)
+  - [x] Custom amount input
+  - [x] Token purchase history
+  - [x] Used for DJ tipping and sending drinks
+- [x] **Photos Tab:**
+  - [x] Submit photos to gallery (auto-approved)
+  - [x] View own submissions
+- [x] **History Tab:**
+  - [x] Visit/check-in count
+  - [x] Post count
+  - [x] Photo submission count
+- [x] "My Account" button on homepage (amber gradient)
 
 #### PWA Features
 - [x] Service worker registered
