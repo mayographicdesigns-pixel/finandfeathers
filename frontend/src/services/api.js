@@ -1030,3 +1030,174 @@ export async function updateDrinkStatus(orderId, status) {
   if (!response.ok) throw new Error('Failed to update drink status');
   return await response.json();
 }
+
+
+// ==================== USER PROFILE API ====================
+
+// Create user profile
+export async function createUserProfile(profile) {
+  const response = await fetch(`${API_URL}/user/profile`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(profile)
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to create profile');
+  }
+  return await response.json();
+}
+
+// Get user profile by ID
+export async function getUserProfile(userId) {
+  const response = await fetch(`${API_URL}/user/profile/${userId}`);
+  if (!response.ok) {
+    if (response.status === 404) return null;
+    throw new Error('Failed to fetch profile');
+  }
+  return await response.json();
+}
+
+// Get user profile by email
+export async function getUserProfileByEmail(email) {
+  const response = await fetch(`${API_URL}/user/profile/by-email/${encodeURIComponent(email)}`);
+  if (!response.ok) return null;
+  return await response.json();
+}
+
+// Update user profile
+export async function updateUserProfile(userId, update) {
+  const response = await fetch(`${API_URL}/user/profile/${userId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(update)
+  });
+  if (!response.ok) throw new Error('Failed to update profile');
+  return await response.json();
+}
+
+
+// ==================== F&F TOKENS API ====================
+
+// Purchase tokens ($1 = 10 tokens)
+export async function purchaseTokens(userId, amountUsd) {
+  const response = await fetch(`${API_URL}/user/tokens/purchase/${userId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ amount_usd: amountUsd })
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to purchase tokens');
+  }
+  return await response.json();
+}
+
+// Get token balance
+export async function getTokenBalance(userId) {
+  const response = await fetch(`${API_URL}/user/tokens/balance/${userId}`);
+  if (!response.ok) throw new Error('Failed to get token balance');
+  return await response.json();
+}
+
+// Get token history
+export async function getTokenHistory(userId) {
+  const response = await fetch(`${API_URL}/user/tokens/history/${userId}`);
+  if (!response.ok) throw new Error('Failed to get token history');
+  return await response.json();
+}
+
+// Spend tokens
+export async function spendTokens(userId, amount) {
+  const response = await fetch(`${API_URL}/user/tokens/spend/${userId}?amount=${amount}`, {
+    method: 'POST'
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to spend tokens');
+  }
+  return await response.json();
+}
+
+// Admin: Gift tokens
+export async function adminGiftTokens(userId, tokens, message = null) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/tokens/gift`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ user_id: userId, tokens, message })
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to gift tokens');
+  }
+  return await response.json();
+}
+
+// Admin: Get all users
+export async function adminGetUsers() {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/users`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error('Failed to fetch users');
+  return await response.json();
+}
+
+
+// ==================== USER HISTORY API ====================
+
+// Get user's visit history
+export async function getUserVisits(userId) {
+  const response = await fetch(`${API_URL}/user/history/visits/${userId}`);
+  if (!response.ok) throw new Error('Failed to fetch visits');
+  return await response.json();
+}
+
+// Get user's post history
+export async function getUserPosts(userId) {
+  const response = await fetch(`${API_URL}/user/history/posts/${userId}`);
+  if (!response.ok) throw new Error('Failed to fetch posts');
+  return await response.json();
+}
+
+// Get user's drink history
+export async function getUserDrinkHistory(userId) {
+  const response = await fetch(`${API_URL}/user/history/drinks/${userId}`);
+  if (!response.ok) throw new Error('Failed to fetch drinks');
+  return await response.json();
+}
+
+// Get user's tip history
+export async function getUserTipHistory(userId) {
+  const response = await fetch(`${API_URL}/user/history/tips/${userId}`);
+  if (!response.ok) throw new Error('Failed to fetch tips');
+  return await response.json();
+}
+
+
+// ==================== USER GALLERY SUBMISSION API ====================
+
+// Submit photo to gallery
+export async function submitGalleryPhoto(userId, imageUrl, caption = null, locationSlug = null) {
+  const response = await fetch(`${API_URL}/user/gallery/submit/${userId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ image_url: imageUrl, caption, location_slug: locationSlug })
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to submit photo');
+  }
+  return await response.json();
+}
+
+// Get user's gallery submissions
+export async function getUserGallerySubmissions(userId) {
+  const response = await fetch(`${API_URL}/user/gallery/submissions/${userId}`);
+  if (!response.ok) throw new Error('Failed to fetch submissions');
+  return await response.json();
+}
