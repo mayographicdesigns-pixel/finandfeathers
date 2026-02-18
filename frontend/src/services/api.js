@@ -925,3 +925,108 @@ export async function getDJTipsTotal(locationSlug) {
   if (!response.ok) throw new Error('Failed to fetch tips total');
   return await response.json();
 }
+
+
+// ==================== DJ PROFILE API ====================
+
+// Register a new DJ
+export async function registerDJ(profile) {
+  const response = await fetch(`${API_URL}/dj/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(profile)
+  });
+  if (!response.ok) throw new Error('Failed to register DJ');
+  return await response.json();
+}
+
+// Get all DJ profiles
+export async function getAllDJProfiles() {
+  const response = await fetch(`${API_URL}/dj/profiles`);
+  if (!response.ok) throw new Error('Failed to fetch DJ profiles');
+  return await response.json();
+}
+
+// Get DJ profile by ID
+export async function getDJProfile(djId) {
+  const response = await fetch(`${API_URL}/dj/profile/${djId}`);
+  if (!response.ok) throw new Error('Failed to fetch DJ profile');
+  return await response.json();
+}
+
+// Update DJ profile
+export async function updateDJProfile(djId, update) {
+  const response = await fetch(`${API_URL}/dj/profile/${djId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(update)
+  });
+  if (!response.ok) throw new Error('Failed to update DJ profile');
+  return await response.json();
+}
+
+// DJ check-in at location
+export async function djCheckin(djId, locationSlug) {
+  const response = await fetch(`${API_URL}/dj/checkin/${djId}?location_slug=${locationSlug}`, {
+    method: 'POST'
+  });
+  if (!response.ok) throw new Error('Failed to check in DJ');
+  return await response.json();
+}
+
+// DJ check-out
+export async function djCheckout(djId) {
+  const response = await fetch(`${API_URL}/dj/checkout/${djId}`, {
+    method: 'POST'
+  });
+  if (!response.ok) throw new Error('Failed to check out DJ');
+  return await response.json();
+}
+
+// Get DJ currently at location
+export async function getDJAtLocation(locationSlug) {
+  const response = await fetch(`${API_URL}/dj/at-location/${locationSlug}`);
+  if (!response.ok) return null;
+  const data = await response.json();
+  return data;
+}
+
+
+// ==================== SEND A DRINK API ====================
+
+// Send a drink to another user
+export async function sendDrink(order) {
+  const response = await fetch(`${API_URL}/social/drinks`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(order)
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to send drink');
+  }
+  return await response.json();
+}
+
+// Get drinks at location (public feed)
+export async function getDrinksAtLocation(locationSlug) {
+  const response = await fetch(`${API_URL}/social/drinks/${locationSlug}`);
+  if (!response.ok) throw new Error('Failed to fetch drinks');
+  return await response.json();
+}
+
+// Get drinks for a specific user
+export async function getDrinksForUser(checkinId) {
+  const response = await fetch(`${API_URL}/social/drinks/for/${checkinId}`);
+  if (!response.ok) throw new Error('Failed to fetch drinks');
+  return await response.json();
+}
+
+// Update drink order status
+export async function updateDrinkStatus(orderId, status) {
+  const response = await fetch(`${API_URL}/social/drinks/${orderId}/status?status=${status}`, {
+    method: 'PUT'
+  });
+  if (!response.ok) throw new Error('Failed to update drink status');
+  return await response.json();
+}
