@@ -209,7 +209,7 @@ const LocationsPage = () => {
                   </Button>
                   
                   <Button
-                    onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location.address)}`, '_blank')}
+                    onClick={(e) => { e.stopPropagation(); window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location.address)}`, '_blank'); }}
                     variant="outline"
                     className="w-full border-slate-600 text-slate-300 hover:bg-slate-700"
                   >
