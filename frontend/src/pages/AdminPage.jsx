@@ -2026,9 +2026,16 @@ const UsersTab = () => {
   const [giftMessage, setGiftMessage] = useState('');
   const [isGifting, setIsGifting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState('all');
+  const [editingRole, setEditingRole] = useState(null);
+  const [newRole, setNewRole] = useState('');
+  const [staffTitle, setStaffTitle] = useState('');
+  const [cashouts, setCashouts] = useState([]);
+  const [showCashouts, setShowCashouts] = useState(false);
 
   useEffect(() => {
     fetchUsers();
+    fetchCashouts();
   }, []);
 
   const fetchUsers = async () => {
@@ -2039,6 +2046,15 @@ const UsersTab = () => {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCashouts = async () => {
+    try {
+      const data = await adminGetCashouts();
+      setCashouts(data);
+    } catch (err) {
+      console.error('Error fetching cashouts:', err);
     }
   };
 
@@ -2070,10 +2086,65 @@ const UsersTab = () => {
     }
   };
 
-  const filteredUsers = users.filter(u => 
-    u.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    u.email?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleUpdateRole = async (userId) => {
+    if (!newRole) return;
+    
+    try {
+      await adminUpdateUserRole(userId, newRole, newRole === 'staff' ? staffTitle : null);
+      toast({ title: 'Role Updated', description: `User role changed to ${newRole}` });
+      
+      // Update local state
+      setUsers(prev => prev.map(u => 
+        u.id === userId 
+          ? { ...u, role: newRole, staff_title: newRole === 'staff' ? staffTitle : u.staff_title }
+          : u
+      ));
+      
+      setEditingRole(null);
+      setNewRole('');
+      setStaffTitle('');
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+  };
+
+  const handleProcessCashout = async (cashoutId, status) => {
+    try {
+      await adminProcessCashout(cashoutId, status);
+      toast({ title: 'Cashout Processed', description: `Request ${status}` });
+      setCashouts(prev => prev.map(c => 
+        c.id === cashoutId ? { ...c, status } : c
+      ));
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+  };
+
+  const getRoleBadge = (role, staffTitle) => {
+    const config = {
+      admin: { label: 'Admin', color: 'bg-red-600', icon: BadgeCheck },
+      management: { label: 'Management', color: 'bg-purple-600', icon: Briefcase },
+      staff: { label: staffTitle || 'Staff', color: 'bg-blue-600', icon: Award },
+      customer: { label: 'Member', color: 'bg-slate-600', icon: User }
+    };
+    const c = config[role] || config.customer;
+    const Icon = c.icon;
+    return (
+      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium text-white ${c.color}`}>
+        <Icon className="w-3 h-3" />
+        {c.label}
+      </span>
+    );
+  };
+
+  const filteredUsers = users.filter(u => {
+    const matchesSearch = u.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          u.email?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRole = roleFilter === 'all' || u.role === roleFilter;
+    return matchesSearch && matchesRole;
+  });
+
+  const pendingCashouts = cashouts.filter(c => c.status === 'pending');
 
   if (loading) return <div className="text-white text-center py-8">Loading users...</div>;
 
