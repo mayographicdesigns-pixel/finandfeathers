@@ -2509,6 +2509,7 @@ const AdminPage = () => {
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { id: 'specials', label: 'Post Special', icon: Megaphone },
     { id: 'gallery', label: 'Gallery', icon: Grid3X3 },
+    { id: 'locations', label: 'Locations', icon: MapPin },
     { id: 'social', label: 'Social', icon: Share2 },
     { id: 'menu', label: 'Menu Items', icon: UtensilsCrossed },
     { id: 'users', label: 'Users', icon: Coins },
