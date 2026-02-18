@@ -377,6 +377,7 @@ class DJTip(BaseModel):
     amount: float
     message: Optional[str] = None
     song_request: Optional[str] = None
+    payment_method: str = "cash_app"  # cash_app, apple_pay, venmo
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class DJTipCreate(BaseModel):
@@ -387,6 +388,7 @@ class DJTipCreate(BaseModel):
     amount: float
     message: Optional[str] = None
     song_request: Optional[str] = None
+    payment_method: str = "cash_app"
 
 class DJTipResponse(BaseModel):
     id: str
@@ -396,4 +398,101 @@ class DJTipResponse(BaseModel):
     amount: float
     message: Optional[str]
     song_request: Optional[str]
+    payment_method: str
+    created_at: datetime
+
+
+# DJ Profile - For DJs to register and show their payment info
+class DJProfile(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    stage_name: Optional[str] = None
+    avatar_emoji: str = "🎧"
+    cash_app_username: Optional[str] = None  # e.g., "$DJMike"
+    venmo_username: Optional[str] = None  # e.g., "@DJMike"
+    apple_pay_phone: Optional[str] = None  # Phone number for Apple Pay
+    bio: Optional[str] = None
+    photo_url: Optional[str] = None
+    is_active: bool = True
+    current_location: Optional[str] = None  # Location slug where DJ is currently playing
+    checked_in_at: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class DJProfileCreate(BaseModel):
+    name: str
+    stage_name: Optional[str] = None
+    avatar_emoji: str = "🎧"
+    cash_app_username: Optional[str] = None
+    venmo_username: Optional[str] = None
+    apple_pay_phone: Optional[str] = None
+    bio: Optional[str] = None
+    photo_url: Optional[str] = None
+
+class DJProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    stage_name: Optional[str] = None
+    avatar_emoji: Optional[str] = None
+    cash_app_username: Optional[str] = None
+    venmo_username: Optional[str] = None
+    apple_pay_phone: Optional[str] = None
+    bio: Optional[str] = None
+    photo_url: Optional[str] = None
+    is_active: Optional[bool] = None
+
+class DJProfileResponse(BaseModel):
+    id: str
+    name: str
+    stage_name: Optional[str]
+    avatar_emoji: str
+    cash_app_username: Optional[str]
+    venmo_username: Optional[str]
+    apple_pay_phone: Optional[str]
+    bio: Optional[str]
+    photo_url: Optional[str]
+    is_active: bool
+    current_location: Optional[str]
+    checked_in_at: Optional[datetime]
+
+
+# Send a Drink - Users can send drinks to each other
+class DrinkOrder(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    location_slug: str
+    from_checkin_id: str
+    from_name: str
+    from_emoji: str
+    to_checkin_id: str
+    to_name: str
+    to_emoji: str
+    drink_name: str
+    drink_emoji: str
+    message: Optional[str] = None
+    status: str = "pending"  # pending, accepted, delivered
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class DrinkOrderCreate(BaseModel):
+    location_slug: str
+    from_checkin_id: str
+    from_name: str
+    from_emoji: str
+    to_checkin_id: str
+    to_name: str
+    to_emoji: str
+    drink_name: str
+    drink_emoji: str
+    message: Optional[str] = None
+
+class DrinkOrderResponse(BaseModel):
+    id: str
+    location_slug: str
+    from_checkin_id: str
+    from_name: str
+    from_emoji: str
+    to_checkin_id: str
+    to_name: str
+    to_emoji: str
+    drink_name: str
+    drink_emoji: str
+    message: Optional[str]
+    status: str
     created_at: datetime
