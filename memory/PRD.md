@@ -277,16 +277,17 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - `payment_transactions`: id, session_id, user_id, amount, currency, tokens, package_id, payment_status (pending/paid/expired), created_at, updated_at
 
 ## Known Limitations / Mocked Data
-1. **Menu Page uses Mock Data**: The public menu page (`MenuPage.jsx`) displays items from `mockData.js`, not from the database. Admin can manage items in MongoDB but they won't appear on the public menu.
-2. **Video files**: Daily promotional videos in `/public/videos/` don't exist - carousel shows empty frames
-3. **PWA Icons**: Not optimized for all device sizes
-4. **Photo Gallery Submissions**: Auto-approved without moderation
+1. **PWA Icons**: Not optimized for all device sizes
+2. **Photo Gallery Submissions**: Auto-approved without moderation
 
-## Bug Fixes (February 2026)
+## Bug Fixes & Completed Features (February 2026)
 - **FIXED**: Deployment blocker - `AttributeError: module 'bcrypt' has no attribute '__about__'` resolved by downgrading bcrypt to 3.2.2
 - **VERIFIED**: Location detail pages working correctly (blank page issue not reproducible)
 - **COMPLETED**: Location data migration from mockData.js to MongoDB backend
 - **COMPLETED**: Stripe payment integration for token purchases (Feb 18, 2026)
+- **COMPLETED**: WooCommerce merchandise store integration (Feb 18, 2026)
+- **COMPLETED**: Promo video management via admin panel (Feb 18, 2026)
+- **COMPLETED**: MenuPage already connected to backend API (97 items in DB)
 
 ## Prioritized Backlog
 
@@ -295,10 +296,13 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Deployment dependency issue (bcrypt/passlib)
 - [x] Migrate locations data from mockData.js to backend/admin panel
 - [x] Stripe payment integration for token purchases
+- [x] Connect MenuPage.jsx to backend API (already done - 97 items from DB)
+- [x] Promo video management via admin panel
+- [x] WooCommerce merchandise store integration
 
-### P1 (High Priority)
-- [ ] Connect MenuPage.jsx to backend API (replace mockData.js)
-- [ ] Upload and manage promo videos via admin panel
+### P1 (High Priority) - All Done!
+- [x] Video upload and management via admin panel
+- [x] Merchandise page with WooCommerce integration
 
 ### P2 (Medium Priority)
 - [x] Geolocation for sorting locations by proximity (implemented)
@@ -309,6 +313,20 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [ ] Email notifications for new loyalty signups
 - [ ] Analytics dashboard for admin
 - [ ] Multi-admin user support
+
+## New API Endpoints (Feb 18, 2026)
+- `GET /api/merchandise` - Fetch products from WooCommerce
+- `GET /api/merchandise/{id}` - Fetch single product
+- `GET /api/promo-videos` - Get all active promo videos
+- `GET /api/promo-videos/by-day/{day}` - Get videos for specific day (0-6)
+- `GET /api/admin/promo-videos` - Admin: Get all videos
+- `POST /api/admin/promo-videos` - Admin: Create video
+- `PUT /api/admin/promo-videos/{id}` - Admin: Update video
+- `DELETE /api/admin/promo-videos/{id}` - Admin: Delete video
+
+## 3rd Party Integrations
+- **Stripe**: Token purchases with real payment processing
+- **WooCommerce**: Live product feed from finandfeathersrestaurants.com
 
 ## Credentials
 - **Admin Login**: username=`admin`, password=`admin`
