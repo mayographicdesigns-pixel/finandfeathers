@@ -72,11 +72,30 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Order online and reservation buttons
 - [x] Navigation to detail pages
 
-#### Location Detail Pages (LocationDetailPage.jsx)
+#### Location Detail Pages (LocationDetailPage.jsx) - Updated February 2026
 - [x] Individual pages for each location
 - [x] Contact info and social media
 - [x] Weekly specials display
-- [x] Embedded map placeholder
+- [x] Embedded Google Maps with directions
+- [x] **Social Check-In System:**
+  - [x] Check-in with display name, emoji avatar, mood selection
+  - [x] "Who's Here" section showing checked-in users
+  - [x] Check-out functionality
+- [x] **Social Wall:**
+  - [x] Post messages and pictures to other guests
+  - [x] Like/unlike posts
+  - [x] Delete own posts
+  - [x] Real-time refresh every 15 seconds
+- [x] **Direct Messages (DMs):**
+  - [x] Tap on a user to open DM conversation
+  - [x] Full chat thread with read receipts
+  - [x] Unread message count badge
+  - [x] Conversation list
+- [x] **DJ Tipping:**
+  - [x] "Tonight's DJ Tips" total display
+  - [x] Quick tip amounts ($1, $3, $5, $10, $20) or custom
+  - [x] Add message and song request to tip
+  - [x] Recent tips feed
 
 #### Admin Dashboard (AdminPage.jsx) - COMPLETED December 15, 2025
 - [x] JWT-based authentication (username: admin, password: admin)
