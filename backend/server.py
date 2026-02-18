@@ -703,7 +703,9 @@ async def admin_delete_instagram_post(post_id: str, username: str = Depends(get_
 
 # File Upload (Admin)
 ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
+ALLOWED_VIDEO_EXTENSIONS = {'.mp4', '.mov', '.webm', '.avi'}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+MAX_VIDEO_SIZE = 50 * 1024 * 1024  # 50MB
 
 @api_router.post("/admin/upload")
 async def admin_upload_file(
@@ -743,6 +745,41 @@ async def admin_upload_file(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to save file: {str(e)}")
+
+
+@api_router.post("/admin/upload/video")
+async def admin_upload_video(
+    file: UploadFile = File(...),
+    username: str = Depends(get_current_admin)
+):
+    """Upload a video file for promo carousel"""
+    file_ext = Path(file.filename).suffix.lower()
+    if file_ext not in ALLOWED_VIDEO_EXTENSIONS:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Video type not allowed. Allowed types: {', '.join(ALLOWED_VIDEO_EXTENSIONS)}"
+        )
+    
+    unique_filename = f"{uuid.uuid4()}{file_ext}"
+    file_path = UPLOAD_DIR / unique_filename
+    
+    try:
+        contents = await file.read()
+        if len(contents) > MAX_VIDEO_SIZE:
+            raise HTTPException(status_code=400, detail="Video too large. Maximum size is 50MB")
+        
+        with open(file_path, "wb") as f:
+            f.write(contents)
+        
+        return {
+            "filename": unique_filename,
+            "url": f"/uploads/{unique_filename}",
+            "size": len(contents)
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save video: {str(e)}")
 
 
 @api_router.get("/admin/uploads")
