@@ -162,16 +162,28 @@ const LocationDetailPage = () => {
 
   const loadDJData = async () => {
     try {
-      const [dj, tips, total] = await Promise.all([
-        getDJAtLocation(slug),
-        getDJTips(slug),
-        getDJTipsTotal(slug)
-      ]);
+      // Load DJ profile first
+      const dj = await getDJAtLocation(slug);
       setCurrentDJ(dj);
+    } catch (e) {
+      console.error('Error loading DJ:', e);
+      setCurrentDJ(null);
+    }
+    
+    try {
+      const tips = await getDJTips(slug);
       setDjTips(tips);
+    } catch (e) {
+      console.error('Error loading DJ tips:', e);
+      setDjTips([]);
+    }
+    
+    try {
+      const total = await getDJTipsTotal(slug);
       setDjTipsTotal(total);
     } catch (e) {
-      console.error('Error loading DJ data:', e);
+      console.error('Error loading DJ tips total:', e);
+      setDjTipsTotal({ total: 0, count: 0 });
     }
   };
 
