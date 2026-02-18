@@ -1427,6 +1427,45 @@ async def update_user_profile(user_id: str, update: UserProfileUpdate):
     return UserProfileResponse(**updated)
 
 
+@api_router.post("/user/profile/{user_id}/photo")
+async def upload_profile_photo(user_id: str, file: UploadFile = File(...)):
+    """Upload a profile photo/selfie"""
+    profile = await db.user_profiles.find_one({"id": user_id})
+    if not profile:
+        raise HTTPException(status_code=404, detail="User profile not found")
+    
+    # Validate file type
+    allowed_types = ["image/jpeg", "image/png", "image/gif", "image/webp"]
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid file type. Allowed: JPG, PNG, GIF, WebP")
+    
+    # Validate file size (max 5MB)
+    contents = await file.read()
+    if len(contents) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File too large. Max 5MB")
+    
+    # Generate unique filename
+    ext = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
+    filename = f"profile_{user_id}_{uuid.uuid4().hex[:8]}.{ext}"
+    
+    # Save to uploads directory
+    upload_dir = Path("uploads")
+    upload_dir.mkdir(exist_ok=True)
+    file_path = upload_dir / filename
+    
+    with open(file_path, "wb") as f:
+        f.write(contents)
+    
+    # Update user profile with photo URL
+    photo_url = f"/api/uploads/{filename}"
+    await db.user_profiles.update_one(
+        {"id": user_id},
+        {"$set": {"profile_photo_url": photo_url, "updated_at": datetime.now(timezone.utc)}}
+    )
+    
+    return {"url": photo_url, "filename": filename}
+
+
 # =====================================================
 # F&F TOKEN ENDPOINTS
 # =====================================================
