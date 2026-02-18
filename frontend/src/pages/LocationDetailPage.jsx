@@ -456,6 +456,14 @@ const LocationDetailPage = () => {
     }
   };
 
+  if (isLoadingLocation) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-xl">Loading location...</div>
+      </div>
+    );
+  }
+
   if (!location) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -470,7 +478,7 @@ const LocationDetailPage = () => {
   }
 
   const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-  const todaysSpecial = location.weeklySpecials?.find(s => s.day.toLowerCase() === currentDay);
+  const todaysSpecial = location.weekly_specials?.find(s => s.day.toLowerCase() === currentDay);
 
   return (
     <div className="min-h-screen bg-black pb-20">
