@@ -81,9 +81,20 @@ const LocationDetailPage = () => {
   const [selectedDrink, setSelectedDrink] = useState(null);
   const [drinkMessage, setDrinkMessage] = useState('');
   const [sendingDrink, setSendingDrink] = useState(false);
+  const [location, setLocation] = useState(null);
+  const [isLoadingLocation, setIsLoadingLocation] = useState(true);
 
-  const location = useMemo(() => {
-    return locations.find(loc => loc.slug === slug);
+  // Fetch location data from API
+  useEffect(() => {
+    const fetchLocation = async () => {
+      setIsLoadingLocation(true);
+      const data = await getLocationBySlug(slug);
+      setLocation(data);
+      setIsLoadingLocation(false);
+    };
+    if (slug) {
+      fetchLocation();
+    }
   }, [slug]);
 
   // Check for checkin parameter in URL (from QR code scan)
