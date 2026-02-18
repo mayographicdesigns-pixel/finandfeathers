@@ -222,10 +222,23 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - `GET /api/user/tokens/balance/{id}` - Get token balance
 - `GET /api/user/tokens/history/{id}` - Get token purchase/gift history
 - `POST /api/user/tokens/spend/{id}` - Spend tokens (tips/drinks)
+- `POST /api/user/tokens/transfer/{id}` - Transfer tokens to another user
+- `GET /api/user/tokens/transfers/{id}` - Get transfer history
 - `POST /api/user/gallery/submit/{id}` - Submit photo to gallery
 - `GET /api/user/gallery/submissions/{id}` - Get user's gallery submissions
 - `GET /api/user/history/visits/{id}` - Get visit history
 - `GET /api/user/history/posts/{id}` - Get post history
+
+#### Staff Endpoints (February 2026)
+- `GET /api/staff/list` - Get list of staff for tipping
+- `POST /api/staff/cashout/{id}` - Request cashout (min $20, 80% rate)
+- `GET /api/staff/cashout/history/{id}` - Get cashout history
+- `POST /api/staff/transfer-to-personal/{id}` - Transfer tips to token balance
+
+#### Admin Role Management (February 2026)
+- `POST /api/admin/users/role` - Update user role
+- `GET /api/admin/cashouts` - View all cashout requests
+- `PUT /api/admin/cashouts/{id}` - Process cashout request
 
 #### Public Gallery Endpoint
 - `GET /api/gallery` - Get active gallery items (is_active=true only)
