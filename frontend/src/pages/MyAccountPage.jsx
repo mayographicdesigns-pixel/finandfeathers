@@ -132,7 +132,7 @@ const MyAccountPage = () => {
       if (attempts >= maxAttempts) {
         setIsCheckingPayment(false);
         toast({ title: 'Payment Status', description: 'Please check your email for confirmation', variant: 'default' });
-        window.history.replaceState({}, '', '/my-account');
+        window.history.replaceState({}, '', '/account');
         return;
       }
 
@@ -154,12 +154,12 @@ const MyAccountPage = () => {
             const history = await getTokenHistory(profile.id);
             setTokenHistory(history);
           }
-          window.history.replaceState({}, '', '/my-account');
+          window.history.replaceState({}, '', '/account');
           return;
         } else if (result.status === 'expired') {
           setIsCheckingPayment(false);
           toast({ title: 'Payment Expired', description: 'Please try again', variant: 'destructive' });
-          window.history.replaceState({}, '', '/my-account');
+          window.history.replaceState({}, '', '/account');
           return;
         }
 
