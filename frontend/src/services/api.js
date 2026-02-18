@@ -1358,3 +1358,81 @@ export async function adminProcessCashout(cashoutId, status) {
   }
   return await response.json();
 }
+
+
+// ==================== ADMIN LOCATION API ====================
+
+// Get all locations (admin)
+export async function adminGetLocations() {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/locations`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error('Failed to fetch locations');
+  return await response.json();
+}
+
+// Create location (admin)
+export async function adminCreateLocation(location) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/locations`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(location)
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to create location');
+  }
+  return await response.json();
+}
+
+// Update location (admin)
+export async function adminUpdateLocation(locationId, update) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/locations/${locationId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(update)
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to update location');
+  }
+  return await response.json();
+}
+
+// Delete location (admin)
+export async function adminDeleteLocation(locationId) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/locations/${locationId}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to delete location');
+  }
+  return await response.json();
+}
+
+// Reorder locations (admin)
+export async function adminReorderLocations(order) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/locations/reorder`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(order)
+  });
+  if (!response.ok) throw new Error('Failed to reorder locations');
+  return await response.json();
+}
