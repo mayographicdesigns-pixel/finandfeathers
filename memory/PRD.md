@@ -246,7 +246,7 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 ## Tech Stack
 - **Frontend**: React, React Router, TailwindCSS, Shadcn UI
 - **Backend**: FastAPI, MongoDB (Motor), Pydantic
-- **Auth**: JWT (python-jose), bcrypt (passlib)
+- **Auth**: JWT (python-jose), bcrypt 3.2.2 (passlib 1.7.4) - **FIXED Feb 2026**: Downgraded bcrypt to 3.2.2 to fix passlib compatibility issue
 - **PWA**: Service Workers, Web Push API (pywebpush)
 
 ## Database Schema
