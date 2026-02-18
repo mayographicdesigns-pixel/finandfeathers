@@ -1342,7 +1342,7 @@ const LocationDetailPage = () => {
                 <ExternalLink className="w-4 h-4 mr-2" />
                 View Menu
               </Button>
-              <Button onClick={() => window.open(location.onlineOrdering, '_blank')} variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700 h-12">
+              <Button onClick={() => window.open(location.online_ordering, '_blank')} variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700 h-12">
                 <ShoppingBag className="w-4 h-4 mr-2" />
                 Order Online
               </Button>
