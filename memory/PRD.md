@@ -186,6 +186,22 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - `POST /api/admin/gallery` - Add gallery item
 - `PUT /api/admin/gallery/{id}` - Update gallery item
 - `DELETE /api/admin/gallery/{id}` - Delete gallery item
+- `GET /api/admin/users` - List all user profiles
+- `POST /api/admin/tokens/gift` - Gift tokens to a user
+
+#### User Profile Endpoints (February 2026)
+- `POST /api/user/profile` - Create user profile
+- `GET /api/user/profile/{id}` - Get user profile by ID
+- `GET /api/user/profile/by-email/{email}` - Get user profile by email
+- `PUT /api/user/profile/{id}` - Update user profile
+- `POST /api/user/tokens/purchase/{id}` - Purchase tokens ($1 = 10 tokens)
+- `GET /api/user/tokens/balance/{id}` - Get token balance
+- `GET /api/user/tokens/history/{id}` - Get token purchase/gift history
+- `POST /api/user/tokens/spend/{id}` - Spend tokens (tips/drinks)
+- `POST /api/user/gallery/submit/{id}` - Submit photo to gallery
+- `GET /api/user/gallery/submissions/{id}` - Get user's gallery submissions
+- `GET /api/user/history/visits/{id}` - Get visit history
+- `GET /api/user/history/posts/{id}` - Get post history
 
 #### Public Gallery Endpoint
 - `GET /api/gallery` - Get active gallery items (is_active=true only)
