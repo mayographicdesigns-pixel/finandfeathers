@@ -1076,6 +1076,22 @@ export async function updateUserProfile(userId, update) {
   return await response.json();
 }
 
+// Upload profile photo
+export async function uploadProfilePhoto(userId, file) {
+  const formData = new FormData();
+  formData.append('file', file);
+  
+  const response = await fetch(`${API_URL}/user/profile/${userId}/photo`, {
+    method: 'POST',
+    body: formData
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to upload photo');
+  }
+  return await response.json();
+}
+
 
 // ==================== F&F TOKENS API ====================
 
