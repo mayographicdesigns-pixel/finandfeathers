@@ -2121,6 +2121,274 @@ const LocationsTab = () => {
   );
 };
 
+// Videos Tab - Manage promo video carousel
+const VideosTab = () => {
+  const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editingVideo, setEditingVideo] = useState(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    url: '',
+    day_of_week: -1,
+    is_common: false,
+    display_order: 0
+  });
+
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  useEffect(() => {
+    fetchVideos();
+  }, []);
+
+  const fetchVideos = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/promo-videos`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setVideos(data);
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('adminToken');
+      const url = editingVideo 
+        ? `${process.env.REACT_APP_BACKEND_URL}/api/admin/promo-videos/${editingVideo.id}`
+        : `${process.env.REACT_APP_BACKEND_URL}/api/admin/promo-videos`;
+      
+      const response = await fetch(url, {
+        method: editingVideo ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(formData)
+      });
+      
+      if (response.ok) {
+        toast({ title: 'Success', description: editingVideo ? 'Video updated' : 'Video created' });
+        setShowForm(false);
+        setEditingVideo(null);
+        resetForm();
+        fetchVideos();
+      } else {
+        throw new Error('Failed to save video');
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  };
+
+  const handleEdit = (video) => {
+    setEditingVideo(video);
+    setFormData({
+      title: video.title || '',
+      url: video.url || '',
+      day_of_week: video.day_of_week ?? -1,
+      is_common: video.is_common || false,
+      display_order: video.display_order || 0
+    });
+    setShowForm(true);
+  };
+
+  const handleDelete = async (videoId) => {
+    if (!window.confirm('Delete this video?')) return;
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/promo-videos/${videoId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        toast({ title: 'Success', description: 'Video deleted' });
+        fetchVideos();
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  };
+
+  const handleToggleActive = async (video) => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/promo-videos/${video.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ is_active: !video.is_active })
+      });
+      if (response.ok) {
+        toast({ title: 'Success', description: `Video ${video.is_active ? 'hidden' : 'shown'}` });
+        fetchVideos();
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({ title: '', url: '', day_of_week: -1, is_common: false, display_order: 0 });
+  };
+
+  if (loading) {
+    return <div className="text-white text-center py-8">Loading videos...</div>;
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-bold text-white">Promo Videos ({videos.length})</h2>
+        <Button
+          onClick={() => { resetForm(); setEditingVideo(null); setShowForm(true); }}
+          className="bg-red-600 hover:bg-red-700"
+          data-testid="add-video-btn"
+        >
+          <Plus className="w-4 h-4 mr-2" /> Add Video
+        </Button>
+      </div>
+
+      {/* Video Form */}
+      {showForm && (
+        <Card className="bg-slate-800/50 border-slate-700">
+          <CardContent className="p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-white">
+                {editingVideo ? 'Edit Video' : 'Add New Video'}
+              </h3>
+              <Button variant="ghost" size="sm" onClick={() => { setShowForm(false); setEditingVideo(null); }}>
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="text-sm text-slate-300 block mb-1">Title *</label>
+                <Input
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="Monday Special Promo"
+                  required
+                  className="bg-slate-900 border-slate-700 text-white"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-slate-300 block mb-1">Video URL *</label>
+                <Input
+                  value={formData.url}
+                  onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                  placeholder="https://..."
+                  required
+                  className="bg-slate-900 border-slate-700 text-white"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-slate-300 block mb-1">Day of Week</label>
+                  <select
+                    value={formData.day_of_week}
+                    onChange={(e) => setFormData({ ...formData, day_of_week: parseInt(e.target.value), is_common: parseInt(e.target.value) === -1 ? formData.is_common : false })}
+                    className="w-full bg-slate-900 border border-slate-700 text-white rounded px-3 py-2"
+                  >
+                    <option value={-1}>All Days (Common)</option>
+                    {dayNames.map((day, i) => (
+                      <option key={i} value={i}>{day}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm text-slate-300 block mb-1">Display Order</label>
+                  <Input
+                    type="number"
+                    value={formData.display_order}
+                    onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
+                    className="bg-slate-900 border-slate-700 text-white"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="is_common"
+                  checked={formData.is_common}
+                  onChange={(e) => setFormData({ ...formData, is_common: e.target.checked })}
+                  className="rounded"
+                />
+                <label htmlFor="is_common" className="text-sm text-slate-300">
+                  Common video (shows after day-specific videos)
+                </label>
+              </div>
+              <div className="flex gap-2 pt-4">
+                <Button type="submit" className="bg-red-600 hover:bg-red-700">
+                  {editingVideo ? 'Update Video' : 'Create Video'}
+                </Button>
+                <Button type="button" variant="outline" onClick={() => { setShowForm(false); setEditingVideo(null); }}>
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Videos List */}
+      <div className="space-y-3">
+        {videos.map((video) => (
+          <Card key={video.id} className={`border-slate-700 ${video.is_active ? 'bg-slate-800/50' : 'bg-slate-800/20 opacity-60'}`}>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <h3 className="text-white font-semibold">{video.title}</h3>
+                  <p className="text-slate-400 text-sm truncate max-w-md">{video.url}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className={`text-xs px-2 py-0.5 rounded ${video.is_common ? 'bg-blue-600' : 'bg-green-600'}`}>
+                      {video.is_common ? 'Common' : dayNames[video.day_of_week] || 'All Days'}
+                    </span>
+                    <span className="text-xs text-slate-500">Order: {video.display_order}</span>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleToggleActive(video)}
+                    className={video.is_active ? 'text-green-400' : 'text-slate-500'}
+                  >
+                    {video.is_active ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => handleEdit(video)} className="text-blue-400">
+                    <Edit2 className="w-4 h-4" />
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => handleDelete(video.id)} className="text-red-400">
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {videos.length === 0 && (
+        <div className="text-center py-8 text-slate-400">
+          No promo videos yet. Add your first video!
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Social Tab - Manage social links and Instagram feed
 const SocialTab = () => {
   const [socialLinks, setSocialLinks] = useState([]);
