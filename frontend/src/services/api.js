@@ -43,6 +43,35 @@ export async function getMenuCategories() {
   }
 }
 
+// ==================== LOCATION API ====================
+
+// Get all public locations
+export async function getLocations() {
+  try {
+    const response = await fetch(`${API_URL}/locations`);
+    if (!response.ok) throw new Error('Failed to fetch locations');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching locations:', error);
+    return [];
+  }
+}
+
+// Get single location by slug
+export async function getLocationBySlug(slug) {
+  try {
+    const response = await fetch(`${API_URL}/locations/${slug}`);
+    if (!response.ok) {
+      if (response.status === 404) return null;
+      throw new Error('Failed to fetch location');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching location:', error);
+    return null;
+  }
+}
+
 // Get VAPID public key from server
 export async function getVapidPublicKey() {
   try {
