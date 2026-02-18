@@ -508,6 +508,7 @@ class UserProfile(BaseModel):
     phone: Optional[str] = None
     email: Optional[str] = None
     avatar_emoji: str = "😊"
+    profile_photo_url: Optional[str] = None  # URL to uploaded profile photo/selfie
     birthdate: Optional[str] = None  # YYYY-MM-DD format
     anniversary: Optional[str] = None  # YYYY-MM-DD format
     special_dates: List[dict] = []  # [{name, date}]
