@@ -66,7 +66,7 @@ const CheckInPage = () => {
             setStatus('found');
             // Redirect to location check-in after short delay
             setTimeout(() => {
-              navigate(`/location/${nearest.slug}?checkin=true`);
+              navigate(`/locations/${nearest.slug}?checkin=true`);
             }, 1500);
           } else {
             // Too far from any location
