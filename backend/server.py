@@ -1356,6 +1356,302 @@ async def update_drink_status(order_id: str, status: str):
     return {"message": f"Drink status updated to {status}"}
 
 
+# =====================================================
+# USER PROFILE ENDPOINTS
+# =====================================================
+
+@api_router.post("/user/profile", response_model=UserProfileResponse)
+async def create_user_profile(profile: UserProfileCreate):
+    """Create a new user profile"""
+    # Check if email already exists
+    if profile.email:
+        existing = await db.user_profiles.find_one({"email": profile.email})
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already registered")
+    
+    profile_dict = profile.dict()
+    profile_dict["id"] = str(uuid.uuid4())
+    profile_dict["token_balance"] = 0
+    profile_dict["total_visits"] = 0
+    profile_dict["total_posts"] = 0
+    profile_dict["total_photos"] = 0
+    profile_dict["special_dates"] = []
+    profile_dict["allow_gallery_posts"] = True
+    profile_dict["created_at"] = datetime.now(timezone.utc)
+    profile_dict["updated_at"] = datetime.now(timezone.utc)
+    
+    await db.user_profiles.insert_one(profile_dict)
+    profile_dict.pop("_id", None)
+    
+    return UserProfileResponse(**profile_dict)
+
+
+@api_router.get("/user/profile/{user_id}", response_model=UserProfileResponse)
+async def get_user_profile(user_id: str):
+    """Get a user profile by ID"""
+    profile = await db.user_profiles.find_one({"id": user_id}, {"_id": 0})
+    if not profile:
+        raise HTTPException(status_code=404, detail="User profile not found")
+    return UserProfileResponse(**profile)
+
+
+@api_router.get("/user/profile/by-email/{email}")
+async def get_user_profile_by_email(email: str):
+    """Get a user profile by email"""
+    profile = await db.user_profiles.find_one({"email": email}, {"_id": 0})
+    if not profile:
+        return None
+    return UserProfileResponse(**profile)
+
+
+@api_router.put("/user/profile/{user_id}", response_model=UserProfileResponse)
+async def update_user_profile(user_id: str, update: UserProfileUpdate):
+    """Update a user profile"""
+    profile = await db.user_profiles.find_one({"id": user_id})
+    if not profile:
+        raise HTTPException(status_code=404, detail="User profile not found")
+    
+    update_dict = {k: v for k, v in update.dict().items() if v is not None}
+    if update_dict:
+        update_dict["updated_at"] = datetime.now(timezone.utc)
+        await db.user_profiles.update_one({"id": user_id}, {"$set": update_dict})
+    
+    updated = await db.user_profiles.find_one({"id": user_id}, {"_id": 0})
+    return UserProfileResponse(**updated)
+
+
+# =====================================================
+# F&F TOKEN ENDPOINTS
+# =====================================================
+
+@api_router.post("/user/tokens/purchase/{user_id}")
+async def purchase_tokens(user_id: str, purchase: TokenPurchaseCreate):
+    """Purchase F&F tokens - $1 = 10 tokens"""
+    profile = await db.user_profiles.find_one({"id": user_id})
+    if not profile:
+        raise HTTPException(status_code=404, detail="User profile not found")
+    
+    if purchase.amount_usd < 1:
+        raise HTTPException(status_code=400, detail="Minimum purchase is $1")
+    
+    tokens_to_add = int(purchase.amount_usd * 10)
+    
+    # Create purchase record
+    purchase_record = {
+        "id": str(uuid.uuid4()),
+        "user_id": user_id,
+        "amount_usd": purchase.amount_usd,
+        "tokens_purchased": tokens_to_add,
+        "payment_method": "card",
+        "gifted_by": None,
+        "created_at": datetime.now(timezone.utc)
+    }
+    await db.token_purchases.insert_one(purchase_record)
+    
+    # Update user balance
+    new_balance = profile.get("token_balance", 0) + tokens_to_add
+    await db.user_profiles.update_one(
+        {"id": user_id},
+        {"$set": {"token_balance": new_balance, "updated_at": datetime.now(timezone.utc)}}
+    )
+    
+    purchase_record.pop("_id", None)
+    return {
+        "purchase": purchase_record,
+        "new_balance": new_balance
+    }
+
+
+@api_router.get("/user/tokens/balance/{user_id}")
+async def get_token_balance(user_id: str):
+    """Get user's F&F token balance"""
+    profile = await db.user_profiles.find_one({"id": user_id}, {"_id": 0, "token_balance": 1, "id": 1})
+    if not profile:
+        raise HTTPException(status_code=404, detail="User profile not found")
+    return {"user_id": user_id, "token_balance": profile.get("token_balance", 0)}
+
+
+@api_router.get("/user/tokens/history/{user_id}")
+async def get_token_history(user_id: str):
+    """Get user's token purchase/gift history"""
+    history = await db.token_purchases.find(
+        {"user_id": user_id},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(50).to_list(50)
+    return history
+
+
+@api_router.post("/user/tokens/spend/{user_id}")
+async def spend_tokens(user_id: str, amount: int):
+    """Spend tokens (for tips and drinks)"""
+    profile = await db.user_profiles.find_one({"id": user_id})
+    if not profile:
+        raise HTTPException(status_code=404, detail="User profile not found")
+    
+    current_balance = profile.get("token_balance", 0)
+    if current_balance < amount:
+        raise HTTPException(status_code=400, detail="Insufficient token balance")
+    
+    new_balance = current_balance - amount
+    await db.user_profiles.update_one(
+        {"id": user_id},
+        {"$set": {"token_balance": new_balance, "updated_at": datetime.now(timezone.utc)}}
+    )
+    
+    return {"user_id": user_id, "tokens_spent": amount, "new_balance": new_balance}
+
+
+# Admin: Gift tokens to a user
+@api_router.post("/admin/tokens/gift")
+async def admin_gift_tokens(gift: TokenGiftCreate, username: str = Depends(get_current_admin)):
+    """Admin: Gift F&F tokens to a user"""
+    profile = await db.user_profiles.find_one({"id": gift.user_id})
+    if not profile:
+        raise HTTPException(status_code=404, detail="User profile not found")
+    
+    if gift.tokens < 1:
+        raise HTTPException(status_code=400, detail="Must gift at least 1 token")
+    
+    # Create gift record
+    gift_record = {
+        "id": str(uuid.uuid4()),
+        "user_id": gift.user_id,
+        "amount_usd": gift.tokens / 10,  # Equivalent USD value
+        "tokens_purchased": gift.tokens,
+        "payment_method": "gift",
+        "gifted_by": username,
+        "message": gift.message,
+        "created_at": datetime.now(timezone.utc)
+    }
+    await db.token_purchases.insert_one(gift_record)
+    
+    # Update user balance
+    new_balance = profile.get("token_balance", 0) + gift.tokens
+    await db.user_profiles.update_one(
+        {"id": gift.user_id},
+        {"$set": {"token_balance": new_balance, "updated_at": datetime.now(timezone.utc)}}
+    )
+    
+    gift_record.pop("_id", None)
+    return {
+        "gift": gift_record,
+        "new_balance": new_balance,
+        "user_name": profile.get("name")
+    }
+
+
+# Admin: Get all user profiles
+@api_router.get("/admin/users")
+async def admin_get_users(username: str = Depends(get_current_admin)):
+    """Get all user profiles (admin only)"""
+    users = await db.user_profiles.find({}, {"_id": 0}).sort("created_at", -1).to_list(500)
+    return users
+
+
+# =====================================================
+# USER HISTORY ENDPOINTS
+# =====================================================
+
+@api_router.get("/user/history/visits/{user_id}")
+async def get_user_visits(user_id: str):
+    """Get user's check-in/visit history"""
+    # Get visits from the checkins collection, filtered by user
+    # We track visits by linking user_id to checkin records
+    visits = await db.user_visits.find(
+        {"user_id": user_id},
+        {"_id": 0}
+    ).sort("checked_in_at", -1).limit(50).to_list(50)
+    return visits
+
+
+@api_router.get("/user/history/posts/{user_id}")
+async def get_user_posts(user_id: str):
+    """Get user's social wall post history"""
+    # Find posts by checkin IDs associated with this user
+    posts = await db.social_posts.find(
+        {"author_user_id": user_id},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(50).to_list(50)
+    return posts
+
+
+@api_router.get("/user/history/drinks/{user_id}")
+async def get_user_drink_history(user_id: str):
+    """Get user's drink sending/receiving history"""
+    drinks = await db.drink_orders.find(
+        {
+            "$or": [
+                {"from_user_id": user_id},
+                {"to_user_id": user_id}
+            ]
+        },
+        {"_id": 0}
+    ).sort("created_at", -1).limit(50).to_list(50)
+    return drinks
+
+
+@api_router.get("/user/history/tips/{user_id}")
+async def get_user_tip_history(user_id: str):
+    """Get user's DJ tip history"""
+    tips = await db.dj_tips.find(
+        {"tipper_user_id": user_id},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(50).to_list(50)
+    return tips
+
+
+# =====================================================
+# USER GALLERY SUBMISSION ENDPOINTS
+# =====================================================
+
+@api_router.post("/user/gallery/submit/{user_id}", response_model=UserGallerySubmissionResponse)
+async def submit_gallery_photo(user_id: str, submission: UserGallerySubmissionCreate):
+    """Submit a photo to the gallery (auto-approved)"""
+    profile = await db.user_profiles.find_one({"id": user_id})
+    if not profile:
+        raise HTTPException(status_code=404, detail="User profile not found")
+    
+    submission_dict = submission.dict()
+    submission_dict["id"] = str(uuid.uuid4())
+    submission_dict["user_id"] = user_id
+    submission_dict["user_name"] = profile.get("name", "Anonymous")
+    submission_dict["created_at"] = datetime.now(timezone.utc)
+    
+    await db.user_gallery_submissions.insert_one(submission_dict)
+    
+    # Also add to the main gallery (auto-approved)
+    gallery_item = {
+        "id": str(uuid.uuid4()),
+        "title": submission.caption or f"Photo by {profile.get('name', 'Guest')}",
+        "image_url": submission.image_url,
+        "category": "community",
+        "is_active": True,
+        "display_order": 999,  # Show at end
+        "submitted_by_user": user_id,
+        "created_at": datetime.now(timezone.utc)
+    }
+    await db.gallery_items.insert_one(gallery_item)
+    
+    # Update user's photo count
+    await db.user_profiles.update_one(
+        {"id": user_id},
+        {"$inc": {"total_photos": 1}, "$set": {"updated_at": datetime.now(timezone.utc)}}
+    )
+    
+    submission_dict.pop("_id", None)
+    return UserGallerySubmissionResponse(**submission_dict)
+
+
+@api_router.get("/user/gallery/submissions/{user_id}")
+async def get_user_submissions(user_id: str):
+    """Get user's gallery submissions"""
+    submissions = await db.user_gallery_submissions.find(
+        {"user_id": user_id},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(50).to_list(50)
+    return submissions
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
