@@ -106,7 +106,7 @@ const MyAccountPage = () => {
         if (existingProfile) {
           setProfile(existingProfile);
           setEditedProfile(existingProfile);
-          loadAdditionalData(existingProfile.id);
+          loadAdditionalData(existingProfile.id, existingProfile.role);
           setIsLoading(false);
           return;
         }
@@ -121,7 +121,7 @@ const MyAccountPage = () => {
             localStorage.setItem('ff_user_profile_id', existingProfile.id);
             setProfile(existingProfile);
             setEditedProfile(existingProfile);
-            loadAdditionalData(existingProfile.id);
+            loadAdditionalData(existingProfile.id, existingProfile.role);
             setIsLoading(false);
             return;
           }
@@ -137,7 +137,7 @@ const MyAccountPage = () => {
         localStorage.setItem('ff_user_profile_id', newProfile.id);
         setProfile(newProfile);
         setEditedProfile(newProfile);
-        loadAdditionalData(newProfile.id);
+        loadAdditionalData(newProfile.id, newProfile.role);
       } else {
         // No saved user - redirect to home or show signup prompt
         setProfile(null);
