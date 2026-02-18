@@ -2017,6 +2017,211 @@ const SocialTab = () => {
   );
 };
 
+// Users Tab - Manage users and gift tokens
+const UsersTab = () => {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [giftTokens, setGiftTokens] = useState(10);
+  const [giftMessage, setGiftMessage] = useState('');
+  const [isGifting, setIsGifting] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const data = await adminGetUsers();
+      setUsers(data);
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGiftTokens = async () => {
+    if (!selectedUser || giftTokens < 1) return;
+    
+    setIsGifting(true);
+    try {
+      const result = await adminGiftTokens(selectedUser.id, giftTokens, giftMessage || null);
+      toast({ 
+        title: 'Tokens Gifted!', 
+        description: `${giftTokens} tokens sent to ${result.user_name}. New balance: ${result.new_balance}` 
+      });
+      
+      // Update local state
+      setUsers(prev => prev.map(u => 
+        u.id === selectedUser.id 
+          ? { ...u, token_balance: result.new_balance }
+          : u
+      ));
+      
+      setSelectedUser(null);
+      setGiftTokens(10);
+      setGiftMessage('');
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setIsGifting(false);
+    }
+  };
+
+  const filteredUsers = users.filter(u => 
+    u.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    u.email?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (loading) return <div className="text-white text-center py-8">Loading users...</div>;
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold text-white">User Profiles ({users.length})</h3>
+      </div>
+
+      {/* Search */}
+      <Input
+        placeholder="Search by name or email..."
+        value={searchTerm}
+        onChange={e => setSearchTerm(e.target.value)}
+        className="bg-slate-800 border-slate-700 text-white"
+        data-testid="user-search-input"
+      />
+
+      {/* Gift Tokens Modal */}
+      {selectedUser && (
+        <Card className="bg-amber-900/30 border-amber-600/50">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Gift className="w-5 h-5 text-amber-400" />
+              Gift Tokens to {selectedUser.name}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="text-slate-300">Current balance:</span>
+              <span className="text-amber-400 font-bold">{selectedUser.token_balance || 0} tokens</span>
+            </div>
+            
+            <div className="grid grid-cols-4 gap-2">
+              {[10, 25, 50, 100].map(amount => (
+                <button
+                  key={amount}
+                  onClick={() => setGiftTokens(amount)}
+                  className={`p-2 rounded-lg border transition-all ${
+                    giftTokens === amount
+                      ? 'border-amber-500 bg-amber-500/20 text-white'
+                      : 'border-slate-600 bg-slate-800 text-slate-300 hover:border-slate-500'
+                  }`}
+                >
+                  {amount}
+                </button>
+              ))}
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Input
+                type="number"
+                min="1"
+                value={giftTokens}
+                onChange={e => setGiftTokens(Math.max(1, parseInt(e.target.value) || 1))}
+                className="bg-slate-800 border-slate-600 text-white w-24"
+              />
+              <span className="text-slate-400">tokens (${(giftTokens / 10).toFixed(2)} value)</span>
+            </div>
+
+            <Input
+              placeholder="Optional message..."
+              value={giftMessage}
+              onChange={e => setGiftMessage(e.target.value)}
+              className="bg-slate-800 border-slate-600 text-white"
+            />
+
+            <div className="flex gap-2">
+              <Button
+                onClick={handleGiftTokens}
+                disabled={isGifting}
+                className="flex-1 bg-amber-600 hover:bg-amber-700"
+                data-testid="confirm-gift-btn"
+              >
+                <Coins className="w-4 h-4 mr-2" />
+                {isGifting ? 'Sending...' : `Gift ${giftTokens} Tokens`}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setSelectedUser(null)}
+                className="border-slate-600 text-slate-300"
+              >
+                Cancel
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Users List */}
+      {filteredUsers.length === 0 ? (
+        <Card className="bg-slate-800/50 border-slate-700">
+          <CardContent className="p-6 text-center">
+            <User className="w-12 h-12 mx-auto text-slate-500 mb-2" />
+            <p className="text-slate-400">No users found</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-3">
+          {filteredUsers.map(user => (
+            <Card key={user.id} className="bg-slate-800/50 border-slate-700">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">{user.avatar_emoji || '😊'}</span>
+                    <div>
+                      <p className="text-white font-medium">{user.name}</p>
+                      <p className="text-slate-400 text-sm">{user.email || 'No email'}</p>
+                      <div className="flex items-center gap-4 mt-1 text-xs text-slate-500">
+                        <span>Visits: {user.total_visits || 0}</span>
+                        <span>Posts: {user.total_posts || 0}</span>
+                        <span>Photos: {user.total_photos || 0}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-4">
+                    {/* Token Balance */}
+                    <div className="text-right">
+                      <div className="flex items-center gap-1 text-amber-400">
+                        <Coins className="w-4 h-4" />
+                        <span className="font-bold">{user.token_balance || 0}</span>
+                      </div>
+                      <span className="text-xs text-slate-500">tokens</span>
+                    </div>
+                    
+                    {/* Gift Button */}
+                    <Button
+                      size="sm"
+                      onClick={() => setSelectedUser(user)}
+                      className="bg-amber-600/30 hover:bg-amber-600/50 text-amber-300 border border-amber-600/50"
+                      data-testid={`gift-tokens-${user.id}`}
+                    >
+                      <Gift className="w-4 h-4 mr-1" />
+                      Gift
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Main Admin Page Component
 const AdminPage = () => {
   const navigate = useNavigate();
