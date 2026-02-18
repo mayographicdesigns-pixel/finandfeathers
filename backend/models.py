@@ -565,22 +565,22 @@ class UserProfileResponse(BaseModel):
     email: Optional[str]
     avatar_emoji: str
     profile_photo_url: Optional[str]
-    role: str
-    staff_title: Optional[str]
-    cashout_balance: float
-    total_earnings: float
+    role: str = "customer"
+    staff_title: Optional[str] = None
+    cashout_balance: float = 0.0
+    total_earnings: float = 0.0
     birthdate: Optional[str]
     anniversary: Optional[str]
-    special_dates: List[dict]
+    special_dates: List[dict] = []
     instagram_handle: Optional[str]
     facebook_handle: Optional[str]
     twitter_handle: Optional[str]
     tiktok_handle: Optional[str]
-    token_balance: int
-    total_visits: int
-    total_posts: int
-    total_photos: int
-    allow_gallery_posts: bool
+    token_balance: int = 0
+    total_visits: int = 0
+    total_posts: int = 0
+    total_photos: int = 0
+    allow_gallery_posts: bool = True
     created_at: datetime
     updated_at: datetime
 
