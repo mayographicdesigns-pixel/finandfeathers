@@ -736,6 +736,15 @@ const LinkTreeHomePage = () => {
           </Button>
 
           <Button
+            onClick={() => navigate('/merch')}
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+            data-testid="merch-btn"
+          >
+            <ShoppingBag className="w-5 h-5 mr-2" />
+            F&F Merch Shop
+          </Button>
+
+          <Button
             onClick={() => navigate('/account')}
             className="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
             data-testid="my-account-btn"
