@@ -183,7 +183,7 @@ const LocationsPage = () => {
                 {/* Action Buttons */}
                 <div className="space-y-2">
                   <Button
-                    onClick={() => navigate('/menu')}
+                    onClick={(e) => { e.stopPropagation(); navigate('/menu'); }}
                     className="w-full bg-red-600 hover:bg-red-700 text-white"
                   >
                     <ExternalLink className="w-4 h-4 mr-2" />
