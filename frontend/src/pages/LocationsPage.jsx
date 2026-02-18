@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { MapPin, Phone, ExternalLink, Calendar, ShoppingBag, Home } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
-import { locations } from '../mockData';
+import { getLocations } from '../services/api';
 
 const LocationsPage = () => {
   const navigate = useNavigate();
   const [userLocation, setUserLocation] = useState(null);
-  const [sortedLocations, setSortedLocations] = useState(locations);
+  const [sortedLocations, setSortedLocations] = useState([]);
   const [locationPermission, setLocationPermission] = useState('prompt');
+  const [isLoading, setIsLoading] = useState(true);
 
   // Calculate distance between two coordinates using Haversine formula
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -25,8 +26,21 @@ const LocationsPage = () => {
     return distance;
   };
 
-  // Get user's geolocation
+  // Fetch locations from API
   useEffect(() => {
+    const fetchLocations = async () => {
+      setIsLoading(true);
+      const locations = await getLocations();
+      setSortedLocations(locations);
+      setIsLoading(false);
+    };
+    fetchLocations();
+  }, []);
+
+  // Get user's geolocation and sort locations
+  useEffect(() => {
+    if (sortedLocations.length === 0) return;
+    
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -35,7 +49,7 @@ const LocationsPage = () => {
           setLocationPermission('granted');
           
           // Sort locations by distance
-          const sorted = [...locations].map(loc => ({
+          const sorted = [...sortedLocations].map(loc => ({
             ...loc,
             distance: calculateDistance(latitude, longitude, loc.coordinates.lat, loc.coordinates.lng)
           })).sort((a, b) => a.distance - b.distance);
@@ -48,7 +62,15 @@ const LocationsPage = () => {
         }
       );
     }
-  }, []);
+  }, [sortedLocations.length > 0]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-xl">Loading locations...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black">
