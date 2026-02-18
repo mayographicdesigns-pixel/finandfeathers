@@ -120,7 +120,8 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 #### My Account Feature (MyAccountPage.jsx) - COMPLETED February 2026
 - [x] **Profile Management:**
   - [x] View/edit name, phone, email
-  - [x] Avatar emoji picker (12 options)
+  - [x] **Profile photo/selfie upload** (JPG, PNG, GIF, WebP up to 5MB)
+  - [x] Avatar emoji picker (12 options - fallback if no photo)
   - [x] Birthdate and anniversary date fields
   - [x] Special dates (add/remove with name + date)
   - [x] Social media handles (Instagram, Facebook, Twitter, TikTok)
