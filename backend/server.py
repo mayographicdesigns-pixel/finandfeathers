@@ -1379,6 +1379,7 @@ async def create_user_profile(profile: UserProfileCreate):
     profile_dict["allow_gallery_posts"] = True
     profile_dict["birthdate"] = None
     profile_dict["anniversary"] = None
+    profile_dict["profile_photo_url"] = None
     profile_dict["instagram_handle"] = None
     profile_dict["facebook_handle"] = None
     profile_dict["twitter_handle"] = None
