@@ -125,12 +125,31 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - [x] Birthdate and anniversary date fields
   - [x] Special dates (add/remove with name + date)
   - [x] Social media handles (Instagram, Facebook, Twitter, TikTok)
+- [x] **Role-Based Access System:**
+  - [x] Admin - Full access
+  - [x] Management - Can gift tokens, view users, no system settings
+  - [x] Staff - Collect tips, cash out at 80% after $20 min, transfer tips to personal
+  - [x] Customer - Loyalty account, gift drink tokens, tip staff
+  - [x] Role badges display in profile and admin panel
+  - [x] Tokens work across all locations
 - [x] **F&F Tokens System ($1 = 10 tokens):**
   - [x] Token balance display in header
   - [x] Quick purchase buttons ($1, $5, $10, $20)
   - [x] Custom amount input
   - [x] Token purchase history
   - [x] Used for DJ tipping and sending drinks
+  - [x] Token transfers between users
+- [x] **Staff Earnings Tab (staff role only):**
+  - [x] Tips earned display (cashout_balance)
+  - [x] Total lifetime earnings tracking
+  - [x] Cash out at 80% rate (minimum $20)
+  - [x] Transfer tips to personal token balance
+  - [x] Cashout history
+- [x] **Tip Staff Tab (all users):**
+  - [x] Browse and select staff to tip
+  - [x] Quick tip amounts (10, 20, 50, 100 tokens)
+  - [x] Custom tip with message
+  - [x] Transfer history
 - [x] **Photos Tab:**
   - [x] Submit photos to gallery (auto-approved)
   - [x] View own submissions
