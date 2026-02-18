@@ -516,6 +516,8 @@ class UserProfile(BaseModel):
     facebook_handle: Optional[str] = None
     twitter_handle: Optional[str] = None
     tiktok_handle: Optional[str] = None
+    # F&F Tokens - $1 = 10 tokens, used for DJ tips and drinks
+    token_balance: int = 0
     # Stats
     total_visits: int = 0
     total_posts: int = 0
