@@ -555,6 +555,7 @@ class UserProfileResponse(BaseModel):
     phone: Optional[str]
     email: Optional[str]
     avatar_emoji: str
+    profile_photo_url: Optional[str]
     birthdate: Optional[str]
     anniversary: Optional[str]
     special_dates: List[dict]
