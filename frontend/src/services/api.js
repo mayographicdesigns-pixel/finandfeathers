@@ -1124,7 +1124,38 @@ export async function uploadProfilePhoto(userId, file) {
 
 // ==================== F&F TOKENS API ====================
 
-// Purchase tokens ($1 = 10 tokens)
+// Get available token packages
+export async function getTokenPackages() {
+  const response = await fetch(`${API_URL}/tokens/packages`);
+  if (!response.ok) throw new Error('Failed to get token packages');
+  return await response.json();
+}
+
+// Create Stripe checkout session for token purchase
+export async function createTokenCheckout(userId, packageId) {
+  const originUrl = window.location.origin;
+  const response = await fetch(`${API_URL}/tokens/checkout?package_id=${packageId}&user_id=${userId}&origin_url=${encodeURIComponent(originUrl)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to create checkout session');
+  }
+  return await response.json();
+}
+
+// Check token checkout status
+export async function checkTokenCheckoutStatus(sessionId) {
+  const response = await fetch(`${API_URL}/tokens/checkout/status/${sessionId}`);
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to check checkout status');
+  }
+  return await response.json();
+}
+
+// Purchase tokens (deprecated - kept for admin gifting)
 export async function purchaseTokens(userId, amountUsd) {
   const response = await fetch(`${API_URL}/user/tokens/purchase/${userId}`, {
     method: 'POST',
