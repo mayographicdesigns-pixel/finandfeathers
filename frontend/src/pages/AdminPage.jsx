@@ -23,7 +23,8 @@ import {
   getAdminSocialLinks, createSocialLink, updateSocialLink, deleteSocialLink,
   getAdminInstagramPosts, createInstagramPost, updateInstagramPost, deleteInstagramPost,
   getAdminGallery, createGalleryItem, updateGalleryItem, deleteGalleryItem,
-  adminGetUsers, adminGiftTokens, adminUpdateUserRole, adminGetCashouts, adminProcessCashout
+  adminGetUsers, adminGiftTokens, adminUpdateUserRole, adminGetCashouts, adminProcessCashout,
+  adminGetLocations, adminCreateLocation, adminUpdateLocation, adminDeleteLocation, adminReorderLocations
 } from '../services/api';
 import {
   DndContext,
