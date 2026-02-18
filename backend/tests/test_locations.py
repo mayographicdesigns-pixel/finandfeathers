@@ -237,14 +237,15 @@ class TestLocationDataIntegrity:
         locations = response.json()
         slugs = [loc["slug"] for loc in locations]
         
+        # These are the actual location slugs from the seeded data
         expected_slugs = [
             "edgewood-atlanta",
             "midtown-atlanta",
-            "marietta",
-            "alpharetta",
-            "stonecrest",
-            "conyers",
-            "west-end-atlanta",
+            "douglasville",
+            "riverdale",
+            "valdosta",
+            "albany",
+            "stone-mountain",
             "las-vegas"
         ]
         
