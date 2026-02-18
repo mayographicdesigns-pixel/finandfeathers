@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { 
   User, Coins, Camera, History, Gift, Calendar, 
   Instagram, Twitter, Facebook, ArrowLeft, Edit2, 
-  Save, X, Plus, Trash2, CreditCard, Sparkles, Music, Wine, Upload
+  Save, X, Plus, Trash2, CreditCard, Sparkles, Music, Wine, Upload,
+  DollarSign, Send, Award, Briefcase, BadgeCheck, ArrowRightLeft
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -22,8 +23,34 @@ import {
   getUserGallerySubmissions,
   submitGalleryPhoto,
   uploadImage,
-  uploadProfilePhoto
+  uploadProfilePhoto,
+  getStaffList,
+  transferTokens,
+  getTransferHistory,
+  requestCashout,
+  getCashoutHistory,
+  transferTipsToPersonal
 } from '../services/api';
+
+// Role badge component
+const RoleBadge = ({ role, staffTitle }) => {
+  const roleConfig = {
+    admin: { label: 'Admin', color: 'bg-red-600', icon: BadgeCheck },
+    management: { label: 'Management', color: 'bg-purple-600', icon: Briefcase },
+    staff: { label: staffTitle || 'Staff', color: 'bg-blue-600', icon: Award },
+    customer: { label: 'Member', color: 'bg-slate-600', icon: User }
+  };
+  
+  const config = roleConfig[role] || roleConfig.customer;
+  const Icon = config.icon;
+  
+  return (
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium text-white ${config.color}`}>
+      <Icon className="w-3 h-3" />
+      {config.label}
+    </span>
+  );
+};
 
 const MyAccountPage = () => {
   const navigate = useNavigate();
@@ -47,6 +74,20 @@ const MyAccountPage = () => {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [photoCaption, setPhotoCaption] = useState('');
   const [uploadingProfilePhoto, setUploadingProfilePhoto] = useState(false);
+  
+  // Staff-specific state
+  const [staffList, setStaffList] = useState([]);
+  const [tipAmount, setTipAmount] = useState(10);
+  const [selectedStaff, setSelectedStaff] = useState(null);
+  const [tipMessage, setTipMessage] = useState('');
+  const [isTipping, setIsTipping] = useState(false);
+  const [transferHistory, setTransferHistory] = useState([]);
+  const [cashoutHistory, setCashoutHistory] = useState([]);
+  const [cashoutAmount, setCashoutAmount] = useState(0);
+  const [cashoutMethod, setCashoutMethod] = useState('venmo');
+  const [cashoutDetails, setCashoutDetails] = useState('');
+  const [isRequestingCashout, setIsRequestingCashout] = useState(false);
+  const [transferToPersonalAmount, setTransferToPersonalAmount] = useState(0);
 
   useEffect(() => {
     loadUserProfile();
