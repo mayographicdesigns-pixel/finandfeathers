@@ -48,6 +48,12 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Auto-save order on drag end
 
 #### Location Ordering (Updated February 2026)
+- [x] Locations now sorted by distance from user when geolocation is enabled
+- [x] **Migrated locations to backend database** - All location data now stored in MongoDB
+- [x] Admin can manage locations via Admin Panel > Locations tab
+- [x] CRUD operations: Create, Read, Update, Delete locations
+- [x] Toggle location visibility (show/hide from public)
+- [x] Each location includes: name, slug, address, phone, hours, coordinates, image, specials, social links
 - [x] All 8 locations have **ToastTab Order Online URLs**:
   - Edgewood: https://order.toasttab.com/online/fin-feathers-edgewood-2nd-location-345-edgewood-ave-se
   - Midtown: https://www.toasttab.com/local/order/fin-feathers-midtown-1136-crescent-ave-ne
