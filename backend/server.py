@@ -26,7 +26,10 @@ from models import (
     InstagramPost, InstagramPostCreate, InstagramPostUpdate,
     CheckIn, CheckInCreate, CheckInResponse,
     GalleryItem, GalleryItemCreate, GalleryItemUpdate,
-    HomepageContent, HomepageContentUpdate
+    HomepageContent, HomepageContentUpdate,
+    SocialPost, SocialPostCreate, SocialPostResponse,
+    DirectMessage, DirectMessageCreate, DirectMessageResponse,
+    DJTip, DJTipCreate, DJTipResponse
 )
 from push_service import PushNotificationService
 from auth import verify_password, get_password_hash, create_access_token, decode_access_token
