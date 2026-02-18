@@ -1,19 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 
-// Organize videos by day of the week using uploaded promotional videos
-// Day-specific video shows first, then common videos (m-f specials, hookah)
-const mfSpecialsVideo = 'https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/gguqbaki_m-f%205%20specials.mp4';
-const hookahVideo = 'https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/5lk2zci7_Hookah.mp4';
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-const weeklyVideos = {
-  0: [mfSpecialsVideo, hookahVideo], // Sunday - no specific video
-  1: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/72qd1ab8_Monday.mp4', mfSpecialsVideo, hookahVideo], // Monday
-  2: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/wvi3jxji_Tuesday.mp4', mfSpecialsVideo, hookahVideo], // Tuesday
-  3: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/d6juf8fz_Wednesday.mp4', 'https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/jzr5vp5d_Wednesday%20%282%29.mp4', mfSpecialsVideo, hookahVideo], // Wednesday
-  4: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/w9nk5dsp_Thursday.mp4', mfSpecialsVideo, hookahVideo], // Thursday
-  5: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/s5myd3mu_Friday.mp4', mfSpecialsVideo, hookahVideo], // Friday
-  6: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/lrdt4s1h_Saturday.mp4', mfSpecialsVideo, hookahVideo] // Saturday
+// Fallback videos in case API fails
+const fallbackVideos = {
+  0: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/gguqbaki_m-f%205%20specials.mp4'],
+  1: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/72qd1ab8_Monday.mp4'],
+  2: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/wvi3jxji_Tuesday.mp4'],
+  3: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/d6juf8fz_Wednesday.mp4'],
+  4: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/w9nk5dsp_Thursday.mp4'],
+  5: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/s5myd3mu_Friday.mp4'],
+  6: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/lrdt4s1h_Saturday.mp4']
 };
 
 const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -23,15 +21,51 @@ const DailyVideoCarousel = () => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [showPlayButton, setShowPlayButton] = useState(false);
+  const [videosByDay, setVideosByDay] = useState(fallbackVideos);
   const videoRef = useRef(null);
 
-  const videos = weeklyVideos[currentDay] || [];
-  const currentVideo = videos[currentVideoIndex];
-
+  // Fetch videos from API
   useEffect(() => {
-    // Update to current day on mount
-    setCurrentDay(new Date().getDay());
+    const fetchVideos = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/promo-videos`);
+        if (response.ok) {
+          const data = await response.json();
+          
+          // Organize videos by day
+          const organized = { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
+          const commonVideos = [];
+          
+          data.forEach(video => {
+            if (video.is_common) {
+              commonVideos.push(video.url);
+            } else if (video.day_of_week >= 0 && video.day_of_week <= 6) {
+              organized[video.day_of_week].push(video.url);
+            }
+          });
+          
+          // Add common videos to each day
+          for (let day = 0; day <= 6; day++) {
+            organized[day] = [...organized[day], ...commonVideos];
+            // Fallback if no videos for a day
+            if (organized[day].length === 0) {
+              organized[day] = fallbackVideos[day] || commonVideos;
+            }
+          }
+          
+          setVideosByDay(organized);
+        }
+      } catch (error) {
+        console.error('Error fetching promo videos:', error);
+        // Keep using fallback videos
+      }
+    };
+    
+    fetchVideos();
   }, []);
+
+  const videos = videosByDay[currentDay] || [];
+  const currentVideo = videos[currentVideoIndex];
 
   // Handle video loading and autoplay
   useEffect(() => {
@@ -43,11 +77,9 @@ const DailyVideoCarousel = () => {
 
     const handleCanPlayThrough = () => {
       setIsLoading(false);
-      // Attempt to play the video
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          // Autoplay was prevented, show play button
           setShowPlayButton(true);
         });
       }
@@ -55,7 +87,6 @@ const DailyVideoCarousel = () => {
 
     const handleLoadedData = () => {
       setIsLoading(false);
-      // Try to autoplay
       video.play().catch(() => {
         setShowPlayButton(true);
       });
@@ -66,7 +97,6 @@ const DailyVideoCarousel = () => {
       setShowPlayButton(true);
     };
 
-    // Add a timeout fallback in case the video takes too long
     const timeoutId = setTimeout(() => {
       setIsLoading(false);
       setShowPlayButton(true);
@@ -76,7 +106,6 @@ const DailyVideoCarousel = () => {
     video.addEventListener('canplaythrough', handleCanPlayThrough);
     video.addEventListener('error', handleError);
 
-    // Force load
     video.load();
 
     return () => {
@@ -135,14 +164,12 @@ const DailyVideoCarousel = () => {
       <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
         {currentVideo ? (
           <>
-            {/* Loading Spinner */}
             {isLoading && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
                 <div className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
               </div>
             )}
 
-            {/* Play Button Overlay */}
             {showPlayButton && !isLoading && (
               <button
                 onClick={handlePlayClick}
@@ -169,7 +196,6 @@ const DailyVideoCarousel = () => {
               Your browser does not support the video tag.
             </video>
 
-            {/* Navigation Arrows */}
             {videos.length > 1 && (
               <>
                 <button
@@ -187,7 +213,6 @@ const DailyVideoCarousel = () => {
                   <ChevronRight className="w-6 h-6" />
                 </button>
 
-                {/* Video Counter */}
                 <div className="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm z-20">
                   {currentVideoIndex + 1} / {videos.length}
                 </div>
