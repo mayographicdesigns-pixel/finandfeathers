@@ -560,12 +560,66 @@ class UserProfileResponse(BaseModel):
     facebook_handle: Optional[str]
     twitter_handle: Optional[str]
     tiktok_handle: Optional[str]
+    token_balance: int
     total_visits: int
     total_posts: int
     total_photos: int
     allow_gallery_posts: bool
     created_at: datetime
     updated_at: datetime
+
+
+# Token Purchase Model
+class TokenPurchase(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    amount_usd: float  # $1 = 10 tokens
+    tokens_purchased: int
+    payment_method: str = "card"  # card, gift (admin gifted)
+    gifted_by: Optional[str] = None  # Admin username if gifted
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class TokenPurchaseCreate(BaseModel):
+    amount_usd: float  # Must be at least $1
+
+class TokenGiftCreate(BaseModel):
+    user_id: str
+    tokens: int
+    message: Optional[str] = None
+
+class TokenPurchaseResponse(BaseModel):
+    id: str
+    user_id: str
+    amount_usd: float
+    tokens_purchased: int
+    payment_method: str
+    gifted_by: Optional[str]
+    created_at: datetime
+
+
+# User Gallery Submission Model (auto-approved)
+class UserGallerySubmission(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    user_name: str
+    image_url: str
+    caption: Optional[str] = None
+    location_slug: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class UserGallerySubmissionCreate(BaseModel):
+    image_url: str
+    caption: Optional[str] = None
+    location_slug: Optional[str] = None
+
+class UserGallerySubmissionResponse(BaseModel):
+    id: str
+    user_id: str
+    user_name: str
+    image_url: str
+    caption: Optional[str]
+    location_slug: Optional[str]
+    created_at: datetime
 
 
 # User Visit History
