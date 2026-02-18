@@ -151,6 +151,28 @@ const MyAccountPage = () => {
     }
   };
 
+  const handleProfilePhotoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !profile) return;
+    
+    setUploadingProfilePhoto(true);
+    try {
+      const result = await uploadProfilePhoto(profile.id, file);
+      const photoUrl = `${process.env.REACT_APP_BACKEND_URL}${result.url}`;
+      
+      // Update local state
+      setProfile(prev => ({ ...prev, profile_photo_url: photoUrl }));
+      setEditedProfile(prev => ({ ...prev, profile_photo_url: photoUrl }));
+      
+      toast({ title: 'Photo Updated!', description: 'Your profile photo has been saved' });
+    } catch (error) {
+      console.error('Error uploading profile photo:', error);
+      toast({ title: 'Error', description: error.message || 'Failed to upload photo', variant: 'destructive' });
+    } finally {
+      setUploadingProfilePhoto(false);
+    }
+  };
+
   const handlePurchaseTokens = async () => {
     if (!profile || purchaseAmount < 1) return;
     
