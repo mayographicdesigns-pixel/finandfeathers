@@ -565,6 +565,10 @@ class UserProfileResponse(BaseModel):
     email: Optional[str]
     avatar_emoji: str
     profile_photo_url: Optional[str]
+    role: str
+    staff_title: Optional[str]
+    cashout_balance: float
+    total_earnings: float
     birthdate: Optional[str]
     anniversary: Optional[str]
     special_dates: List[dict]
@@ -579,6 +583,66 @@ class UserProfileResponse(BaseModel):
     allow_gallery_posts: bool
     created_at: datetime
     updated_at: datetime
+
+
+# Token Transfer Model
+class TokenTransfer(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    from_user_id: str
+    to_user_id: str
+    amount: int
+    transfer_type: str  # "tip", "drink", "gift", "transfer"
+    message: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class TokenTransferCreate(BaseModel):
+    to_user_id: str
+    amount: int
+    transfer_type: str = "transfer"
+    message: Optional[str] = None
+
+class TokenTransferResponse(BaseModel):
+    id: str
+    from_user_id: str
+    to_user_id: str
+    amount: int
+    transfer_type: str
+    message: Optional[str]
+    created_at: datetime
+
+
+# Cashout Request Model
+class CashoutRequest(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    amount_tokens: int
+    amount_usd: float  # 80% of token value
+    status: str = "pending"  # pending, approved, paid, rejected
+    payment_method: Optional[str] = None  # venmo, cashapp, bank
+    payment_details: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    processed_at: Optional[datetime] = None
+
+class CashoutRequestCreate(BaseModel):
+    amount_tokens: int
+    payment_method: str
+    payment_details: str
+
+class CashoutRequestResponse(BaseModel):
+    id: str
+    user_id: str
+    amount_tokens: int
+    amount_usd: float
+    status: str
+    payment_method: Optional[str]
+    created_at: datetime
+
+
+# Role Update Model (admin/management only)
+class RoleUpdate(BaseModel):
+    user_id: str
+    new_role: str  # customer, staff, management
+    staff_title: Optional[str] = None
 
 
 # Token Purchase Model
