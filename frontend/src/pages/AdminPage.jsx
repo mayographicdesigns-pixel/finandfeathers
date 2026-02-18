@@ -2153,19 +2153,78 @@ const UsersTab = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold text-white">User Profiles ({users.length})</h3>
+        <Button
+          variant={showCashouts ? "default" : "outline"}
+          size="sm"
+          onClick={() => setShowCashouts(!showCashouts)}
+          className={showCashouts ? "bg-green-600" : "border-slate-600 text-slate-300"}
+        >
+          <DollarSign className="w-4 h-4 mr-1" />
+          Cashouts {pendingCashouts.length > 0 && `(${pendingCashouts.length})`}
+        </Button>
       </div>
 
-      {/* Search */}
-      <Input
-        placeholder="Search by name or email..."
-        value={searchTerm}
-        onChange={e => setSearchTerm(e.target.value)}
-        className="bg-slate-800 border-slate-700 text-white"
-        data-testid="user-search-input"
-      />
+      {/* Pending Cashouts */}
+      {showCashouts && pendingCashouts.length > 0 && (
+        <Card className="bg-green-900/30 border-green-600/50">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <DollarSign className="w-5 h-5 text-green-400" />
+              Pending Cashout Requests
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {pendingCashouts.map(co => (
+              <div key={co.id} className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
+                <div>
+                  <p className="text-white font-medium">${co.amount_usd.toFixed(2)} via {co.payment_method}</p>
+                  <p className="text-xs text-slate-400">{co.payment_details}</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    onClick={() => handleProcessCashout(co.id, 'approved')}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <Check className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => handleProcessCashout(co.id, 'rejected')}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Filters */}
+      <div className="flex gap-4">
+        <Input
+          placeholder="Search by name or email..."
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          className="bg-slate-800 border-slate-700 text-white flex-1"
+          data-testid="user-search-input"
+        />
+        <select
+          value={roleFilter}
+          onChange={e => setRoleFilter(e.target.value)}
+          className="bg-slate-800 border border-slate-700 text-white rounded-md px-3"
+        >
+          <option value="all">All Roles</option>
+          <option value="customer">Customers</option>
+          <option value="staff">Staff</option>
+          <option value="management">Management</option>
+        </select>
+      </div>
 
       {/* Gift Tokens Modal */}
-      {selectedUser && (
+      {selectedUser && !editingRole && (
         <Card className="bg-amber-900/30 border-amber-600/50">
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
@@ -2235,6 +2294,87 @@ const UsersTab = () => {
         </Card>
       )}
 
+      {/* Edit Role Modal */}
+      {editingRole && (
+        <Card className="bg-purple-900/30 border-purple-600/50">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Award className="w-5 h-5 text-purple-400" />
+              Change Role for {editingRole.name}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="text-slate-300">Current role:</span>
+              {getRoleBadge(editingRole.role, editingRole.staff_title)}
+            </div>
+            
+            <div>
+              <label className="text-sm text-slate-400 block mb-2">New Role</label>
+              <div className="grid grid-cols-3 gap-2">
+                {['customer', 'staff', 'management'].map(role => (
+                  <button
+                    key={role}
+                    onClick={() => setNewRole(role)}
+                    className={`p-2 rounded-lg border capitalize transition-all ${
+                      newRole === role
+                        ? 'border-purple-500 bg-purple-500/20 text-white'
+                        : 'border-slate-600 bg-slate-800 text-slate-300'
+                    }`}
+                  >
+                    {role}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {newRole === 'staff' && (
+              <div>
+                <label className="text-sm text-slate-400 block mb-2">Staff Title</label>
+                <div className="grid grid-cols-4 gap-2 mb-2">
+                  {['Bartender', 'Server', 'DJ', 'Host'].map(title => (
+                    <button
+                      key={title}
+                      onClick={() => setStaffTitle(title)}
+                      className={`p-2 rounded-lg border text-sm transition-all ${
+                        staffTitle === title
+                          ? 'border-blue-500 bg-blue-500/20 text-white'
+                          : 'border-slate-600 bg-slate-800 text-slate-300'
+                      }`}
+                    >
+                      {title}
+                    </button>
+                  ))}
+                </div>
+                <Input
+                  value={staffTitle}
+                  onChange={e => setStaffTitle(e.target.value)}
+                  placeholder="Or enter custom title..."
+                  className="bg-slate-800 border-slate-600 text-white"
+                />
+              </div>
+            )}
+
+            <div className="flex gap-2">
+              <Button
+                onClick={() => handleUpdateRole(editingRole.id)}
+                disabled={!newRole}
+                className="flex-1 bg-purple-600 hover:bg-purple-700"
+              >
+                Update Role
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => { setEditingRole(null); setNewRole(''); setStaffTitle(''); }}
+                className="border-slate-600 text-slate-300"
+              >
+                Cancel
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Users List */}
       {filteredUsers.length === 0 ? (
         <Card className="bg-slate-800/50 border-slate-700">
@@ -2261,17 +2401,22 @@ const UsersTab = () => {
                       <span className="text-3xl">{user.avatar_emoji || '😊'}</span>
                     )}
                     <div>
-                      <p className="text-white font-medium">{user.name}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-white font-medium">{user.name}</p>
+                        {getRoleBadge(user.role, user.staff_title)}
+                      </div>
                       <p className="text-slate-400 text-sm">{user.email || 'No email'}</p>
                       <div className="flex items-center gap-4 mt-1 text-xs text-slate-500">
                         <span>Visits: {user.total_visits || 0}</span>
                         <span>Posts: {user.total_posts || 0}</span>
-                        <span>Photos: {user.total_photos || 0}</span>
+                        {user.role === 'staff' && (
+                          <span className="text-green-400">Tips: ${(user.cashout_balance || 0).toFixed(2)}</span>
+                        )}
                       </div>
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
                     {/* Token Balance */}
                     <div className="text-right">
                       <div className="flex items-center gap-1 text-amber-400">
@@ -2281,16 +2426,26 @@ const UsersTab = () => {
                       <span className="text-xs text-slate-500">tokens</span>
                     </div>
                     
-                    {/* Gift Button */}
-                    <Button
-                      size="sm"
-                      onClick={() => setSelectedUser(user)}
-                      className="bg-amber-600/30 hover:bg-amber-600/50 text-amber-300 border border-amber-600/50"
-                      data-testid={`gift-tokens-${user.id}`}
-                    >
-                      <Gift className="w-4 h-4 mr-1" />
-                      Gift
-                    </Button>
+                    {/* Action Buttons */}
+                    <div className="flex gap-1">
+                      <Button
+                        size="sm"
+                        onClick={() => { setEditingRole(user); setNewRole(user.role); setStaffTitle(user.staff_title || ''); }}
+                        className="bg-purple-600/30 hover:bg-purple-600/50 text-purple-300 border border-purple-600/50"
+                        title="Change Role"
+                      >
+                        <Award className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => setSelectedUser(user)}
+                        className="bg-amber-600/30 hover:bg-amber-600/50 text-amber-300 border border-amber-600/50"
+                        data-testid={`gift-tokens-${user.id}`}
+                        title="Gift Tokens"
+                      >
+                        <Gift className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
