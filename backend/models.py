@@ -496,3 +496,89 @@ class DrinkOrderResponse(BaseModel):
     message: Optional[str]
     status: str
     created_at: datetime
+
+
+# =====================================================
+# USER PROFILE MODELS
+# =====================================================
+
+class UserProfile(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    avatar_emoji: str = "😊"
+    birthdate: Optional[str] = None  # YYYY-MM-DD format
+    anniversary: Optional[str] = None  # YYYY-MM-DD format
+    special_dates: List[dict] = []  # [{name, date}]
+    # Social media handles
+    instagram_handle: Optional[str] = None
+    facebook_handle: Optional[str] = None
+    twitter_handle: Optional[str] = None
+    tiktok_handle: Optional[str] = None
+    # Stats
+    total_visits: int = 0
+    total_posts: int = 0
+    total_photos: int = 0
+    # Settings
+    allow_gallery_posts: bool = True  # Auto-add photo posts to gallery
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class UserProfileCreate(BaseModel):
+    name: str
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    avatar_emoji: str = "😊"
+
+class UserProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    avatar_emoji: Optional[str] = None
+    birthdate: Optional[str] = None
+    anniversary: Optional[str] = None
+    special_dates: Optional[List[dict]] = None
+    instagram_handle: Optional[str] = None
+    facebook_handle: Optional[str] = None
+    twitter_handle: Optional[str] = None
+    tiktok_handle: Optional[str] = None
+    allow_gallery_posts: Optional[bool] = None
+
+class UserProfileResponse(BaseModel):
+    id: str
+    name: str
+    phone: Optional[str]
+    email: Optional[str]
+    avatar_emoji: str
+    birthdate: Optional[str]
+    anniversary: Optional[str]
+    special_dates: List[dict]
+    instagram_handle: Optional[str]
+    facebook_handle: Optional[str]
+    twitter_handle: Optional[str]
+    tiktok_handle: Optional[str]
+    total_visits: int
+    total_posts: int
+    total_photos: int
+    allow_gallery_posts: bool
+    created_at: datetime
+    updated_at: datetime
+
+
+# User Visit History
+class UserVisit(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    location_slug: str
+    location_name: str
+    checkin_id: str
+    checked_in_at: datetime
+    checked_out_at: Optional[datetime] = None
+
+class UserVisitResponse(BaseModel):
+    id: str
+    location_slug: str
+    location_name: str
+    checked_in_at: datetime
+    checked_out_at: Optional[datetime]
