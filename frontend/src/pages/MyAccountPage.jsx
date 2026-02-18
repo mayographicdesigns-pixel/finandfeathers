@@ -118,7 +118,7 @@ const MyAccountPage = () => {
     } else if (paymentStatus === 'cancelled') {
       toast({ title: 'Payment Cancelled', description: 'Your token purchase was cancelled', variant: 'destructive' });
       // Clean up URL
-      window.history.replaceState({}, '', '/my-account');
+      window.history.replaceState({}, '', '/account');
     }
   }, [searchParams]);
 
