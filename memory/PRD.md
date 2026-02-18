@@ -246,6 +246,16 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - `GET /api/admin/cashouts` - View all cashout requests
 - `PUT /api/admin/cashouts/{id}` - Process cashout request
 
+#### Location Endpoints (February 2026)
+- `GET /api/locations` - Get all active locations (public)
+- `GET /api/locations/{slug}` - Get single location by slug (public)
+- `GET /api/admin/locations` - Get all locations including inactive (admin)
+- `POST /api/admin/locations` - Create new location (admin)
+- `PUT /api/admin/locations/{id}` - Update location (admin)
+- `DELETE /api/admin/locations/{id}` - Delete location (admin)
+- `POST /api/admin/locations/reorder` - Reorder locations (admin)
+- `POST /api/admin/locations/seed` - Seed initial location data (admin, one-time)
+
 #### Public Gallery Endpoint
 - `GET /api/gallery` - Get active gallery items (is_active=true only)
 
