@@ -312,21 +312,16 @@ const MyAccountPage = () => {
   };
 
   const handlePurchaseTokens = async () => {
-    if (!profile || purchaseAmount < 1) return;
+    if (!profile || !selectedPackage) return;
     
     setIsPurchasing(true);
     try {
-      const result = await purchaseTokens(profile.id, purchaseAmount);
-      setProfile(prev => ({ ...prev, token_balance: result.new_balance }));
-      setTokenHistory(prev => [result.purchase, ...prev]);
-      toast({ 
-        title: 'Tokens Purchased!', 
-        description: `You now have ${result.new_balance} F&F tokens` 
-      });
+      const result = await createTokenCheckout(profile.id, selectedPackage);
+      // Redirect to Stripe Checkout
+      window.location.href = result.checkout_url;
     } catch (error) {
-      console.error('Error purchasing tokens:', error);
+      console.error('Error creating checkout:', error);
       toast({ title: 'Error', description: error.message, variant: 'destructive' });
-    } finally {
       setIsPurchasing(false);
     }
   };
