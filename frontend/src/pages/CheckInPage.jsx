@@ -205,7 +205,7 @@ const CheckInPage = () => {
               
               <div className="space-y-3">
                 <Button
-                  onClick={() => navigate(`/location/${nearestLocation.slug}?checkin=true`)}
+                  onClick={() => navigate(`/locations/${nearestLocation.slug}?checkin=true`)}
                   className="w-full bg-red-600 hover:bg-red-700 h-12"
                 >
                   Check In Anyway
