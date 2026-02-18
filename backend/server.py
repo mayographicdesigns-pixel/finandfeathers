@@ -10,7 +10,6 @@ load_dotenv(ROOT_DIR / '.env')
 
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
-from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 import aiohttp
 import os
 import logging
