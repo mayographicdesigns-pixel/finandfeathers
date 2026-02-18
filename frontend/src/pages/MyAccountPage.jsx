@@ -1000,46 +1000,55 @@ const MyAccountPage = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-4 gap-2">
-                  {[1, 5, 10, 20].map(amount => (
+                {isCheckingPayment && (
+                  <div className="flex items-center justify-center gap-2 p-4 bg-amber-500/20 rounded-lg">
+                    <Loader2 className="w-5 h-5 animate-spin text-amber-500" />
+                    <span className="text-amber-400">Verifying your payment...</span>
+                  </div>
+                )}
+                
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {Object.entries(tokenPackages).map(([key, pkg]) => (
                     <button
-                      key={amount}
-                      onClick={() => setPurchaseAmount(amount)}
+                      key={key}
+                      onClick={() => setSelectedPackage(key)}
                       className={`p-3 rounded-lg border-2 transition-all ${
-                        purchaseAmount === amount
+                        selectedPackage === key
                           ? 'border-amber-500 bg-amber-500/20'
                           : 'border-slate-600 bg-slate-800 hover:border-slate-500'
                       }`}
+                      data-testid={`package-${key}`}
                     >
-                      <div className="text-lg font-bold text-white">${amount}</div>
-                      <div className="text-xs text-slate-400">{amount * 10} tokens</div>
+                      <div className="text-lg font-bold text-white">${pkg.amount.toFixed(0)}</div>
+                      <div className="text-xs text-slate-400">{pkg.tokens} tokens</div>
                     </button>
                   ))}
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <Input
-                    type="number"
-                    min="1"
-                    value={purchaseAmount}
-                    onChange={e => setPurchaseAmount(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="bg-slate-800 border-slate-600 text-white w-24"
-                    data-testid="token-amount-input"
-                  />
-                  <span className="text-slate-400">= {purchaseAmount * 10} tokens</span>
                 </div>
 
                 <Button
                   onClick={handlePurchaseTokens}
-                  disabled={isPurchasing}
+                  disabled={isPurchasing || isCheckingPayment || !selectedPackage}
                   className="w-full bg-amber-600 hover:bg-amber-700"
                   data-testid="purchase-tokens-btn"
                 >
-                  {isPurchasing ? 'Processing...' : `Purchase ${purchaseAmount * 10} Tokens for $${purchaseAmount}`}
+                  {isPurchasing ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Redirecting to Checkout...
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="w-4 h-4 mr-2" />
+                      {selectedPackage && tokenPackages[selectedPackage] 
+                        ? `Pay $${tokenPackages[selectedPackage].amount.toFixed(2)} for ${tokenPackages[selectedPackage].tokens} Tokens`
+                        : 'Select a Package'
+                      }
+                    </>
+                  )}
                 </Button>
                 
                 <p className="text-xs text-slate-500 text-center">
-                  Tokens are used to tip DJs and send drinks to friends at F&F locations
+                  Secure payment via Stripe. Tokens are used to tip DJs and send drinks to friends at F&F locations.
                 </p>
               </CardContent>
             </Card>
