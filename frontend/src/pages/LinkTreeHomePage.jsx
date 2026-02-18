@@ -593,6 +593,17 @@ const LinkTreeHomePage = () => {
 
   return (
     <div className="min-h-screen bg-black py-8 px-4 relative">
+      {/* Welcome Popup */}
+      {showWelcomePopup && (
+        <WelcomePopup 
+          onClose={() => setShowWelcomePopup(false)}
+          onSubmit={(userInfo) => {
+            // Optionally save user info to backend/loyalty
+            console.log('User info submitted:', userInfo);
+          }}
+        />
+      )}
+
       {/* Admin Bar */}
       {isAdmin && (
         <div className="fixed top-0 left-0 right-0 bg-red-600 text-white py-2 px-4 z-50 flex items-center justify-between">
