@@ -5,7 +5,7 @@ import {
   LogOut, BarChart3, Trash2, Eye, Check, X, Plus, Edit2, 
   Lock, User, AlertCircle, RefreshCw, Upload, Image, Megaphone, 
   Calendar, ToggleLeft, ToggleRight, Share2, Instagram, Facebook, ExternalLink,
-  ImagePlus, Grid3X3, GripVertical, Coins, Gift, Award, Briefcase, BadgeCheck, DollarSign, MapPin
+  ImagePlus, Grid3X3, GripVertical, Coins, Gift, Award, Briefcase, BadgeCheck, DollarSign, MapPin, Video
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
