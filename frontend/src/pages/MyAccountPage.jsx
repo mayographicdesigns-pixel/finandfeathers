@@ -297,6 +297,89 @@ const MyAccountPage = () => {
   // Emoji picker options
   const emojiOptions = ['😊', '😎', '🤠', '🥳', '😇', '🤩', '👨', '👩', '🧑', '👴', '👵', '🎉'];
 
+  // Handle tipping a staff member
+  const handleTipStaff = async () => {
+    if (!profile || !selectedStaff || tipAmount < 1) return;
+    
+    setIsTipping(true);
+    try {
+      const result = await transferTokens(profile.id, selectedStaff.id, tipAmount, 'tip', tipMessage);
+      setProfile(prev => ({ ...prev, token_balance: result.sender_new_balance }));
+      setTransferHistory(prev => [result.transfer, ...prev]);
+      toast({ 
+        title: 'Tip Sent!', 
+        description: `You tipped ${result.receiver_name} ${tipAmount} tokens` 
+      });
+      setSelectedStaff(null);
+      setTipAmount(10);
+      setTipMessage('');
+    } catch (error) {
+      console.error('Error tipping:', error);
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    } finally {
+      setIsTipping(false);
+    }
+  };
+
+  // Handle staff cashout request
+  const handleRequestCashout = async () => {
+    if (!profile || profile.role !== 'staff') return;
+    
+    const cashoutBalance = profile.cashout_balance || 0;
+    if (cashoutBalance < 20) {
+      toast({ title: 'Minimum Not Met', description: 'You need at least $20 to cash out', variant: 'destructive' });
+      return;
+    }
+    
+    if (!cashoutDetails) {
+      toast({ title: 'Missing Details', description: 'Please enter your payment details', variant: 'destructive' });
+      return;
+    }
+    
+    const amountToCashout = cashoutAmount || cashoutBalance;
+    const tokensEquivalent = Math.floor(amountToCashout * 10);
+    
+    setIsRequestingCashout(true);
+    try {
+      const result = await requestCashout(profile.id, tokensEquivalent, cashoutMethod, cashoutDetails);
+      setProfile(prev => ({ ...prev, cashout_balance: result.new_balance }));
+      setCashoutHistory(prev => [result.cashout, ...prev]);
+      toast({ 
+        title: 'Cashout Requested!', 
+        description: `$${result.payout_amount.toFixed(2)} will be sent to your ${cashoutMethod}` 
+      });
+      setCashoutAmount(0);
+      setCashoutDetails('');
+    } catch (error) {
+      console.error('Error requesting cashout:', error);
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    } finally {
+      setIsRequestingCashout(false);
+    }
+  };
+
+  // Handle transferring tips to personal token balance
+  const handleTransferToPersonal = async () => {
+    if (!profile || profile.role !== 'staff' || transferToPersonalAmount < 1) return;
+    
+    try {
+      const result = await transferTipsToPersonal(profile.id, transferToPersonalAmount);
+      setProfile(prev => ({ 
+        ...prev, 
+        cashout_balance: result.new_cashout_balance,
+        token_balance: result.new_token_balance 
+      }));
+      toast({ 
+        title: 'Transfer Complete!', 
+        description: `Added ${result.tokens_added} tokens to your personal balance` 
+      });
+      setTransferToPersonalAmount(0);
+    } catch (error) {
+      console.error('Error transferring:', error);
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
