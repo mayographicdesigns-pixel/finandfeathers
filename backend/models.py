@@ -398,7 +398,7 @@ class DJTipResponse(BaseModel):
     amount: float
     message: Optional[str]
     song_request: Optional[str]
-    payment_method: str
+    payment_method: Optional[str] = "cash_app"
     created_at: datetime
 
 
