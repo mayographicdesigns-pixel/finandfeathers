@@ -29,7 +29,9 @@ from models import (
     HomepageContent, HomepageContentUpdate,
     SocialPost, SocialPostCreate, SocialPostResponse,
     DirectMessage, DirectMessageCreate, DirectMessageResponse,
-    DJTip, DJTipCreate, DJTipResponse
+    DJTip, DJTipCreate, DJTipResponse,
+    DJProfile, DJProfileCreate, DJProfileUpdate, DJProfileResponse,
+    DrinkOrder, DrinkOrderCreate, DrinkOrderResponse
 )
 from push_service import PushNotificationService
 from auth import verify_password, get_password_hash, create_access_token, decode_access_token
