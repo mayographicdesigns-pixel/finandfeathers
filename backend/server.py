@@ -891,6 +891,294 @@ async def admin_delete_gallery_item(item_id: str, username: str = Depends(get_cu
     return {"message": "Gallery item deleted"}
 
 
+# =====================================================
+# SOCIAL WALL ENDPOINTS
+# =====================================================
+
+@api_router.post("/social/posts", response_model=SocialPostResponse)
+async def create_social_post(post: SocialPostCreate):
+    """Create a post on the social wall for a location"""
+    # Verify the check-in exists and is active
+    checkin = await db.checkins.find_one({"id": post.checkin_id})
+    if not checkin:
+        raise HTTPException(status_code=400, detail="You must be checked in to post")
+    
+    post_dict = post.dict()
+    post_dict["id"] = str(uuid.uuid4())
+    post_dict["likes"] = []
+    post_dict["created_at"] = datetime.now(timezone.utc)
+    
+    await db.social_posts.insert_one(post_dict)
+    
+    return SocialPostResponse(
+        id=post_dict["id"],
+        location_slug=post_dict["location_slug"],
+        checkin_id=post_dict["checkin_id"],
+        author_name=post_dict["author_name"],
+        author_emoji=post_dict["author_emoji"],
+        message=post_dict["message"],
+        image_url=post_dict.get("image_url"),
+        likes_count=0,
+        liked_by_me=False,
+        created_at=post_dict["created_at"]
+    )
+
+
+@api_router.get("/social/posts/{location_slug}")
+async def get_social_posts(location_slug: str, my_checkin_id: Optional[str] = None):
+    """Get all posts for a location's social wall"""
+    posts = await db.social_posts.find(
+        {"location_slug": location_slug},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(50).to_list(50)
+    
+    result = []
+    for post in posts:
+        liked_by_me = my_checkin_id in post.get("likes", []) if my_checkin_id else False
+        result.append(SocialPostResponse(
+            id=post["id"],
+            location_slug=post["location_slug"],
+            checkin_id=post["checkin_id"],
+            author_name=post["author_name"],
+            author_emoji=post["author_emoji"],
+            message=post["message"],
+            image_url=post.get("image_url"),
+            likes_count=len(post.get("likes", [])),
+            liked_by_me=liked_by_me,
+            created_at=post["created_at"]
+        ))
+    
+    return result
+
+
+@api_router.post("/social/posts/{post_id}/like")
+async def like_post(post_id: str, checkin_id: str):
+    """Like or unlike a post"""
+    post = await db.social_posts.find_one({"id": post_id})
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    
+    likes = post.get("likes", [])
+    if checkin_id in likes:
+        # Unlike
+        likes.remove(checkin_id)
+        action = "unliked"
+    else:
+        # Like
+        likes.append(checkin_id)
+        action = "liked"
+    
+    await db.social_posts.update_one(
+        {"id": post_id},
+        {"$set": {"likes": likes}}
+    )
+    
+    return {"action": action, "likes_count": len(likes)}
+
+
+@api_router.delete("/social/posts/{post_id}")
+async def delete_social_post(post_id: str, checkin_id: str):
+    """Delete your own post"""
+    post = await db.social_posts.find_one({"id": post_id})
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    
+    if post["checkin_id"] != checkin_id:
+        raise HTTPException(status_code=403, detail="You can only delete your own posts")
+    
+    await db.social_posts.delete_one({"id": post_id})
+    return {"message": "Post deleted"}
+
+
+# =====================================================
+# DIRECT MESSAGES ENDPOINTS
+# =====================================================
+
+@api_router.post("/social/dm", response_model=DirectMessageResponse)
+async def send_direct_message(dm: DirectMessageCreate):
+    """Send a direct message to another checked-in user"""
+    # Verify both check-ins exist
+    from_checkin = await db.checkins.find_one({"id": dm.from_checkin_id})
+    to_checkin = await db.checkins.find_one({"id": dm.to_checkin_id})
+    
+    if not from_checkin:
+        raise HTTPException(status_code=400, detail="You must be checked in to send messages")
+    if not to_checkin:
+        raise HTTPException(status_code=400, detail="Recipient is no longer checked in")
+    
+    dm_dict = dm.dict()
+    dm_dict["id"] = str(uuid.uuid4())
+    dm_dict["read"] = False
+    dm_dict["created_at"] = datetime.now(timezone.utc)
+    
+    await db.direct_messages.insert_one(dm_dict)
+    
+    return DirectMessageResponse(**dm_dict)
+
+
+@api_router.get("/social/dm/{checkin_id}")
+async def get_my_messages(checkin_id: str):
+    """Get all DMs for a checked-in user (sent and received)"""
+    messages = await db.direct_messages.find(
+        {
+            "$or": [
+                {"from_checkin_id": checkin_id},
+                {"to_checkin_id": checkin_id}
+            ]
+        },
+        {"_id": 0}
+    ).sort("created_at", -1).limit(100).to_list(100)
+    
+    return [DirectMessageResponse(**m) for m in messages]
+
+
+@api_router.get("/social/dm/{checkin_id}/conversations")
+async def get_conversations(checkin_id: str):
+    """Get list of unique conversations for a user"""
+    messages = await db.direct_messages.find(
+        {
+            "$or": [
+                {"from_checkin_id": checkin_id},
+                {"to_checkin_id": checkin_id}
+            ]
+        },
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(500)
+    
+    # Group by conversation partner
+    conversations = {}
+    for msg in messages:
+        if msg["from_checkin_id"] == checkin_id:
+            partner_id = msg["to_checkin_id"]
+            partner_name = msg["to_name"]
+            partner_emoji = msg["to_emoji"]
+        else:
+            partner_id = msg["from_checkin_id"]
+            partner_name = msg["from_name"]
+            partner_emoji = msg["from_emoji"]
+        
+        if partner_id not in conversations:
+            unread_count = await db.direct_messages.count_documents({
+                "from_checkin_id": partner_id,
+                "to_checkin_id": checkin_id,
+                "read": False
+            })
+            conversations[partner_id] = {
+                "partner_id": partner_id,
+                "partner_name": partner_name,
+                "partner_emoji": partner_emoji,
+                "last_message": msg["message"],
+                "last_message_at": msg["created_at"],
+                "unread_count": unread_count
+            }
+    
+    return list(conversations.values())
+
+
+@api_router.get("/social/dm/{checkin_id}/thread/{partner_id}")
+async def get_dm_thread(checkin_id: str, partner_id: str):
+    """Get message thread between two users"""
+    messages = await db.direct_messages.find(
+        {
+            "$or": [
+                {"from_checkin_id": checkin_id, "to_checkin_id": partner_id},
+                {"from_checkin_id": partner_id, "to_checkin_id": checkin_id}
+            ]
+        },
+        {"_id": 0}
+    ).sort("created_at", 1).to_list(100)
+    
+    # Mark messages as read
+    await db.direct_messages.update_many(
+        {"from_checkin_id": partner_id, "to_checkin_id": checkin_id, "read": False},
+        {"$set": {"read": True}}
+    )
+    
+    return [DirectMessageResponse(**m) for m in messages]
+
+
+@api_router.get("/social/dm/{checkin_id}/unread")
+async def get_unread_count(checkin_id: str):
+    """Get count of unread messages"""
+    count = await db.direct_messages.count_documents({
+        "to_checkin_id": checkin_id,
+        "read": False
+    })
+    return {"unread_count": count}
+
+
+# =====================================================
+# DJ TIPPING ENDPOINTS
+# =====================================================
+
+@api_router.post("/social/dj-tip", response_model=DJTipResponse)
+async def send_dj_tip(tip: DJTipCreate):
+    """Send a tip to the DJ"""
+    # Verify check-in exists
+    checkin = await db.checkins.find_one({"id": tip.checkin_id})
+    if not checkin:
+        raise HTTPException(status_code=400, detail="You must be checked in to tip the DJ")
+    
+    if tip.amount < 1:
+        raise HTTPException(status_code=400, detail="Minimum tip is $1")
+    
+    tip_dict = tip.dict()
+    tip_dict["id"] = str(uuid.uuid4())
+    tip_dict["created_at"] = datetime.now(timezone.utc)
+    
+    await db.dj_tips.insert_one(tip_dict)
+    
+    return DJTipResponse(
+        id=tip_dict["id"],
+        location_slug=tip_dict["location_slug"],
+        tipper_name=tip_dict["tipper_name"],
+        tipper_emoji=tip_dict["tipper_emoji"],
+        amount=tip_dict["amount"],
+        message=tip_dict.get("message"),
+        song_request=tip_dict.get("song_request"),
+        created_at=tip_dict["created_at"]
+    )
+
+
+@api_router.get("/social/dj-tips/{location_slug}")
+async def get_dj_tips(location_slug: str):
+    """Get recent DJ tips for a location (public display)"""
+    tips = await db.dj_tips.find(
+        {"location_slug": location_slug},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(20).to_list(20)
+    
+    return [DJTipResponse(**t) for t in tips]
+
+
+@api_router.get("/social/dj-tips/{location_slug}/total")
+async def get_dj_tips_total(location_slug: str):
+    """Get total tips for the DJ at a location today"""
+    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    
+    pipeline = [
+        {
+            "$match": {
+                "location_slug": location_slug,
+                "created_at": {"$gte": today_start}
+            }
+        },
+        {
+            "$group": {
+                "_id": None,
+                "total": {"$sum": "$amount"},
+                "count": {"$sum": 1}
+            }
+        }
+    ]
+    
+    result = await db.dj_tips.aggregate(pipeline).to_list(1)
+    
+    if result:
+        return {"total": result[0]["total"], "count": result[0]["count"]}
+    return {"total": 0, "count": 0}
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
