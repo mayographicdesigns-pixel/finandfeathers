@@ -2866,6 +2866,131 @@ async def get_merchandise_product(product_id: int):
         raise HTTPException(status_code=500, detail="Failed to connect to store")
 
 
+# =====================================================
+# CART & MERCHANDISE CHECKOUT
+# =====================================================
+
+class CartItem(BaseModel):
+    product_id: int
+    name: str
+    price: float
+    quantity: int = 1
+    image: Optional[str] = None
+
+class CartCheckoutRequest(BaseModel):
+    items: List[CartItem]
+    customer_email: Optional[str] = None
+    customer_name: Optional[str] = None
+    shipping_address: Optional[dict] = None
+
+
+@api_router.post("/cart/checkout")
+async def cart_checkout(checkout: CartCheckoutRequest, origin_url: str = None):
+    """Create WooCommerce order for cart items"""
+    if not checkout.items:
+        raise HTTPException(status_code=400, detail="Cart is empty")
+    
+    # Create order record
+    order_id = str(uuid.uuid4())
+    total = sum(item.price * item.quantity for item in checkout.items)
+    
+    cart_order = {
+        "id": order_id,
+        "items": [item.model_dump() for item in checkout.items],
+        "total": total,
+        "customer_email": checkout.customer_email,
+        "customer_name": checkout.customer_name,
+        "status": "pending",
+        "woo_order_id": None,
+        "created_at": datetime.now(timezone.utc),
+        "updated_at": datetime.now(timezone.utc)
+    }
+    await db.cart_orders.insert_one(cart_order)
+    
+    # Build WooCommerce line items
+    line_items = []
+    for item in checkout.items:
+        line_items.append({
+            "product_id": item.product_id,
+            "quantity": item.quantity
+        })
+    
+    # Meta data for tracking
+    return_url = f"{origin_url}/merch?order=success&order_id={order_id}" if origin_url else None
+    meta_data = [
+        {"key": "ff_order_id", "value": order_id},
+        {"key": "ff_type", "value": "merchandise"},
+    ]
+    if return_url:
+        meta_data.append({"key": "ff_return_url", "value": return_url})
+    
+    try:
+        order = await create_woocommerce_order(
+            line_items=line_items,
+            customer_email=checkout.customer_email,
+            meta_data=meta_data
+        )
+        
+        woo_order_id = order.get("id")
+        checkout_url = order.get("payment_url") or f"{os.environ.get('WOOCOMMERCE_URL')}/checkout/order-pay/{woo_order_id}/?pay_for_order=true&key={order.get('order_key')}"
+        
+        # Update order with WooCommerce ID
+        await db.cart_orders.update_one(
+            {"id": order_id},
+            {"$set": {"woo_order_id": woo_order_id, "updated_at": datetime.now(timezone.utc)}}
+        )
+        
+        return {
+            "checkout_url": checkout_url,
+            "order_id": order_id,
+            "woo_order_id": woo_order_id,
+            "total": total
+        }
+    except Exception as e:
+        await db.cart_orders.delete_one({"id": order_id})
+        raise
+
+
+@api_router.get("/cart/order/{order_id}")
+async def get_cart_order_status(order_id: str):
+    """Get cart order status"""
+    cart_order = await db.cart_orders.find_one({"id": order_id}, {"_id": 0})
+    if not cart_order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Check WooCommerce status if we have an order ID
+    woo_order_id = cart_order.get("woo_order_id")
+    if woo_order_id and cart_order.get("status") == "pending":
+        woo_url = os.environ.get("WOOCOMMERCE_URL")
+        woo_key = os.environ.get("WOOCOMMERCE_KEY")
+        woo_secret = os.environ.get("WOOCOMMERCE_SECRET")
+        
+        try:
+            async with aiohttp.ClientSession() as session:
+                auth = aiohttp.BasicAuth(woo_key, woo_secret)
+                api_url = f"{woo_url}/wp-json/wc/v3/orders/{woo_order_id}"
+                async with session.get(api_url, auth=auth) as response:
+                    if response.status == 200:
+                        woo_order = await response.json()
+                        woo_status = woo_order.get("status")
+                        if woo_status in ["completed", "processing"]:
+                            await db.cart_orders.update_one(
+                                {"id": order_id},
+                                {"$set": {"status": "paid", "updated_at": datetime.now(timezone.utc)}}
+                            )
+                            cart_order["status"] = "paid"
+                        elif woo_status in ["cancelled", "failed"]:
+                            await db.cart_orders.update_one(
+                                {"id": order_id},
+                                {"$set": {"status": woo_status, "updated_at": datetime.now(timezone.utc)}}
+                            )
+                            cart_order["status"] = woo_status
+        except Exception as e:
+            logging.error(f"Error checking order status: {e}")
+    
+    return cart_order
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
