@@ -226,6 +226,9 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 1. **Menu Page uses Mock Data**: The public menu page (`MenuPage.jsx`) displays items from `mockData.js`, not from the database. Admin can manage items in MongoDB but they won't appear on the public menu.
 2. **Video files**: Daily promotional videos in `/public/videos/` don't exist - carousel shows empty frames
 3. **PWA Icons**: Not optimized for all device sizes
+4. **Token Purchase**: Does NOT process actual payments - simulates purchase and adds tokens
+5. **Photo Gallery Submissions**: Auto-approved without moderation
+6. **Location Data**: Still sourced from mockData.js, not backend-managed
 
 ## Prioritized Backlog
 
