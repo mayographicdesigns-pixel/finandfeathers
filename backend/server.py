@@ -2582,6 +2582,105 @@ async def seed_locations(admin: str = Depends(get_current_admin)):
     return {"message": f"Successfully seeded {len(initial_locations)} locations"}
 
 
+# =====================================================
+# WOOCOMMERCE MERCHANDISE ENDPOINTS
+# =====================================================
+
+@api_router.get("/merchandise")
+async def get_merchandise():
+    """Fetch products from WooCommerce store"""
+    woo_url = os.environ.get("WOOCOMMERCE_URL")
+    woo_key = os.environ.get("WOOCOMMERCE_KEY")
+    woo_secret = os.environ.get("WOOCOMMERCE_SECRET")
+    
+    if not all([woo_url, woo_key, woo_secret]):
+        raise HTTPException(status_code=500, detail="WooCommerce not configured")
+    
+    api_url = f"{woo_url}/wp-json/wc/v3/products"
+    params = {
+        "consumer_key": woo_key,
+        "consumer_secret": woo_secret,
+        "per_page": 50,
+        "status": "publish"
+    }
+    
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api_url, params=params) as response:
+                if response.status != 200:
+                    raise HTTPException(status_code=response.status, detail="Failed to fetch products")
+                products = await response.json()
+                
+                # Transform to simplified format
+                simplified = []
+                for p in products:
+                    # Get the main image
+                    image = p.get("images", [{}])[0].get("src", "") if p.get("images") else ""
+                    
+                    simplified.append({
+                        "id": p.get("id"),
+                        "name": p.get("name"),
+                        "price": p.get("price"),
+                        "regular_price": p.get("regular_price"),
+                        "sale_price": p.get("sale_price"),
+                        "description": p.get("short_description") or p.get("description", "")[:200],
+                        "image": image,
+                        "permalink": p.get("permalink"),
+                        "in_stock": p.get("in_stock", True),
+                        "categories": [c.get("name") for c in p.get("categories", [])]
+                    })
+                
+                return simplified
+    except aiohttp.ClientError as e:
+        logging.error(f"WooCommerce API error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to connect to store")
+
+
+@api_router.get("/merchandise/{product_id}")
+async def get_merchandise_product(product_id: int):
+    """Fetch a single product from WooCommerce"""
+    woo_url = os.environ.get("WOOCOMMERCE_URL")
+    woo_key = os.environ.get("WOOCOMMERCE_KEY")
+    woo_secret = os.environ.get("WOOCOMMERCE_SECRET")
+    
+    if not all([woo_url, woo_key, woo_secret]):
+        raise HTTPException(status_code=500, detail="WooCommerce not configured")
+    
+    api_url = f"{woo_url}/wp-json/wc/v3/products/{product_id}"
+    params = {
+        "consumer_key": woo_key,
+        "consumer_secret": woo_secret
+    }
+    
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api_url, params=params) as response:
+                if response.status == 404:
+                    raise HTTPException(status_code=404, detail="Product not found")
+                if response.status != 200:
+                    raise HTTPException(status_code=response.status, detail="Failed to fetch product")
+                p = await response.json()
+                
+                return {
+                    "id": p.get("id"),
+                    "name": p.get("name"),
+                    "price": p.get("price"),
+                    "regular_price": p.get("regular_price"),
+                    "sale_price": p.get("sale_price"),
+                    "description": p.get("description"),
+                    "short_description": p.get("short_description"),
+                    "images": [img.get("src") for img in p.get("images", [])],
+                    "permalink": p.get("permalink"),
+                    "in_stock": p.get("in_stock", True),
+                    "categories": [c.get("name") for c in p.get("categories", [])],
+                    "attributes": p.get("attributes", []),
+                    "variations": p.get("variations", [])
+                }
+    except aiohttp.ClientError as e:
+        logging.error(f"WooCommerce API error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to connect to store")
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
