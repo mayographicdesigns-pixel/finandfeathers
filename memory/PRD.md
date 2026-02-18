@@ -279,13 +279,13 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 1. **Menu Page uses Mock Data**: The public menu page (`MenuPage.jsx`) displays items from `mockData.js`, not from the database. Admin can manage items in MongoDB but they won't appear on the public menu.
 2. **Video files**: Daily promotional videos in `/public/videos/` don't exist - carousel shows empty frames
 3. **PWA Icons**: Not optimized for all device sizes
-4. **Token Purchase**: Does NOT process actual payments - simulates purchase and adds tokens
-5. **Photo Gallery Submissions**: Auto-approved without moderation
+4. **Photo Gallery Submissions**: Auto-approved without moderation
 
 ## Bug Fixes (February 2026)
 - **FIXED**: Deployment blocker - `AttributeError: module 'bcrypt' has no attribute '__about__'` resolved by downgrading bcrypt to 3.2.2
 - **VERIFIED**: Location detail pages working correctly (blank page issue not reproducible)
 - **COMPLETED**: Location data migration from mockData.js to MongoDB backend
+- **COMPLETED**: Stripe payment integration for token purchases (Feb 18, 2026)
 
 ## Prioritized Backlog
 
@@ -293,6 +293,7 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Admin dashboard with authentication
 - [x] Deployment dependency issue (bcrypt/passlib)
 - [x] Migrate locations data from mockData.js to backend/admin panel
+- [x] Stripe payment integration for token purchases
 
 ### P1 (High Priority)
 - [ ] Connect MenuPage.jsx to backend API (replace mockData.js)
