@@ -816,3 +816,35 @@ class LocationResponse(BaseModel):
     display_order: int
     created_at: datetime
     updated_at: datetime
+
+
+# =====================================================
+# PROMO VIDEO MODELS
+# =====================================================
+
+class PromoVideo(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    title: str
+    url: str
+    day_of_week: int = -1  # 0=Sunday, 1=Monday, ..., 6=Saturday, -1=All days
+    is_common: bool = False  # Common videos show on all days after day-specific
+    display_order: int = 0
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class PromoVideoCreate(BaseModel):
+    title: str
+    url: str
+    day_of_week: int = -1
+    is_common: bool = False
+    display_order: int = 0
+
+class PromoVideoUpdate(BaseModel):
+    title: Optional[str] = None
+    url: Optional[str] = None
+    day_of_week: Optional[int] = None
+    is_common: Optional[bool] = None
+    display_order: Optional[int] = None
+    is_active: Optional[bool] = None
+
