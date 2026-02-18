@@ -22,7 +22,8 @@ import {
   getAdminSpecials, createSpecial, updateSpecial, deleteSpecial, resendSpecialNotification,
   getAdminSocialLinks, createSocialLink, updateSocialLink, deleteSocialLink,
   getAdminInstagramPosts, createInstagramPost, updateInstagramPost, deleteInstagramPost,
-  getAdminGallery, createGalleryItem, updateGalleryItem, deleteGalleryItem
+  getAdminGallery, createGalleryItem, updateGalleryItem, deleteGalleryItem,
+  adminGetUsers, adminGiftTokens
 } from '../services/api';
 import {
   DndContext,
