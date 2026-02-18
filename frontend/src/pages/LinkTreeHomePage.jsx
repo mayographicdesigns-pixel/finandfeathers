@@ -736,6 +736,15 @@ const LinkTreeHomePage = () => {
           </Button>
 
           <Button
+            onClick={() => navigate('/account')}
+            className="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+            data-testid="my-account-btn"
+          >
+            <User className="w-5 h-5 mr-2" />
+            My Account
+          </Button>
+
+          <Button
             onClick={() => window.open('https://g.page/r/CfinandfeathersReview', '_blank')}
             className="w-full bg-slate-800 hover:bg-slate-700 text-white border-2 border-slate-700 h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
           >
