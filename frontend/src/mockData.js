@@ -932,7 +932,7 @@ export const locations = [
       saturday: '10am-3am',
       sunday: '10am-12am'
     },
-    locationUrl: '/location/edgewood-atlanta',
+    locationUrl: '/locations/edgewood-atlanta',
     onlineOrdering: 'https://order.toasttab.com/online/fin-feathers-edgewood-2nd-location-345-edgewood-ave-se',
     reservations: 'sms:14046921252?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
     delivery: 'https://order.toasttab.com/online/fin-feathers-edgewood-2nd-location-345-edgewood-ave-se',
@@ -969,7 +969,7 @@ export const locations = [
       saturday: '10am-12am',
       sunday: '10am-10pm'
     },
-    locationUrl: '/location/midtown-atlanta',
+    locationUrl: '/locations/midtown-atlanta',
     onlineOrdering: 'https://www.toasttab.com/local/order/fin-feathers-midtown-1136-crescent-ave-ne/r-94f8c8b0-51bd-4f67-a787-68f7f39f0eb9',
     reservations: 'sms:16784214083?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
     delivery: 'https://www.toasttab.com/local/order/fin-feathers-midtown-1136-crescent-ave-ne/r-94f8c8b0-51bd-4f67-a787-68f7f39f0eb9',
@@ -1006,7 +1006,7 @@ export const locations = [
       saturday: '11am-12am',
       sunday: '11am-9pm'
     },
-    locationUrl: '/location/douglasville',
+    locationUrl: '/locations/douglasville',
     onlineOrdering: 'https://order.toasttab.com/online/fins-feathers-douglasville-7430-douglas-blvd-zmrgr',
     reservations: 'sms:14044581958?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
     delivery: 'https://order.toasttab.com/online/fins-feathers-douglasville-7430-douglas-blvd-zmrgr',
@@ -1043,7 +1043,7 @@ export const locations = [
       saturday: '10am-12am',
       sunday: '10am-10pm'
     },
-    locationUrl: '/location/riverdale',
+    locationUrl: '/locations/riverdale',
     onlineOrdering: 'https://www.toasttab.com/local/order/fin-feathers-riverdale-6340-ga-85',
     reservations: 'sms:16783048191?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
     delivery: 'https://www.toasttab.com/local/order/fin-feathers-riverdale-6340-ga-85',
@@ -1080,7 +1080,7 @@ export const locations = [
       saturday: '11am-11pm',
       sunday: '11am-9pm'
     },
-    locationUrl: '/location/valdosta',
+    locationUrl: '/locations/valdosta',
     onlineOrdering: 'https://www.toasttab.com/local/order/fin-feathers-valdosta-1700-norman-drive/r-2f4566e8-677d-42d2-93d3-9aa6d2687fcd',
     reservations: 'sms:2292314653?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
     delivery: 'https://www.toasttab.com/local/order/fin-feathers-valdosta-1700-norman-drive/r-2f4566e8-677d-42d2-93d3-9aa6d2687fcd',
@@ -1117,7 +1117,7 @@ export const locations = [
       saturday: '10am-11pm',
       sunday: '10am-9pm'
     },
-    locationUrl: '/location/albany',
+    locationUrl: '/locations/albany',
     onlineOrdering: 'https://www.toasttab.com/local/order/fin-and-feathers-albany-llc',
     reservations: 'sms:12292312101?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
     delivery: 'https://www.toasttab.com/local/order/fin-and-feathers-albany-llc',
@@ -1154,7 +1154,7 @@ export const locations = [
       saturday: '10am-12am',
       sunday: '10am-10pm'
     },
-    locationUrl: '/location/stone-mountain',
+    locationUrl: '/locations/stone-mountain',
     onlineOrdering: 'https://www.toasttab.com/local/order/fin-feathers-stone-mountain-5469-memorial-drive',
     reservations: 'sms:14703348255?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
     delivery: 'https://www.toasttab.com/local/order/fin-feathers-stone-mountain-5469-memorial-drive',
@@ -1191,7 +1191,7 @@ export const locations = [
       saturday: '10am-2am',
       sunday: '10am-12am'
     },
-    locationUrl: '/location/las-vegas',
+    locationUrl: '/locations/las-vegas',
     onlineOrdering: 'https://www.toasttab.com/local/order/fin-feathers-las-vegas-1229-s-casino-center-blvd',
     reservations: 'sms:17025466394?&body=Include%20Full%20Name,%20Number%20in%20Party,%20Date%20and%20Time%20Requested',
     delivery: 'https://www.toasttab.com/local/order/fin-feathers-las-vegas-1229-s-casino-center-blvd',
