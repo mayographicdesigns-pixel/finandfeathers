@@ -108,25 +108,24 @@ const MyAccountPage = () => {
     loadPackages();
   }, []);
 
-  // Check for payment return from Stripe
+  // Check for payment return from WooCommerce
   useEffect(() => {
-    const sessionId = searchParams.get('session_id');
+    const transactionId = searchParams.get('transaction_id');
     const paymentStatus = searchParams.get('payment');
     
-    if (sessionId && paymentStatus === 'success') {
-      handlePaymentReturn(sessionId);
+    if (transactionId && paymentStatus === 'success') {
+      handlePaymentReturn(transactionId);
     } else if (paymentStatus === 'cancelled') {
       toast({ title: 'Payment Cancelled', description: 'Your token purchase was cancelled', variant: 'destructive' });
-      // Clean up URL
       window.history.replaceState({}, '', '/account');
     }
   }, [searchParams]);
 
-  const handlePaymentReturn = async (sessionId) => {
+  const handlePaymentReturn = async (transactionId) => {
     setIsCheckingPayment(true);
     let attempts = 0;
-    const maxAttempts = 5;
-    const pollInterval = 2000;
+    const maxAttempts = 10;
+    const pollInterval = 3000;
 
     const pollStatus = async () => {
       if (attempts >= maxAttempts) {
