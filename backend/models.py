@@ -714,3 +714,105 @@ class UserVisitResponse(BaseModel):
     location_name: str
     checked_in_at: datetime
     checked_out_at: Optional[datetime]
+
+
+# =====================================================
+# LOCATION MODELS
+# =====================================================
+
+class LocationHours(BaseModel):
+    monday: str = "Closed"
+    tuesday: str = "Closed"
+    wednesday: str = "Closed"
+    thursday: str = "Closed"
+    friday: str = "Closed"
+    saturday: str = "Closed"
+    sunday: str = "Closed"
+
+class LocationCoordinates(BaseModel):
+    lat: float
+    lng: float
+
+class LocationSocialMedia(BaseModel):
+    instagram: Optional[str] = None
+    facebook: Optional[str] = None
+    twitter: Optional[str] = None
+    tiktok: Optional[str] = None
+
+class WeeklySpecial(BaseModel):
+    day: str
+    special: str
+    image: Optional[str] = None
+
+class Location(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    slug: str  # URL-friendly identifier e.g., "edgewood-atlanta"
+    name: str
+    address: str
+    phone: str
+    reservation_phone: Optional[str] = None
+    coordinates: LocationCoordinates
+    image: str  # Main location image
+    hours: LocationHours
+    online_ordering: Optional[str] = None  # ToastTab or similar URL
+    reservations: Optional[str] = None  # SMS link for reservations
+    delivery: Optional[str] = None
+    social_media: LocationSocialMedia = LocationSocialMedia()
+    weekly_specials: List[WeeklySpecial] = []
+    is_active: bool = True
+    display_order: int = 0
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class LocationCreate(BaseModel):
+    slug: str
+    name: str
+    address: str
+    phone: str
+    reservation_phone: Optional[str] = None
+    coordinates: LocationCoordinates
+    image: str
+    hours: LocationHours = LocationHours()
+    online_ordering: Optional[str] = None
+    reservations: Optional[str] = None
+    delivery: Optional[str] = None
+    social_media: LocationSocialMedia = LocationSocialMedia()
+    weekly_specials: List[WeeklySpecial] = []
+    display_order: int = 0
+
+class LocationUpdate(BaseModel):
+    slug: Optional[str] = None
+    name: Optional[str] = None
+    address: Optional[str] = None
+    phone: Optional[str] = None
+    reservation_phone: Optional[str] = None
+    coordinates: Optional[LocationCoordinates] = None
+    image: Optional[str] = None
+    hours: Optional[LocationHours] = None
+    online_ordering: Optional[str] = None
+    reservations: Optional[str] = None
+    delivery: Optional[str] = None
+    social_media: Optional[LocationSocialMedia] = None
+    weekly_specials: Optional[List[WeeklySpecial]] = None
+    is_active: Optional[bool] = None
+    display_order: Optional[int] = None
+
+class LocationResponse(BaseModel):
+    id: str
+    slug: str
+    name: str
+    address: str
+    phone: str
+    reservation_phone: Optional[str]
+    coordinates: LocationCoordinates
+    image: str
+    hours: LocationHours
+    online_ordering: Optional[str]
+    reservations: Optional[str]
+    delivery: Optional[str]
+    social_media: LocationSocialMedia
+    weekly_specials: List[WeeklySpecial]
+    is_active: bool
+    display_order: int
+    created_at: datetime
+    updated_at: datetime
