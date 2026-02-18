@@ -17,7 +17,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LinkTreeHomePage />} />
           <Route path="/locations" element={<LocationsPage />} />
-          <Route path="/location/:slug" element={<LocationDetailPage />} />
+          <Route path="/locations/:slug" element={<LocationDetailPage />} />
           <Route path="/menu" element={<MenuPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/checkin" element={<CheckInPage />} />
