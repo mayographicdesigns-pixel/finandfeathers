@@ -195,6 +195,7 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - `GET /api/user/profile/{id}` - Get user profile by ID
 - `GET /api/user/profile/by-email/{email}` - Get user profile by email
 - `PUT /api/user/profile/{id}` - Update user profile
+- `POST /api/user/profile/{id}/photo` - Upload profile photo/selfie
 - `POST /api/user/tokens/purchase/{id}` - Purchase tokens ($1 = 10 tokens)
 - `GET /api/user/tokens/balance/{id}` - Get token balance
 - `GET /api/user/tokens/history/{id}` - Get token purchase/gift history
