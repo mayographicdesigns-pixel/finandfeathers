@@ -31,7 +31,10 @@ from models import (
     DirectMessage, DirectMessageCreate, DirectMessageResponse,
     DJTip, DJTipCreate, DJTipResponse,
     DJProfile, DJProfileCreate, DJProfileUpdate, DJProfileResponse,
-    DrinkOrder, DrinkOrderCreate, DrinkOrderResponse
+    DrinkOrder, DrinkOrderCreate, DrinkOrderResponse,
+    UserProfile, UserProfileCreate, UserProfileUpdate, UserProfileResponse,
+    TokenPurchase, TokenPurchaseCreate, TokenGiftCreate, TokenPurchaseResponse,
+    UserGallerySubmission, UserGallerySubmissionCreate, UserGallerySubmissionResponse
 )
 from push_service import PushNotificationService
 from auth import verify_password, get_password_hash, create_access_token, decode_access_token
