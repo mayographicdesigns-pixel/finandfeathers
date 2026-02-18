@@ -279,6 +279,16 @@ const MyAccountPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-950">
+      {/* Hidden file input for profile photo */}
+      <input
+        type="file"
+        ref={profilePhotoInputRef}
+        onChange={handleProfilePhotoUpload}
+        accept="image/*"
+        className="hidden"
+        data-testid="profile-photo-input"
+      />
+      
       {/* Header */}
       <div className="bg-gradient-to-b from-red-900/40 to-slate-950 pt-6 pb-8 px-4">
         <div className="max-w-2xl mx-auto">
@@ -293,7 +303,35 @@ const MyAccountPage = () => {
           
           {/* Profile Header */}
           <div className="flex items-center gap-4">
-            <div className="text-5xl">{profile.avatar_emoji}</div>
+            {/* Profile Photo/Avatar */}
+            <div className="relative group">
+              {profile.profile_photo_url ? (
+                <img 
+                  src={profile.profile_photo_url} 
+                  alt={profile.name}
+                  className="w-16 h-16 rounded-full object-cover border-2 border-red-500"
+                  data-testid="profile-photo"
+                />
+              ) : (
+                <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center text-4xl border-2 border-slate-700">
+                  {profile.avatar_emoji}
+                </div>
+              )}
+              {/* Upload overlay */}
+              <button
+                onClick={() => profilePhotoInputRef.current?.click()}
+                disabled={uploadingProfilePhoto}
+                className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                data-testid="upload-photo-btn"
+              >
+                {uploadingProfilePhoto ? (
+                  <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Camera className="w-6 h-6 text-white" />
+                )}
+              </button>
+            </div>
+            
             <div className="flex-1">
               <h1 className="text-2xl font-bold text-white" data-testid="profile-name">
                 {profile.name}
