@@ -34,7 +34,10 @@ from models import (
     DrinkOrder, DrinkOrderCreate, DrinkOrderResponse,
     UserProfile, UserProfileCreate, UserProfileUpdate, UserProfileResponse,
     TokenPurchase, TokenPurchaseCreate, TokenGiftCreate, TokenPurchaseResponse,
-    UserGallerySubmission, UserGallerySubmissionCreate, UserGallerySubmissionResponse
+    UserGallerySubmission, UserGallerySubmissionCreate, UserGallerySubmissionResponse,
+    TokenTransfer, TokenTransferCreate, TokenTransferResponse,
+    CashoutRequest, CashoutRequestCreate, CashoutRequestResponse,
+    RoleUpdate
 )
 from push_service import PushNotificationService
 from auth import verify_password, get_password_hash, create_access_token, decode_access_token
