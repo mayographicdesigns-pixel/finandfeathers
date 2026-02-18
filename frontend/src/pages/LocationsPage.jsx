@@ -200,7 +200,7 @@ const LocationsPage = () => {
                   </Button>
                   
                   <Button
-                    onClick={() => window.location.href = location.reservations}
+                    onClick={(e) => { e.stopPropagation(); window.location.href = location.reservations; }}
                     variant="outline"
                     className="w-full border-red-600 text-red-500 hover:bg-slate-700"
                   >
