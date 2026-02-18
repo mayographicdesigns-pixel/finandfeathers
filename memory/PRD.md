@@ -267,10 +267,15 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 5. **Photo Gallery Submissions**: Auto-approved without moderation
 6. **Location Data**: Still sourced from mockData.js, not backend-managed
 
+## Bug Fixes (February 2026)
+- **FIXED**: Deployment blocker - `AttributeError: module 'bcrypt' has no attribute '__about__'` resolved by downgrading bcrypt to 3.2.2
+- **VERIFIED**: Location detail pages working correctly (blank page issue not reproducible)
+
 ## Prioritized Backlog
 
 ### P0 (Critical) - DONE
 - [x] Admin dashboard with authentication
+- [x] Deployment dependency issue (bcrypt/passlib)
 
 ### P1 (High Priority)
 - [ ] Migrate locations data from mockData.js to backend/admin panel
