@@ -63,11 +63,14 @@ const MyAccountPage = () => {
   const [editedProfile, setEditedProfile] = useState(null);
   const [activeTab, setActiveTab] = useState('profile');
   const profilePhotoInputRef = useRef(null);
+  const [searchParams] = useSearchParams();
   
   // Token state
-  const [purchaseAmount, setPurchaseAmount] = useState(5);
+  const [tokenPackages, setTokenPackages] = useState({});
+  const [selectedPackage, setSelectedPackage] = useState('50');
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [tokenHistory, setTokenHistory] = useState([]);
+  const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   
   // History state
   const [visits, setVisits] = useState([]);
@@ -91,6 +94,87 @@ const MyAccountPage = () => {
   const [cashoutDetails, setCashoutDetails] = useState('');
   const [isRequestingCashout, setIsRequestingCashout] = useState(false);
   const [transferToPersonalAmount, setTransferToPersonalAmount] = useState(0);
+
+  // Load token packages on mount
+  useEffect(() => {
+    const loadPackages = async () => {
+      try {
+        const packages = await getTokenPackages();
+        setTokenPackages(packages);
+      } catch (error) {
+        console.error('Error loading token packages:', error);
+      }
+    };
+    loadPackages();
+  }, []);
+
+  // Check for payment return from Stripe
+  useEffect(() => {
+    const sessionId = searchParams.get('session_id');
+    const paymentStatus = searchParams.get('payment');
+    
+    if (sessionId && paymentStatus === 'success') {
+      handlePaymentReturn(sessionId);
+    } else if (paymentStatus === 'cancelled') {
+      toast({ title: 'Payment Cancelled', description: 'Your token purchase was cancelled', variant: 'destructive' });
+      // Clean up URL
+      window.history.replaceState({}, '', '/my-account');
+    }
+  }, [searchParams]);
+
+  const handlePaymentReturn = async (sessionId) => {
+    setIsCheckingPayment(true);
+    let attempts = 0;
+    const maxAttempts = 5;
+    const pollInterval = 2000;
+
+    const pollStatus = async () => {
+      if (attempts >= maxAttempts) {
+        setIsCheckingPayment(false);
+        toast({ title: 'Payment Status', description: 'Please check your email for confirmation', variant: 'default' });
+        window.history.replaceState({}, '', '/my-account');
+        return;
+      }
+
+      try {
+        const result = await checkTokenCheckoutStatus(sessionId);
+        
+        if (result.payment_status === 'paid') {
+          setIsCheckingPayment(false);
+          toast({ 
+            title: 'Payment Successful!', 
+            description: `${result.tokens_credited} tokens have been added to your account!` 
+          });
+          // Refresh profile to get new balance
+          if (profile) {
+            const updatedProfile = await getUserProfile(profile.id);
+            setProfile(updatedProfile);
+            setEditedProfile(updatedProfile);
+            // Refresh token history
+            const history = await getTokenHistory(profile.id);
+            setTokenHistory(history);
+          }
+          window.history.replaceState({}, '', '/my-account');
+          return;
+        } else if (result.status === 'expired') {
+          setIsCheckingPayment(false);
+          toast({ title: 'Payment Expired', description: 'Please try again', variant: 'destructive' });
+          window.history.replaceState({}, '', '/my-account');
+          return;
+        }
+
+        // Continue polling
+        attempts++;
+        setTimeout(pollStatus, pollInterval);
+      } catch (error) {
+        console.error('Error checking payment status:', error);
+        attempts++;
+        setTimeout(pollStatus, pollInterval);
+      }
+    };
+
+    pollStatus();
+  };
 
   useEffect(() => {
     loadUserProfile();
