@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ExternalLink, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Clock, X, Image as ImageIcon, Edit2, Save, LogOut, Settings, GripVertical } from 'lucide-react';
+import { ExternalLink, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Clock, X, Image as ImageIcon, Edit2, Save, LogOut, Settings, GripVertical, Navigation } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { toast } from '../hooks/use-toast';
 import DailyVideoCarousel from '../components/DailyVideoCarousel';
+import { locations } from '../mockData';
 import {
   DndContext,
   closestCenter,
@@ -33,6 +34,228 @@ import {
   verifyAdminToken,
   uploadImage
 } from '../services/api';
+
+// Welcome Popup Component
+const WelcomePopup = ({ onClose, onSubmit }) => {
+  const navigate = useNavigate();
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [findingLocation, setFindingLocation] = useState(false);
+  const [closestLocation, setClosestLocation] = useState(null);
+
+  // Find closest location on mount
+  useEffect(() => {
+    findClosestLocation();
+  }, []);
+
+  const findClosestLocation = () => {
+    setFindingLocation(true);
+    
+    if (!navigator.geolocation) {
+      // Default to first location if geolocation not available
+      setClosestLocation(locations[0]);
+      setFindingLocation(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const userLat = position.coords.latitude;
+        const userLng = position.coords.longitude;
+        
+        // Calculate distance to each location
+        let nearest = locations[0];
+        let minDistance = Infinity;
+        
+        locations.forEach(loc => {
+          if (loc.coordinates) {
+            const distance = calculateDistance(
+              userLat, userLng,
+              loc.coordinates.lat, loc.coordinates.lng
+            );
+            if (distance < minDistance) {
+              minDistance = distance;
+              nearest = loc;
+            }
+          }
+        });
+        
+        setClosestLocation(nearest);
+        setFindingLocation(false);
+      },
+      (error) => {
+        console.log('Geolocation error:', error);
+        // Default to first location
+        setClosestLocation(locations[0]);
+        setFindingLocation(false);
+      },
+      { timeout: 5000, maximumAge: 300000 }
+    );
+  };
+
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 3959; // Earth's radius in miles
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!name.trim()) {
+      toast({ title: "Name required", description: "Please enter your name", variant: "destructive" });
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      // Save user info to localStorage
+      const userInfo = {
+        name: name.trim(),
+        phone: phone.trim(),
+        email: email.trim(),
+        savedAt: new Date().toISOString()
+      };
+      localStorage.setItem('ff_user_info', JSON.stringify(userInfo));
+      
+      // Mark popup as shown
+      localStorage.setItem('ff_welcome_shown', 'true');
+      
+      // Call onSubmit callback
+      if (onSubmit) {
+        await onSubmit(userInfo);
+      }
+      
+      // Navigate to closest location's social page
+      if (closestLocation) {
+        navigate(`/locations/${closestLocation.slug}?checkin=true`);
+      } else {
+        onClose();
+      }
+    } catch (error) {
+      console.error('Error saving user info:', error);
+      onClose();
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleClose = () => {
+    localStorage.setItem('ff_welcome_shown', 'true');
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+      <Card className="bg-slate-900 border-red-600/50 w-full max-w-md relative overflow-hidden">
+        {/* Close button */}
+        <button
+          onClick={handleClose}
+          className="absolute top-4 right-4 text-slate-400 hover:text-white z-10"
+          data-testid="welcome-close-btn"
+        >
+          <X className="w-6 h-6" />
+        </button>
+
+        <CardContent className="p-6 pt-8">
+          {/* Logo */}
+          <div className="text-center mb-6">
+            <img 
+              src="https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png"
+              alt="Fin & Feathers"
+              className="max-h-20 w-auto mx-auto mb-4"
+            />
+            <h2 className="text-2xl font-bold text-white mb-2">
+              Welcome to Fin & Feathers!
+            </h2>
+            <p className="text-slate-400 text-sm">
+              Join the vibe and connect with others at your nearest location
+            </p>
+          </div>
+
+          {/* Closest Location */}
+          {closestLocation && (
+            <div className="bg-red-900/30 border border-red-600/30 rounded-lg p-3 mb-6">
+              <div className="flex items-center gap-2 text-red-400 text-sm mb-1">
+                <Navigation className="w-4 h-4" />
+                <span>Your nearest location:</span>
+              </div>
+              <p className="text-white font-semibold">{closestLocation.name.replace('Fin & Feathers - ', '')}</p>
+              <p className="text-slate-400 text-xs">{closestLocation.address}</p>
+            </div>
+          )}
+
+          {findingLocation && (
+            <div className="text-center text-slate-400 text-sm mb-4">
+              <span className="animate-pulse">Finding your nearest location...</span>
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Your Name *</label>
+              <Input
+                type="text"
+                placeholder="Enter your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="bg-slate-800 border-slate-700 text-white"
+                required
+                data-testid="welcome-name-input"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Phone Number</label>
+              <Input
+                type="tel"
+                placeholder="(555) 123-4567"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="bg-slate-800 border-slate-700 text-white"
+                data-testid="welcome-phone-input"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
+              <Input
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-slate-800 border-slate-700 text-white"
+                data-testid="welcome-email-input"
+              />
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isSubmitting || !name.trim()}
+              className="w-full bg-red-600 hover:bg-red-700 text-white h-12 text-lg"
+              data-testid="welcome-submit-btn"
+            >
+              {isSubmitting ? 'Connecting...' : 'Join the Vibe'}
+            </Button>
+
+            <p className="text-slate-500 text-xs text-center">
+              We'll take you to the social hub at your nearest location
+            </p>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
 
 // Default content
 const defaultContent = {
