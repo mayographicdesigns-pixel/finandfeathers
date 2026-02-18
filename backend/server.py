@@ -2621,6 +2621,106 @@ async def seed_locations(admin: str = Depends(get_current_admin)):
 
 
 # =====================================================
+# PROMO VIDEO ENDPOINTS
+# =====================================================
+
+@api_router.get("/promo-videos")
+async def get_promo_videos():
+    """Get all active promo videos for the carousel"""
+    videos = await db.promo_videos.find(
+        {"is_active": True},
+        {"_id": 0}
+    ).sort("display_order", 1).to_list(100)
+    return videos
+
+
+@api_router.get("/promo-videos/by-day/{day_of_week}")
+async def get_promo_videos_by_day(day_of_week: int):
+    """Get videos for a specific day (0=Sunday to 6=Saturday)"""
+    # Get day-specific videos first, then common videos
+    day_videos = await db.promo_videos.find(
+        {"is_active": True, "day_of_week": day_of_week, "is_common": False},
+        {"_id": 0}
+    ).sort("display_order", 1).to_list(50)
+    
+    common_videos = await db.promo_videos.find(
+        {"is_active": True, "is_common": True},
+        {"_id": 0}
+    ).sort("display_order", 1).to_list(50)
+    
+    return day_videos + common_videos
+
+
+@api_router.get("/admin/promo-videos")
+async def admin_get_promo_videos(admin: str = Depends(get_current_admin)):
+    """Get all promo videos for admin"""
+    videos = await db.promo_videos.find({}, {"_id": 0}).sort("display_order", 1).to_list(100)
+    return videos
+
+
+@api_router.post("/admin/promo-videos")
+async def admin_create_promo_video(video: PromoVideoCreate, admin: str = Depends(get_current_admin)):
+    """Create a new promo video"""
+    video_data = PromoVideo(
+        title=video.title,
+        url=video.url,
+        day_of_week=video.day_of_week,
+        is_common=video.is_common,
+        display_order=video.display_order
+    )
+    await db.promo_videos.insert_one(video_data.model_dump())
+    return {"id": video_data.id, "message": "Promo video created successfully"}
+
+
+@api_router.put("/admin/promo-videos/{video_id}")
+async def admin_update_promo_video(video_id: str, video: PromoVideoUpdate, admin: str = Depends(get_current_admin)):
+    """Update a promo video"""
+    existing = await db.promo_videos.find_one({"id": video_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Promo video not found")
+    
+    update_data = {k: v for k, v in video.model_dump().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc)
+    
+    await db.promo_videos.update_one({"id": video_id}, {"$set": update_data})
+    return {"message": "Promo video updated successfully"}
+
+
+@api_router.delete("/admin/promo-videos/{video_id}")
+async def admin_delete_promo_video(video_id: str, admin: str = Depends(get_current_admin)):
+    """Delete a promo video"""
+    result = await db.promo_videos.delete_one({"id": video_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Promo video not found")
+    return {"message": "Promo video deleted successfully"}
+
+
+@api_router.post("/admin/promo-videos/seed")
+async def seed_promo_videos(admin: str = Depends(get_current_admin)):
+    """Seed the database with initial promo videos"""
+    existing_count = await db.promo_videos.count_documents({})
+    if existing_count > 0:
+        return {"message": f"Database already has {existing_count} promo videos. Skipping seed."}
+    
+    initial_videos = [
+        # Common videos (show on all days)
+        {"id": str(uuid.uuid4()), "title": "M-F $5 Specials", "url": "https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/gguqbaki_m-f%205%20specials.mp4", "day_of_week": -1, "is_common": True, "display_order": 100, "is_active": True, "created_at": datetime.now(timezone.utc), "updated_at": datetime.now(timezone.utc)},
+        {"id": str(uuid.uuid4()), "title": "Hookah Lounge", "url": "https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/5lk2zci7_Hookah.mp4", "day_of_week": -1, "is_common": True, "display_order": 101, "is_active": True, "created_at": datetime.now(timezone.utc), "updated_at": datetime.now(timezone.utc)},
+        # Day-specific videos
+        {"id": str(uuid.uuid4()), "title": "Monday Special", "url": "https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/72qd1ab8_Monday.mp4", "day_of_week": 1, "is_common": False, "display_order": 0, "is_active": True, "created_at": datetime.now(timezone.utc), "updated_at": datetime.now(timezone.utc)},
+        {"id": str(uuid.uuid4()), "title": "Tuesday Special", "url": "https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/wvi3jxji_Tuesday.mp4", "day_of_week": 2, "is_common": False, "display_order": 0, "is_active": True, "created_at": datetime.now(timezone.utc), "updated_at": datetime.now(timezone.utc)},
+        {"id": str(uuid.uuid4()), "title": "Wednesday Special", "url": "https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/d6juf8fz_Wednesday.mp4", "day_of_week": 3, "is_common": False, "display_order": 0, "is_active": True, "created_at": datetime.now(timezone.utc), "updated_at": datetime.now(timezone.utc)},
+        {"id": str(uuid.uuid4()), "title": "Wednesday Special 2", "url": "https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/jzr5vp5d_Wednesday%20%282%29.mp4", "day_of_week": 3, "is_common": False, "display_order": 1, "is_active": True, "created_at": datetime.now(timezone.utc), "updated_at": datetime.now(timezone.utc)},
+        {"id": str(uuid.uuid4()), "title": "Thursday Special", "url": "https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/w9nk5dsp_Thursday.mp4", "day_of_week": 4, "is_common": False, "display_order": 0, "is_active": True, "created_at": datetime.now(timezone.utc), "updated_at": datetime.now(timezone.utc)},
+        {"id": str(uuid.uuid4()), "title": "Friday Special", "url": "https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/s5myd3mu_Friday.mp4", "day_of_week": 5, "is_common": False, "display_order": 0, "is_active": True, "created_at": datetime.now(timezone.utc), "updated_at": datetime.now(timezone.utc)},
+        {"id": str(uuid.uuid4()), "title": "Saturday Special", "url": "https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/lrdt4s1h_Saturday.mp4", "day_of_week": 6, "is_common": False, "display_order": 0, "is_active": True, "created_at": datetime.now(timezone.utc), "updated_at": datetime.now(timezone.utc)},
+    ]
+    
+    await db.promo_videos.insert_many(initial_videos)
+    return {"message": f"Successfully seeded {len(initial_videos)} promo videos"}
+
+
+# =====================================================
 # WOOCOMMERCE MERCHANDISE ENDPOINTS
 # =====================================================
 
