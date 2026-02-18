@@ -116,6 +116,9 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Logout functionality
 - [x] **Users Tab** - View all user profiles with token balances
 - [x] **Gift Tokens** - Admin can gift F&F tokens to any user with optional message
+- [x] **Role Management** - Admin can change user roles (customer/staff/management)
+- [x] **Cashout Processing** - View and approve/reject staff cashout requests
+- [x] **Role Filter** - Filter users by role type
 
 #### My Account Feature (MyAccountPage.jsx) - COMPLETED February 2026
 - [x] **Profile Management:**
