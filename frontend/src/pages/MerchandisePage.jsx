@@ -1,21 +1,61 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Home, ShoppingBag, ExternalLink, Tag, Loader2, MapPin } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Home, ShoppingBag, ExternalLink, Tag, Loader2, MapPin, ShoppingCart, Plus, Minus, X, Trash2, CheckCircle } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
+import { Input } from '../components/ui/input';
+import { toast } from '../hooks/use-toast';
+import { createCartCheckout, getCartOrderStatus } from '../services/api';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const MerchandisePage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [cart, setCart] = useState([]);
+  const [showCart, setShowCart] = useState(false);
+  const [checkingOut, setCheckingOut] = useState(false);
+  const [customerEmail, setCustomerEmail] = useState('');
+  const [orderSuccess, setOrderSuccess] = useState(false);
 
   useEffect(() => {
     fetchProducts();
+    // Load cart from localStorage
+    const savedCart = localStorage.getItem('ff_cart');
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
   }, []);
+
+  // Check for order return
+  useEffect(() => {
+    const orderId = searchParams.get('order_id');
+    const orderStatus = searchParams.get('order');
+    
+    if (orderId && orderStatus === 'success') {
+      checkOrderStatus(orderId);
+    }
+  }, [searchParams]);
+
+  const checkOrderStatus = async (orderId) => {
+    try {
+      const order = await getCartOrderStatus(orderId);
+      if (order.status === 'paid') {
+        setOrderSuccess(true);
+        // Clear cart
+        setCart([]);
+        localStorage.removeItem('ff_cart');
+        toast({ title: 'Order Confirmed!', description: 'Thank you for your purchase!' });
+      }
+      window.history.replaceState({}, '', '/merch');
+    } catch (error) {
+      console.error('Error checking order:', error);
+    }
+  };
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -31,6 +71,11 @@ const MerchandisePage = () => {
     }
   };
 
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('ff_cart', JSON.stringify(cart));
+  }, [cart]);
+
   // Get unique categories
   const categories = ['all', ...new Set(products.flatMap(p => p.categories || []))];
 
@@ -39,8 +84,53 @@ const MerchandisePage = () => {
     ? products 
     : products.filter(p => p.categories?.includes(selectedCategory));
 
-  const handleBuyNow = (product) => {
-    window.open(product.permalink, '_blank');
+  const addToCart = (product) => {
+    setCart(prev => {
+      const existing = prev.find(item => item.id === product.id);
+      if (existing) {
+        return prev.map(item => 
+          item.id === product.id 
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      return [...prev, { ...product, quantity: 1 }];
+    });
+    toast({ title: 'Added to Cart', description: `${product.name} added to your cart` });
+  };
+
+  const updateQuantity = (productId, delta) => {
+    setCart(prev => prev.map(item => {
+      if (item.id === productId) {
+        const newQty = item.quantity + delta;
+        return newQty > 0 ? { ...item, quantity: newQty } : item;
+      }
+      return item;
+    }).filter(item => item.quantity > 0));
+  };
+
+  const removeFromCart = (productId) => {
+    setCart(prev => prev.filter(item => item.id !== productId));
+  };
+
+  const cartTotal = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
+  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  const handleCheckout = async () => {
+    if (cart.length === 0) {
+      toast({ title: 'Cart Empty', description: 'Add some items to your cart first', variant: 'destructive' });
+      return;
+    }
+
+    setCheckingOut(true);
+    try {
+      const result = await createCartCheckout(cart, customerEmail || null);
+      // Redirect to WooCommerce checkout
+      window.location.href = result.checkout_url;
+    } catch (error) {
+      toast({ title: 'Checkout Error', description: error.message, variant: 'destructive' });
+      setCheckingOut(false);
+    }
   };
 
   return (
@@ -57,17 +147,43 @@ const MerchandisePage = () => {
             <Home className="w-4 h-4 mr-2" />
             Home
           </Button>
-          <Button
-            onClick={() => navigate('/locations')}
-            variant="outline"
-            className="border-slate-600 text-slate-300 hover:bg-slate-700"
-            data-testid="locations-btn"
-          >
-            <MapPin className="w-4 h-4 mr-2" />
-            Locations
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setShowCart(true)}
+              variant="outline"
+              className="border-amber-600 text-amber-500 hover:bg-amber-600/10 relative"
+              data-testid="cart-btn"
+            >
+              <ShoppingCart className="w-4 h-4 mr-2" />
+              Cart
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Button>
+            <Button
+              onClick={() => navigate('/locations')}
+              variant="outline"
+              className="border-slate-600 text-slate-300 hover:bg-slate-700"
+              data-testid="locations-btn"
+            >
+              <MapPin className="w-4 h-4 mr-2" />
+              Locations
+            </Button>
+          </div>
         </div>
       </div>
+
+      {/* Order Success Banner */}
+      {orderSuccess && (
+        <div className="bg-green-600/20 border-b border-green-600 py-4">
+          <div className="max-w-7xl mx-auto px-4 flex items-center justify-center gap-2">
+            <CheckCircle className="w-5 h-5 text-green-500" />
+            <span className="text-green-400">Your order has been confirmed! Thank you for your purchase.</span>
+          </div>
+        </div>
+      )}
 
       {/* Logo */}
       <div className="flex flex-col items-center pt-8 pb-4">
@@ -175,13 +291,13 @@ const MerchandisePage = () => {
                   </div>
                   
                   <Button
-                    onClick={() => handleBuyNow(product)}
+                    onClick={() => addToCart(product)}
                     disabled={!product.in_stock}
                     className="w-full mt-4 bg-red-600 hover:bg-red-700 disabled:bg-slate-700"
-                    data-testid={`buy-${product.id}`}
+                    data-testid={`add-to-cart-${product.id}`}
                   >
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    {product.in_stock ? 'Buy Now' : 'Sold Out'}
+                    <ShoppingCart className="w-4 h-4 mr-2" />
+                    {product.in_stock ? 'Add to Cart' : 'Sold Out'}
                   </Button>
                 </CardContent>
               </Card>
@@ -189,6 +305,112 @@ const MerchandisePage = () => {
           </div>
         )}
       </div>
+
+      {/* Cart Sidebar */}
+      {showCart && (
+        <div className="fixed inset-0 z-50 flex justify-end">
+          <div 
+            className="absolute inset-0 bg-black/60"
+            onClick={() => setShowCart(false)}
+          />
+          <div className="relative w-full max-w-md bg-slate-900 h-full overflow-y-auto">
+            <div className="sticky top-0 bg-slate-900 border-b border-slate-700 p-4 flex justify-between items-center">
+              <h2 className="text-xl font-bold text-white">
+                <ShoppingCart className="inline w-5 h-5 mr-2" />
+                Your Cart ({cartCount})
+              </h2>
+              <Button variant="ghost" size="sm" onClick={() => setShowCart(false)}>
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+
+            <div className="p-4 space-y-4">
+              {cart.length === 0 ? (
+                <div className="text-center py-12">
+                  <ShoppingCart className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+                  <p className="text-slate-400">Your cart is empty</p>
+                </div>
+              ) : (
+                <>
+                  {cart.map(item => (
+                    <div key={item.id} className="flex gap-3 bg-slate-800 rounded-lg p-3">
+                      {item.image && (
+                        <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded" />
+                      )}
+                      <div className="flex-1">
+                        <h3 className="text-white font-medium text-sm line-clamp-2">{item.name}</h3>
+                        <p className="text-amber-500 font-bold">${item.price}</p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <button
+                            onClick={() => updateQuantity(item.id, -1)}
+                            className="w-6 h-6 bg-slate-700 rounded flex items-center justify-center hover:bg-slate-600"
+                          >
+                            <Minus className="w-3 h-3" />
+                          </button>
+                          <span className="text-white w-8 text-center">{item.quantity}</span>
+                          <button
+                            onClick={() => updateQuantity(item.id, 1)}
+                            className="w-6 h-6 bg-slate-700 rounded flex items-center justify-center hover:bg-slate-600"
+                          >
+                            <Plus className="w-3 h-3" />
+                          </button>
+                          <button
+                            onClick={() => removeFromCart(item.id)}
+                            className="ml-auto text-red-400 hover:text-red-300"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  <div className="border-t border-slate-700 pt-4 space-y-4">
+                    <div className="flex justify-between text-lg">
+                      <span className="text-slate-400">Subtotal:</span>
+                      <span className="text-white font-bold">${cartTotal.toFixed(2)}</span>
+                    </div>
+
+                    <div>
+                      <label className="text-sm text-slate-400 block mb-1">Email (optional)</label>
+                      <Input
+                        type="email"
+                        value={customerEmail}
+                        onChange={(e) => setCustomerEmail(e.target.value)}
+                        placeholder="your@email.com"
+                        className="bg-slate-800 border-slate-700 text-white"
+                      />
+                    </div>
+
+                    <Button
+                      onClick={handleCheckout}
+                      disabled={checkingOut || cart.length === 0}
+                      className="w-full bg-amber-600 hover:bg-amber-700 h-12 text-lg"
+                      data-testid="checkout-btn"
+                    >
+                      {checkingOut ? (
+                        <>
+                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingBag className="w-5 h-5 mr-2" />
+                          Checkout ${cartTotal.toFixed(2)}
+                        </>
+                      )}
+                    </Button>
+                    
+                    <p className="text-xs text-slate-500 text-center">
+                      Secure payment via Fin & Feathers store
+                    </p>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <div className="text-center py-8 border-t border-slate-800">
