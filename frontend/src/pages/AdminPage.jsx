@@ -2275,6 +2275,7 @@ const AdminPage = () => {
     { id: 'gallery', label: 'Gallery', icon: Grid3X3 },
     { id: 'social', label: 'Social', icon: Share2 },
     { id: 'menu', label: 'Menu Items', icon: UtensilsCrossed },
+    { id: 'users', label: 'Users', icon: Coins },
     { id: 'members', label: 'Loyalty', icon: Users },
     { id: 'contacts', label: 'Contacts', icon: Mail },
     { id: 'notifications', label: 'Notifications', icon: Bell },
