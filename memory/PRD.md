@@ -281,26 +281,26 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 3. **PWA Icons**: Not optimized for all device sizes
 4. **Token Purchase**: Does NOT process actual payments - simulates purchase and adds tokens
 5. **Photo Gallery Submissions**: Auto-approved without moderation
-6. **Location Data**: Still sourced from mockData.js, not backend-managed
 
 ## Bug Fixes (February 2026)
 - **FIXED**: Deployment blocker - `AttributeError: module 'bcrypt' has no attribute '__about__'` resolved by downgrading bcrypt to 3.2.2
 - **VERIFIED**: Location detail pages working correctly (blank page issue not reproducible)
+- **COMPLETED**: Location data migration from mockData.js to MongoDB backend
 
 ## Prioritized Backlog
 
 ### P0 (Critical) - DONE
 - [x] Admin dashboard with authentication
 - [x] Deployment dependency issue (bcrypt/passlib)
+- [x] Migrate locations data from mockData.js to backend/admin panel
 
 ### P1 (High Priority)
-- [ ] Migrate locations data from mockData.js to backend/admin panel
 - [ ] Connect MenuPage.jsx to backend API (replace mockData.js)
 - [ ] Upload and manage promo videos via admin panel
 
 ### P2 (Medium Priority)
-- [ ] Geolocation for sorting locations by proximity
-- [ ] Location-specific weekly specials management
+- [x] Geolocation for sorting locations by proximity (implemented)
+- [ ] Location-specific weekly specials management (per-location from admin)
 - [ ] PWA icon optimization
 
 ### P3 (Low Priority)
