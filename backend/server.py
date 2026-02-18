@@ -1181,6 +1181,173 @@ async def get_dj_tips_total(location_slug: str):
     return {"total": 0, "count": 0}
 
 
+# =====================================================
+# DJ PROFILE ENDPOINTS
+# =====================================================
+
+@api_router.post("/dj/register", response_model=DJProfileResponse)
+async def register_dj(profile: DJProfileCreate):
+    """Register a new DJ profile"""
+    profile_dict = profile.dict()
+    profile_dict["id"] = str(uuid.uuid4())
+    profile_dict["is_active"] = True
+    profile_dict["current_location"] = None
+    profile_dict["checked_in_at"] = None
+    profile_dict["created_at"] = datetime.now(timezone.utc)
+    
+    await db.dj_profiles.insert_one(profile_dict)
+    
+    return DJProfileResponse(**profile_dict)
+
+
+@api_router.get("/dj/profiles")
+async def get_all_dj_profiles():
+    """Get all DJ profiles"""
+    profiles = await db.dj_profiles.find({"is_active": True}, {"_id": 0}).to_list(100)
+    return [DJProfileResponse(**p) for p in profiles]
+
+
+@api_router.get("/dj/profile/{dj_id}", response_model=DJProfileResponse)
+async def get_dj_profile(dj_id: str):
+    """Get a specific DJ profile"""
+    profile = await db.dj_profiles.find_one({"id": dj_id}, {"_id": 0})
+    if not profile:
+        raise HTTPException(status_code=404, detail="DJ profile not found")
+    return DJProfileResponse(**profile)
+
+
+@api_router.put("/dj/profile/{dj_id}", response_model=DJProfileResponse)
+async def update_dj_profile(dj_id: str, update: DJProfileUpdate):
+    """Update a DJ profile"""
+    profile = await db.dj_profiles.find_one({"id": dj_id})
+    if not profile:
+        raise HTTPException(status_code=404, detail="DJ profile not found")
+    
+    update_dict = {k: v for k, v in update.dict().items() if v is not None}
+    if update_dict:
+        await db.dj_profiles.update_one({"id": dj_id}, {"$set": update_dict})
+    
+    updated = await db.dj_profiles.find_one({"id": dj_id}, {"_id": 0})
+    return DJProfileResponse(**updated)
+
+
+@api_router.post("/dj/checkin/{dj_id}")
+async def dj_checkin(dj_id: str, location_slug: str):
+    """DJ checks in at a location to start their set"""
+    profile = await db.dj_profiles.find_one({"id": dj_id})
+    if not profile:
+        raise HTTPException(status_code=404, detail="DJ profile not found")
+    
+    # Check out any other DJ at this location
+    await db.dj_profiles.update_many(
+        {"current_location": location_slug},
+        {"$set": {"current_location": None, "checked_in_at": None}}
+    )
+    
+    # Check in this DJ
+    await db.dj_profiles.update_one(
+        {"id": dj_id},
+        {"$set": {
+            "current_location": location_slug,
+            "checked_in_at": datetime.now(timezone.utc)
+        }}
+    )
+    
+    return {"message": f"DJ checked in at {location_slug}"}
+
+
+@api_router.post("/dj/checkout/{dj_id}")
+async def dj_checkout(dj_id: str):
+    """DJ checks out from their current location"""
+    await db.dj_profiles.update_one(
+        {"id": dj_id},
+        {"$set": {"current_location": None, "checked_in_at": None}}
+    )
+    return {"message": "DJ checked out"}
+
+
+@api_router.get("/dj/at-location/{location_slug}")
+async def get_dj_at_location(location_slug: str):
+    """Get the DJ currently playing at a location"""
+    profile = await db.dj_profiles.find_one(
+        {"current_location": location_slug, "is_active": True},
+        {"_id": 0}
+    )
+    if not profile:
+        return None
+    return DJProfileResponse(**profile)
+
+
+# =====================================================
+# SEND A DRINK ENDPOINTS
+# =====================================================
+
+@api_router.post("/social/drinks", response_model=DrinkOrderResponse)
+async def send_drink(order: DrinkOrderCreate):
+    """Send a drink to another checked-in user"""
+    # Verify both check-ins exist
+    from_checkin = await db.checkins.find_one({"id": order.from_checkin_id})
+    to_checkin = await db.checkins.find_one({"id": order.to_checkin_id})
+    
+    if not from_checkin:
+        raise HTTPException(status_code=400, detail="You must be checked in to send drinks")
+    if not to_checkin:
+        raise HTTPException(status_code=400, detail="Recipient is no longer checked in")
+    
+    order_dict = order.dict()
+    order_dict["id"] = str(uuid.uuid4())
+    order_dict["status"] = "pending"
+    order_dict["created_at"] = datetime.now(timezone.utc)
+    
+    await db.drink_orders.insert_one(order_dict)
+    
+    return DrinkOrderResponse(**order_dict)
+
+
+@api_router.get("/social/drinks/{location_slug}")
+async def get_drinks_at_location(location_slug: str):
+    """Get recent drink orders at a location (public feed)"""
+    orders = await db.drink_orders.find(
+        {"location_slug": location_slug, "status": {"$in": ["pending", "accepted", "delivered"]}},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(20).to_list(20)
+    
+    return [DrinkOrderResponse(**o) for o in orders]
+
+
+@api_router.get("/social/drinks/for/{checkin_id}")
+async def get_drinks_for_user(checkin_id: str):
+    """Get drinks sent to or from a specific user"""
+    orders = await db.drink_orders.find(
+        {
+            "$or": [
+                {"from_checkin_id": checkin_id},
+                {"to_checkin_id": checkin_id}
+            ]
+        },
+        {"_id": 0}
+    ).sort("created_at", -1).limit(50).to_list(50)
+    
+    return [DrinkOrderResponse(**o) for o in orders]
+
+
+@api_router.put("/social/drinks/{order_id}/status")
+async def update_drink_status(order_id: str, status: str):
+    """Update drink order status (pending, accepted, delivered)"""
+    if status not in ["pending", "accepted", "delivered", "cancelled"]:
+        raise HTTPException(status_code=400, detail="Invalid status")
+    
+    result = await db.drink_orders.update_one(
+        {"id": order_id},
+        {"$set": {"status": status}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Drink order not found")
+    
+    return {"message": f"Drink status updated to {status}"}
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
