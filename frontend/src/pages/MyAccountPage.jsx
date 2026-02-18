@@ -1003,6 +1003,344 @@ const MyAccountPage = () => {
             </Card>
           </TabsContent>
 
+          {/* Tip Staff Tab */}
+          <TabsContent value="tip" className="space-y-4">
+            <Card className="bg-slate-900 border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Gift className="w-5 h-5 text-pink-400" />
+                  Tip Our Amazing Staff
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-slate-400 text-sm">
+                  Show appreciation to our bartenders, servers, and DJs with a token tip!
+                </p>
+                
+                {/* Staff List */}
+                {staffList.length > 0 ? (
+                  <div className="grid gap-3">
+                    {staffList.map(staff => (
+                      <button
+                        key={staff.id}
+                        onClick={() => setSelectedStaff(staff)}
+                        className={`flex items-center gap-3 p-3 rounded-lg border-2 transition-all text-left ${
+                          selectedStaff?.id === staff.id
+                            ? 'border-pink-500 bg-pink-500/20'
+                            : 'border-slate-700 bg-slate-800 hover:border-slate-600'
+                        }`}
+                      >
+                        {staff.profile_photo_url ? (
+                          <img 
+                            src={staff.profile_photo_url.startsWith('http') ? staff.profile_photo_url : `${process.env.REACT_APP_BACKEND_URL}${staff.profile_photo_url}`}
+                            alt={staff.name}
+                            className="w-12 h-12 rounded-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-3xl">{staff.avatar_emoji || '😊'}</span>
+                        )}
+                        <div>
+                          <p className="text-white font-medium">{staff.name}</p>
+                          <p className="text-slate-400 text-sm">{staff.staff_title || 'Staff'}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-slate-500 text-center py-4">No staff members available for tipping</p>
+                )}
+
+                {/* Tip Form (when staff selected) */}
+                {selectedStaff && (
+                  <div className="mt-4 p-4 bg-slate-800 rounded-lg border border-pink-500/30">
+                    <p className="text-white mb-3">Tip <span className="text-pink-400 font-bold">{selectedStaff.name}</span></p>
+                    
+                    <div className="grid grid-cols-4 gap-2 mb-3">
+                      {[10, 20, 50, 100].map(amount => (
+                        <button
+                          key={amount}
+                          onClick={() => setTipAmount(amount)}
+                          className={`p-2 rounded-lg border transition-all ${
+                            tipAmount === amount
+                              ? 'border-pink-500 bg-pink-500/20 text-white'
+                              : 'border-slate-600 bg-slate-700 text-slate-300 hover:border-slate-500'
+                          }`}
+                        >
+                          {amount}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    <div className="flex items-center gap-2 mb-3">
+                      <Input
+                        type="number"
+                        min="1"
+                        value={tipAmount}
+                        onChange={e => setTipAmount(Math.max(1, parseInt(e.target.value) || 1))}
+                        className="bg-slate-700 border-slate-600 text-white w-24"
+                      />
+                      <span className="text-slate-400">tokens (${(tipAmount / 10).toFixed(2)})</span>
+                    </div>
+                    
+                    <Input
+                      value={tipMessage}
+                      onChange={e => setTipMessage(e.target.value)}
+                      placeholder="Add a message (optional)"
+                      className="bg-slate-700 border-slate-600 text-white mb-3"
+                    />
+                    
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={handleTipStaff}
+                        disabled={isTipping || (profile.token_balance || 0) < tipAmount}
+                        className="flex-1 bg-pink-600 hover:bg-pink-700"
+                        data-testid="send-tip-btn"
+                      >
+                        {isTipping ? 'Sending...' : `Send ${tipAmount} Token Tip`}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => setSelectedStaff(null)}
+                        className="border-slate-600 text-slate-300"
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                    
+                    {(profile.token_balance || 0) < tipAmount && (
+                      <p className="text-red-400 text-xs mt-2">Insufficient balance. You have {profile.token_balance || 0} tokens.</p>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Transfer History */}
+            <Card className="bg-slate-900 border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <ArrowRightLeft className="w-5 h-5" />
+                  Transfer History
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {transferHistory.length > 0 ? (
+                  <div className="space-y-2">
+                    {transferHistory.slice(0, 10).map((tx, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          {tx.from_user_id === profile.id ? (
+                            <Send className="w-5 h-5 text-red-400" />
+                          ) : (
+                            <Gift className="w-5 h-5 text-green-400" />
+                          )}
+                          <div>
+                            <p className="text-white font-medium">
+                              {tx.from_user_id === profile.id ? 'Sent' : 'Received'} ({tx.transfer_type})
+                            </p>
+                            <p className="text-xs text-slate-400">
+                              {new Date(tx.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className={`font-bold ${tx.from_user_id === profile.id ? 'text-red-400' : 'text-green-400'}`}>
+                            {tx.from_user_id === profile.id ? '-' : '+'}{tx.amount}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-slate-500 text-center py-4">No transfers yet</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Staff Earnings Tab (only for staff role) */}
+          {profile.role === 'staff' && (
+            <TabsContent value="earnings" className="space-y-4">
+              {/* Earnings Summary */}
+              <Card className="bg-gradient-to-r from-green-900/50 to-green-800/30 border-green-600/30">
+                <CardContent className="p-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-green-200 text-sm mb-1">Available to Cash Out</p>
+                      <div className="flex items-center gap-2">
+                        <DollarSign className="w-8 h-8 text-green-400" />
+                        <span className="text-4xl font-bold text-white">{(profile.cashout_balance || 0).toFixed(2)}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-green-200 text-sm mb-1">Total Lifetime Earnings</p>
+                      <div className="flex items-center gap-2">
+                        <Award className="w-8 h-8 text-green-400" />
+                        <span className="text-4xl font-bold text-white">${(profile.total_earnings || 0).toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Cash Out */}
+              <Card className="bg-slate-900 border-slate-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <DollarSign className="w-5 h-5" />
+                    Cash Out Tips
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-3 bg-slate-800 rounded-lg">
+                    <p className="text-slate-400 text-sm">
+                      <span className="text-green-400 font-bold">80% payout rate</span> • Minimum $20 to cash out
+                    </p>
+                  </div>
+                  
+                  {(profile.cashout_balance || 0) >= 20 ? (
+                    <>
+                      <div>
+                        <label className="text-sm text-slate-400 block mb-2">Amount to Cash Out</label>
+                        <div className="flex items-center gap-2">
+                          <span className="text-slate-400">$</span>
+                          <Input
+                            type="number"
+                            min="20"
+                            max={profile.cashout_balance || 0}
+                            value={cashoutAmount || (profile.cashout_balance || 0)}
+                            onChange={e => setCashoutAmount(Math.min(profile.cashout_balance || 0, Math.max(20, parseFloat(e.target.value) || 20)))}
+                            className="bg-slate-800 border-slate-600 text-white w-32"
+                          />
+                          <span className="text-slate-400">
+                            = ${((cashoutAmount || profile.cashout_balance || 0) * 0.8).toFixed(2)} payout
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="text-sm text-slate-400 block mb-2">Payment Method</label>
+                        <div className="grid grid-cols-3 gap-2">
+                          {['venmo', 'cashapp', 'bank'].map(method => (
+                            <button
+                              key={method}
+                              onClick={() => setCashoutMethod(method)}
+                              className={`p-2 rounded-lg border capitalize transition-all ${
+                                cashoutMethod === method
+                                  ? 'border-green-500 bg-green-500/20 text-white'
+                                  : 'border-slate-600 bg-slate-800 text-slate-300'
+                              }`}
+                            >
+                              {method}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="text-sm text-slate-400 block mb-2">
+                          {cashoutMethod === 'venmo' ? 'Venmo Username' : 
+                           cashoutMethod === 'cashapp' ? 'Cash App $Cashtag' : 
+                           'Bank Account Details'}
+                        </label>
+                        <Input
+                          value={cashoutDetails}
+                          onChange={e => setCashoutDetails(e.target.value)}
+                          placeholder={cashoutMethod === 'venmo' ? '@username' : 
+                                       cashoutMethod === 'cashapp' ? '$cashtag' : 
+                                       'Account number'}
+                          className="bg-slate-800 border-slate-600 text-white"
+                        />
+                      </div>
+                      
+                      <Button
+                        onClick={handleRequestCashout}
+                        disabled={isRequestingCashout || !cashoutDetails}
+                        className="w-full bg-green-600 hover:bg-green-700"
+                        data-testid="request-cashout-btn"
+                      >
+                        {isRequestingCashout ? 'Processing...' : `Request Cashout ($${((cashoutAmount || profile.cashout_balance || 0) * 0.8).toFixed(2)})`}
+                      </Button>
+                    </>
+                  ) : (
+                    <div className="text-center py-4">
+                      <p className="text-slate-400">You need at least $20 to cash out.</p>
+                      <p className="text-slate-500 text-sm">Current balance: ${(profile.cashout_balance || 0).toFixed(2)}</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Transfer to Personal Account */}
+              <Card className="bg-slate-900 border-slate-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <ArrowRightLeft className="w-5 h-5" />
+                    Transfer to Personal Token Balance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-slate-400 text-sm">
+                    Convert your tip earnings to tokens you can use at F&F locations.
+                  </p>
+                  
+                  <div className="flex items-center gap-2">
+                    <span className="text-slate-400">$</span>
+                    <Input
+                      type="number"
+                      min="1"
+                      max={profile.cashout_balance || 0}
+                      value={transferToPersonalAmount}
+                      onChange={e => setTransferToPersonalAmount(Math.min(profile.cashout_balance || 0, Math.max(0, parseFloat(e.target.value) || 0)))}
+                      className="bg-slate-800 border-slate-600 text-white w-24"
+                    />
+                    <span className="text-slate-400">= {Math.floor(transferToPersonalAmount * 10)} tokens</span>
+                  </div>
+                  
+                  <Button
+                    onClick={handleTransferToPersonal}
+                    disabled={transferToPersonalAmount < 1 || transferToPersonalAmount > (profile.cashout_balance || 0)}
+                    className="w-full bg-amber-600 hover:bg-amber-700"
+                    data-testid="transfer-personal-btn"
+                  >
+                    Transfer {Math.floor(transferToPersonalAmount * 10)} Tokens
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Cashout History */}
+              <Card className="bg-slate-900 border-slate-700">
+                <CardHeader>
+                  <CardTitle className="text-white">Cashout History</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {cashoutHistory.length > 0 ? (
+                    <div className="space-y-2">
+                      {cashoutHistory.map((co, idx) => (
+                        <div key={idx} className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
+                          <div>
+                            <p className="text-white font-medium">${co.amount_usd.toFixed(2)} via {co.payment_method}</p>
+                            <p className="text-xs text-slate-400">{new Date(co.created_at).toLocaleDateString()}</p>
+                          </div>
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${
+                            co.status === 'paid' ? 'bg-green-600 text-white' :
+                            co.status === 'approved' ? 'bg-blue-600 text-white' :
+                            co.status === 'rejected' ? 'bg-red-600 text-white' :
+                            'bg-yellow-600 text-white'
+                          }`}>
+                            {co.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-slate-500 text-center py-4">No cashout requests yet</p>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
+
           {/* Photos Tab */}
           <TabsContent value="photos" className="space-y-4">
             {/* Upload Photo */}
