@@ -1540,16 +1540,16 @@ async def upload_profile_photo(user_id: str, file: UploadFile = File(...)):
 
 
 # =====================================================
-# F&F TOKEN ENDPOINTS (with Stripe Payment)
+# F&F TOKEN ENDPOINTS (with WooCommerce Payment)
 # =====================================================
 
 # Fixed token packages - amounts defined server-side for security
 TOKEN_PACKAGES = {
-    "10": {"amount": 1.00, "tokens": 10},
-    "50": {"amount": 5.00, "tokens": 50},
-    "100": {"amount": 10.00, "tokens": 100},
-    "250": {"amount": 25.00, "tokens": 250},
-    "500": {"amount": 50.00, "tokens": 500},
+    "10": {"amount": 1.00, "tokens": 10, "name": "10 F&F Tokens"},
+    "50": {"amount": 5.00, "tokens": 50, "name": "50 F&F Tokens"},
+    "100": {"amount": 10.00, "tokens": 100, "name": "100 F&F Tokens"},
+    "250": {"amount": 25.00, "tokens": 250, "name": "250 F&F Tokens"},
+    "500": {"amount": 50.00, "tokens": 500, "name": "500 F&F Tokens"},
 }
 
 
@@ -1559,9 +1559,46 @@ async def get_token_packages():
     return TOKEN_PACKAGES
 
 
+async def create_woocommerce_order(line_items: list, customer_email: str = None, meta_data: list = None):
+    """Helper function to create WooCommerce order"""
+    woo_url = os.environ.get("WOOCOMMERCE_URL")
+    woo_key = os.environ.get("WOOCOMMERCE_KEY")
+    woo_secret = os.environ.get("WOOCOMMERCE_SECRET")
+    
+    if not all([woo_url, woo_key, woo_secret]):
+        raise HTTPException(status_code=500, detail="WooCommerce not configured")
+    
+    api_url = f"{woo_url}/wp-json/wc/v3/orders"
+    
+    order_data = {
+        "payment_method": "woocommerce_payments",
+        "payment_method_title": "Credit Card",
+        "set_paid": False,
+        "status": "pending",
+        "line_items": line_items,
+        "meta_data": meta_data or []
+    }
+    
+    if customer_email:
+        order_data["billing"] = {"email": customer_email}
+    
+    try:
+        async with aiohttp.ClientSession() as session:
+            auth = aiohttp.BasicAuth(woo_key, woo_secret)
+            async with session.post(api_url, json=order_data, auth=auth) as response:
+                if response.status not in [200, 201]:
+                    error_text = await response.text()
+                    logging.error(f"WooCommerce order error: {error_text}")
+                    raise HTTPException(status_code=response.status, detail="Failed to create order")
+                return await response.json()
+    except aiohttp.ClientError as e:
+        logging.error(f"WooCommerce connection error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to connect to payment system")
+
+
 @api_router.post("/tokens/checkout")
 async def create_token_checkout(request: Request, package_id: str, user_id: str, origin_url: str):
-    """Create Stripe checkout session for token purchase"""
+    """Create WooCommerce order for token purchase"""
     # Validate package
     if package_id not in TOKEN_PACKAGES:
         raise HTTPException(status_code=400, detail="Invalid package")
@@ -1574,63 +1611,75 @@ async def create_token_checkout(request: Request, package_id: str, user_id: str,
     package = TOKEN_PACKAGES[package_id]
     amount = package["amount"]
     tokens = package["tokens"]
+    name = package["name"]
     
-    # Initialize Stripe
-    stripe_api_key = os.environ.get("STRIPE_API_KEY")
-    if not stripe_api_key:
-        raise HTTPException(status_code=500, detail="Stripe not configured")
-    
-    host_url = str(request.base_url).rstrip('/')
-    webhook_url = f"{host_url}/api/webhook/stripe"
-    stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
-    
-    # Build success/cancel URLs from frontend origin
-    success_url = f"{origin_url}/account?payment=success&session_id={{CHECKOUT_SESSION_ID}}"
-    cancel_url = f"{origin_url}/account?payment=cancelled"
-    
-    # Create checkout session
-    checkout_request = CheckoutSessionRequest(
-        amount=float(amount),
-        currency="usd",
-        success_url=success_url,
-        cancel_url=cancel_url,
-        metadata={
-            "user_id": user_id,
-            "package_id": package_id,
-            "tokens": str(tokens),
-            "type": "token_purchase"
-        }
-    )
-    
-    session = await stripe_checkout.create_checkout_session(checkout_request)
-    
-    # Create pending payment transaction record
+    # Create transaction record first
+    transaction_id = str(uuid.uuid4())
     transaction = {
-        "id": str(uuid.uuid4()),
-        "session_id": session.session_id,
+        "id": transaction_id,
+        "type": "token_purchase",
         "user_id": user_id,
         "amount": amount,
         "currency": "usd",
         "tokens": tokens,
         "package_id": package_id,
         "payment_status": "pending",
+        "woo_order_id": None,
         "created_at": datetime.now(timezone.utc),
         "updated_at": datetime.now(timezone.utc)
     }
     await db.payment_transactions.insert_one(transaction)
     
-    return {"checkout_url": session.url, "session_id": session.session_id}
+    # Create WooCommerce order
+    line_items = [{
+        "name": name,
+        "quantity": 1,
+        "total": str(amount)
+    }]
+    
+    meta_data = [
+        {"key": "ff_transaction_id", "value": transaction_id},
+        {"key": "ff_user_id", "value": user_id},
+        {"key": "ff_tokens", "value": str(tokens)},
+        {"key": "ff_type", "value": "token_purchase"},
+        {"key": "ff_return_url", "value": f"{origin_url}/account?payment=success&transaction_id={transaction_id}"}
+    ]
+    
+    try:
+        order = await create_woocommerce_order(
+            line_items=line_items,
+            customer_email=profile.get("email"),
+            meta_data=meta_data
+        )
+        
+        woo_order_id = order.get("id")
+        checkout_url = order.get("payment_url") or f"{os.environ.get('WOOCOMMERCE_URL')}/checkout/order-pay/{woo_order_id}/?pay_for_order=true&key={order.get('order_key')}"
+        
+        # Update transaction with WooCommerce order ID
+        await db.payment_transactions.update_one(
+            {"id": transaction_id},
+            {"$set": {"woo_order_id": woo_order_id, "updated_at": datetime.now(timezone.utc)}}
+        )
+        
+        return {
+            "checkout_url": checkout_url,
+            "transaction_id": transaction_id,
+            "order_id": woo_order_id
+        }
+    except Exception as e:
+        # Clean up failed transaction
+        await db.payment_transactions.delete_one({"id": transaction_id})
+        raise
 
 
-@api_router.get("/tokens/checkout/status/{session_id}")
-async def get_checkout_status(request: Request, session_id: str):
-    """Get the status of a token checkout session"""
-    # Find the transaction
-    transaction = await db.payment_transactions.find_one({"session_id": session_id})
+@api_router.get("/tokens/checkout/status/{transaction_id}")
+async def get_checkout_status(transaction_id: str):
+    """Get the status of a token checkout"""
+    transaction = await db.payment_transactions.find_one({"id": transaction_id})
     if not transaction:
         raise HTTPException(status_code=404, detail="Transaction not found")
     
-    # If already completed, don't re-process
+    # If already completed, return immediately
     if transaction.get("payment_status") == "paid":
         return {
             "status": "complete",
@@ -1639,128 +1688,131 @@ async def get_checkout_status(request: Request, session_id: str):
             "already_processed": True
         }
     
-    # Check with Stripe
-    stripe_api_key = os.environ.get("STRIPE_API_KEY")
-    host_url = str(request.base_url).rstrip('/')
-    webhook_url = f"{host_url}/api/webhook/stripe"
-    stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+    # Check WooCommerce order status
+    woo_order_id = transaction.get("woo_order_id")
+    if not woo_order_id:
+        return {"status": "pending", "payment_status": "pending"}
     
-    status = await stripe_checkout.get_checkout_status(session_id)
+    woo_url = os.environ.get("WOOCOMMERCE_URL")
+    woo_key = os.environ.get("WOOCOMMERCE_KEY")
+    woo_secret = os.environ.get("WOOCOMMERCE_SECRET")
     
-    # Update transaction based on status
-    if status.payment_status == "paid" and transaction.get("payment_status") != "paid":
-        # Credit tokens to user
-        user_id = transaction.get("user_id")
-        tokens_to_add = transaction.get("tokens", 0)
-        
-        profile = await db.user_profiles.find_one({"id": user_id})
-        if profile:
-            new_balance = profile.get("token_balance", 0) + tokens_to_add
-            await db.user_profiles.update_one(
-                {"id": user_id},
-                {"$set": {"token_balance": new_balance, "updated_at": datetime.now(timezone.utc)}}
-            )
-            
-            # Create purchase record
-            purchase_record = {
-                "id": str(uuid.uuid4()),
-                "user_id": user_id,
-                "amount_usd": transaction.get("amount"),
-                "tokens_purchased": tokens_to_add,
-                "payment_method": "stripe",
-                "stripe_session_id": session_id,
-                "gifted_by": None,
-                "created_at": datetime.now(timezone.utc)
-            }
-            await db.token_purchases.insert_one(purchase_record)
-        
-        # Update transaction status
-        await db.payment_transactions.update_one(
-            {"session_id": session_id},
-            {"$set": {"payment_status": "paid", "updated_at": datetime.now(timezone.utc)}}
-        )
-        
-        return {
-            "status": status.status,
-            "payment_status": "paid",
-            "tokens_credited": tokens_to_add,
-            "new_balance": new_balance if profile else 0
-        }
-    
-    elif status.status == "expired":
-        await db.payment_transactions.update_one(
-            {"session_id": session_id},
-            {"$set": {"payment_status": "expired", "updated_at": datetime.now(timezone.utc)}}
-        )
-    
-    return {
-        "status": status.status,
-        "payment_status": status.payment_status,
-        "amount_total": status.amount_total,
-        "currency": status.currency
-    }
-
-
-@api_router.post("/webhook/stripe")
-async def stripe_webhook(request: Request):
-    """Handle Stripe webhook events"""
     try:
-        body = await request.body()
-        stripe_signature = request.headers.get("Stripe-Signature")
-        
-        stripe_api_key = os.environ.get("STRIPE_API_KEY")
-        host_url = str(request.base_url).rstrip('/')
-        webhook_url = f"{host_url}/api/webhook/stripe"
-        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
-        
-        webhook_response = await stripe_checkout.handle_webhook(body, stripe_signature)
-        
-        # Handle successful payment
-        if webhook_response.payment_status == "paid":
-            session_id = webhook_response.session_id
-            transaction = await db.payment_transactions.find_one({"session_id": session_id})
-            
-            if transaction and transaction.get("payment_status") != "paid":
-                user_id = webhook_response.metadata.get("user_id")
-                tokens_to_add = int(webhook_response.metadata.get("tokens", 0))
+        async with aiohttp.ClientSession() as session:
+            auth = aiohttp.BasicAuth(woo_key, woo_secret)
+            api_url = f"{woo_url}/wp-json/wc/v3/orders/{woo_order_id}"
+            async with session.get(api_url, auth=auth) as response:
+                if response.status != 200:
+                    return {"status": "pending", "payment_status": "pending"}
                 
-                profile = await db.user_profiles.find_one({"id": user_id})
-                if profile:
-                    new_balance = profile.get("token_balance", 0) + tokens_to_add
-                    await db.user_profiles.update_one(
-                        {"id": user_id},
-                        {"$set": {"token_balance": new_balance, "updated_at": datetime.now(timezone.utc)}}
-                    )
+                order = await response.json()
+                order_status = order.get("status")
+                
+                # WooCommerce completed/processing means payment received
+                if order_status in ["completed", "processing"]:
+                    # Credit tokens if not already done
+                    if transaction.get("payment_status") != "paid":
+                        await credit_tokens_from_transaction(transaction)
                     
-                    # Create purchase record
-                    purchase_record = {
-                        "id": str(uuid.uuid4()),
-                        "user_id": user_id,
-                        "amount_usd": transaction.get("amount"),
-                        "tokens_purchased": tokens_to_add,
-                        "payment_method": "stripe",
-                        "stripe_session_id": session_id,
-                        "gifted_by": None,
-                        "created_at": datetime.now(timezone.utc)
+                    return {
+                        "status": "complete",
+                        "payment_status": "paid",
+                        "tokens_credited": transaction.get("tokens", 0)
                     }
-                    await db.token_purchases.insert_one(purchase_record)
-                
-                await db.payment_transactions.update_one(
-                    {"session_id": session_id},
-                    {"$set": {"payment_status": "paid", "updated_at": datetime.now(timezone.utc)}}
+                elif order_status in ["cancelled", "failed", "refunded"]:
+                    await db.payment_transactions.update_one(
+                        {"id": transaction_id},
+                        {"$set": {"payment_status": order_status, "updated_at": datetime.now(timezone.utc)}}
+                    )
+                    return {"status": order_status, "payment_status": order_status}
+                else:
+                    return {"status": "pending", "payment_status": "pending"}
+    except Exception as e:
+        logging.error(f"Error checking order status: {e}")
+        return {"status": "pending", "payment_status": "pending"}
+
+
+async def credit_tokens_from_transaction(transaction: dict):
+    """Helper to credit tokens from a completed transaction"""
+    user_id = transaction.get("user_id")
+    tokens_to_add = transaction.get("tokens", 0)
+    transaction_id = transaction.get("id")
+    
+    profile = await db.user_profiles.find_one({"id": user_id})
+    if profile:
+        new_balance = profile.get("token_balance", 0) + tokens_to_add
+        await db.user_profiles.update_one(
+            {"id": user_id},
+            {"$set": {"token_balance": new_balance, "updated_at": datetime.now(timezone.utc)}}
+        )
+        
+        # Create purchase record
+        purchase_record = {
+            "id": str(uuid.uuid4()),
+            "user_id": user_id,
+            "amount_usd": transaction.get("amount"),
+            "tokens_purchased": tokens_to_add,
+            "payment_method": "woocommerce",
+            "woo_order_id": transaction.get("woo_order_id"),
+            "transaction_id": transaction_id,
+            "gifted_by": None,
+            "created_at": datetime.now(timezone.utc)
+        }
+        await db.token_purchases.insert_one(purchase_record)
+    
+    # Update transaction status
+    await db.payment_transactions.update_one(
+        {"id": transaction_id},
+        {"$set": {"payment_status": "paid", "updated_at": datetime.now(timezone.utc)}}
+    )
+
+
+@api_router.post("/webhook/woocommerce")
+async def woocommerce_webhook(request: Request):
+    """Handle WooCommerce webhook for order status updates"""
+    try:
+        body = await request.json()
+        
+        # Get order details
+        order_id = body.get("id")
+        order_status = body.get("status")
+        
+        if not order_id:
+            return {"status": "ok", "message": "No order ID"}
+        
+        # Find transaction by WooCommerce order ID
+        transaction = await db.payment_transactions.find_one({"woo_order_id": order_id})
+        
+        if not transaction:
+            # Could be a merchandise order
+            cart_order = await db.cart_orders.find_one({"woo_order_id": order_id})
+            if cart_order and order_status in ["completed", "processing"]:
+                await db.cart_orders.update_one(
+                    {"woo_order_id": order_id},
+                    {"$set": {"status": "paid", "updated_at": datetime.now(timezone.utc)}}
                 )
+            return {"status": "ok"}
+        
+        # Handle token purchase
+        if order_status in ["completed", "processing"] and transaction.get("payment_status") != "paid":
+            await credit_tokens_from_transaction(transaction)
+            logging.info(f"Credited {transaction.get('tokens')} tokens for order {order_id}")
+        elif order_status in ["cancelled", "failed", "refunded"]:
+            await db.payment_transactions.update_one(
+                {"id": transaction.get("id")},
+                {"$set": {"payment_status": order_status, "updated_at": datetime.now(timezone.utc)}}
+            )
         
         return {"status": "ok"}
     except Exception as e:
-        logging.error(f"Webhook error: {e}")
+        logging.error(f"WooCommerce webhook error: {e}")
         return {"status": "error", "message": str(e)}
 
 
-# Keep old endpoint for backwards compatibility (admin gifting still uses this)
+# Keep old endpoint for admin gifting
 @api_router.post("/user/tokens/purchase/{user_id}")
 async def purchase_tokens(user_id: str, purchase: TokenPurchaseCreate):
-    """Purchase F&F tokens - DEPRECATED: Use /tokens/checkout for Stripe payments"""
-    # This endpoint is now only used for admin gifting
+    """Purchase F&F tokens - Used for admin gifting only"""
     profile = await db.user_profiles.find_one({"id": user_id})
     if not profile:
         raise HTTPException(status_code=404, detail="User profile not found")
@@ -1770,7 +1822,6 @@ async def purchase_tokens(user_id: str, purchase: TokenPurchaseCreate):
     
     tokens_to_add = int(purchase.amount_usd * 10)
     
-    # Create purchase record
     purchase_record = {
         "id": str(uuid.uuid4()),
         "user_id": user_id,
@@ -1782,7 +1833,6 @@ async def purchase_tokens(user_id: str, purchase: TokenPurchaseCreate):
     }
     await db.token_purchases.insert_one(purchase_record)
     
-    # Update user balance
     new_balance = profile.get("token_balance", 0) + tokens_to_add
     await db.user_profiles.update_one(
         {"id": user_id},
@@ -1790,10 +1840,7 @@ async def purchase_tokens(user_id: str, purchase: TokenPurchaseCreate):
     )
     
     purchase_record.pop("_id", None)
-    return {
-        "purchase": purchase_record,
-        "new_balance": new_balance
-    }
+    return {"purchase": purchase_record, "new_balance": new_balance}
 
 
 @api_router.get("/user/tokens/balance/{user_id}")
