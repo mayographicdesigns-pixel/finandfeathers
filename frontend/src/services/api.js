@@ -1131,7 +1131,7 @@ export async function getTokenPackages() {
   return await response.json();
 }
 
-// Create Stripe checkout session for token purchase
+// Create WooCommerce checkout for token purchase
 export async function createTokenCheckout(userId, packageId) {
   const originUrl = window.location.origin;
   const response = await fetch(`${API_URL}/tokens/checkout?package_id=${packageId}&user_id=${userId}&origin_url=${encodeURIComponent(originUrl)}`, {
@@ -1140,14 +1140,14 @@ export async function createTokenCheckout(userId, packageId) {
   });
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.detail || 'Failed to create checkout session');
+    throw new Error(error.detail || 'Failed to create checkout');
   }
   return await response.json();
 }
 
-// Check token checkout status
-export async function checkTokenCheckoutStatus(sessionId) {
-  const response = await fetch(`${API_URL}/tokens/checkout/status/${sessionId}`);
+// Check token checkout status (now uses transaction_id)
+export async function checkTokenCheckoutStatus(transactionId) {
+  const response = await fetch(`${API_URL}/tokens/checkout/status/${transactionId}`);
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.detail || 'Failed to check checkout status');
@@ -1155,7 +1155,7 @@ export async function checkTokenCheckoutStatus(sessionId) {
   return await response.json();
 }
 
-// Purchase tokens (deprecated - kept for admin gifting)
+// Purchase tokens (admin gifting only)
 export async function purchaseTokens(userId, amountUsd) {
   const response = await fetch(`${API_URL}/user/tokens/purchase/${userId}`, {
     method: 'POST',
@@ -1165,6 +1165,43 @@ export async function purchaseTokens(userId, amountUsd) {
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.detail || 'Failed to purchase tokens');
+  }
+  return await response.json();
+}
+
+// ==================== CART & CHECKOUT API ====================
+
+// Create cart checkout for merchandise
+export async function createCartCheckout(items, customerEmail = null, customerName = null) {
+  const originUrl = window.location.origin;
+  const response = await fetch(`${API_URL}/cart/checkout?origin_url=${encodeURIComponent(originUrl)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      items: items.map(item => ({
+        product_id: item.id,
+        name: item.name,
+        price: parseFloat(item.price),
+        quantity: item.quantity || 1,
+        image: item.image
+      })),
+      customer_email: customerEmail,
+      customer_name: customerName
+    })
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to create checkout');
+  }
+  return await response.json();
+}
+
+// Get cart order status
+export async function getCartOrderStatus(orderId) {
+  const response = await fetch(`${API_URL}/cart/order/${orderId}`);
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to get order status');
   }
   return await response.json();
 }
