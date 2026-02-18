@@ -811,3 +811,117 @@ export async function verifyAdminToken() {
     return false;
   }
 }
+
+
+// ==================== SOCIAL WALL API ====================
+
+// Create a social post
+export async function createSocialPost(post) {
+  const response = await fetch(`${API_URL}/social/posts`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(post)
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to create post');
+  }
+  return await response.json();
+}
+
+// Get social posts for a location
+export async function getSocialPosts(locationSlug, myCheckinId = null) {
+  const url = myCheckinId 
+    ? `${API_URL}/social/posts/${locationSlug}?my_checkin_id=${myCheckinId}`
+    : `${API_URL}/social/posts/${locationSlug}`;
+  const response = await fetch(url);
+  if (!response.ok) throw new Error('Failed to fetch posts');
+  return await response.json();
+}
+
+// Like/unlike a post
+export async function likePost(postId, checkinId) {
+  const response = await fetch(`${API_URL}/social/posts/${postId}/like?checkin_id=${checkinId}`, {
+    method: 'POST'
+  });
+  if (!response.ok) throw new Error('Failed to like post');
+  return await response.json();
+}
+
+// Delete a post
+export async function deleteSocialPost(postId, checkinId) {
+  const response = await fetch(`${API_URL}/social/posts/${postId}?checkin_id=${checkinId}`, {
+    method: 'DELETE'
+  });
+  if (!response.ok) throw new Error('Failed to delete post');
+  return await response.json();
+}
+
+
+// ==================== DIRECT MESSAGES API ====================
+
+// Send a direct message
+export async function sendDirectMessage(dm) {
+  const response = await fetch(`${API_URL}/social/dm`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(dm)
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to send message');
+  }
+  return await response.json();
+}
+
+// Get all conversations for a user
+export async function getConversations(checkinId) {
+  const response = await fetch(`${API_URL}/social/dm/${checkinId}/conversations`);
+  if (!response.ok) throw new Error('Failed to fetch conversations');
+  return await response.json();
+}
+
+// Get message thread with a specific user
+export async function getDMThread(checkinId, partnerId) {
+  const response = await fetch(`${API_URL}/social/dm/${checkinId}/thread/${partnerId}`);
+  if (!response.ok) throw new Error('Failed to fetch messages');
+  return await response.json();
+}
+
+// Get unread message count
+export async function getUnreadCount(checkinId) {
+  const response = await fetch(`${API_URL}/social/dm/${checkinId}/unread`);
+  if (!response.ok) throw new Error('Failed to get unread count');
+  return await response.json();
+}
+
+
+// ==================== DJ TIPPING API ====================
+
+// Send a tip to the DJ
+export async function sendDJTip(tip) {
+  const response = await fetch(`${API_URL}/social/dj-tip`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(tip)
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to send tip');
+  }
+  return await response.json();
+}
+
+// Get recent DJ tips for a location
+export async function getDJTips(locationSlug) {
+  const response = await fetch(`${API_URL}/social/dj-tips/${locationSlug}`);
+  if (!response.ok) throw new Error('Failed to fetch tips');
+  return await response.json();
+}
+
+// Get total DJ tips for today
+export async function getDJTipsTotal(locationSlug) {
+  const response = await fetch(`${API_URL}/social/dj-tips/${locationSlug}/total`);
+  if (!response.ok) throw new Error('Failed to fetch tips total');
+  return await response.json();
+}
