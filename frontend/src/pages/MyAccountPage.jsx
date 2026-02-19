@@ -1047,7 +1047,7 @@ const MyAccountPage = () => {
                 </Button>
                 
                 <p className="text-xs text-slate-500 text-center">
-                  Secure payment via Stripe. Tokens are used to tip DJs and send drinks to friends at F&F locations.
+                  Secure checkout via Fin & Feathers store. Tokens are used to tip DJs and send drinks to friends at F&F locations.
                 </p>
               </CardContent>
             </Card>
