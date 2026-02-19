@@ -8,7 +8,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dine-connect-51.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://fork-dining-1.preview.emergentagent.com')
 API_URL = f"{BASE_URL}/api"
 
 # Test credentials

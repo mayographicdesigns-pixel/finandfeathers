@@ -9,188 +9,180 @@ The user wants to build a pixel-perfect clone of a restaurant's website. The pro
 - A My Account feature for users to manage their profile, view history, and interact with site content.
 - An F&F token system for tipping and gifting.
 - A role-based access control (RBAC) system with four tiers: Admin, Management, Staff, and Customer.
+- A merchandise store integrated with WooCommerce.
 
 **PRODUCT REQUIREMENTS:**
 1.  **Homepage:** Linktree-style hub with a multi-video carousel, editable by an admin from the frontend.
 2.  **Menu & Gallery Pages:** Data-driven from the backend.
-3.  **Locations & Social Hub:**
-    *   Geolocation check-in and a rich social hub (Social Wall, DMs, DJ tipping, Send a Drink).
+3.  **Locations & Social Hub:** Geolocation check-in and a rich social hub.
 4.  **Admin Dashboard:**
-    *   CRUD for Menu, Gallery, Social Links, and location-specific Specials.
+    *   CRUD for Menu, Gallery, Social Links, Videos, Locations, and location-specific Specials.
     *   **User & Role Management:** Admins can view all users, manage their roles (Admin, Management, Staff, Customer), and gift F&F tokens.
 5.  **User Experience & My Account:**
-    *   A My Account section for users to manage their profile, including uploading a profile photo/selfie.
-    *   **F&F Token Economy:** Users can purchase tokens ( = 10 tokens), use them to tip staff/DJs, and gift drinks.
-    *   **Role-Based Features:**
-        *   **Staff/DJs:** Can collect tips, view earnings, and request cashouts (at an 80% rate, with a 0 minimum).
-        *   **Management:** Can gift tokens and view all users.
-        *   **Customers:** Can have a loyalty account, purchase tokens, and tip staff.
+    *   A My Account section for users to manage their profile and F&F tokens.
+    *   **F&F Token Economy:** Users can purchase tokens, use them to tip staff/DJs, and gift drinks.
+    *   **Role-Based Features:** Staff/DJs can collect tips and cash out.
+6.  **Merchandise Store:** A new tab on the homepage that links to a page displaying products from the user's WooCommerce store.
+7.  **Payment System:** All payments (token purchases, merchandise) must be handled through WooCommerce.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A feature-rich full-stack PWA. The frontend is a React app, and the backend is FastAPI with MongoDB.
-- **Core Features:** Inline-editable homepage, admin-managed menu/gallery/specials, and location-based social hubs with a social wall, DMs, DJ tipping, and send a drink.
-- **My Account & Roles:** A comprehensive My Account page is implemented where users can edit their profile, upload a profile photo, and manage F&F tokens. A four-tier role-based access control system (Admin, Management, Staff, Customer) is fully integrated, providing different views and permissions for each role, including staff earnings/cashouts and admin role management.
-- **Bug Fixes:** A critical routing issue causing Location Not Found errors has been fixed.
+A feature-rich full-stack PWA with a React frontend and FastAPI backend.
+- **Core Features:** An inline-editable homepage, admin-managed content (menu, gallery, locations, videos), and a comprehensive My Account page with profile management and role-based access control.
+- **Recent Completions:**
+    - Two critical bugs (a deployment blocker with  and a blank location page regression) were fixed.
+    - Location data was successfully migrated from a static file to the backend, with full admin CRUD functionality.
+    - A merchandise page that fetches and displays products from the user's WooCommerce store has been implemented.
+    - A video management system was added to the admin panel to control the homepage video carousel.
+- The application is currently in the middle of a major refactor to consolidate all payment processing through WooCommerce, replacing a short-lived Stripe integration.
 
 **Last working item**:
--   Last item agent was working: The agent was addressing two critical issues simultaneously:
-    1.  A deployment error () provided by the user.
-    2.  A new user-reported bug that the pages are blank when you select a location, which appears to be a regression of a previously fixed issue. The agent had just started investigating the blank page issue.
+-   Last item agent was working: The agent was refactoring the application to handle all payments via WooCommerce, as requested by the user. This included three main parts:
+    1.  Replacing the token purchase flow (previously Stripe) with a new system that creates a WooCommerce order.
+    2.  Implementing an in-app cart system for the merchandise page, leading to a WooCommerce checkout.
+    3.  Ensuring in-app actions like tipping remained token-based.
+    The agent had started modifying backend endpoints in  and updating frontend API calls in .
 -   Status: IN PROGRESS
 -   Agent Testing Done: N
--   Which testing method agent to use? backend testing agent for the dependency issue, and frontend testing agent for the blank page bug.
+-   Which testing method agent to use? both
 -   User Testing Done: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Deployment is blocked by a dependency conflict. (P0)
--   Issue 2: Location detail pages are reportedly blank. (P0)
+-   Issue 1: Complete the migration of all payment systems to WooCommerce. (P0)
 
   Issues Detail:
-  - Issue 1:
-     - Attempted fixes: The agent identified the error  from user-provided logs, pointing to an incompatibility between  and . The agent correctly planned to downgrade  or adjust dependencies.
+  - Issue 1: 
+     - Attempted fixes: The agent started creating new backend endpoints in  (, ) and removing the Stripe SDK. Frontend modifications were started in  and  to accommodate the new flow.
      - Next debug checklist:
-        1.  Examine  to see the current versions of  and .
-        2.  Execute Looking in indexes: https://pypi.org/simple, https://d33sy5i8bnduwe.cloudfront.net/simple/
-Requirement already satisfied: passlib<2.0 in /root/.venv/lib/python3.11/site-packages (1.7.4) or Looking in indexes: https://pypi.org/simple, https://d33sy5i8bnduwe.cloudfront.net/simple/
-Collecting bcrypt==3.2.0
-  Downloading bcrypt-3.2.0-cp36-abi3-manylinux2014_aarch64.whl.metadata (7.5 kB)
-Requirement already satisfied: cffi>=1.1 in /root/.venv/lib/python3.11/site-packages (from bcrypt==3.2.0) (2.0.0)
-Requirement already satisfied: six>=1.4.1 in /root/.venv/lib/python3.11/site-packages (from bcrypt==3.2.0) (1.17.0)
-Requirement already satisfied: pycparser in /root/.venv/lib/python3.11/site-packages (from cffi>=1.1->bcrypt==3.2.0) (3.0)
-Downloading bcrypt-3.2.0-cp36-abi3-manylinux2014_aarch64.whl (56 kB)
-Installing collected packages: bcrypt
-  Attempting uninstall: bcrypt
-    Found existing installation: bcrypt 4.1.3
-    Uninstalling bcrypt-4.1.3:
-      Successfully uninstalled bcrypt-4.1.3
-Successfully installed bcrypt-3.2.0 (a known compatible version) to resolve the conflict.
-        3.  Update  with the new working versions.
-        4.  Restart the backend service and verify it starts without the .
-     - Why fix this issue and what will be achieved with the fix?: This is a hard blocker for any production deployment. Fixing it will allow the application to be containerized and deployed successfully.
+        1.  **Backend ():**
+            - Finalize the  and  endpoints to ensure they correctly create WooCommerce orders and return a checkout URL.
+            - **Implement a new webhook handler ()** to listen for  events, which will credit tokens to the user's account. This is a critical missing piece.
+            - Completely remove all remaining Stripe-related code and dependencies.
+        2.  **Frontend:**
+            - Refactor  to remove all Stripe logic and use the new WooCommerce token purchase endpoint, redirecting the user to the checkout URL.
+            - Implement a cart state management solution (e.g., React Context or  in a parent component).
+            - Update  to include Add to Cart functionality on products.
+            - Create a new Cart component (modal or page) to display cart contents and a Checkout button that uses the new  endpoint.
+     - Why fix this issue and what will be achieved with the fix?: This will unify the application's payment system under a single provider as requested by the user, simplifying maintenance and creating a consistent user experience.
      - Status: IN PROGRESS
      - Is recurring issue?: N
-     - Should Test frontend/backend/both after fix?: backend
-     - Blocked on other issue: None
-  - Issue 2:
-     - Attempted fixes: The agent just started investigating by taking a screenshot of the locations page. The previous fix involved correcting navigation links from  to .
-     - Next debug checklist:
-        1.  Re-verify that the navigation links in , , and  are still using the correct  path.
-        2.  Examine  to see how it fetches location data from  using the  from the URL.
-        3.  Use the browser's developer tools (console logs) to check for JavaScript errors on the blank page.
-        4.  Confirm that the  in the URL (e.g., ) exactly matches a slug in .
-     - Why fix this issue and what will be achieved with the fix?: This is a critical bug rendering a core feature of the application unusable.
-     - Status: IN PROGRESS
-     - Is recurring issue?: Y
-     - Should Test frontend/backend/both after fix?: frontend
+     - Should Test frontend/backend/both after fix?: both
      - Blocked on other issue: None
 
 **In progress Task List**:
-- None. The current focus is on critical bug fixes.
+- None, as the current focus is on the P0 issue above.
 
 **Upcoming and Future Tasks**
 -   Upcoming Tasks:
-    -   (P1) Backend Integration for Locations: Migrate the location data from  to a new  collection in the database and create corresponding admin CRUD functionality. This is a long-standing piece of technical debt.
--   Future Tasks:
-    -   (P2) Geolocation Sorting: On the main  page, sort the list of restaurants by the user's proximity.
+    -   (P1) Geolocation Sorting: On the main  page, sort the list of restaurants by the user's proximity.
     -   (P2) Location-Specific Content: Allow other content (besides specials) to be managed on a per-location basis.
+-   Future Tasks:
+    -   (P2) Enhance Merchandise Store: Add features like product search, more detailed product pages, and viewing order history within the app.
 
 **Completed work in this session**
--   **My Account Feature:** Implemented a full My Account page with profile editing, history, and photo submission tabs.
--   **F&F Token System:** Created a token economy for purchasing, gifting, and tipping.
--   **Profile Photo/Selfie Upload:** Added functionality for users to upload and display a profile picture on their profile and in the admin panel.
--   **Role-Based Access Control (RBAC):** Implemented a four-tier role system (Admin, Management, Staff, Customer) with distinct UI views and permissions, including staff earnings/cashout functionality.
--   **Admin Panel Enhancements:** Added a Users tab for comprehensive user management, including role assignment and token gifting.
--   **Location Link Fix:** Resolved a critical bug where location detail pages showed Not Found due to incorrect URL paths.
+- **Critical Bug Fixes:**
+  - Resolved / deployment blocker by pinning .
+  - Verified that the blank location pages bug was not reproducible.
+- **Location Data Migration:** Migrated location data from  to a MongoDB collection with a full admin CRUD interface.
+- **WooCommerce Merchandise Store:** Implemented a  page that dynamically loads products from the user's WooCommerce store.
+- **Admin Video Management:** Created a new Videos tab in the admin panel for full CRUD management of the homepage video carousel.
+- **Payment Integration (Iterative):**
+    - Implemented and then began removing a Stripe-based token purchase system.
+    - Began the implementation of a unified WooCommerce payment system for both tokens and merchandise.
+- **Testing:** Successfully used the testing agent to validate the location, merchandise, and video features before starting the payment refactor.
 
 **Earlier issues found/mentioned but not fixed**
-   - The location data is still sourced from a mock file () and is not managed via the backend. This is a high-priority technical debt item, captured in Upcoming Tasks.
+-   None. The major technical debt of using  for locations has been resolved.
 
 **Known issue recurrence from previous fork**
-  - The blank location pages bug is a regression. It was fixed earlier in this session by correcting URL paths but has been reported again by the user.
+-   None. The previously recurring blank location pages issue was investigated and found to be non-reproducible.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Frontend:** React, React Router, TailwindCSS, PWA, Shadcn UI, Geolocation API, .
--   **Backend:** FastAPI, MongoDB (Motor), Pydantic, Web Push, JWT.
--   **Architecture:** Full-stack monolith with a REST API, Role-Based Access Control (RBAC).
+-   **Frontend:** React, React Router, TailwindCSS, PWA, Shadcn UI
+-   **Backend:** FastAPI, MongoDB (Motor), Pydantic
+-   **Architecture:** Full-stack monolith, REST API, Role-Based Access Control (RBAC)
+-   **Integrations:** WooCommerce API
 
 **key DB schema**
--   :  **(New/Modified)**
--   :  **(New)**
--   :  **(New)**
--   (Other collections like , , etc. remain)
+-   :  (New)
+-   :  (New)
+-   : (Unchanged, but  will now be updated via WooCommerce webhooks)
 
 **changes in tech stack**
--   No new libraries added, but a version conflict between  and  is causing a deployment error and needs to be resolved.
+-    added to the backend for asynchronous API calls to WooCommerce.
+-    library and integration are being actively removed.
+-    version pinned to  to resolve a dependency conflict.
 
 **All files of reference**
--   : The source of the deployment error; needs to be modified.
--   : Contains all new endpoints for RBAC, tokens, and profile management.
--   : Contains all new Pydantic models for the above features.
--   : The new, complex component for all user-facing account features.
--   : Contains the new  for admin management.
--   : The file likely causing the blank page bug.
--   : **Still the source of truth for location data.**
+-   : Core file for the ongoing WooCommerce integration and removal of Stripe.
+-   : Frontend component for token purchases, currently being refactored.
+-   : The new merchandise store page that will need cart functionality.
+-   : Contains all new and modified API client functions.
+-   : Contains the new admin tabs for locations and videos.
+-   : Contains the WooCommerce API credentials.
 
 **Areas that need refactoring**:
--   The  file must be replaced with a backend database collection for locations, managed through the admin panel.
+-   The primary refactoring task is the complete removal of the Stripe integration code from , , and  once the WooCommerce replacement is fully functional and tested.
 
 **key api endpoints**
--   : CRUD for user profiles.
--   : Upload profile photo.
--   : Purchase F&F tokens.
--   : Transfer tokens (for tipping).
--   : Request cashout of earnings.
--   : Get all users for the admin panel.
--   : Update a user's role.
--   : Gift tokens to a user.
+-    & : (CRUD for locations) **(NEW & WORKING)**
+-   : (Get WooCommerce products) **(NEW & WORKING)**
+-    & : (CRUD for promo videos) **(NEW & WORKING)**
+-   : (Create WC order for tokens) **(IN PROGRESS)**
+-   : (Create WC order from in-app cart) **(IN PROGRESS)**
+-   : (To process completed orders) **(NOT STARTED)**
+-    & : (Stripe-related endpoints) **(DEPRECATED / BEING REMOVED)**
 
 **Critical Info for New Agent**
--   **Your immediate priority is to fix the two critical bugs:**
-    1.  **Deployment Blocker:** Resolve the / version conflict in . This is P0.
-    2.  **Blank Location Pages:** Debug the regression causing location detail pages to be blank. This is also P0.
--   After fixing the bugs, the next high-priority task is to finally migrate the static location data from  to a proper backend collection with an admin interface. This is a long-standing piece of technical debt.
--   The application's complexity has grown significantly. The My Account and RBAC features are deeply intertwined. Refer to , , , and  to understand the new logic.
+-   **Your top priority is to complete the migration to WooCommerce for all payments.** The user has explicitly requested this.
+-   The most critical missing part is the **backend webhook handler** to process completed WooCommerce orders and credit tokens to users. Without this, the purchase flow is incomplete.
+-   The frontend needs a **cart system** for the merchandise page. This does not exist yet and needs to be built from scratch.
+-   WooCommerce API keys are already in . You do not need to ask the user for them.
+-   Once the WooCommerce migration is done, you should use the testing agent to perform a full regression test on the payment flows for both tokens and merchandise.
 
 **documents and test reports created in this job**
--    (Updated multiple times)
--   Test reports in  for the My Account and RBAC features.
+-    (Continuously updated)
+-   Multiple reports in  confirming the stability of features implemented before the payment refactor.
 
-**Last 10 User Messages and any pending HUMAN messages**
-1.  **Request:**  (Start of RBAC feature) - **Status: Completed**
-2.  **Clarification:**  (Details for RBAC) - **Status: Completed**
-3.  **Continuation:**  - **Status: Completed**
-4.  **Bug Report:**  - **Status: Completed** (but now a regression)
-5.  **Request:**  (User provides deployment logs) - **Status: IN PROGRESS**
-6.  **Bug Report:**  (The regression bug) - **Status: IN PROGRESS**
+**Last 10 User Messages and any pending HUMAN messages** 
+1.  **Request:** Fix token purchasing (it's not prompting for payment). Also asked about admin user management. - **Status: In Progress (led to current task)**
+2.  **User Choice:** Chose Stripe for payment integration. - **Status: Superseded**
+3.  **Request:** Add a merchandise tab using WooCommerce and fix the menu page. - **Status: Completed (Merch tab done, menu was already working)**
+4.  **User Choice:** Chose to integrate the merchandise store directly into the app (Option B). - **Status: Completed**
+5.  **User Input:** Provided WooCommerce API keys. - **Status: Completed**
+6.  **Request:** Use the WooCommerce API for ALL payments. - **Status: In Progress**
+7.  **User Clarification:**
+    - Token purchases should create a WooCommerce order.
+    - Merchandise should have an in-app cart and checkout via WooCommerce.
+    - Tipping/gifting drinks should remain token-based. - **Status: In Progress (This defines the current task)**
 
 **Project Health Check:**
 -   **Broken:**
-    -   Deployment is failing due to a Python dependency error ().
-    -   Location detail pages are reportedly blank, which is a critical functionality regression.
+    -   The token purchasing feature is currently non-functional as it is in the middle of a refactor from Stripe to WooCommerce.
 -   **Mocked:**
-    -   All location data is still sourced from .
+    -   None.
 
 **3rd Party Integrations**
+-   **WooCommerce:** Used for both merchandise display and all payment processing. Requires User API Key (already provided and in ).
 -   **@dnd-kit:** Used for drag-and-drop on the homepage.
--   **passlib/bcrypt:** Used for password hashing; currently has a version conflict causing deployment to fail.
+-   **passlib/bcrypt:** Used for password hashing.
 
 **Testing status**
--   Testing agent used after significant changes: YES (for My Account & RBAC features, all passed).
+-   Testing agent used after significant changes: YES (for locations, videos, and merch page).
 -   Troubleshoot agent used after agent stuck in loop: NO
--   Test files created: No new automated test files.
--   Known regressions: The location detail page is blank, which was a previously fixed issue.
+-   Test files created: None.
+-   Known regressions: The token purchase flow is intentionally broken during the refactor.
 
 **Credentials to test flow:**
 -   **Admin Panel:**
     -   **URL:** 
     -   **Username:** 
     -   **Password:** 
+-   **WooCommerce Credentials:** Available in .
 
 **What agent forgot to execute**
--   The agent did not fully resolve the  deployment error or the blank location page regression before the session ended.
--   The task to migrate location data from  to the backend remains postponed.</analysis>
+-   The previous agent did not complete the full WooCommerce payment migration. Key missing components are the backend webhook handler to confirm purchases and the entire frontend cart UI for merchandise.</analysis>
