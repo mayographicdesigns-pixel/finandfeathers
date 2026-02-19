@@ -136,7 +136,7 @@ const MyAccountPage = () => {
       }
 
       try {
-        const result = await checkTokenCheckoutStatus(sessionId);
+        const result = await checkTokenCheckoutStatus(transactionId);
         
         if (result.payment_status === 'paid') {
           setIsCheckingPayment(false);
