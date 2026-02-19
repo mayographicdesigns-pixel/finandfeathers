@@ -284,25 +284,32 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - **FIXED**: Deployment blocker - `AttributeError: module 'bcrypt' has no attribute '__about__'` resolved by downgrading bcrypt to 3.2.2
 - **VERIFIED**: Location detail pages working correctly (blank page issue not reproducible)
 - **COMPLETED**: Location data migration from mockData.js to MongoDB backend
-- **COMPLETED**: Stripe payment integration for token purchases (Feb 18, 2026)
 - **COMPLETED**: WooCommerce merchandise store integration (Feb 18, 2026)
 - **COMPLETED**: Promo video management via admin panel (Feb 18, 2026)
 - **COMPLETED**: MenuPage already connected to backend API (97 items in DB)
+- **COMPLETED**: Unified WooCommerce payment system for tokens and merchandise (Feb 19, 2026)
+  - Token purchases now create WooCommerce orders instead of Stripe
+  - Cart checkout for merchandise creates WooCommerce orders
+  - Webhook handler processes order completions and credits tokens
+  - Fixed MyAccountPage sessionId bug (was using wrong variable name)
+  - Fixed BaseModel import for CartItem/CartCheckoutRequest in server.py
 
 ## Prioritized Backlog
 
-### P0 (Critical) - DONE
+### P0 (Critical) - ALL DONE
 - [x] Admin dashboard with authentication
 - [x] Deployment dependency issue (bcrypt/passlib)
 - [x] Migrate locations data from mockData.js to backend/admin panel
-- [x] Stripe payment integration for token purchases
 - [x] Connect MenuPage.jsx to backend API (already done - 97 items from DB)
 - [x] Promo video management via admin panel
 - [x] WooCommerce merchandise store integration
+- [x] Unified WooCommerce payment system (removed Stripe, all payments via WooCommerce)
 
 ### P1 (High Priority) - All Done!
 - [x] Video upload and management via admin panel
 - [x] Merchandise page with WooCommerce integration
+- [x] Cart system with slide-out drawer for merchandise
+- [x] Token purchase via WooCommerce checkout
 
 ### P2 (Medium Priority)
 - [x] Geolocation for sorting locations by proximity (implemented)
@@ -314,7 +321,7 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [ ] Analytics dashboard for admin
 - [ ] Multi-admin user support
 
-## New API Endpoints (Feb 18, 2026)
+## New API Endpoints (Feb 18-19, 2026)
 - `GET /api/merchandise` - Fetch products from WooCommerce
 - `GET /api/merchandise/{id}` - Fetch single product
 - `GET /api/promo-videos` - Get all active promo videos
@@ -323,10 +330,27 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - `POST /api/admin/promo-videos` - Admin: Create video
 - `PUT /api/admin/promo-videos/{id}` - Admin: Update video
 - `DELETE /api/admin/promo-videos/{id}` - Admin: Delete video
+- `GET /api/tokens/packages` - Get available token packages
+- `POST /api/tokens/checkout` - Create WooCommerce order for token purchase
+- `GET /api/tokens/checkout/status/{transaction_id}` - Check token checkout status
+- `POST /api/cart/checkout` - Create WooCommerce order for cart items
+- `GET /api/cart/order/{order_id}` - Get cart order status
+- `POST /api/webhook/woocommerce` - Handle WooCommerce order webhooks
 
 ## 3rd Party Integrations
-- **Stripe**: Token purchases with real payment processing
-- **WooCommerce**: Live product feed from finandfeathersrestaurants.com
+- **WooCommerce**: Live product feed AND all payment processing via finandfeathersrestaurants.com store
+  - Merchandise products (8 items)
+  - Token purchases (5 packages: $1-$50)
+  - Webhook handler for order completion
+
+## Token Packages
+| Package | Price | Tokens |
+|---------|-------|--------|
+| Small   | $1    | 10     |
+| Medium  | $5    | 50     |
+| Large   | $10   | 100    |
+| XL      | $25   | 250    |
+| XXL     | $50   | 500    |
 
 ## Credentials
 - **Admin Login**: username=`admin`, password=`admin`
