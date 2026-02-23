@@ -6,7 +6,7 @@ import {
   Lock, User, AlertCircle, RefreshCw, Upload, Image, Megaphone, 
   Calendar, ToggleLeft, ToggleRight, Share2, Instagram, Facebook, ExternalLink,
   ImagePlus, Grid3X3, GripVertical, Coins, Gift, Award, Briefcase, BadgeCheck, DollarSign, MapPin, Video,
-  Ticket, Star, Clock, ImageUp
+  Ticket, Star, Clock, ImageUp, MessageSquare, UserX
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
