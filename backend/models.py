@@ -561,21 +561,21 @@ class UserProfileUpdate(BaseModel):
 class UserProfileResponse(BaseModel):
     id: str
     name: str
-    phone: Optional[str]
-    email: Optional[str]
-    avatar_emoji: str
-    profile_photo_url: Optional[str]
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    avatar_emoji: str = "👤"
+    profile_photo_url: Optional[str] = None
     role: str = "customer"
     staff_title: Optional[str] = None
     cashout_balance: float = 0.0
     total_earnings: float = 0.0
-    birthdate: Optional[str]
-    anniversary: Optional[str]
+    birthdate: Optional[str] = None
+    anniversary: Optional[str] = None
     special_dates: List[dict] = []
-    instagram_handle: Optional[str]
-    facebook_handle: Optional[str]
-    twitter_handle: Optional[str]
-    tiktok_handle: Optional[str]
+    instagram_handle: Optional[str] = None
+    facebook_handle: Optional[str] = None
+    twitter_handle: Optional[str] = None
+    tiktok_handle: Optional[str] = None
     token_balance: int = 0
     total_visits: int = 0
     total_posts: int = 0
