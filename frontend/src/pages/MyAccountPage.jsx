@@ -58,6 +58,206 @@ const RoleBadge = ({ role, staffTitle }) => {
   );
 };
 
+// Signup Form Component - allows creating account without location
+const SignupForm = ({ onProfileCreated }) => {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    avatar_emoji: '😊'
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  const AVATAR_EMOJIS = ['😊', '😎', '🤩', '😋', '😄', '🤙', '🔥', '💯', '🎉', '✨', '🍗', '🍺'];
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.name.trim()) {
+      toast({ title: 'Name Required', description: 'Please enter your name', variant: 'destructive' });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Check if email already exists
+      if (formData.email) {
+        const existing = await getUserProfileByEmail(formData.email);
+        if (existing) {
+          // Found existing profile - log them in
+          localStorage.setItem('ff_user_profile_id', existing.id);
+          localStorage.setItem('ff_user_info', JSON.stringify({
+            name: existing.name,
+            email: existing.email,
+            phone: existing.phone
+          }));
+          toast({ title: 'Welcome Back!', description: `Logged in as ${existing.name}` });
+          onProfileCreated(existing);
+          return;
+        }
+      }
+
+      // Create new profile
+      const newProfile = await createUserProfile({
+        name: formData.name.trim(),
+        email: formData.email || null,
+        phone: formData.phone || null,
+        avatar_emoji: formData.avatar_emoji
+      });
+
+      // Save to localStorage
+      localStorage.setItem('ff_user_profile_id', newProfile.id);
+      localStorage.setItem('ff_user_info', JSON.stringify({
+        name: newProfile.name,
+        email: newProfile.email,
+        phone: newProfile.phone
+      }));
+
+      toast({ title: 'Account Created!', description: 'Welcome to Fin & Feathers!' });
+      onProfileCreated(newProfile);
+    } catch (error) {
+      console.error('Error creating profile:', error);
+      toast({ title: 'Error', description: error.message || 'Failed to create account', variant: 'destructive' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <img 
+            src="https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/logo-1.png"
+            alt="Fin & Feathers"
+            className="h-20 mx-auto mb-4"
+          />
+          <h1 className="text-2xl font-bold text-white">Join Fin & Feathers</h1>
+          <p className="text-slate-400 mt-2">Create your account to start earning rewards</p>
+        </div>
+
+        <Card className="bg-slate-900 border-red-600/30">
+          <CardContent className="p-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Avatar Selection */}
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">Choose Your Avatar</label>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                    className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center text-4xl border-2 border-red-500 hover:border-red-400 transition-colors"
+                  >
+                    {formData.avatar_emoji}
+                  </button>
+                  {showEmojiPicker && (
+                    <div className="flex flex-wrap gap-2">
+                      {AVATAR_EMOJIS.map((emoji) => (
+                        <button
+                          key={emoji}
+                          type="button"
+                          onClick={() => {
+                            setFormData({ ...formData, avatar_emoji: emoji });
+                            setShowEmojiPicker(false);
+                          }}
+                          className={`w-10 h-10 text-2xl rounded-lg flex items-center justify-center transition-all ${
+                            formData.avatar_emoji === emoji ? 'bg-red-600 scale-110' : 'bg-slate-800 hover:bg-slate-700'
+                          }`}
+                        >
+                          {emoji}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Name */}
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">Your Name *</label>
+                <Input
+                  type="text"
+                  placeholder="Enter your name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="bg-slate-800 border-slate-700 text-white"
+                  required
+                  data-testid="signup-name-input"
+                />
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
+                <Input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="bg-slate-800 border-slate-700 text-white"
+                  data-testid="signup-email-input"
+                />
+                <p className="text-slate-500 text-xs mt-1">Used to find your account later</p>
+              </div>
+
+              {/* Phone */}
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">Phone Number</label>
+                <Input
+                  type="tel"
+                  placeholder="(555) 123-4567"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  className="bg-slate-800 border-slate-700 text-white"
+                  data-testid="signup-phone-input"
+                />
+              </div>
+
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-red-600 hover:bg-red-700 text-white h-12 text-lg mt-6"
+                data-testid="signup-submit-btn"
+              >
+                {isSubmitting ? 'Creating Account...' : 'Create Account'}
+              </Button>
+            </form>
+
+            <div className="mt-6 text-center">
+              <p className="text-slate-500 text-sm">
+                Already have an account?{' '}
+                <button 
+                  onClick={() => {
+                    const email = window.prompt('Enter your email to find your account:');
+                    if (email) {
+                      setFormData({ ...formData, email });
+                    }
+                  }}
+                  className="text-red-400 hover:text-red-300"
+                >
+                  Find my account
+                </button>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="text-center mt-6">
+          <button 
+            onClick={() => navigate('/')}
+            className="text-slate-400 hover:text-white text-sm"
+          >
+            ← Back to Home
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const MyAccountPage = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
