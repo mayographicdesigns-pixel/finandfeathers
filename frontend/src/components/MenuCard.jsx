@@ -1,14 +1,23 @@
 import React from 'react';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
-import { Edit2 } from 'lucide-react';
+import { Edit2, ZoomIn } from 'lucide-react';
 
-const MenuCard = ({ item, variant = 'default', editMode = false, onEdit }) => {
+const MenuCard = ({ item, variant = 'default', editMode = false, onEdit, onImageClick }) => {
   const isCompact = variant === 'compact';
   // Support both image and image_url properties
   const imageUrl = item.image_url || item.image;
   const hasImage = imageUrl && imageUrl.trim() !== '';
   const isLineLayout = item.layout === 'line';
+
+  const handleImageClick = (e) => {
+    if (editMode && onEdit) {
+      onEdit(item);
+    } else if (onImageClick && hasImage) {
+      e.stopPropagation();
+      onImageClick(item);
+    }
+  };
   
   // If it's marked as line layout or has no image, render as line item
   if (isLineLayout || !hasImage) {
@@ -57,7 +66,10 @@ const MenuCard = ({ item, variant = 'default', editMode = false, onEdit }) => {
       className={`overflow-hidden bg-slate-800/80 border-slate-700/50 hover:bg-slate-800 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl group ${editMode ? 'cursor-pointer ring-2 ring-red-500/50 ring-dashed' : ''}`}
       onClick={editMode && onEdit ? () => onEdit(item) : undefined}
     >
-      <div className={`relative ${isCompact ? 'h-44' : 'h-56'} overflow-hidden`}>
+      <div 
+        className={`relative ${isCompact ? 'h-44' : 'h-56'} overflow-hidden ${!editMode ? 'cursor-pointer' : ''}`}
+        onClick={handleImageClick}
+      >
         <img
           src={imageUrl}
           alt={item.name}
@@ -66,10 +78,16 @@ const MenuCard = ({ item, variant = 'default', editMode = false, onEdit }) => {
         <div className={`absolute top-3 right-3 bg-red-500 text-white ${isCompact ? 'px-2.5 py-1' : 'px-3 py-1.5'} rounded-full font-bold ${isCompact ? 'text-xs' : 'text-sm'} shadow-lg`}>
           {item.priceLabel ? item.priceLabel : item.price !== null ? `$${item.price}` : 'MKT'}
         </div>
-        {editMode && (
+        {editMode ? (
           <div className="absolute top-3 left-3 bg-red-600 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
             <Edit2 className="w-3 h-3" />
             Click to Edit
+          </div>
+        ) : (
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+            <div className="bg-white/90 rounded-full p-2">
+              <ZoomIn className="w-5 h-5 text-slate-800" />
+            </div>
           </div>
         )}
       </div>
