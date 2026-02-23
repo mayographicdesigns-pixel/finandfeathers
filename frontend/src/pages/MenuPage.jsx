@@ -203,6 +203,10 @@ const MenuPage = () => {
     if (activeCategory === 'all') {
       return menuItems;
     }
+    // Handle signature-cocktails mapping
+    if (activeCategory === 'cocktails') {
+      return menuItems.filter(item => item.category === 'cocktails' || item.category === 'signature-cocktails');
+    }
     return menuItems.filter(item => item.category === activeCategory);
   }, [activeCategory, menuItems]);
 
