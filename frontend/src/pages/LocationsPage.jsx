@@ -14,6 +14,24 @@ const LocationsPage = () => {
   const [sortedLocations, setSortedLocations] = useState([]);
   const [locationPermission, setLocationPermission] = useState('prompt');
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Admin editing state
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editingLocation, setEditingLocation] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newLocation, setNewLocation] = useState({
+    name: '',
+    slug: '',
+    address: '',
+    phone: '',
+    image: '',
+    hours: { monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', saturday: '', sunday: '' },
+    coordinates: { lat: 0, lng: 0 },
+    reservation_phone: '',
+    online_ordering: '',
+    reservations: ''
+  });
 
   // Calculate distance between two coordinates using Haversine formula
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
