@@ -771,7 +771,7 @@ async def admin_upload_file(
         # Return the URL path (will be served via static files mount)
         return {
             "filename": unique_filename,
-            "url": f"/uploads/{unique_filename}",
+            "url": f"/api/uploads/{unique_filename}",
             "size": len(contents)
         }
     except HTTPException:
