@@ -184,6 +184,7 @@ const MenuPage = () => {
       'sandwiches': '🥪',
       'salads': '🥗',
       'cocktails': '🍹',
+      'signature-cocktails': '🍹',
       'brunch': '🥞',
       'brunch-drinks': '🥂',
       'brunch-sides': '🥓'
