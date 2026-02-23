@@ -374,6 +374,35 @@ async def admin_delete_menu_item(item_id: str, username: str = Depends(get_curre
     return {"message": "Menu item deleted successfully"}
 
 
+@api_router.post("/admin/menu-items/bulk-update-images")
+async def admin_bulk_update_menu_images(updates: list, username: str = Depends(get_current_admin)):
+    """Bulk update menu item images by category or individual items"""
+    updated_count = 0
+    for update in updates:
+        if "category" in update and "image_url" in update:
+            # Update all items in a category
+            result = await db.menu_items.update_many(
+                {"category": update["category"]},
+                {"$set": {"image_url": update["image_url"]}}
+            )
+            updated_count += result.modified_count
+        elif "id" in update and "image_url" in update:
+            # Update specific item
+            result = await db.menu_items.update_one(
+                {"id": update["id"]},
+                {"$set": {"image_url": update["image_url"]}}
+            )
+            updated_count += result.modified_count
+        elif "name" in update and "image_url" in update:
+            # Update by name (partial match)
+            result = await db.menu_items.update_one(
+                {"name": {"$regex": update["name"], "$options": "i"}},
+                {"$set": {"image_url": update["image_url"]}}
+            )
+            updated_count += result.modified_count
+    return {"message": f"Updated {updated_count} menu items"}
+
+
 # Push Notifications (Admin - Protected versions)
 @api_router.post("/admin/notifications/send")
 async def admin_send_notification(notification: PushNotificationCreate, username: str = Depends(get_current_admin)):
