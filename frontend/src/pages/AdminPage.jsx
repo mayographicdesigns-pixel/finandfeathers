@@ -3739,7 +3739,9 @@ const AdminPage = () => {
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { id: 'specials', label: 'Post Special', icon: Megaphone },
+    { id: 'events', label: 'Events', icon: Ticket },
     { id: 'gallery', label: 'Gallery', icon: Grid3X3 },
+    { id: 'submissions', label: 'Submissions', icon: ImageUp },
     { id: 'locations', label: 'Locations', icon: MapPin },
     { id: 'videos', label: 'Videos', icon: Video },
     { id: 'social', label: 'Social', icon: Share2 },
