@@ -62,6 +62,13 @@ const LocationDetailPage = () => {
   const [postingMessage, setPostingMessage] = useState(false);
   const [lightboxImage, setLightboxImage] = useState(null);
   
+  // Post photo capture state
+  const [showPostCamera, setShowPostCamera] = useState(false);
+  const [postCameraStream, setPostCameraStream] = useState(null);
+  const [uploadingPostPhoto, setUploadingPostPhoto] = useState(false);
+  const postVideoRef = useRef(null);
+  const postCanvasRef = useRef(null);
+  
   // DM state
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
