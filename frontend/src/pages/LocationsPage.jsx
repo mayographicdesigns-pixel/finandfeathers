@@ -49,14 +49,90 @@ const LocationsPage = () => {
 
   // Fetch locations from API
   useEffect(() => {
-    const fetchLocations = async () => {
-      setIsLoading(true);
-      const locations = await getLocations();
-      setSortedLocations(locations);
-      setIsLoading(false);
+    // Check if admin is logged in
+    const checkAdmin = async () => {
+      const isValid = await verifyAdminToken();
+      setIsAdmin(isValid);
     };
+    checkAdmin();
+    
     fetchLocations();
   }, []);
+
+  const fetchLocations = async () => {
+    setIsLoading(true);
+    const locations = await getLocations();
+    setSortedLocations(locations);
+    setIsLoading(false);
+  };
+
+  // Admin functions
+  const handleEditLocation = (location) => {
+    setEditingLocation({ ...location });
+  };
+
+  const handleSaveLocation = async () => {
+    if (!editingLocation) return;
+    try {
+      await updateLocation(editingLocation.id, editingLocation);
+      await fetchLocations();
+      setEditingLocation(null);
+      toast({ title: 'Success', description: 'Location updated!' });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+  };
+
+  const handleAddLocation = async () => {
+    if (!newLocation.name || !newLocation.address) {
+      toast({ title: 'Error', description: 'Name and address are required', variant: 'destructive' });
+      return;
+    }
+    try {
+      // Generate slug from name
+      const slug = newLocation.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      await createLocation({
+        ...newLocation,
+        slug
+      });
+      await fetchLocations();
+      setShowAddModal(false);
+      setNewLocation({
+        name: '',
+        slug: '',
+        address: '',
+        phone: '',
+        image: '',
+        hours: { monday: '', tuesday: '', wednesday: '', thursday: '', friday: '', saturday: '', sunday: '' },
+        coordinates: { lat: 0, lng: 0 },
+        reservation_phone: '',
+        online_ordering: '',
+        reservations: ''
+      });
+      toast({ title: 'Success', description: 'Location added!' });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+  };
+
+  const handleDeleteLocation = async (locationId) => {
+    if (!window.confirm('Delete this location?')) return;
+    try {
+      await deleteLocation(locationId);
+      await fetchLocations();
+      setEditingLocation(null);
+      toast({ title: 'Deleted', description: 'Location removed' });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+  };
+
+  const handleAdminLogout = () => {
+    localStorage.removeItem('adminToken');
+    setIsAdmin(false);
+    setEditMode(false);
+    toast({ title: 'Logged Out', description: 'Admin session ended' });
+  };
 
   // Get user's geolocation and sort locations
   useEffect(() => {
