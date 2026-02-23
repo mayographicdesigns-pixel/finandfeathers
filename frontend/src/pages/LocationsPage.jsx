@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Phone, ExternalLink, Calendar, ShoppingBag, Home, Edit2, Save, X, Settings, LogOut, Plus, Trash2 } from 'lucide-react';
+import { MapPin, Phone, ExternalLink, Calendar, ShoppingBag, Home, Edit2, Save, X, Settings, LogOut, Plus, Trash2, ZoomIn } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
+import ImageUploader from '../components/ImageUploader';
+import ImageLightbox from '../components/ImageLightbox';
 import { getLocations, verifyAdminToken, adminUpdateLocation, adminCreateLocation, adminDeleteLocation } from '../services/api';
 import { toast } from '../hooks/use-toast';
 
