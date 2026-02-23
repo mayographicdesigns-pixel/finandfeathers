@@ -2706,6 +2706,549 @@ const SocialTab = () => {
   );
 };
 
+// Events Tab - Manage events and ticketing
+const EventsTab = () => {
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editingEvent, setEditingEvent] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const fileInputRef = useRef(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    date: '',
+    time: '',
+    location: '',
+    image: '',
+    featured: false,
+    packages: ['general']
+  });
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      const data = await adminGetEvents();
+      setEvents(data);
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ title: 'Error', description: 'Please upload a valid image', variant: 'destructive' });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: 'Error', description: 'Image must be less than 5MB', variant: 'destructive' });
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const result = await uploadImage(file);
+      const backendUrl = process.env.REACT_APP_BACKEND_URL;
+      const fullUrl = `${backendUrl}${result.url}`;
+      setFormData({ ...formData, image: fullUrl });
+      toast({ title: 'Success', description: 'Image uploaded' });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.description || !formData.date || !formData.time) {
+      toast({ title: 'Error', description: 'Please fill all required fields', variant: 'destructive' });
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      if (editingEvent) {
+        await adminUpdateEvent(editingEvent.id, formData);
+        setEvents(events.map(ev => ev.id === editingEvent.id ? { ...ev, ...formData } : ev));
+        toast({ title: 'Success', description: 'Event updated' });
+      } else {
+        const newEvent = await adminCreateEvent(formData);
+        setEvents([...events, newEvent]);
+        toast({ title: 'Success', description: 'Event created' });
+      }
+      resetForm();
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleEdit = (event) => {
+    setEditingEvent(event);
+    setFormData({
+      name: event.name,
+      description: event.description,
+      date: event.date,
+      time: event.time,
+      location: event.location || '',
+      image: event.image || '',
+      featured: event.featured || false,
+      packages: event.packages || ['general']
+    });
+    setShowForm(true);
+  };
+
+  const handleToggleActive = async (event) => {
+    try {
+      await adminUpdateEvent(event.id, { is_active: !event.is_active });
+      setEvents(events.map(ev => ev.id === event.id ? { ...ev, is_active: !ev.is_active } : ev));
+      toast({ title: 'Success', description: `Event ${event.is_active ? 'hidden' : 'shown'}` });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+  };
+
+  const handleToggleFeatured = async (event) => {
+    try {
+      await adminUpdateEvent(event.id, { featured: !event.featured });
+      setEvents(events.map(ev => ev.id === event.id ? { ...ev, featured: !ev.featured } : ev));
+      toast({ title: 'Success', description: `Event ${event.featured ? 'unfeatured' : 'featured'}` });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this event?')) return;
+    try {
+      await adminDeleteEvent(id);
+      setEvents(events.filter(ev => ev.id !== id));
+      toast({ title: 'Success', description: 'Event deleted' });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+  };
+
+  const resetForm = () => {
+    setShowForm(false);
+    setEditingEvent(null);
+    setFormData({
+      name: '',
+      description: '',
+      date: '',
+      time: '',
+      location: '',
+      image: '',
+      featured: false,
+      packages: ['general']
+    });
+  };
+
+  const togglePackage = (pkg) => {
+    const newPackages = formData.packages.includes(pkg)
+      ? formData.packages.filter(p => p !== pkg)
+      : [...formData.packages, pkg];
+    setFormData({ ...formData, packages: newPackages });
+  };
+
+  if (loading) return <div className="text-white text-center py-8">Loading...</div>;
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-xl font-bold text-white flex items-center gap-2">
+            <Ticket className="w-5 h-5 text-red-500" />
+            Events Management
+          </h3>
+          <p className="text-slate-400 text-sm mt-1">Manage events displayed on the Events & Tickets page</p>
+        </div>
+        <Button onClick={() => setShowForm(true)} className="bg-red-600 hover:bg-red-700" data-testid="add-event-btn">
+          <Plus className="w-4 h-4 mr-2" /> Add Event
+        </Button>
+      </div>
+
+      {/* Add/Edit Form */}
+      {showForm && (
+        <Card className="bg-slate-800 border-slate-700">
+          <CardContent className="p-6">
+            <h4 className="text-white font-semibold mb-4">
+              {editingEvent ? 'Edit Event' : 'Create New Event'}
+            </h4>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-slate-300 text-sm block mb-2">Event Name *</label>
+                  <Input
+                    placeholder="e.g., Friday Night Live"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="bg-slate-900 border-slate-700 text-white"
+                    required
+                    data-testid="event-name-input"
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-300 text-sm block mb-2">Location</label>
+                  <Input
+                    placeholder="e.g., Edgewood (Atlanta) or All Locations"
+                    value={formData.location}
+                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                    className="bg-slate-900 border-slate-700 text-white"
+                    data-testid="event-location-input"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-slate-300 text-sm block mb-2">Description *</label>
+                <Textarea
+                  placeholder="Describe the event..."
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="bg-slate-900 border-slate-700 text-white"
+                  rows={3}
+                  required
+                  data-testid="event-description-input"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-slate-300 text-sm block mb-2">Date *</label>
+                  <Input
+                    placeholder="e.g., Every Friday or December 25, 2025"
+                    value={formData.date}
+                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    className="bg-slate-900 border-slate-700 text-white"
+                    required
+                    data-testid="event-date-input"
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-300 text-sm block mb-2">Time *</label>
+                  <Input
+                    placeholder="e.g., 9PM - 2AM"
+                    value={formData.time}
+                    onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                    className="bg-slate-900 border-slate-700 text-white"
+                    required
+                    data-testid="event-time-input"
+                  />
+                </div>
+              </div>
+
+              {/* Image Upload */}
+              <div>
+                <label className="text-slate-300 text-sm block mb-2">Event Image</label>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Image URL or upload"
+                    value={formData.image}
+                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                    className="bg-slate-900 border-slate-700 text-white flex-1"
+                    data-testid="event-image-input"
+                  />
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="bg-slate-700 hover:bg-slate-600"
+                  >
+                    {uploading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                  </Button>
+                </div>
+                {formData.image && (
+                  <div className="mt-3">
+                    <img src={formData.image} alt="Preview" className="h-32 w-48 object-cover rounded-lg border border-slate-700" />
+                  </div>
+                )}
+              </div>
+
+              {/* Ticket Packages */}
+              <div>
+                <label className="text-slate-300 text-sm block mb-2">Available Ticket Packages</label>
+                <div className="flex gap-3">
+                  {['general', 'vip', 'table'].map(pkg => (
+                    <button
+                      key={pkg}
+                      type="button"
+                      onClick={() => togglePackage(pkg)}
+                      className={`px-4 py-2 rounded-lg border transition-all ${
+                        formData.packages.includes(pkg)
+                          ? 'border-red-500 bg-red-500/20 text-red-400'
+                          : 'border-slate-600 text-slate-400 hover:border-slate-500'
+                      }`}
+                    >
+                      {pkg === 'general' && 'General ($25)'}
+                      {pkg === 'vip' && 'VIP ($75)'}
+                      {pkg === 'table' && 'Table ($200)'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Featured Toggle */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="featured-checkbox"
+                  checked={formData.featured}
+                  onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+                  className="rounded"
+                />
+                <label htmlFor="featured-checkbox" className="text-slate-300 text-sm flex items-center gap-1">
+                  <Star className="w-4 h-4 text-yellow-500" /> Mark as Featured Event
+                </label>
+              </div>
+
+              <div className="flex gap-2">
+                <Button type="submit" className="bg-green-600 hover:bg-green-700" disabled={submitting} data-testid="save-event-btn">
+                  {submitting ? 'Saving...' : editingEvent ? 'Update Event' : 'Create Event'}
+                </Button>
+                <Button type="button" variant="outline" onClick={resetForm} className="border-slate-600 text-slate-300">
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Events List */}
+      {events.length === 0 ? (
+        <Card className="bg-slate-800/50 border-slate-700">
+          <CardContent className="p-12 text-center">
+            <Ticket className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+            <p className="text-slate-400 text-lg mb-2">No events yet</p>
+            <p className="text-slate-500 text-sm">Create events to display on the Events & Tickets page</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {events.map(event => (
+            <Card 
+              key={event.id} 
+              className={`overflow-hidden ${event.is_active !== false ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-900/50 border-slate-800 opacity-60'}`}
+              data-testid={`event-card-${event.id}`}
+            >
+              <div className="md:flex">
+                {event.image && (
+                  <div className="md:w-48 h-32 md:h-auto flex-shrink-0">
+                    <img src={event.image} alt={event.name} className="w-full h-full object-cover" />
+                  </div>
+                )}
+                <CardContent className="p-4 flex-1">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="text-white font-semibold">{event.name}</h4>
+                        {event.featured && (
+                          <span className="px-2 py-0.5 rounded text-xs bg-yellow-500 text-black font-semibold flex items-center gap-1">
+                            <Star className="w-3 h-3" /> Featured
+                          </span>
+                        )}
+                        <span className={`px-2 py-0.5 rounded text-xs ${event.is_active !== false ? 'bg-green-600 text-white' : 'bg-slate-700 text-slate-300'}`}>
+                          {event.is_active !== false ? 'Active' : 'Hidden'}
+                        </span>
+                      </div>
+                      <p className="text-slate-400 text-sm line-clamp-2 mb-2">{event.description}</p>
+                      <div className="flex flex-wrap gap-3 text-xs text-slate-500">
+                        <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {event.date}</span>
+                        <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {event.time}</span>
+                        {event.location && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {event.location}</span>}
+                      </div>
+                      <div className="flex gap-1 mt-2">
+                        {event.packages?.map(pkg => (
+                          <span key={pkg} className="px-2 py-0.5 bg-slate-700 text-slate-300 rounded text-xs">
+                            {pkg}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Button size="sm" variant="outline" onClick={() => handleEdit(event)} className="border-yellow-600 text-yellow-400">
+                        <Edit2 className="w-3 h-3 mr-1" /> Edit
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => handleToggleFeatured(event)} className="border-slate-600 text-slate-300">
+                        <Star className="w-3 h-3 mr-1" /> {event.featured ? 'Unfeature' : 'Feature'}
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => handleToggleActive(event)} className="border-slate-600 text-slate-300">
+                        {event.is_active !== false ? 'Hide' : 'Show'}
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => handleDelete(event.id)} className="text-red-400 hover:bg-red-900/30">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+
+// Gallery Submissions Tab - View and moderate user photo submissions
+const GallerySubmissionsTab = () => {
+  const [submissions, setSubmissions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [lightboxImage, setLightboxImage] = useState(null);
+
+  useEffect(() => {
+    fetchSubmissions();
+  }, []);
+
+  const fetchSubmissions = async () => {
+    try {
+      const data = await adminGetGallerySubmissions();
+      setSubmissions(data);
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this photo submission? This will also remove it from the public gallery.')) return;
+    try {
+      await adminDeleteGallerySubmission(id);
+      setSubmissions(submissions.filter(s => s.id !== id));
+      toast({ title: 'Success', description: 'Submission removed from gallery' });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+  };
+
+  if (loading) return <div className="text-white text-center py-8">Loading...</div>;
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-xl font-bold text-white flex items-center gap-2">
+            <ImageUp className="w-5 h-5 text-red-500" />
+            User Photo Submissions
+          </h3>
+          <p className="text-slate-400 text-sm mt-1">
+            Photos submitted by users are auto-approved to the gallery. Remove inappropriate content here.
+          </p>
+        </div>
+        <Button variant="outline" size="sm" onClick={fetchSubmissions} className="border-slate-600 text-slate-300">
+          <RefreshCw className="w-4 h-4 mr-2" /> Refresh
+        </Button>
+      </div>
+
+      {submissions.length === 0 ? (
+        <Card className="bg-slate-800/50 border-slate-700">
+          <CardContent className="p-12 text-center">
+            <ImageUp className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+            <p className="text-slate-400 text-lg mb-2">No user submissions yet</p>
+            <p className="text-slate-500 text-sm">User-submitted photos will appear here</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {submissions.map(submission => (
+            <Card key={submission.id} className="bg-slate-800/50 border-slate-700 overflow-hidden" data-testid={`submission-${submission.id}`}>
+              <div 
+                className="aspect-video cursor-pointer group relative"
+                onClick={() => setLightboxImage(submission)}
+              >
+                <img 
+                  src={submission.image_url} 
+                  alt={submission.caption || 'User submission'}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <Eye className="w-8 h-8 text-white" />
+                </div>
+              </div>
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="text-white font-medium text-sm">{submission.user_name}</p>
+                    {submission.caption && (
+                      <p className="text-slate-400 text-xs line-clamp-2 mt-1">{submission.caption}</p>
+                    )}
+                    <p className="text-slate-500 text-xs mt-2">
+                      {new Date(submission.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleDelete(submission.id)}
+                    className="text-red-400 hover:bg-red-900/30 flex-shrink-0"
+                    data-testid={`delete-submission-${submission.id}`}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Lightbox */}
+      {lightboxImage && (
+        <div 
+          className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4"
+          onClick={() => setLightboxImage(null)}
+        >
+          <Button
+            onClick={() => setLightboxImage(null)}
+            className="absolute top-4 right-4 bg-slate-800 hover:bg-slate-700"
+          >
+            <X className="w-6 h-6" />
+          </Button>
+          <div className="max-w-4xl" onClick={(e) => e.stopPropagation()}>
+            <img 
+              src={lightboxImage.image_url}
+              alt={lightboxImage.caption || 'User submission'}
+              className="max-w-full max-h-[80vh] object-contain rounded-lg"
+            />
+            <div className="mt-4 text-center">
+              <p className="text-white font-medium">{lightboxImage.user_name}</p>
+              {lightboxImage.caption && <p className="text-slate-400 mt-1">{lightboxImage.caption}</p>}
+              <p className="text-slate-500 text-sm mt-2">{new Date(lightboxImage.created_at).toLocaleString()}</p>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+
 // Users Tab - Manage users and gift tokens
 const UsersTab = () => {
   const [users, setUsers] = useState([]);
