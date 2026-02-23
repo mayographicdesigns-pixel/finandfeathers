@@ -18,6 +18,20 @@ const MenuPage = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [usingMockData, setUsingMockData] = useState(false);
+  
+  // Admin editing state
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newItem, setNewItem] = useState({
+    name: '',
+    description: '',
+    price: '',
+    category: 'starters',
+    image_url: '',
+    is_available: true
+  });
 
   // Category display names - moved to top
   const categoryNames = {
