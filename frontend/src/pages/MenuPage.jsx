@@ -501,6 +501,14 @@ const MenuPage = () => {
         </div>
       )}
 
+      {/* Image Lightbox */}
+      {lightboxItem && (
+        <ImageLightbox 
+          image={lightboxItem}
+          onClose={() => setLightboxItem(null)}
+        />
+      )}
+
       {/* Header with logo and location */}
       <div className={`container mx-auto px-4 pt-8 pb-4 ${isAdmin ? 'mt-12' : ''}`}>
         <div className="flex flex-col items-center gap-4">
