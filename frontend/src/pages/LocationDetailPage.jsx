@@ -833,7 +833,7 @@ const LocationDetailPage = () => {
             <CardContent className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-white">Check In</h2>
-                <Button variant="ghost" size="sm" onClick={() => setShowCheckInModal(false)} className="text-slate-400 hover:text-white">
+                <Button variant="ghost" size="sm" onClick={() => { setShowCheckInModal(false); stopCamera(); setSelfieImage(null); }} className="text-slate-400 hover:text-white">
                   <X className="w-5 h-5" />
                 </Button>
               </div>
@@ -842,6 +842,90 @@ const LocationDetailPage = () => {
                 Join the vibe at <span className="text-red-500 font-semibold">{location.name}</span>! 
                 Let others know you're here.
               </p>
+
+              {/* Selfie Section */}
+              <div className="mb-5">
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <Camera className="w-4 h-4 inline mr-1" /> Take a Selfie
+                </label>
+                
+                {!showCamera && !selfieImage && (
+                  <button
+                    onClick={startCamera}
+                    className="w-full h-32 border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center gap-2 hover:border-red-500 hover:bg-slate-800/50 transition-all"
+                    data-testid="start-camera-btn"
+                  >
+                    <Camera className="w-8 h-8 text-slate-400" />
+                    <span className="text-slate-400 text-sm">Tap to take a selfie</span>
+                  </button>
+                )}
+
+                {showCamera && (
+                  <div className="relative rounded-xl overflow-hidden bg-black">
+                    <video 
+                      ref={videoRef}
+                      autoPlay 
+                      playsInline 
+                      muted
+                      className="w-full aspect-square object-cover mirror"
+                      style={{ transform: 'scaleX(-1)' }}
+                    />
+                    <canvas ref={canvasRef} className="hidden" />
+                    <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-3">
+                      <Button
+                        onClick={stopCamera}
+                        variant="outline"
+                        size="sm"
+                        className="bg-slate-900/80 border-slate-600 text-white"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={captureSelfie}
+                        className="bg-red-600 hover:bg-red-700 text-white px-6"
+                        data-testid="capture-selfie-btn"
+                      >
+                        <Camera className="w-4 h-4 mr-2" /> Capture
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {uploadingSelfie && (
+                  <div className="w-full h-32 rounded-xl bg-slate-800 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                      <span className="text-slate-400 text-sm">Uploading...</span>
+                    </div>
+                  </div>
+                )}
+
+                {selfieImage && !uploadingSelfie && (
+                  <div className="relative">
+                    <img 
+                      src={selfieImage} 
+                      alt="Your selfie" 
+                      className="w-full aspect-square object-cover rounded-xl border-2 border-green-500"
+                    />
+                    <div className="absolute top-2 right-2">
+                      <Button
+                        onClick={retakeSelfie}
+                        size="sm"
+                        className="bg-slate-900/80 hover:bg-slate-800 text-white"
+                      >
+                        <RotateCcw className="w-4 h-4 mr-1" /> Retake
+                      </Button>
+                    </div>
+                    <div className="absolute bottom-2 left-2 bg-green-600 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                      <span>✓</span> Selfie ready!
+                    </div>
+                  </div>
+                )}
+
+                {cameraError && (
+                  <p className="text-red-400 text-sm mt-2">{cameraError}</p>
+                )}
+              </div>
 
               <div className="mb-4">
                 <label className="block text-sm font-medium text-slate-300 mb-2">Your Name</label>
@@ -857,7 +941,7 @@ const LocationDetailPage = () => {
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-slate-300 mb-2">Pick Your Avatar</label>
+                <label className="block text-sm font-medium text-slate-300 mb-2">Pick Your Avatar (fallback)</label>
                 <div className="flex flex-wrap gap-2">
                   {AVATAR_EMOJIS.map((emoji) => (
                     <button
@@ -904,11 +988,11 @@ const LocationDetailPage = () => {
 
               <Button
                 onClick={handleCheckIn}
-                disabled={isLoading}
+                disabled={isLoading || uploadingSelfie}
                 className="w-full bg-red-600 hover:bg-red-700 text-white h-12 text-lg"
                 data-testid="checkin-submit-btn"
               >
-                {isLoading ? 'Checking in...' : `Check In ${selectedEmoji}`}
+                {isLoading ? 'Checking in...' : `Check In ${selfieImage ? '📸' : selectedEmoji}`}
               </Button>
             </CardContent>
           </Card>
