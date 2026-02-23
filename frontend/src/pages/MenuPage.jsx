@@ -386,16 +386,20 @@ const MenuPage = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm text-slate-300 mb-1 block">Image URL</label>
-                  <Input
-                    value={editingItem.image_url || ''}
-                    onChange={(e) => setEditingItem({ ...editingItem, image_url: e.target.value })}
-                    className="bg-slate-800 border-slate-700 text-white"
-                    placeholder="https://..."
+                  <label className="text-sm text-slate-300 mb-1 block">Image</label>
+                  <ImageUploader 
+                    currentImage={editingItem.image_url}
+                    onImageUpload={(url) => setEditingItem({ ...editingItem, image_url: url })}
                   />
-                  {editingItem.image_url && (
-                    <img src={editingItem.image_url} alt="Preview" className="mt-2 h-20 object-cover rounded" />
-                  )}
+                  <div className="mt-2">
+                    <label className="text-xs text-slate-400">Or enter URL directly:</label>
+                    <Input
+                      value={editingItem.image_url || ''}
+                      onChange={(e) => setEditingItem({ ...editingItem, image_url: e.target.value })}
+                      className="bg-slate-800 border-slate-700 text-white mt-1"
+                      placeholder="https://..."
+                    />
+                  </div>
                 </div>
                 <div className="flex gap-2 pt-2">
                   <Button onClick={handleSaveItem} className="flex-1 bg-green-600 hover:bg-green-700">
