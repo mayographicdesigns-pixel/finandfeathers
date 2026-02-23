@@ -375,8 +375,9 @@ async def admin_delete_menu_item(item_id: str, username: str = Depends(get_curre
 
 
 @api_router.post("/admin/menu-items/bulk-update-images")
-async def admin_bulk_update_menu_images(updates: list, username: str = Depends(get_current_admin)):
+async def admin_bulk_update_menu_images(request: Request, username: str = Depends(get_current_admin)):
     """Bulk update menu item images by category or individual items"""
+    updates = await request.json()
     updated_count = 0
     for update in updates:
         if "category" in update and "image_url" in update:
