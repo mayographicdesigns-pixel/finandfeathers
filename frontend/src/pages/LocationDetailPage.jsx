@@ -522,6 +522,123 @@ const LocationDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-black pb-20">
+      {/* Admin Bar */}
+      {isAdmin && (
+        <div className="fixed top-0 left-0 right-0 bg-red-600 text-white py-2 px-4 z-50 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Settings className="w-4 h-4" />
+            <span className="text-sm font-medium">Admin Mode - Location: {location?.name}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            {editMode ? (
+              <>
+                <Button 
+                  size="sm" 
+                  onClick={handleSaveLocation}
+                  className="bg-green-600 hover:bg-green-700 h-8"
+                >
+                  <Save className="w-3 h-3 mr-1" />
+                  Save Changes
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={() => { setEditMode(false); setEditingLocation(null); }}
+                  className="border-white text-white hover:bg-white/20 h-8"
+                >
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              <Button 
+                size="sm" 
+                onClick={handleEditLocation}
+                className="bg-white text-red-600 hover:bg-gray-100 h-8"
+                data-testid="edit-location-btn"
+              >
+                <Edit2 className="w-3 h-3 mr-1" />
+                Edit Location
+              </Button>
+            )}
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              onClick={() => navigate('/admin')}
+              className="text-white hover:bg-white/20 h-8"
+            >
+              Dashboard
+            </Button>
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              onClick={handleAdminLogout}
+              className="text-white hover:bg-white/20 h-8"
+            >
+              <LogOut className="w-3 h-3" />
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Location Inline Panel */}
+      {editMode && editingLocation && (
+        <div className={`bg-slate-800 border-b border-red-600/50 p-4 ${isAdmin ? 'mt-12' : ''}`}>
+          <div className="container mx-auto">
+            <h3 className="text-lg font-bold text-white mb-4">Edit Location Details</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div>
+                <label className="text-sm text-slate-300 mb-1 block">Name</label>
+                <Input
+                  value={editingLocation.name}
+                  onChange={(e) => setEditingLocation({ ...editingLocation, name: e.target.value })}
+                  className="bg-slate-900 border-slate-700 text-white"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-slate-300 mb-1 block">Address</label>
+                <Input
+                  value={editingLocation.address}
+                  onChange={(e) => setEditingLocation({ ...editingLocation, address: e.target.value })}
+                  className="bg-slate-900 border-slate-700 text-white"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-slate-300 mb-1 block">Phone</label>
+                <Input
+                  value={editingLocation.phone}
+                  onChange={(e) => setEditingLocation({ ...editingLocation, phone: e.target.value })}
+                  className="bg-slate-900 border-slate-700 text-white"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-slate-300 mb-1 block">Reservation Phone</label>
+                <Input
+                  value={editingLocation.reservation_phone || ''}
+                  onChange={(e) => setEditingLocation({ ...editingLocation, reservation_phone: e.target.value })}
+                  className="bg-slate-900 border-slate-700 text-white"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-slate-300 mb-1 block">Online Ordering URL</label>
+                <Input
+                  value={editingLocation.online_ordering || ''}
+                  onChange={(e) => setEditingLocation({ ...editingLocation, online_ordering: e.target.value })}
+                  className="bg-slate-900 border-slate-700 text-white"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-slate-300 mb-1 block">Image URL</label>
+                <Input
+                  value={editingLocation.image || ''}
+                  onChange={(e) => setEditingLocation({ ...editingLocation, image: e.target.value })}
+                  className="bg-slate-900 border-slate-700 text-white"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Check-In Modal */}
       {showCheckInModal && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
