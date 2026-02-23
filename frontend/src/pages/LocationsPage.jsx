@@ -431,8 +431,8 @@ const LocationsPage = () => {
           {sortedLocations.map((location, index) => (
             <Card 
               key={location.id} 
-              className="overflow-hidden bg-slate-800/80 border-slate-700/50 hover:bg-slate-800 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl group cursor-pointer"
-              onClick={() => navigate(`/locations/${location.slug}`)}
+              className={`overflow-hidden bg-slate-800/80 border-slate-700/50 hover:bg-slate-800 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl group cursor-pointer ${editMode ? 'ring-2 ring-red-500/50 ring-dashed' : ''}`}
+              onClick={() => editMode ? handleEditLocation(location) : navigate(`/locations/${location.slug}`)}
             >
               {/* Location Image */}
               <div className="relative h-48 overflow-hidden">
@@ -441,7 +441,13 @@ const LocationsPage = () => {
                   alt={location.name}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
-                {location.distance && index === 0 && (
+                {editMode && (
+                  <div className="absolute top-3 left-3 bg-red-600 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
+                    <Edit2 className="w-3 h-3" />
+                    Click to Edit
+                  </div>
+                )}
+                {!editMode && location.distance && index === 0 && (
                   <div className="absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
                     Nearest Location
                   </div>
