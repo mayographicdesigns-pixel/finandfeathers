@@ -336,6 +336,14 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - Webhook handler processes order completions and credits tokens
   - Fixed MyAccountPage sessionId bug (was using wrong variable name)
   - Fixed BaseModel import for CartItem/CartCheckoutRequest in server.py
+- **FIXED**: Welcome popup persistent reappear bug (Feb 23, 2026)
+  - Changed from localStorage to sessionStorage for session-based popup control
+  - Popup now shows once per browser session (closes permanently within session)
+  - Prevents popup from blocking UI during testing or normal use
+- **COMPLETED**: All-inclusive Admin Dashboard (Feb 23, 2026)
+  - Added Events Management tab for managing /events page content
+  - Added Gallery Submissions tab for moderating user photo uploads
+  - Events now dynamic from MongoDB instead of hardcoded
 
 ## Prioritized Backlog
 
