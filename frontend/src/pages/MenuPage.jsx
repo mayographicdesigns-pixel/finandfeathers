@@ -48,6 +48,7 @@ const MenuPage = () => {
     'sandwiches': 'Sandwiches',
     'salads': 'Salads',
     'cocktails': 'Signature Cocktails',
+    'signature-cocktails': 'Signature Cocktails',
     'brunch': 'Brunch',
     'brunch-drinks': 'Brunch Drinks',
     'brunch-sides': 'Brunch Sides'
