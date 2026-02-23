@@ -308,6 +308,7 @@ class SocialPost(BaseModel):
     checkin_id: str  # Reference to the check-in
     author_name: str
     author_emoji: str
+    author_selfie: Optional[str] = None  # URL to author's selfie
     message: str
     image_url: Optional[str] = None
     likes: List[str] = []  # List of checkin_ids that liked
@@ -318,6 +319,7 @@ class SocialPostCreate(BaseModel):
     checkin_id: str
     author_name: str
     author_emoji: str
+    author_selfie: Optional[str] = None
     message: str
     image_url: Optional[str] = None
 
@@ -327,6 +329,7 @@ class SocialPostResponse(BaseModel):
     checkin_id: str
     author_name: str
     author_emoji: str
+    author_selfie: Optional[str] = None
     message: str
     image_url: Optional[str]
     likes_count: int
