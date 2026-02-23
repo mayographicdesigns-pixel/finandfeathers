@@ -267,6 +267,98 @@ const LocationDetailPage = () => {
     }
   };
 
+  // Camera/Selfie functions
+  const startCamera = async () => {
+    setCameraError(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 640 } },
+        audio: false
+      });
+      setCameraStream(stream);
+      setShowCamera(true);
+      
+      // Wait for video element to be available
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.play();
+        }
+      }, 100);
+    } catch (err) {
+      console.error('Camera error:', err);
+      setCameraError('Could not access camera. Please allow camera permissions.');
+      toast({
+        title: 'Camera Error',
+        description: 'Could not access camera. Please check permissions.',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const stopCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+    setShowCamera(false);
+  };
+
+  const captureSelfie = async () => {
+    if (!videoRef.current || !canvasRef.current) return;
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+
+    // Set canvas to square dimensions
+    const size = Math.min(video.videoWidth, video.videoHeight);
+    canvas.width = 400;
+    canvas.height = 400;
+
+    // Calculate crop to center (square crop)
+    const sx = (video.videoWidth - size) / 2;
+    const sy = (video.videoHeight - size) / 2;
+
+    // Draw cropped and resized image
+    ctx.drawImage(video, sx, sy, size, size, 0, 0, 400, 400);
+
+    // Convert to blob and upload
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
+
+      setUploadingSelfie(true);
+      stopCamera();
+
+      try {
+        // Create a file from blob
+        const file = new File([blob], `selfie_${Date.now()}.jpg`, { type: 'image/jpeg' });
+        const result = await uploadImage(file);
+        const backendUrl = process.env.REACT_APP_BACKEND_URL;
+        const fullUrl = `${backendUrl}${result.url}`;
+        setSelfieImage(fullUrl);
+        toast({ title: 'Selfie captured!', description: 'Looking good!' });
+      } catch (err) {
+        console.error('Upload error:', err);
+        toast({ title: 'Upload Failed', description: err.message, variant: 'destructive' });
+      } finally {
+        setUploadingSelfie(false);
+      }
+    }, 'image/jpeg', 0.85);
+  };
+
+  const retakeSelfie = () => {
+    setSelfieImage(null);
+    startCamera();
+  };
+
+  // Cleanup camera on modal close
+  useEffect(() => {
+    if (!showCheckInModal && cameraStream) {
+      stopCamera();
+    }
+  }, [showCheckInModal]);
+
   const handleCheckIn = async () => {
     if (!displayName.trim()) {
       toast({
