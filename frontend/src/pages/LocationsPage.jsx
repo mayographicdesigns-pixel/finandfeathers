@@ -300,15 +300,19 @@ const LocationsPage = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm text-slate-300 mb-1 block">Image URL</label>
-                  <Input
-                    value={editingLocation.image || ''}
-                    onChange={(e) => setEditingLocation({ ...editingLocation, image: e.target.value })}
-                    className="bg-slate-800 border-slate-700 text-white"
+                  <label className="text-sm text-slate-300 mb-1 block">Image</label>
+                  <ImageUploader 
+                    currentImage={editingLocation.image}
+                    onImageUpload={(url) => setEditingLocation({ ...editingLocation, image: url })}
                   />
-                  {editingLocation.image && (
-                    <img src={editingLocation.image} alt="Preview" className="mt-2 h-20 object-cover rounded" />
-                  )}
+                  <div className="mt-2">
+                    <label className="text-xs text-slate-400">Or enter URL directly:</label>
+                    <Input
+                      value={editingLocation.image || ''}
+                      onChange={(e) => setEditingLocation({ ...editingLocation, image: e.target.value })}
+                      className="bg-slate-800 border-slate-700 text-white mt-1"
+                    />
+                  </div>
                 </div>
                 <div>
                   <label className="text-sm text-slate-300 mb-1 block">Online Ordering URL</label>
