@@ -54,6 +54,7 @@ const EventsPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [packages, setPackages] = useState({});
+  const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedPackage, setSelectedPackage] = useState('general');
   const [quantity, setQuantity] = useState(1);
@@ -63,16 +64,21 @@ const EventsPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchPackages();
+    fetchData();
     checkPaymentReturn();
   }, []);
 
-  const fetchPackages = async () => {
+  const fetchData = async () => {
     try {
-      const data = await getEventPackages();
-      setPackages(data);
+      const [packagesData, eventsData] = await Promise.all([
+        getEventPackages(),
+        getPublicEvents()
+      ]);
+      setPackages(packagesData);
+      setEvents(eventsData.length > 0 ? eventsData : FALLBACK_EVENTS);
     } catch (error) {
-      console.error('Error fetching packages:', error);
+      console.error('Error fetching data:', error);
+      setEvents(FALLBACK_EVENTS);
     } finally {
       setLoading(false);
     }
