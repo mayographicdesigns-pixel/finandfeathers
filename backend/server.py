@@ -3087,10 +3087,12 @@ async def admin_get_events(username: str = Depends(get_current_admin)):
     if not events:
         # Seed default events if none exist
         for event in DEFAULT_EVENTS:
-            event["created_at"] = datetime.now(timezone.utc)
-            event["updated_at"] = datetime.now(timezone.utc)
-            await db.events.insert_one(event)
-        return DEFAULT_EVENTS
+            event_copy = event.copy()
+            event_copy["created_at"] = datetime.now(timezone.utc)
+            event_copy["updated_at"] = datetime.now(timezone.utc)
+            await db.events.insert_one(event_copy)
+        # Fetch the newly seeded events without _id
+        events = await db.events.find({}, {"_id": 0}).sort("display_order", 1).to_list(100)
     return events
 
 
