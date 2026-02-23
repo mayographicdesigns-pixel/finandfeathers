@@ -230,6 +230,7 @@ class CheckIn(BaseModel):
     avatar_emoji: str = "😊"
     mood: Optional[str] = None  # e.g., "Vibing", "Hungry", "Celebrating"
     message: Optional[str] = None
+    selfie_url: Optional[str] = None  # URL to selfie photo taken at check-in
     checked_in_at: datetime = Field(default_factory=datetime.utcnow)
     expires_at: datetime = None  # Auto-checkout after X hours
 
@@ -239,6 +240,7 @@ class CheckInCreate(BaseModel):
     avatar_emoji: str = "😊"
     mood: Optional[str] = None
     message: Optional[str] = None
+    selfie_url: Optional[str] = None
 
 class CheckInResponse(BaseModel):
     id: str
@@ -247,6 +249,7 @@ class CheckInResponse(BaseModel):
     avatar_emoji: str
     mood: Optional[str]
     message: Optional[str]
+    selfie_url: Optional[str] = None
     checked_in_at: datetime
 
 
