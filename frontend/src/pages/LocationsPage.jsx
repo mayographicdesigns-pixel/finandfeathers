@@ -5,7 +5,7 @@ import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
-import { getLocations, verifyAdminToken, updateLocation, createLocation, deleteLocation } from '../services/api';
+import { getLocations, verifyAdminToken, adminUpdateLocation, adminCreateLocation, adminDeleteLocation } from '../services/api';
 import { toast } from '../hooks/use-toast';
 
 const LocationsPage = () => {
