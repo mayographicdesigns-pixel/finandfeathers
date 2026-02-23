@@ -1,8 +1,13 @@
 {
-  "short_name": "Fin & Feathers",
+  "short_name": "F&F",
   "name": "Fin & Feathers Restaurants",
-  "description": "Elevated dining meets Southern soul. View our menu, find locations, and order online.",
+  "description": "Elevated dining meets Southern soul. View our menu, find locations, check in, and connect with other guests.",
   "icons": [
+    {
+      "src": "/favicon-32x32.png",
+      "type": "image/png",
+      "sizes": "32x32"
+    },
     {
       "src": "/logo192.png",
       "type": "image/png",
@@ -14,20 +19,36 @@
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/ff-icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
     }
   ],
-  "start_url": "/",
+  "start_url": "/?source=pwa",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "theme_color": "#dc2626",
   "background_color": "#000000",
-  "orientation": "portrait-primary",
+  "orientation": "portrait",
   "scope": "/",
-  "categories": ["food", "restaurant", "lifestyle"],
-  "screenshots": [
+  "categories": ["food", "restaurant", "lifestyle", "social"],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "shortcuts": [
     {
-      "src": "/screenshot1.png",
-      "type": "image/png",
-      "sizes": "1080x1920"
+      "name": "Menu",
+      "short_name": "Menu",
+      "url": "/menu",
+      "icons": [{"src": "/logo192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Locations",
+      "short_name": "Locations",
+      "url": "/locations",
+      "icons": [{"src": "/logo192.png", "sizes": "192x192"}]
     }
   ]
 }
