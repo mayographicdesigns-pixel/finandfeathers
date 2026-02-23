@@ -27,6 +27,29 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Social feed grid with lightbox view (now using actual F&F images)
 - [x] **Admin inline editing** - Edit tagline, contact info, and social feed images directly on homepage
 - [x] **Drag-and-drop reordering** for social feed images in edit mode
+- [x] **Unified button colors** - All buttons now use consistent red styling (Feb 2026)
+- [x] **"Latest from Our Feed" repositioned** - Now between Gallery and Merch Shop buttons
+
+#### Menu Page (MenuPage.jsx)
+- [x] Category filters for all menu sections
+- [x] Card and line-item layouts based on category type
+- [x] Menu images for Starters, Seafood & Grits, Sandwiches, Salads, Brunch, Entrees (Feb 2026)
+- [x] **Admin inline editing** - Edit menu items directly from the page when logged in as admin (Feb 2026)
+- [x] Admin bar with Edit Menu, Add Item, Dashboard, Logout buttons
+- [x] Edit modal for modifying item name, description, price, category, image URL
+
+#### Locations Page (LocationsPage.jsx)
+- [x] All restaurant locations with images and details
+- [x] Geolocation sorting by proximity
+- [x] **Admin inline editing** - Edit location details directly from the page when logged in as admin (Feb 2026)
+- [x] Admin bar with Edit Locations, Add Location, Dashboard, Logout buttons
+- [x] Edit modal for modifying location name, address, phone, image URL
+
+#### Location Detail Page (LocationDetailPage.jsx)
+- [x] Full location details with check-in system
+- [x] Social wall, DJ tips, drinks sending features
+- [x] **Admin inline editing** - Edit location details from the detail page when logged in as admin (Feb 2026)
+- [x] Inline edit panel with form fields for name, address, phone, reservation phone, online ordering URL, image URL
 
 #### Gallery Page (GalleryPage.jsx) - Added February 2026
 - [x] Photo and video gallery with category filters (All, Photos, Videos, Food, Ambiance, Drinks)
