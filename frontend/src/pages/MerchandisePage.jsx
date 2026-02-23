@@ -147,9 +147,21 @@ const MerchandisePage = () => {
 
     setCheckingOut(true);
     try {
-      const result = await createCartCheckout(cart, customerEmail || null);
-      // Redirect to WooCommerce checkout
-      window.location.href = result.checkout_url;
+      if (paymentMethod === 'stripe') {
+        // Format cart items for Stripe
+        const stripeItems = cart.map(item => ({
+          product_id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity
+        }));
+        const result = await createStripeMerchCheckout(stripeItems, customerEmail || null);
+        window.location.href = result.checkout_url;
+      } else {
+        // WooCommerce checkout
+        const result = await createCartCheckout(cart, customerEmail || null);
+        window.location.href = result.checkout_url;
+      }
     } catch (error) {
       toast({ title: 'Checkout Error', description: error.message, variant: 'destructive' });
       setCheckingOut(false);
