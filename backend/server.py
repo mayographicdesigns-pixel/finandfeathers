@@ -860,6 +860,7 @@ async def check_in(checkin_data: CheckInCreate):
         avatar_emoji=checkin_data.avatar_emoji,
         mood=checkin_data.mood,
         message=checkin_data.message,
+        selfie_url=checkin_data.selfie_url,
         checked_in_at=datetime.now(timezone.utc),
         expires_at=expires_at
     )
@@ -874,6 +875,7 @@ async def check_in(checkin_data: CheckInCreate):
         avatar_emoji=checkin.avatar_emoji,
         mood=checkin.mood,
         message=checkin.message,
+        selfie_url=checkin.selfie_url,
         checked_in_at=checkin.checked_in_at
     )
 
