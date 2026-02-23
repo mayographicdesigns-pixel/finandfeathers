@@ -1692,5 +1692,3 @@ export async function adminDeleteGallerySubmission(submissionId) {
   }
   return await response.json();
 }
-
-}
