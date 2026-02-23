@@ -3724,6 +3724,52 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# ============================================================================
+# SCHEDULED TASKS - Cleanup old posts at 4am EST (9am UTC) daily
+# ============================================================================
+
+scheduler = AsyncIOScheduler()
+
+async def scheduled_cleanup_old_posts():
+    """Scheduled task to clean up old posts without images (runs at 4am EST daily)"""
+    try:
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
+        
+        # Delete posts older than 24 hours that don't have images
+        result = await db.social_posts.delete_many({
+            "created_at": {"$lt": cutoff},
+            "$or": [
+                {"image_url": None},
+                {"image_url": ""},
+                {"image_url": {"$exists": False}}
+            ]
+        })
+        
+        # Also cleanup expired check-ins
+        checkin_result = await db.checkins.delete_many({
+            "checked_in_at": {"$lt": cutoff}
+        })
+        
+        logging.info(f"Scheduled cleanup: Deleted {result.deleted_count} old posts, {checkin_result.deleted_count} expired check-ins")
+    except Exception as e:
+        logging.error(f"Scheduled cleanup error: {e}")
+
+
+@app.on_event("startup")
+async def startup_scheduler():
+    """Start the background scheduler on app startup"""
+    # Schedule cleanup at 4am EST (9am UTC) every day
+    scheduler.add_job(
+        scheduled_cleanup_old_posts,
+        CronTrigger(hour=9, minute=0, timezone='UTC'),  # 4am EST = 9am UTC
+        id='cleanup_old_posts',
+        replace_existing=True
+    )
+    scheduler.start()
+    logging.info("Scheduler started: Post cleanup scheduled for 4am EST (9am UTC) daily")
+
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
+    scheduler.shutdown()
     client.close()
