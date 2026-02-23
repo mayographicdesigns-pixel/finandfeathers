@@ -83,6 +83,46 @@ const LocationDetailPage = () => {
   const [sendingDrink, setSendingDrink] = useState(false);
   const [location, setLocation] = useState(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
+  
+  // Admin state
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editingLocation, setEditingLocation] = useState(null);
+
+  // Check if admin is logged in
+  useEffect(() => {
+    const checkAdmin = async () => {
+      const isValid = await verifyAdminToken();
+      setIsAdmin(isValid);
+    };
+    checkAdmin();
+  }, []);
+
+  // Admin functions
+  const handleEditLocation = () => {
+    setEditingLocation({ ...location });
+    setEditMode(true);
+  };
+
+  const handleSaveLocation = async () => {
+    if (!editingLocation) return;
+    try {
+      await adminUpdateLocation(location.id, editingLocation);
+      setLocation(editingLocation);
+      setEditMode(false);
+      setEditingLocation(null);
+      toast({ title: 'Success', description: 'Location updated!' });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+  };
+
+  const handleAdminLogout = () => {
+    localStorage.removeItem('adminToken');
+    setIsAdmin(false);
+    setEditMode(false);
+    toast({ title: 'Logged Out', description: 'Admin session ended' });
+  };
 
   // Fetch location data from API
   useEffect(() => {
