@@ -5,18 +5,18 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import { Card, CardContent } from '../components/ui/card';
-import CategoryFilter from '../components/CategoryFilter';
 import MenuCard from '../components/MenuCard';
 import MenuLineItem from '../components/MenuLineItem';
 import ImageUploader from '../components/ImageUploader';
 import ImageLightbox from '../components/ImageLightbox';
-import { categories as defaultCategories, menuItems as mockMenuItems } from '../mockData';
+import { menuItems as mockMenuItems } from '../mockData';
 import { getPublicMenuItems, verifyAdminToken, updateMenuItem, createMenuItem, deleteMenuItem } from '../services/api';
 import { toast } from '../hooks/use-toast';
 
 const MenuPage = () => {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('all');
+  const [activeSubCategory, setActiveSubCategory] = useState(null);
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [usingMockData, setUsingMockData] = useState(false);
@@ -38,7 +38,7 @@ const MenuPage = () => {
   // Lightbox state
   const [lightboxItem, setLightboxItem] = useState(null);
 
-  // Category display names - moved to top
+  // Category display names
   const categoryNames = {
     'daily-specials': '$5 Daily Specials',
     'starters': 'Starters',
@@ -54,15 +54,45 @@ const MenuPage = () => {
     'brunch-sides': 'Brunch Sides'
   };
 
+  // Main categories (4 buttons)
+  const mainCategories = [
+    { id: 'all', name: 'All', icon: '✨' },
+    { id: 'daily-specials', name: '$5 Daily Specials', icon: '⭐' },
+    { id: 'food', name: 'Food', icon: '🍽️' },
+    { id: 'cocktails', name: 'Cocktails', icon: '🍹' }
+  ];
+
+  // Food sub-categories
+  const foodSubCategories = [
+    { id: 'starters', name: 'Starters', icon: '🍤' },
+    { id: 'sides', name: 'Sides', icon: '🍟' },
+    { id: 'entrees', name: 'Entrees', icon: '🍖' },
+    { id: 'seafood-grits', name: 'Seafood & Grits', icon: '🦞' },
+    { id: 'sandwiches', name: 'Sandwiches', icon: '🥪' },
+    { id: 'salads', name: 'Salads', icon: '🥗' },
+    { id: 'brunch', name: 'Brunch', icon: '🥞' },
+    { id: 'brunch-sides', name: 'Brunch Sides', icon: '🥓' }
+  ];
+
+  // Cocktails sub-categories
+  const cocktailSubCategories = [
+    { id: 'signature-cocktails', name: 'Signature Cocktails', icon: '🍸' },
+    { id: 'brunch-drinks', name: 'Brunch Drinks', icon: '🥂' }
+  ];
+
+  // All food category IDs
+  const foodCategoryIds = ['starters', 'sides', 'entrees', 'seafood-grits', 'sandwiches', 'salads', 'brunch', 'brunch-sides'];
+  
+  // All cocktail category IDs
+  const cocktailCategoryIds = ['cocktails', 'signature-cocktails', 'brunch-drinks'];
+
   // Fetch menu items from API on mount
   useEffect(() => {
-    // Check if admin is logged in
     const checkAdmin = async () => {
       const isValid = await verifyAdminToken();
       setIsAdmin(isValid);
     };
     checkAdmin();
-    
     fetchMenuItems();
   }, []);
 
@@ -74,7 +104,6 @@ const MenuPage = () => {
         setMenuItems(items);
         setUsingMockData(false);
       } else {
-        // Fallback to mock data if no items in database
         setMenuItems(mockMenuItems);
         setUsingMockData(true);
       }
@@ -85,6 +114,17 @@ const MenuPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Handle main category change
+  const handleCategoryChange = (categoryId) => {
+    setActiveCategory(categoryId);
+    setActiveSubCategory(null);
+  };
+
+  // Handle sub-category change
+  const handleSubCategoryChange = (subCatId) => {
+    setActiveSubCategory(subCatId === activeSubCategory ? null : subCatId);
   };
 
   // Admin functions
@@ -151,10 +191,8 @@ const MenuPage = () => {
   // Lightbox keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (lightboxItem) {
-        if (e.key === 'Escape') {
-          setLightboxItem(null);
-        }
+      if (lightboxItem && e.key === 'Escape') {
+        setLightboxItem(null);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -167,62 +205,13 @@ const MenuPage = () => {
     }
   };
 
-  // Build dynamic categories from menu items
-  const categories = useMemo(() => {
-    if (menuItems.length === 0) return defaultCategories;
-    
-    // Get unique categories from current menu items
-    const uniqueCategories = [...new Set(menuItems.map(item => item.category))];
-    
-    // Map to category objects with icons
-    const categoryIcons = {
-      'daily-specials': '⭐',
-      'starters': '🍤',
-      'sides': '🍟',
-      'entrees': '🍖',
-      'seafood-grits': '🦞',
-      'sandwiches': '🥪',
-      'salads': '🥗',
-      'cocktails': '🍹',
-      'signature-cocktails': '🍹',
-      'brunch': '🥞',
-      'brunch-drinks': '🥂',
-      'brunch-sides': '🥓'
-    };
-
-    const dynamicCategories = uniqueCategories.map(cat => ({
-      id: cat,
-      name: categoryNames[cat] || cat.charAt(0).toUpperCase() + cat.slice(1).replace(/-/g, ' '),
-      icon: categoryIcons[cat] || '🍽️'
-    }));
-
-    return [{ id: 'all', name: 'All', icon: '✨' }, ...dynamicCategories];
-  }, [menuItems]);
-
-  const filteredItems = useMemo(() => {
-    if (activeCategory === 'all') {
-      return menuItems;
-    }
-    // Handle signature-cocktails mapping
-    if (activeCategory === 'cocktails') {
-      return menuItems.filter(item => item.category === 'cocktails' || item.category === 'signature-cocktails');
-    }
-    return menuItems.filter(item => item.category === activeCategory);
-  }, [activeCategory, menuItems]);
-
   // Group items by category for "All" view
   const itemsByCategory = useMemo(() => {
-    if (activeCategory !== 'all') {
-      return null;
-    }
-
     const grouped = {};
-    
-    // Initialize groups for known categories
     const knownCategories = [
       'daily-specials', 'starters', 'sides', 'entrees', 
-      'seafood-grits', 'sandwiches', 'salads', 'cocktails', 'signature-cocktails',
-      'brunch', 'brunch-drinks', 'brunch-sides'
+      'seafood-grits', 'sandwiches', 'salads', 'brunch', 'brunch-sides',
+      'cocktails', 'signature-cocktails', 'brunch-drinks'
     ];
     
     knownCategories.forEach(cat => {
@@ -237,35 +226,63 @@ const MenuPage = () => {
     });
 
     return grouped;
-  }, [activeCategory, menuItems]);
+  }, [menuItems]);
 
-  // Separate large items (entrees & seafood-grits) from other items
-  const largeItems = useMemo(() => 
-    filteredItems.filter(item => item.category === 'entrees' || item.category === 'seafood-grits'),
-    [filteredItems]
-  );
+  // Filter items based on active category and sub-category
+  const filteredItems = useMemo(() => {
+    if (activeCategory === 'all') {
+      return menuItems;
+    }
+    
+    if (activeCategory === 'daily-specials') {
+      return menuItems.filter(item => item.category === 'daily-specials');
+    }
+    
+    if (activeCategory === 'food') {
+      if (activeSubCategory) {
+        return menuItems.filter(item => item.category === activeSubCategory);
+      }
+      return menuItems.filter(item => foodCategoryIds.includes(item.category));
+    }
+    
+    if (activeCategory === 'cocktails') {
+      if (activeSubCategory) {
+        return menuItems.filter(item => item.category === activeSubCategory);
+      }
+      return menuItems.filter(item => cocktailCategoryIds.includes(item.category));
+    }
+    
+    return menuItems.filter(item => item.category === activeCategory);
+  }, [activeCategory, activeSubCategory, menuItems]);
 
-  // Line items (sides and brunch-sides)
-  const lineItems = useMemo(() => 
-    filteredItems.filter(item => item.category === 'sides' || item.category === 'brunch-sides' || item.category === 'brunch-drinks'),
-    [filteredItems]
-  );
-
-  const smallItems = useMemo(() => 
-    filteredItems.filter(item => 
-      item.category !== 'entrees' && 
-      item.category !== 'seafood-grits' &&
-      item.category !== 'sides' &&
-      item.category !== 'brunch-sides' &&
-      item.category !== 'brunch-drinks'
-    ),
-    [filteredItems]
-  );
-
-  const otherSmallItems = useMemo(() => 
-    smallItems,
-    [smallItems]
-  );
+  // Render a section of items
+  const renderSection = (title, items, variant = 'compact', gridCols = 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', isLineItem = false) => {
+    if (!items || items.length === 0) return null;
+    
+    return (
+      <div className="mb-10">
+        <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
+          {title}
+        </h3>
+        <div className={`grid ${gridCols} ${isLineItem ? 'gap-3' : 'gap-5'}`}>
+          {items.map((item) => (
+            isLineItem ? (
+              <MenuLineItem key={item.id} item={item} />
+            ) : (
+              <MenuCard 
+                key={item.id} 
+                item={item} 
+                variant={variant} 
+                editMode={editMode} 
+                onEdit={handleEditItem} 
+                onImageClick={handleImageClick} 
+              />
+            )
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   if (loading) {
     return (
@@ -575,286 +592,229 @@ const MenuPage = () => {
         </div>
       </div>
 
-      {/* Category Filter */}
-      <div className="container mx-auto px-4">
-        <CategoryFilter
-          categories={categories}
-          activeCategory={activeCategory}
-          onCategoryChange={setActiveCategory}
-        />
+      {/* Main Category Filter - 4 buttons */}
+      <div className="container mx-auto px-4 mb-4">
+        <div className="flex flex-wrap gap-3 justify-center">
+          {mainCategories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => handleCategoryChange(cat.id)}
+              className={`px-5 py-2.5 rounded-full font-medium transition-all duration-200 flex items-center gap-2 ${
+                activeCategory === cat.id
+                  ? 'bg-red-600 text-white shadow-lg shadow-red-600/30'
+                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
+              }`}
+              data-testid={`category-${cat.id}`}
+            >
+              <span>{cat.icon}</span>
+              <span>{cat.name}</span>
+            </button>
+          ))}
+        </div>
       </div>
+
+      {/* Sub-Category Filter for Food */}
+      {activeCategory === 'food' && (
+        <div className="container mx-auto px-4 mb-6">
+          <div className="flex flex-wrap gap-2 justify-center">
+            {foodSubCategories.map((subCat) => (
+              <button
+                key={subCat.id}
+                onClick={() => handleSubCategoryChange(subCat.id)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${
+                  activeSubCategory === subCat.id
+                    ? 'bg-red-500/80 text-white'
+                    : 'bg-slate-700/50 text-slate-400 hover:bg-slate-700 hover:text-slate-200'
+                }`}
+                data-testid={`subcategory-${subCat.id}`}
+              >
+                <span>{subCat.icon}</span>
+                <span>{subCat.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Sub-Category Filter for Cocktails */}
+      {activeCategory === 'cocktails' && (
+        <div className="container mx-auto px-4 mb-6">
+          <div className="flex flex-wrap gap-2 justify-center">
+            {cocktailSubCategories.map((subCat) => (
+              <button
+                key={subCat.id}
+                onClick={() => handleSubCategoryChange(subCat.id)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${
+                  activeSubCategory === subCat.id
+                    ? 'bg-red-500/80 text-white'
+                    : 'bg-slate-700/50 text-slate-400 hover:bg-slate-700 hover:text-slate-200'
+                }`}
+                data-testid={`subcategory-${subCat.id}`}
+              >
+                <span>{subCat.icon}</span>
+                <span>{subCat.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Menu Grid */}
       <div className="container mx-auto px-4 pb-16">
-        {/* If "All" tab is selected, show items grouped by category with headers */}
-        {activeCategory === 'all' && itemsByCategory && (
-          <div className="space-y-12">
-            {/* $5 Daily Specials - At the top */}
+        
+        {/* ALL VIEW - Show everything organized with drinks at the bottom */}
+        {activeCategory === 'all' && (
+          <div className="space-y-10">
+            {/* $5 Daily Specials */}
             {itemsByCategory['daily-specials']?.length > 0 && (
               <div>
                 <h3 className="text-2xl font-bold text-white mb-2 border-b border-slate-700 pb-3">
-                  {categoryNames['daily-specials']}
+                  $5 Daily Specials
                 </h3>
                 <p className="text-slate-400 text-sm mb-5">Monday-Friday 12pm-8pm • Saturday 5pm-8pm • Sunday 6pm-12am</p>
                 
                 {/* Food Items */}
-                <div className="mb-6">
-                  <h4 className="text-xl font-semibold text-slate-300 mb-4">Food</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                    {itemsByCategory['daily-specials']
-                      .filter(item => item.type === 'food')
-                      .map((item) => (
-                        <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
-                      ))}
+                {itemsByCategory['daily-specials'].filter(item => item.type === 'food').length > 0 && (
+                  <div className="mb-6">
+                    <h4 className="text-xl font-semibold text-slate-300 mb-4">Food</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                      {itemsByCategory['daily-specials']
+                        .filter(item => item.type === 'food')
+                        .map((item) => (
+                          <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
+                        ))}
+                    </div>
                   </div>
-                </div>
+                )}
                 
-                {/* Drink Items */}
-                <div>
-                  <h4 className="text-xl font-semibold text-slate-300 mb-4">Drinks</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                    {itemsByCategory['daily-specials']
-                      .filter(item => item.type === 'drink')
-                      .map((item) => (
-                        <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
-                      ))}
+                {/* Drink Items within Daily Specials */}
+                {itemsByCategory['daily-specials'].filter(item => item.type === 'drink').length > 0 && (
+                  <div>
+                    <h4 className="text-xl font-semibold text-slate-300 mb-4">Drinks</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                      {itemsByCategory['daily-specials']
+                        .filter(item => item.type === 'drink')
+                        .map((item) => (
+                          <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
+                        ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
-            {/* Starters */}
-            {itemsByCategory['starters']?.length > 0 && (
-              <div>
-                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
-                  {categoryNames['starters']}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                  {itemsByCategory['starters'].map((item) => (
-                    <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Sides - Line items in 4 columns */}
-            {itemsByCategory['sides']?.length > 0 && (
-              <div>
-                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
-                  {categoryNames['sides']}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {itemsByCategory['sides'].map((item) => (
-                    <MenuLineItem key={item.id} item={item} />
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* FOOD SECTIONS */}
+            {renderSection('Starters', itemsByCategory['starters'])}
+            {renderSection('Sides', itemsByCategory['sides'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true)}
+            {renderSection('Entrees', itemsByCategory['entrees'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
+            {renderSection('Seafood & Grits', itemsByCategory['seafood-grits'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
+            {renderSection('Sandwiches', itemsByCategory['sandwiches'])}
+            {renderSection('Salads', itemsByCategory['salads'])}
+            {renderSection('Brunch', itemsByCategory['brunch'])}
+            {renderSection('Brunch Sides', itemsByCategory['brunch-sides'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true)}
 
-            {/* Entrees */}
-            {itemsByCategory['entrees']?.length > 0 && (
-              <div>
-                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
-                  {categoryNames['entrees']}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {itemsByCategory['entrees'].map((item) => (
-                    <MenuCard key={item.id} item={item} editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
-                  ))}
-                </div>
+            {/* DRINKS AT THE BOTTOM */}
+            <div className="pt-8 border-t border-slate-700">
+              <div className="flex items-center gap-3 mb-8">
+                <span className="text-2xl">🍹</span>
+                <h2 className="text-3xl font-bold text-white">Cocktails & Drinks</h2>
               </div>
-            )}
-
-            {/* Seafood & Grits */}
-            {itemsByCategory['seafood-grits']?.length > 0 && (
-              <div>
-                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
-                  {categoryNames['seafood-grits']}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {itemsByCategory['seafood-grits'].map((item) => (
-                    <MenuCard key={item.id} item={item} editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Sandwiches */}
-            {itemsByCategory['sandwiches']?.length > 0 && (
-              <div>
-                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
-                  {categoryNames['sandwiches']}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                  {itemsByCategory['sandwiches'].map((item) => (
-                    <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Salads */}
-            {itemsByCategory['salads']?.length > 0 && (
-              <div>
-                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
-                  {categoryNames['salads']}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                  {itemsByCategory['salads'].map((item) => (
-                    <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Signature Cocktails */}
-            {(itemsByCategory['cocktails']?.length > 0 || itemsByCategory['signature-cocktails']?.length > 0) && (
-              <div>
-                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
-                  {categoryNames['cocktails']}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                  {[...(itemsByCategory['cocktails'] || []), ...(itemsByCategory['signature-cocktails'] || [])].map((item) => (
-                    <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Brunch */}
-            {itemsByCategory['brunch']?.length > 0 && (
-              <div>
-                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
-                  {categoryNames['brunch']}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                  {itemsByCategory['brunch'].map((item) => (
-                    <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Brunch Drinks - Line items in 4 columns */}
-            {itemsByCategory['brunch-drinks']?.length > 0 && (
-              <div>
-                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
-                  {categoryNames['brunch-drinks']}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {itemsByCategory['brunch-drinks'].map((item) => (
-                    <MenuLineItem key={item.id} item={item} />
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Brunch Sides - Line items in 4 columns */}
-            {itemsByCategory['brunch-sides']?.length > 0 && (
-              <div>
-                <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
-                  {categoryNames['brunch-sides']}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {itemsByCategory['brunch-sides'].map((item) => (
-                    <MenuLineItem key={item.id} item={item} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Dynamic categories not in the predefined list */}
-            {Object.entries(itemsByCategory)
-              .filter(([cat]) => !Object.keys(categoryNames).includes(cat) && itemsByCategory[cat]?.length > 0)
-              .map(([category, items]) => (
-                <div key={category}>
-                  <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
-                    {category.charAt(0).toUpperCase() + category.slice(1).replace(/-/g, ' ')}
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                    {items.map((item) => (
-                      <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
-                    ))}
-                  </div>
-                </div>
-              ))
-            }
+              
+              {renderSection('Signature Cocktails', [...(itemsByCategory['cocktails'] || []), ...(itemsByCategory['signature-cocktails'] || [])])}
+              {renderSection('Brunch Drinks', itemsByCategory['brunch-drinks'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true)}
+            </div>
           </div>
         )}
 
-        {/* Single category view */}
-        {activeCategory !== 'all' && (
-          <>
-            {/* Daily Specials Category - Split into Food and Drinks */}
-            {activeCategory === 'daily-specials' && (
-              <>
-                <div className="mb-2">
-                  <p className="text-slate-400 text-sm mb-6">Monday-Friday 12pm-8pm • Saturday 5pm-8pm • Sunday 6pm-12am</p>
+        {/* DAILY SPECIALS VIEW */}
+        {activeCategory === 'daily-specials' && (
+          <div>
+            <p className="text-slate-400 text-sm mb-6">Monday-Friday 12pm-8pm • Saturday 5pm-8pm • Sunday 6pm-12am</p>
+            
+            {/* Food section */}
+            {filteredItems.filter(item => item.type === 'food').length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-2xl font-bold text-white mb-4">Food</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                  {filteredItems
+                    .filter(item => item.type === 'food')
+                    .map((item) => (
+                      <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
+                    ))}
                 </div>
-                
-                {/* Food section */}
-                <div className="mb-8">
-                  <h3 className="text-2xl font-bold text-white mb-4">Food</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                    {filteredItems
-                      .filter(item => item.type === 'food')
-                      .map((item) => (
-                        <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
-                      ))}
-                  </div>
-                </div>
-                
-                {/* Drinks section */}
-                <div>
-                  <h3 className="text-2xl font-bold text-white mb-4">Drinks</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                    {filteredItems
-                      .filter(item => item.type === 'drink')
-                      .map((item) => (
-                        <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
-                      ))}
-                  </div>
-                </div>
-              </>
+              </div>
             )}
             
-            {/* Large items - Entrees & Seafood & Grits - 3 columns */}
-            {activeCategory !== 'daily-specials' && largeItems.length > 0 && (
-              <div className="mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {largeItems.map((item) => (
-                    <MenuCard key={item.id} item={item} editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Other small items - 4 columns (smaller cards) */}
-            {activeCategory !== 'daily-specials' && otherSmallItems.length > 0 && (
-              <div className="mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                  {otherSmallItems.map((item) => (
-                    <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Line items - Sides - Simple list in 4 columns */}
-            {activeCategory !== 'daily-specials' && lineItems.length > 0 && (
+            {/* Drinks section */}
+            {filteredItems.filter(item => item.type === 'drink').length > 0 && (
               <div>
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {lineItems.map((item) => (
-                    <MenuLineItem key={item.id} item={item} />
-                  ))}
+                <h3 className="text-2xl font-bold text-white mb-4">Drinks</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                  {filteredItems
+                    .filter(item => item.type === 'drink')
+                    .map((item) => (
+                      <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
+                    ))}
                 </div>
               </div>
             )}
-          </>
+          </div>
         )}
 
-        {/* Empty state for filtered category */}
-        {activeCategory !== 'all' && filteredItems.length === 0 && (
+        {/* FOOD VIEW */}
+        {activeCategory === 'food' && (
+          <div className="space-y-10">
+            {activeSubCategory ? (
+              // Show only selected sub-category
+              <>
+                {activeSubCategory === 'sides' || activeSubCategory === 'brunch-sides' ? (
+                  renderSection(categoryNames[activeSubCategory], filteredItems, 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true)
+                ) : activeSubCategory === 'entrees' || activeSubCategory === 'seafood-grits' ? (
+                  renderSection(categoryNames[activeSubCategory], filteredItems, 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')
+                ) : (
+                  renderSection(categoryNames[activeSubCategory], filteredItems)
+                )}
+              </>
+            ) : (
+              // Show all food categories
+              <>
+                {renderSection('Starters', itemsByCategory['starters'])}
+                {renderSection('Sides', itemsByCategory['sides'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true)}
+                {renderSection('Entrees', itemsByCategory['entrees'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
+                {renderSection('Seafood & Grits', itemsByCategory['seafood-grits'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
+                {renderSection('Sandwiches', itemsByCategory['sandwiches'])}
+                {renderSection('Salads', itemsByCategory['salads'])}
+                {renderSection('Brunch', itemsByCategory['brunch'])}
+                {renderSection('Brunch Sides', itemsByCategory['brunch-sides'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true)}
+              </>
+            )}
+          </div>
+        )}
+
+        {/* COCKTAILS VIEW */}
+        {activeCategory === 'cocktails' && (
+          <div className="space-y-10">
+            {activeSubCategory ? (
+              // Show only selected sub-category
+              <>
+                {activeSubCategory === 'brunch-drinks' ? (
+                  renderSection(categoryNames[activeSubCategory], filteredItems, 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true)
+                ) : (
+                  renderSection(categoryNames[activeSubCategory] || 'Signature Cocktails', filteredItems)
+                )}
+              </>
+            ) : (
+              // Show all cocktail categories
+              <>
+                {renderSection('Signature Cocktails', [...(itemsByCategory['cocktails'] || []), ...(itemsByCategory['signature-cocktails'] || [])])}
+                {renderSection('Brunch Drinks', itemsByCategory['brunch-drinks'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true)}
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Empty state */}
+        {filteredItems.length === 0 && (
           <div className="text-center py-12">
             <p className="text-slate-400 text-lg">No items in this category yet.</p>
           </div>
