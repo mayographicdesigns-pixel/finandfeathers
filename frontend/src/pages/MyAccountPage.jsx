@@ -1070,30 +1070,44 @@ const MyAccountPage = () => {
                   ))}
                 </div>
 
-                <Button
-                  onClick={handlePurchaseTokens}
-                  disabled={isPurchasing || isCheckingPayment || !selectedPackage}
-                  className="w-full bg-amber-600 hover:bg-amber-700"
-                  data-testid="purchase-tokens-btn"
-                >
-                  {isPurchasing ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Redirecting to Checkout...
-                    </>
-                  ) : (
-                    <>
-                      <CreditCard className="w-4 h-4 mr-2" />
-                      {selectedPackage && tokenPackages[selectedPackage] 
-                        ? `Pay $${tokenPackages[selectedPackage].amount.toFixed(2)} for ${tokenPackages[selectedPackage].tokens} Tokens`
-                        : 'Select a Package'
-                      }
-                    </>
-                  )}
-                </Button>
+                {/* Payment Method Selection */}
+                <div className="space-y-2">
+                  <Button
+                    onClick={() => handlePurchaseTokens('stripe')}
+                    disabled={isPurchasing || isCheckingPayment || !selectedPackage}
+                    className="w-full bg-indigo-600 hover:bg-indigo-700"
+                    data-testid="purchase-tokens-stripe-btn"
+                  >
+                    {isPurchasing ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Redirecting to Checkout...
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="w-4 h-4 mr-2" />
+                        {selectedPackage && tokenPackages[selectedPackage] 
+                          ? `Pay with Card - $${tokenPackages[selectedPackage].amount.toFixed(2)}`
+                          : 'Select a Package'
+                        }
+                      </>
+                    )}
+                  </Button>
+                  
+                  <Button
+                    onClick={() => handlePurchaseTokens('woocommerce')}
+                    disabled={isPurchasing || isCheckingPayment || !selectedPackage}
+                    variant="outline"
+                    className="w-full border-amber-600 text-amber-500 hover:bg-amber-600 hover:text-white"
+                    data-testid="purchase-tokens-woo-btn"
+                  >
+                    <DollarSign className="w-4 h-4 mr-2" />
+                    Pay via F&F Store
+                  </Button>
+                </div>
                 
                 <p className="text-xs text-slate-500 text-center">
-                  Secure checkout via Fin & Feathers store. Tokens are used to tip DJs and send drinks to friends at F&F locations.
+                  Secure checkout. Tokens are used to tip DJs and send drinks to friends at F&F locations.
                 </p>
               </CardContent>
             </Card>
