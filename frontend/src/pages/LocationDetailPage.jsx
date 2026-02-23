@@ -1480,7 +1480,11 @@ const LocationDetailPage = () => {
                           onClick={() => openDrinkModalForUser(user)}
                           className="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-700/50 hover:bg-pink-600/30 transition-colors"
                         >
-                          <span className="text-xl">{user.avatar_emoji}</span>
+                          {user.selfie_url ? (
+                            <img src={user.selfie_url} alt={user.display_name} className="w-6 h-6 rounded-full object-cover" />
+                          ) : (
+                            <span className="text-xl">{user.avatar_emoji}</span>
+                          )}
                           <span className="text-white text-sm">{user.display_name}</span>
                           <Wine className="w-4 h-4 text-pink-400" />
                         </button>
