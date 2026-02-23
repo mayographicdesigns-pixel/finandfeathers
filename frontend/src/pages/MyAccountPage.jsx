@@ -111,18 +111,56 @@ const MyAccountPage = () => {
     loadPackages();
   }, []);
 
-  // Check for payment return from WooCommerce
+  // Check for payment return from WooCommerce or Stripe
   useEffect(() => {
     const transactionId = searchParams.get('transaction_id');
+    const sessionId = searchParams.get('session_id');
     const paymentStatus = searchParams.get('payment');
     
-    if (transactionId && paymentStatus === 'success') {
+    if (sessionId && paymentStatus === 'success') {
+      // Stripe payment return
+      handleStripePaymentReturn(sessionId, transactionId);
+    } else if (transactionId && paymentStatus === 'success') {
+      // WooCommerce payment return
       handlePaymentReturn(transactionId);
     } else if (paymentStatus === 'cancelled') {
       toast({ title: 'Payment Cancelled', description: 'Your token purchase was cancelled', variant: 'destructive' });
       window.history.replaceState({}, '', '/account');
     }
   }, [searchParams]);
+
+  const handleStripePaymentReturn = async (sessionId, transactionId) => {
+    setIsCheckingPayment(true);
+    try {
+      const result = await pollStripePaymentStatus(sessionId, 10, 2000);
+      
+      if (result.success) {
+        toast({ 
+          title: 'Payment Successful!', 
+          description: 'Tokens have been added to your account!' 
+        });
+        // Refresh profile to get new balance
+        if (profile) {
+          const updatedProfile = await getUserProfile(profile.id);
+          setProfile(updatedProfile);
+          setEditedProfile(updatedProfile);
+          // Refresh token history
+          const history = await getTokenHistory(profile.id);
+          setTokenHistory(history);
+        }
+      } else if (result.error === 'Payment expired') {
+        toast({ title: 'Payment Expired', description: 'Please try again', variant: 'destructive' });
+      } else {
+        toast({ title: 'Payment Status', description: 'Please check your email for confirmation', variant: 'default' });
+      }
+    } catch (error) {
+      console.error('Error checking Stripe payment status:', error);
+      toast({ title: 'Error', description: 'Could not verify payment status', variant: 'destructive' });
+    } finally {
+      setIsCheckingPayment(false);
+      window.history.replaceState({}, '', '/account');
+    }
+  };
 
   const handlePaymentReturn = async (transactionId) => {
     setIsCheckingPayment(true);
