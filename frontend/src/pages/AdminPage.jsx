@@ -4047,6 +4047,7 @@ const AdminPage = () => {
         {activeTab === 'events' && <EventsTab />}
         {activeTab === 'gallery' && <GalleryTab />}
         {activeTab === 'submissions' && <GallerySubmissionsTab />}
+        {activeTab === 'posts' && <SocialPostsTab />}
         {activeTab === 'locations' && <LocationsTab />}
         {activeTab === 'videos' && <VideosTab />}
         {activeTab === 'social' && <SocialTab />}
