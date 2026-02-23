@@ -147,6 +147,25 @@ const MenuPage = () => {
     toast({ title: 'Logged Out', description: 'Admin session ended' });
   };
 
+  // Lightbox keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (lightboxItem) {
+        if (e.key === 'Escape') {
+          setLightboxItem(null);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxItem]);
+
+  const handleImageClick = (item) => {
+    if (!editMode) {
+      setLightboxItem(item);
+    }
+  };
+
   // Build dynamic categories from menu items
   const categories = useMemo(() => {
     if (menuItems.length === 0) return defaultCategories;
