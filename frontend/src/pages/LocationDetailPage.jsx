@@ -505,6 +505,7 @@ const LocationDetailPage = () => {
         checkin_id: myCheckIn.id,
         author_name: myCheckIn.display_name,
         author_emoji: myCheckIn.avatar_emoji,
+        author_selfie: myCheckIn.selfie_url || null,
         message: newPostText.trim(),
         image_url: newPostImage || null
       });
