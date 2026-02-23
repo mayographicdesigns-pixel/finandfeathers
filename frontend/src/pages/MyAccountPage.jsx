@@ -516,26 +516,11 @@ const MyAccountPage = () => {
   }
 
   if (!profile) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
-        <Card className="bg-slate-900 border-red-600/30 w-full max-w-md">
-          <CardContent className="p-6 text-center">
-            <User className="w-16 h-16 mx-auto text-red-500 mb-4" />
-            <h2 className="text-2xl font-bold text-white mb-2">Create Your Profile</h2>
-            <p className="text-slate-400 mb-6">
-              Visit a location and check in to create your F&F profile
-            </p>
-            <Button 
-              onClick={() => navigate('/locations')}
-              className="bg-red-600 hover:bg-red-700"
-              data-testid="find-location-btn"
-            >
-              Find a Location
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return <SignupForm onProfileCreated={(newProfile) => {
+      setProfile(newProfile);
+      setEditedProfile(newProfile);
+      loadAdditionalData(newProfile.id, newProfile.role);
+    }} />;
   }
 
   return (
