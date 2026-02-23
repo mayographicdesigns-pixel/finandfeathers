@@ -34,6 +34,9 @@ const MenuPage = () => {
     image_url: '',
     is_available: true
   });
+  
+  // Lightbox state
+  const [lightboxItem, setLightboxItem] = useState(null);
 
   // Category display names - moved to top
   const categoryNames = {
