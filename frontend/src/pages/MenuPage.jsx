@@ -704,13 +704,13 @@ const MenuPage = () => {
             )}
             
             {/* Signature Cocktails */}
-            {itemsByCategory['cocktails']?.length > 0 && (
+            {(itemsByCategory['cocktails']?.length > 0 || itemsByCategory['signature-cocktails']?.length > 0) && (
               <div>
                 <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
                   {categoryNames['cocktails']}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                  {itemsByCategory['cocktails'].map((item) => (
+                  {[...(itemsByCategory['cocktails'] || []), ...(itemsByCategory['signature-cocktails'] || [])].map((item) => (
                     <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
                   ))}
                 </div>
