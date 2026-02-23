@@ -634,7 +634,7 @@ const MenuPage = () => {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {itemsByCategory['entrees'].map((item) => (
-                    <MenuCard key={item.id} item={item} editMode={editMode} onEdit={handleEditItem} />
+                    <MenuCard key={item.id} item={item} editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
                   ))}
                 </div>
               </div>
@@ -648,7 +648,7 @@ const MenuPage = () => {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {itemsByCategory['seafood-grits'].map((item) => (
-                    <MenuCard key={item.id} item={item} editMode={editMode} onEdit={handleEditItem} />
+                    <MenuCard key={item.id} item={item} editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
                   ))}
                 </div>
               </div>
@@ -798,7 +798,7 @@ const MenuPage = () => {
               <div className="mb-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {largeItems.map((item) => (
-                    <MenuCard key={item.id} item={item} editMode={editMode} onEdit={handleEditItem} />
+                    <MenuCard key={item.id} item={item} editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
                   ))}
                 </div>
               </div>
