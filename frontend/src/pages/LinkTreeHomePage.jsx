@@ -842,6 +842,15 @@ const LinkTreeHomePage = () => {
           </Button>
 
           <Button
+            onClick={() => navigate('/events')}
+            className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+            data-testid="events-btn"
+          >
+            <Calendar className="w-5 h-5 mr-2" />
+            Events & Tickets
+          </Button>
+
+          <Button
             onClick={() => navigate('/account')}
             className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
             data-testid="my-account-btn"
