@@ -555,7 +555,7 @@ const MenuPage = () => {
                     {itemsByCategory['daily-specials']
                       .filter(item => item.type === 'food')
                       .map((item) => (
-                        <MenuCard key={item.id} item={item} variant="compact" />
+                        <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} />
                       ))}
                   </div>
                 </div>
@@ -567,7 +567,7 @@ const MenuPage = () => {
                     {itemsByCategory['daily-specials']
                       .filter(item => item.type === 'drink')
                       .map((item) => (
-                        <MenuCard key={item.id} item={item} variant="compact" />
+                        <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} />
                       ))}
                   </div>
                 </div>
@@ -582,7 +582,7 @@ const MenuPage = () => {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
                   {itemsByCategory['starters'].map((item) => (
-                    <MenuCard key={item.id} item={item} variant="compact" />
+                    <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} />
                   ))}
                 </div>
               </div>
@@ -638,7 +638,7 @@ const MenuPage = () => {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
                   {itemsByCategory['sandwiches'].map((item) => (
-                    <MenuCard key={item.id} item={item} variant="compact" />
+                    <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} />
                   ))}
                 </div>
               </div>
@@ -652,7 +652,7 @@ const MenuPage = () => {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
                   {itemsByCategory['salads'].map((item) => (
-                    <MenuCard key={item.id} item={item} variant="compact" />
+                    <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} />
                   ))}
                 </div>
               </div>
@@ -666,7 +666,7 @@ const MenuPage = () => {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
                   {itemsByCategory['cocktails'].map((item) => (
-                    <MenuCard key={item.id} item={item} variant="compact" />
+                    <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} />
                   ))}
                 </div>
               </div>
@@ -680,7 +680,7 @@ const MenuPage = () => {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
                   {itemsByCategory['brunch'].map((item) => (
-                    <MenuCard key={item.id} item={item} variant="compact" />
+                    <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} />
                   ))}
                 </div>
               </div>
@@ -724,7 +724,7 @@ const MenuPage = () => {
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
                     {items.map((item) => (
-                      <MenuCard key={item.id} item={item} variant="compact" />
+                      <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} />
                     ))}
                   </div>
                 </div>
@@ -750,7 +750,7 @@ const MenuPage = () => {
                     {filteredItems
                       .filter(item => item.type === 'food')
                       .map((item) => (
-                        <MenuCard key={item.id} item={item} variant="compact" />
+                        <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} />
                       ))}
                   </div>
                 </div>
@@ -762,7 +762,7 @@ const MenuPage = () => {
                     {filteredItems
                       .filter(item => item.type === 'drink')
                       .map((item) => (
-                        <MenuCard key={item.id} item={item} variant="compact" />
+                        <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} />
                       ))}
                   </div>
                 </div>
@@ -785,7 +785,7 @@ const MenuPage = () => {
               <div className="mb-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
                   {otherSmallItems.map((item) => (
-                    <MenuCard key={item.id} item={item} variant="compact" />
+                    <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} />
                   ))}
                 </div>
               </div>
