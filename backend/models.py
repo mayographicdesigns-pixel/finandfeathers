@@ -821,6 +821,49 @@ class LocationResponse(BaseModel):
 
 
 # =====================================================
+# EVENT MODELS
+# =====================================================
+
+class Event(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    description: str
+    date: str  # e.g., "Every Friday" or "December 25, 2025"
+    time: str  # e.g., "9PM - 2AM"
+    location: str  # e.g., "Edgewood (Atlanta)" or "All Locations"
+    image: str
+    featured: bool = False
+    packages: List[str] = ["general"]  # List of package IDs available
+    is_active: bool = True
+    display_order: int = 0
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class EventCreate(BaseModel):
+    name: str
+    description: str
+    date: str
+    time: str
+    location: str
+    image: str
+    featured: bool = False
+    packages: List[str] = ["general"]
+    display_order: int = 0
+
+class EventUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    date: Optional[str] = None
+    time: Optional[str] = None
+    location: Optional[str] = None
+    image: Optional[str] = None
+    featured: Optional[bool] = None
+    packages: Optional[List[str]] = None
+    is_active: Optional[bool] = None
+    display_order: Optional[int] = None
+
+
+# =====================================================
 # PROMO VIDEO MODELS
 # =====================================================
 
