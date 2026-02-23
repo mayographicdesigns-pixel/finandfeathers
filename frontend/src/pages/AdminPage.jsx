@@ -27,7 +27,8 @@ import {
   adminGetUsers, adminGiftTokens, adminUpdateUserRole, adminGetCashouts, adminProcessCashout,
   adminGetLocations, adminCreateLocation, adminUpdateLocation, adminDeleteLocation, adminReorderLocations,
   adminGetEvents, adminCreateEvent, adminUpdateEvent, adminDeleteEvent,
-  adminGetGallerySubmissions, adminDeleteGallerySubmission
+  adminGetGallerySubmissions, adminDeleteGallerySubmission,
+  adminGetAllSocialPosts, adminDeleteSocialPost, adminCleanupOldPosts, adminDeleteUser
 } from '../services/api';
 import {
   DndContext,
