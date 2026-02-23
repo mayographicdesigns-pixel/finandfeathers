@@ -54,6 +54,11 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Social wall, DJ tips, drinks sending features
 - [x] **Admin inline editing** - Edit location details from the detail page when logged in as admin (Feb 2026)
 - [x] Inline edit panel with form fields for name, address, phone, reservation phone, online ordering URL, image URL
+- [x] **Selfie Check-In** (NEW Feb 23, 2026) - Users can take a selfie using device camera during check-in
+  - [x] Camera capture UI with live video preview
+  - [x] Square crop and auto-upload to server
+  - [x] Selfie displayed in "Who's Here" list and social features
+  - [x] Fallback to emoji avatar if no selfie taken
 
 #### New Reusable Components (Feb 2026)
 - [x] **ImageUploader** - Drag-drop image upload with square cropping, canvas-based processing
