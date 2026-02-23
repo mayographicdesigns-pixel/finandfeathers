@@ -376,13 +376,15 @@ const LocationDetailPage = () => {
         display_name: displayName.trim(),
         avatar_emoji: selectedEmoji,
         mood: selectedMood || null,
-        message: message.trim() || null
+        message: message.trim() || null,
+        selfie_url: selfieImage || null
       };
 
       const result = await checkInAtLocation(checkInData);
       setMyCheckIn(result);
       localStorage.setItem(`checkin_${slug}`, JSON.stringify(result));
       setShowCheckInModal(false);
+      setSelfieImage(null); // Reset selfie for next time
       await loadCheckedInUsers();
 
       toast({
