@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Phone, ExternalLink, Calendar, ShoppingBag, Home } from 'lucide-react';
+import { MapPin, Phone, ExternalLink, Calendar, ShoppingBag, Home, Edit2, Save, X, Settings, LogOut, Plus, Trash2 } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
-import { getLocations } from '../services/api';
+import { Input } from '../components/ui/input';
+import { Textarea } from '../components/ui/textarea';
+import { getLocations, verifyAdminToken, updateLocation, createLocation, deleteLocation } from '../services/api';
+import { toast } from '../hooks/use-toast';
 
 const LocationsPage = () => {
   const navigate = useNavigate();
