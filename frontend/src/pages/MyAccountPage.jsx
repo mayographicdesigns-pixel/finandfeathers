@@ -313,13 +313,18 @@ const MyAccountPage = () => {
     }
   };
 
-  const handlePurchaseTokens = async () => {
+  const handlePurchaseTokens = async (paymentMethod = 'stripe') => {
     if (!profile || !selectedPackage) return;
     
     setIsPurchasing(true);
     try {
-      const result = await createTokenCheckout(profile.id, selectedPackage);
-      // Redirect to Stripe Checkout
+      let result;
+      if (paymentMethod === 'stripe') {
+        result = await createStripeTokenCheckout(selectedPackage, profile.id);
+      } else {
+        result = await createTokenCheckout(profile.id, selectedPackage);
+      }
+      // Redirect to checkout
       window.location.href = result.checkout_url;
     } catch (error) {
       console.error('Error creating checkout:', error);
