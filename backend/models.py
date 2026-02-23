@@ -113,6 +113,7 @@ class MenuItemCreate(BaseModel):
     image: str
     category: str
     badges: List[str] = []
+    type: Optional[str] = None  # food or drink
 
 class MenuItemUpdate(BaseModel):
     name: Optional[str] = None
