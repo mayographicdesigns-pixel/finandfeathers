@@ -1052,6 +1052,92 @@ export async function getDrinksForUser(checkinId) {
 }
 
 // Update drink order status
+
+
+// ==================== STRIPE PAYMENT API ====================
+
+// Get available payment methods
+export async function getPaymentMethods() {
+  const response = await fetch(`${API_URL}/payment/methods`);
+  if (!response.ok) throw new Error('Failed to fetch payment methods');
+  return await response.json();
+}
+
+// Create Stripe checkout for token purchase
+export async function createStripeTokenCheckout(packageId, userId) {
+  const originUrl = window.location.origin;
+  const response = await fetch(`${API_URL}/stripe/tokens/checkout?package_id=${packageId}&user_id=${userId}&origin_url=${encodeURIComponent(originUrl)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to create checkout session');
+  }
+  return await response.json();
+}
+
+// Create Stripe checkout for event tickets
+export async function createStripeEventCheckout(packageId, quantity = 1, userId = null) {
+  const originUrl = window.location.origin;
+  let url = `${API_URL}/stripe/events/checkout?package_id=${packageId}&quantity=${quantity}&origin_url=${encodeURIComponent(originUrl)}`;
+  if (userId) url += `&user_id=${userId}`;
+  
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to create checkout session');
+  }
+  return await response.json();
+}
+
+// Create Stripe checkout for merchandise
+export async function createStripeMerchCheckout(items, customerEmail = null) {
+  const originUrl = window.location.origin;
+  const response = await fetch(`${API_URL}/stripe/merch/checkout?origin_url=${encodeURIComponent(originUrl)}${customerEmail ? `&customer_email=${encodeURIComponent(customerEmail)}` : ''}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(items)
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to create checkout session');
+  }
+  return await response.json();
+}
+
+// Get Stripe checkout status
+export async function getStripeCheckoutStatus(sessionId) {
+  const response = await fetch(`${API_URL}/stripe/checkout/status/${sessionId}`);
+  if (!response.ok) throw new Error('Failed to get checkout status');
+  return await response.json();
+}
+
+// Get event packages
+export async function getEventPackages() {
+  const response = await fetch(`${API_URL}/events/packages`);
+  if (!response.ok) throw new Error('Failed to fetch event packages');
+  return await response.json();
+}
+
+// Poll payment status (utility function)
+export async function pollStripePaymentStatus(sessionId, maxAttempts = 5, interval = 2000) {
+  for (let i = 0; i < maxAttempts; i++) {
+    const status = await getStripeCheckoutStatus(sessionId);
+    if (status.payment_status === 'paid') {
+      return { success: true, status };
+    }
+    if (status.status === 'expired') {
+      return { success: false, status, error: 'Payment expired' };
+    }
+    await new Promise(resolve => setTimeout(resolve, interval));
+  }
+  return { success: false, status: { payment_status: 'pending' }, error: 'Timeout' };
+}
+
 export async function updateDrinkStatus(orderId, status) {
   const response = await fetch(`${API_URL}/social/drinks/${orderId}/status?status=${status}`, {
     method: 'PUT'
