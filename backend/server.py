@@ -806,7 +806,7 @@ async def admin_upload_video(
         
         return {
             "filename": unique_filename,
-            "url": f"/uploads/{unique_filename}",
+            "url": f"/api/uploads/{unique_filename}",
             "size": len(contents)
         }
     except HTTPException:
