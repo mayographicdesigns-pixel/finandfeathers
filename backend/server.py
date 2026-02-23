@@ -1028,6 +1028,7 @@ async def get_social_posts(location_slug: str, my_checkin_id: Optional[str] = No
             checkin_id=post["checkin_id"],
             author_name=post["author_name"],
             author_emoji=post["author_emoji"],
+            author_selfie=post.get("author_selfie"),
             message=post["message"],
             image_url=post.get("image_url"),
             likes_count=len(post.get("likes", [])),
