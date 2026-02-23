@@ -1698,7 +1698,7 @@ async def create_token_checkout(request: Request, package_id: str, user_id: str,
             "transaction_id": transaction_id,
             "order_id": woo_order_id
         }
-    except Exception as e:
+    except Exception:
         # Clean up failed transaction
         await db.payment_transactions.delete_one({"id": transaction_id})
         raise
@@ -2978,7 +2978,7 @@ async def cart_checkout(checkout: CartCheckoutRequest, origin_url: str = None):
             "woo_order_id": woo_order_id,
             "total": total
         }
-    except Exception as e:
+    except Exception:
         await db.cart_orders.delete_one({"id": order_id})
         raise
 
