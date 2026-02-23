@@ -242,7 +242,7 @@ const EventsPage = () => {
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {UPCOMING_EVENTS.map(event => (
+          {events.map(event => (
             <Card 
               key={event.id} 
               className="overflow-hidden bg-slate-800/50 border-slate-700 hover:border-red-600/50 transition-all duration-300 group cursor-pointer"
