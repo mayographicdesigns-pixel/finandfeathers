@@ -62,12 +62,70 @@ const LocationsPage = () => {
     checkAdmin();
     
     fetchLocations();
+    requestUserLocation();
   }, []);
+
+  // Request user's location for sorting
+  const requestUserLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+          setLocationPermission('granted');
+        },
+        (error) => {
+          console.log('Location permission denied:', error);
+          setLocationPermission('denied');
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+  };
+
+  // Sort locations by distance when user location changes
+  useEffect(() => {
+    if (userLocation && sortedLocations.length > 0) {
+      const locationsWithDistance = sortedLocations.map(loc => {
+        const coords = loc.coordinates || { lat: 0, lng: 0 };
+        const distance = calculateDistance(
+          userLocation.lat, 
+          userLocation.lng, 
+          coords.lat, 
+          coords.lng
+        );
+        return { ...loc, distance };
+      });
+      
+      // Sort by distance (closest first)
+      locationsWithDistance.sort((a, b) => a.distance - b.distance);
+      setSortedLocations(locationsWithDistance);
+    }
+  }, [userLocation]);
 
   const fetchLocations = async () => {
     setIsLoading(true);
     const locations = await getLocations();
-    setSortedLocations(locations);
+    
+    // If we already have user location, calculate distances
+    if (userLocation) {
+      const locationsWithDistance = locations.map(loc => {
+        const coords = loc.coordinates || { lat: 0, lng: 0 };
+        const distance = calculateDistance(
+          userLocation.lat, 
+          userLocation.lng, 
+          coords.lat, 
+          coords.lng
+        );
+        return { ...loc, distance };
+      });
+      locationsWithDistance.sort((a, b) => a.distance - b.distance);
+      setSortedLocations(locationsWithDistance);
+    } else {
+      setSortedLocations(locations);
+    }
     setIsLoading(false);
   };
 
