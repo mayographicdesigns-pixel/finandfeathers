@@ -991,6 +991,8 @@ async def create_social_post(post: SocialPostCreate):
     post_dict["id"] = str(uuid.uuid4())
     post_dict["likes"] = []
     post_dict["created_at"] = datetime.now(timezone.utc)
+    # Include author's selfie from check-in if available
+    post_dict["author_selfie"] = checkin.get("selfie_url") or post.author_selfie
     
     await db.social_posts.insert_one(post_dict)
     
@@ -1000,6 +1002,7 @@ async def create_social_post(post: SocialPostCreate):
         checkin_id=post_dict["checkin_id"],
         author_name=post_dict["author_name"],
         author_emoji=post_dict["author_emoji"],
+        author_selfie=post_dict.get("author_selfie"),
         message=post_dict["message"],
         image_url=post_dict.get("image_url"),
         likes_count=0,
