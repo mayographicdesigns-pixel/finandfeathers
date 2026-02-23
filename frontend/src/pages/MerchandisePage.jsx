@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Home, ShoppingBag, ExternalLink, Tag, Loader2, MapPin, ShoppingCart, Plus, Minus, X, Trash2, CheckCircle } from 'lucide-react';
+import { Home, ShoppingBag, ExternalLink, Tag, Loader2, MapPin, ShoppingCart, Plus, Minus, X, Trash2, CheckCircle, CreditCard, Store } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { toast } from '../hooks/use-toast';
-import { createCartCheckout, getCartOrderStatus } from '../services/api';
+import { createCartCheckout, getCartOrderStatus, createStripeMerchCheckout, getStripeCheckoutStatus, pollStripePaymentStatus } from '../services/api';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -21,6 +21,7 @@ const MerchandisePage = () => {
   const [checkingOut, setCheckingOut] = useState(false);
   const [customerEmail, setCustomerEmail] = useState('');
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('stripe'); // 'stripe' or 'woocommerce'
 
   useEffect(() => {
     fetchProducts();
