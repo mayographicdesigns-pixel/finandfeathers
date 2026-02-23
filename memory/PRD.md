@@ -36,20 +36,28 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Menu images for Starters, Seafood & Grits, Sandwiches, Salads, Brunch, Entrees (Feb 2026)
 - [x] **Admin inline editing** - Edit menu items directly from the page when logged in as admin (Feb 2026)
 - [x] Admin bar with Edit Menu, Add Item, Dashboard, Logout buttons
-- [x] Edit modal for modifying item name, description, price, category, image URL
+- [x] Edit modal for modifying item name, description, price, category, image
+- [x] **Image lightbox** - Click on any menu item image to view enlarged (Feb 2026)
+- [x] **Direct image upload** - Upload and crop images to square in admin edit modal (Feb 2026)
 
 #### Locations Page (LocationsPage.jsx)
 - [x] All restaurant locations with images and details
 - [x] Geolocation sorting by proximity
 - [x] **Admin inline editing** - Edit location details directly from the page when logged in as admin (Feb 2026)
 - [x] Admin bar with Edit Locations, Add Location, Dashboard, Logout buttons
-- [x] Edit modal for modifying location name, address, phone, image URL
+- [x] Edit modal for modifying location name, address, phone, image
+- [x] **Image lightbox** - Click on any location image to view enlarged (Feb 2026)
+- [x] **Direct image upload** - Upload and crop images to square in admin edit modal (Feb 2026)
 
 #### Location Detail Page (LocationDetailPage.jsx)
 - [x] Full location details with check-in system
 - [x] Social wall, DJ tips, drinks sending features
 - [x] **Admin inline editing** - Edit location details from the detail page when logged in as admin (Feb 2026)
 - [x] Inline edit panel with form fields for name, address, phone, reservation phone, online ordering URL, image URL
+
+#### New Reusable Components (Feb 2026)
+- [x] **ImageUploader** - Drag-drop image upload with square cropping, canvas-based processing
+- [x] **ImageLightbox** - Full-screen image viewer with name, description, price, keyboard ESC support
 
 #### Gallery Page (GalleryPage.jsx) - Added February 2026
 - [x] Photo and video gallery with category filters (All, Photos, Videos, Food, Ambiance, Drinks)
