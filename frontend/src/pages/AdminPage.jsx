@@ -25,7 +25,9 @@ import {
   getAdminInstagramPosts, createInstagramPost, updateInstagramPost, deleteInstagramPost,
   getAdminGallery, createGalleryItem, updateGalleryItem, deleteGalleryItem,
   adminGetUsers, adminGiftTokens, adminUpdateUserRole, adminGetCashouts, adminProcessCashout,
-  adminGetLocations, adminCreateLocation, adminUpdateLocation, adminDeleteLocation, adminReorderLocations
+  adminGetLocations, adminCreateLocation, adminUpdateLocation, adminDeleteLocation, adminReorderLocations,
+  adminGetEvents, adminCreateEvent, adminUpdateEvent, adminDeleteEvent,
+  adminGetGallerySubmissions, adminDeleteGallerySubmission
 } from '../services/api';
 import {
   DndContext,
