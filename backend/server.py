@@ -3024,6 +3024,143 @@ async def get_cart_order_status(order_id: str):
 
 
 # ============================================================================
+# EVENTS CRUD ENDPOINTS
+# ============================================================================
+
+# Default events if none in database
+DEFAULT_EVENTS = [
+    {
+        "id": "friday-night-live",
+        "name": "Friday Night Live",
+        "description": "Live DJ, dancing, and signature cocktails every Friday night! Experience the best nightlife in Atlanta.",
+        "date": "Every Friday",
+        "time": "9PM - 2AM",
+        "location": "Edgewood (Atlanta)",
+        "image": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6657.jpg",
+        "featured": True,
+        "packages": ["general", "vip", "table"],
+        "is_active": True,
+        "display_order": 0
+    },
+    {
+        "id": "brunch-beats",
+        "name": "Brunch & Beats",
+        "description": "Sunday brunch with a twist! Live DJ spinning feel-good music while you enjoy our famous chicken & waffles.",
+        "date": "Every Sunday",
+        "time": "11AM - 4PM",
+        "location": "All Locations",
+        "image": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/a3e08521f140462cbedf10dedd32f879.jpeg",
+        "featured": False,
+        "packages": ["general", "vip"],
+        "is_active": True,
+        "display_order": 1
+    },
+    {
+        "id": "wine-wednesday",
+        "name": "Wine Down Wednesday",
+        "description": "Half-price bottles of wine paired with live acoustic performances. The perfect midweek escape.",
+        "date": "Every Wednesday",
+        "time": "6PM - 10PM",
+        "location": "Midtown (Atlanta)",
+        "image": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6656.jpg",
+        "featured": False,
+        "packages": ["general"],
+        "is_active": True,
+        "display_order": 2
+    }
+]
+
+
+@api_router.get("/events")
+async def get_public_events():
+    """Get all active events for public display"""
+    events = await db.events.find({"is_active": True}, {"_id": 0}).sort("display_order", 1).to_list(100)
+    if not events:
+        return DEFAULT_EVENTS
+    return events
+
+
+@api_router.get("/admin/events")
+async def admin_get_events(username: str = Depends(get_current_admin)):
+    """Get all events including inactive (admin only)"""
+    events = await db.events.find({}, {"_id": 0}).sort("display_order", 1).to_list(100)
+    if not events:
+        # Seed default events if none exist
+        for event in DEFAULT_EVENTS:
+            event["created_at"] = datetime.now(timezone.utc)
+            event["updated_at"] = datetime.now(timezone.utc)
+            await db.events.insert_one(event)
+        return DEFAULT_EVENTS
+    return events
+
+
+@api_router.post("/admin/events")
+async def admin_create_event(event: EventCreate, username: str = Depends(get_current_admin)):
+    """Create a new event"""
+    event_dict = event.dict()
+    event_dict["id"] = str(uuid.uuid4())
+    event_dict["is_active"] = True
+    event_dict["created_at"] = datetime.now(timezone.utc)
+    event_dict["updated_at"] = datetime.now(timezone.utc)
+    await db.events.insert_one(event_dict)
+    event_dict.pop("_id", None)
+    return event_dict
+
+
+@api_router.put("/admin/events/{event_id}")
+async def admin_update_event(event_id: str, update: EventUpdate, username: str = Depends(get_current_admin)):
+    """Update an existing event"""
+    update_data = {k: v for k, v in update.dict().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc)
+    
+    result = await db.events.update_one(
+        {"id": event_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+    
+    updated = await db.events.find_one({"id": event_id}, {"_id": 0})
+    return updated
+
+
+@api_router.delete("/admin/events/{event_id}")
+async def admin_delete_event(event_id: str, username: str = Depends(get_current_admin)):
+    """Delete an event"""
+    result = await db.events.delete_one({"id": event_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Event not found")
+    return {"success": True, "message": "Event deleted"}
+
+
+# ============================================================================
+# GALLERY SUBMISSIONS ADMIN ENDPOINTS
+# ============================================================================
+
+@api_router.get("/admin/gallery-submissions")
+async def admin_get_gallery_submissions(username: str = Depends(get_current_admin)):
+    """Get all user gallery submissions for admin moderation"""
+    submissions = await db.user_gallery_submissions.find({}, {"_id": 0}).sort("created_at", -1).to_list(200)
+    return submissions
+
+
+@api_router.delete("/admin/gallery-submissions/{submission_id}")
+async def admin_delete_gallery_submission(submission_id: str, username: str = Depends(get_current_admin)):
+    """Delete a user gallery submission and its corresponding gallery item"""
+    # Delete from user submissions
+    result = await db.user_gallery_submissions.delete_one({"id": submission_id})
+    
+    # Also remove from main gallery if it was auto-added
+    await db.gallery_items.delete_one({"id": submission_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Submission not found")
+    
+    return {"success": True, "message": "Submission deleted"}
+
+
+# ============================================================================
 # STRIPE PAYMENT ENDPOINTS
 # ============================================================================
 
