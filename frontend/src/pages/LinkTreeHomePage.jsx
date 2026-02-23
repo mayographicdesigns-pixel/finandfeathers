@@ -419,10 +419,13 @@ const LinkTreeHomePage = () => {
     toast({ title: 'Reordered', description: 'Image order updated. Click "Save Changes" to persist.' });
   };
 
-  // Check if welcome popup should be shown
+  // Check if welcome popup should be shown - uses sessionStorage to show once per browser session
   useEffect(() => {
-    const hasSeenWelcome = localStorage.getItem('ff_welcome_shown');
-    if (!hasSeenWelcome) {
+    // Check both sessionStorage (current session) and localStorage (user submitted form)
+    const hasSeenThisSession = sessionStorage.getItem('ff_welcome_shown_session');
+    const hasSubmittedForm = localStorage.getItem('ff_welcome_shown');
+    
+    if (!hasSeenThisSession && !hasSubmittedForm) {
       // Small delay to let the page load first
       const timer = setTimeout(() => {
         setShowWelcomePopup(true);
