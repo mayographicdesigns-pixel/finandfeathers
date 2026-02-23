@@ -823,7 +823,7 @@ async def admin_list_uploads(username: str = Depends(get_current_admin)):
         if f.is_file() and f.suffix.lower() in ALLOWED_EXTENSIONS:
             files.append({
                 "filename": f.name,
-                "url": f"/uploads/{f.name}",
+                "url": f"/api/uploads/{f.name}",
                 "size": f.stat().st_size
             })
     return files
