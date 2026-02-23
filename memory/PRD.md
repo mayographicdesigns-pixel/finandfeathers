@@ -371,7 +371,7 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [ ] Analytics dashboard for admin
 - [ ] Multi-admin user support
 
-## New API Endpoints (Feb 18-19, 2026)
+## New API Endpoints (Feb 18-23, 2026)
 - `GET /api/merchandise` - Fetch products from WooCommerce
 - `GET /api/merchandise/{id}` - Fetch single product
 - `GET /api/promo-videos` - Get all active promo videos
@@ -386,6 +386,13 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - `POST /api/cart/checkout` - Create WooCommerce order for cart items
 - `GET /api/cart/order/{order_id}` - Get cart order status
 - `POST /api/webhook/woocommerce` - Handle WooCommerce order webhooks
+- `GET /api/events` - Get all active events (public)
+- `GET /api/admin/events` - Admin: Get all events including inactive
+- `POST /api/admin/events` - Admin: Create new event
+- `PUT /api/admin/events/{event_id}` - Admin: Update event
+- `DELETE /api/admin/events/{event_id}` - Admin: Delete event
+- `GET /api/admin/gallery-submissions` - Admin: Get all user photo submissions
+- `DELETE /api/admin/gallery-submissions/{submission_id}` - Admin: Delete submission
 
 ## 3rd Party Integrations
 - **WooCommerce**: Live product feed AND all payment processing via finandfeathersrestaurants.com store
