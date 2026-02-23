@@ -321,7 +321,6 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 
 ## Known Limitations / Mocked Data
 1. **PWA Icons**: Not optimized for all device sizes
-2. **Photo Gallery Submissions**: Auto-approved without moderation
 
 ## Bug Fixes & Completed Features (February 2026)
 - **FIXED**: Deployment blocker - `AttributeError: module 'bcrypt' has no attribute '__about__'` resolved by downgrading bcrypt to 3.2.2
