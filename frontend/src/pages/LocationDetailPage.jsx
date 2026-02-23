@@ -45,6 +45,15 @@ const LocationDetailPage = () => {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
+  // Selfie camera state
+  const [showCamera, setShowCamera] = useState(false);
+  const [selfieImage, setSelfieImage] = useState(null);
+  const [cameraStream, setCameraStream] = useState(null);
+  const [cameraError, setCameraError] = useState(null);
+  const [uploadingSelfie, setUploadingSelfie] = useState(false);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  
   // Social Wall state
   const [activeTab, setActiveTab] = useState('wall'); // 'wall', 'dm', 'dj', 'drinks', 'info'
   const [socialPosts, setSocialPosts] = useState([]);
