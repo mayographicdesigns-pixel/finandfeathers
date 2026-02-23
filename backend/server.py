@@ -42,7 +42,8 @@ from models import (
     RoleUpdate,
     Location, LocationCreate, LocationUpdate, LocationResponse,
     LocationHours, LocationCoordinates, LocationSocialMedia, WeeklySpecial,
-    PromoVideo, PromoVideoCreate, PromoVideoUpdate
+    PromoVideo, PromoVideoCreate, PromoVideoUpdate,
+    Event, EventCreate, EventUpdate
 )
 from push_service import PushNotificationService
 from auth import verify_password, get_password_hash, create_access_token, decode_access_token
