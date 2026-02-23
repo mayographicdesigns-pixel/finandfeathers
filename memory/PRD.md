@@ -348,6 +348,17 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - Added Events Management tab for managing /events page content
   - Added Gallery Submissions tab for moderating user photo uploads
   - Events now dynamic from MongoDB instead of hardcoded
+- **COMPLETED**: Admin Posts/Comments Management (Feb 23, 2026)
+  - View all social posts across all locations
+  - Delete individual posts
+  - Cleanup old posts (24hr+ without images)
+  - Filter by location and search
+- **COMPLETED**: Admin User Deletion (Feb 23, 2026)
+  - Delete users and all their associated data
+  - Cannot delete admin users (protected)
+- **COMPLETED**: Selfie Display in Social Wall (Feb 23, 2026)
+  - Posts now show author's selfie as avatar if available
+  - Fallback to emoji for users without selfies
 
 ## Prioritized Backlog
 
