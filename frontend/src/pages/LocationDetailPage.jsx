@@ -585,7 +585,7 @@ const LocationDetailPage = () => {
         <div className={`bg-slate-800 border-b border-red-600/50 p-4 ${isAdmin ? 'mt-12' : ''}`}>
           <div className="container mx-auto">
             <h3 className="text-lg font-bold text-white mb-4">Edit Location Details</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
               <div>
                 <label className="text-sm text-slate-300 mb-1 block">Name</label>
                 <Input
@@ -633,6 +633,90 @@ const LocationDetailPage = () => {
                   onChange={(e) => setEditingLocation({ ...editingLocation, image: e.target.value })}
                   className="bg-slate-900 border-slate-700 text-white"
                 />
+              </div>
+            </div>
+
+            {/* Weekly Specials Section */}
+            <div className="border-t border-slate-700 pt-4">
+              <div className="flex justify-between items-center mb-4">
+                <h4 className="text-md font-semibold text-white">Weekly Specials</h4>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    const newSpecials = [...(editingLocation.weekly_specials || []), { day: '', special: '', time: '' }];
+                    setEditingLocation({ ...editingLocation, weekly_specials: newSpecials });
+                  }}
+                  className="bg-green-600 hover:bg-green-700 h-8"
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Add Special
+                </Button>
+              </div>
+              
+              <div className="space-y-3">
+                {(editingLocation.weekly_specials || []).map((special, index) => (
+                  <div key={index} className="flex gap-2 items-start">
+                    <div className="flex-1">
+                      <select
+                        value={special.day}
+                        onChange={(e) => {
+                          const newSpecials = [...editingLocation.weekly_specials];
+                          newSpecials[index].day = e.target.value;
+                          setEditingLocation({ ...editingLocation, weekly_specials: newSpecials });
+                        }}
+                        className="w-full h-10 px-3 rounded-md bg-slate-900 border border-slate-700 text-white text-sm"
+                      >
+                        <option value="">Select Day</option>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                      </select>
+                    </div>
+                    <div className="flex-[2]">
+                      <Input
+                        value={special.special}
+                        onChange={(e) => {
+                          const newSpecials = [...editingLocation.weekly_specials];
+                          newSpecials[index].special = e.target.value;
+                          setEditingLocation({ ...editingLocation, weekly_specials: newSpecials });
+                        }}
+                        placeholder="Special description..."
+                        className="bg-slate-900 border-slate-700 text-white text-sm"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <Input
+                        value={special.time || ''}
+                        onChange={(e) => {
+                          const newSpecials = [...editingLocation.weekly_specials];
+                          newSpecials[index].time = e.target.value;
+                          setEditingLocation({ ...editingLocation, weekly_specials: newSpecials });
+                        }}
+                        placeholder="Time (e.g., 5pm-8pm)"
+                        className="bg-slate-900 border-slate-700 text-white text-sm"
+                      />
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        const newSpecials = editingLocation.weekly_specials.filter((_, i) => i !== index);
+                        setEditingLocation({ ...editingLocation, weekly_specials: newSpecials });
+                      }}
+                      className="text-red-500 hover:bg-red-500/20 h-10"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+                
+                {(!editingLocation.weekly_specials || editingLocation.weekly_specials.length === 0) && (
+                  <p className="text-slate-500 text-sm text-center py-2">No specials added yet. Click "Add Special" to create one.</p>
+                )}
               </div>
             </div>
           </div>
