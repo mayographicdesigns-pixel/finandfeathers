@@ -712,7 +712,7 @@ const LinkTreeHomePage = () => {
 
           <Button
             onClick={() => navigate('/locations')}
-            className="w-full bg-slate-800 hover:bg-slate-700 text-white border-2 border-slate-700 h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+            className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
           >
             <MapPin className="w-5 h-5 mr-2" />
             Find a Location
@@ -720,7 +720,7 @@ const LinkTreeHomePage = () => {
 
           <Button
             onClick={() => window.open('https://order.toasttab.com/online/fin-feathers-edgewood-2nd-location-345-edgewood-ave-se', '_blank')}
-            className="w-full bg-slate-800 hover:bg-slate-700 text-white border-2 border-slate-700 h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+            className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
           >
             <ExternalLink className="w-5 h-5 mr-2" />
             Order Online
@@ -728,16 +728,101 @@ const LinkTreeHomePage = () => {
 
           <Button
             onClick={() => navigate('/gallery')}
-            className="w-full bg-slate-800 hover:bg-slate-700 text-white border-2 border-slate-700 h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+            className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
             data-testid="gallery-btn"
           >
             <ImageIcon className="w-5 h-5 mr-2" />
             Gallery
           </Button>
+        </div>
 
+        {/* Social Feed - Editable with Drag and Drop */}
+        <Card className="mb-6 bg-slate-800/50 border-slate-700">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Instagram className="w-5 h-5 text-pink-500" />
+              <h2 className="text-lg font-bold text-white">Latest from Our Feed</h2>
+              {editMode && (
+                <span className="bg-red-500 text-white text-xs px-2 py-1 rounded ml-2">
+                  Drag to reorder • Click to edit
+                </span>
+              )}
+            </div>
+            
+            {editMode ? (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={displayContent.social_feed_images.map((_, index) => `image-${index}`)}
+                  strategy={rectSortingStrategy}
+                >
+                  <div className="grid grid-cols-4 gap-2 mb-4">
+                    {displayContent.social_feed_images.map((image, index) => (
+                      <SortableImage
+                        key={`image-${index}`}
+                        image={image}
+                        index={index}
+                        editMode={editMode}
+                        editingImageIndex={editingImageIndex}
+                        setEditingImageIndex={setEditingImageIndex}
+                        setLightboxImage={setLightboxImage}
+                        editingContent={editingContent}
+                        setEditingContent={setEditingContent}
+                        fileInputRef={fileInputRef}
+                        handleImageUpload={handleImageUpload}
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
+            ) : (
+              <div className="grid grid-cols-4 gap-2 mb-4">
+                {displayContent.social_feed_images.map((image, index) => (
+                  <div key={index} className="relative group">
+                    <button
+                      onClick={() => setLightboxImage(image)}
+                      className="aspect-square rounded-lg overflow-hidden cursor-pointer block w-full"
+                      data-testid={`social-feed-image-${index}`}
+                    >
+                      <img 
+                        src={image.url}
+                        alt={image.caption || `Feed image ${index + 1}`}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {/* Social Follow Buttons */}
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                onClick={() => window.open('https://instagram.com/finandfeathers', '_blank')}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+              >
+                <Instagram className="w-4 h-4 mr-2" />
+                Follow on Instagram
+              </Button>
+              <Button
+                onClick={() => window.open('https://facebook.com/finandfeathers', '_blank')}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <Facebook className="w-4 h-4 mr-2" />
+                Follow on Facebook
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* More Link Buttons */}
+        <div className="space-y-3 mb-6">
           <Button
             onClick={() => navigate('/merch')}
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+            className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
             data-testid="merch-btn"
           >
             <ShoppingBag className="w-5 h-5 mr-2" />
@@ -746,7 +831,7 @@ const LinkTreeHomePage = () => {
 
           <Button
             onClick={() => navigate('/account')}
-            className="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+            className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
             data-testid="my-account-btn"
           >
             <User className="w-5 h-5 mr-2" />
@@ -755,7 +840,7 @@ const LinkTreeHomePage = () => {
 
           <Button
             onClick={() => window.open('https://g.page/r/CfinandfeathersReview', '_blank')}
-            className="w-full bg-slate-800 hover:bg-slate-700 text-white border-2 border-slate-700 h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+            className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
           >
             <ExternalLink className="w-5 h-5 mr-2" />
             Leave a Review
