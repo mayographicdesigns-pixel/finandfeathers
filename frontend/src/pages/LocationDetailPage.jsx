@@ -1267,7 +1267,11 @@ const LocationDetailPage = () => {
                           }`}
                           data-testid={`user-${user.id}`}
                         >
-                          <span className="text-xl">{user.avatar_emoji}</span>
+                          {user.selfie_url ? (
+                            <img src={user.selfie_url} alt={user.display_name} className="w-7 h-7 rounded-full object-cover border border-slate-600" />
+                          ) : (
+                            <span className="text-xl">{user.avatar_emoji}</span>
+                          )}
                           <span className="text-white text-sm">{user.display_name}</span>
                           {user.mood && <span className="text-red-400 text-xs">• {user.mood}</span>}
                         </button>
@@ -1295,7 +1299,11 @@ const LocationDetailPage = () => {
               <Card className="bg-slate-800/50 border-slate-700">
                 <CardContent className="p-4">
                   <div className="flex gap-3">
-                    <span className="text-2xl">{myCheckIn.avatar_emoji}</span>
+                    {myCheckIn.selfie_url ? (
+                      <img src={myCheckIn.selfie_url} alt="You" className="w-10 h-10 rounded-full object-cover border-2 border-green-500" />
+                    ) : (
+                      <span className="text-2xl">{myCheckIn.avatar_emoji}</span>
+                    )}
                     <div className="flex-1">
                       <Textarea
                         placeholder="What's happening at F&F?"
