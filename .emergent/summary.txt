@@ -30,152 +30,120 @@ The user wants to build a pixel-perfect clone of a restaurant's website. The pro
 **what currently exists?**
 A feature-rich full-stack PWA with a React frontend and FastAPI backend.
 - **Core Features:** An inline-editable homepage, admin-managed content (menu, gallery, locations, videos), and a comprehensive My Account page with profile management and role-based access control.
-- **Recent Completions:**
-    - Two critical bugs (a deployment blocker with  and a blank location page regression) were fixed.
-    - Location data was successfully migrated from a static file to the backend, with full admin CRUD functionality.
-    - A merchandise page that fetches and displays products from the user's WooCommerce store has been implemented.
-    - A video management system was added to the admin panel to control the homepage video carousel.
-- The application is currently in the middle of a major refactor to consolidate all payment processing through WooCommerce, replacing a short-lived Stripe integration.
+- **WooCommerce Integration:** All payment systems (token purchases, merchandise) have been successfully migrated to and are handled by WooCommerce. An in-app cart system is fully functional for the merchandise page.
+- **Inline Editing:** Admins can now edit content directly on the Menu, Locations, and Location Detail pages without going to the admin panel.
+- **Media Features:** The menu displays images for items. A lightbox component allows users to enlarge images on click. A new image uploader with square cropping functionality has been added to admin modals.
+- **Content:** The drinks menu has been completely rebuilt to the user's latest specifications, organized into specific categories as line items.
 
 **Last working item**:
--   Last item agent was working: The agent was refactoring the application to handle all payments via WooCommerce, as requested by the user. This included three main parts:
-    1.  Replacing the token purchase flow (previously Stripe) with a new system that creates a WooCommerce order.
-    2.  Implementing an in-app cart system for the merchandise page, leading to a WooCommerce checkout.
-    3.  Ensuring in-app actions like tipping remained token-based.
-    The agent had started modifying backend endpoints in  and updating frontend API calls in .
--   Status: IN PROGRESS
--   Agent Testing Done: N
--   Which testing method agent to use? both
+-   Last item agent was working: Implementing the user's latest request to completely overhaul the drinks menu. This involved deleting all existing drinks and re-adding them with new descriptions and categories (, , ), all displayed as line items without images. The agent finished adding the items to the database and was in the process of taking screenshots to verify the final result.
+-   Status: USER VERIFICATION PENDING
+-   Agent Testing Done: Y
+-   Which testing method agent to use? screenshot tool
 -   User Testing Done: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Complete the migration of all payment systems to WooCommerce. (P0)
-
-  Issues Detail:
-  - Issue 1: 
-     - Attempted fixes: The agent started creating new backend endpoints in  (, ) and removing the Stripe SDK. Frontend modifications were started in  and  to accommodate the new flow.
-     - Next debug checklist:
-        1.  **Backend ():**
-            - Finalize the  and  endpoints to ensure they correctly create WooCommerce orders and return a checkout URL.
-            - **Implement a new webhook handler ()** to listen for  events, which will credit tokens to the user's account. This is a critical missing piece.
-            - Completely remove all remaining Stripe-related code and dependencies.
-        2.  **Frontend:**
-            - Refactor  to remove all Stripe logic and use the new WooCommerce token purchase endpoint, redirecting the user to the checkout URL.
-            - Implement a cart state management solution (e.g., React Context or  in a parent component).
-            - Update  to include Add to Cart functionality on products.
-            - Create a new Cart component (modal or page) to display cart contents and a Checkout button that uses the new  endpoint.
-     - Why fix this issue and what will be achieved with the fix?: This will unify the application's payment system under a single provider as requested by the user, simplifying maintenance and creating a consistent user experience.
-     - Status: IN PROGRESS
-     - Is recurring issue?: N
-     - Should Test frontend/backend/both after fix?: both
-     - Blocked on other issue: None
+-   None.
 
 **In progress Task List**:
-- None, as the current focus is on the P0 issue above.
+-   Task 1: Finalize and verify the latest drinks menu update (P0)
+
+ Task Detail:
+  - Task 1: 
+     - Where to resume: The agent has added all the new drinks to the database. The next step is to take comprehensive screenshots of the Menu page, showing the , , and  sections clearly, and present them to the user for final approval.
+     - What will be achieved with this?: The drinks menu content will be finalized according to the user's explicit instructions.
+     - Status: USER VERIFICATION PENDING
+     - Should Test frontend/backend/both after fix?: frontend
+     - Blocked on something: None
 
 **Upcoming and Future Tasks**
 -   Upcoming Tasks:
+    -   (P1) Complete Admin Editing on Location Detail Page: Finish the implementation for editing location-specific specials on . The UI/admin bar was added, but the full functionality was not completed.
     -   (P1) Geolocation Sorting: On the main  page, sort the list of restaurants by the user's proximity.
-    -   (P2) Location-Specific Content: Allow other content (besides specials) to be managed on a per-location basis.
 -   Future Tasks:
+    -   (P2) Location-Specific Content: Allow other content (besides specials) to be managed on a per-location basis.
     -   (P2) Enhance Merchandise Store: Add features like product search, more detailed product pages, and viewing order history within the app.
 
 **Completed work in this session**
-- **Critical Bug Fixes:**
-  - Resolved / deployment blocker by pinning .
-  - Verified that the blank location pages bug was not reproducible.
-- **Location Data Migration:** Migrated location data from  to a MongoDB collection with a full admin CRUD interface.
-- **WooCommerce Merchandise Store:** Implemented a  page that dynamically loads products from the user's WooCommerce store.
-- **Admin Video Management:** Created a new Videos tab in the admin panel for full CRUD management of the homepage video carousel.
-- **Payment Integration (Iterative):**
-    - Implemented and then began removing a Stripe-based token purchase system.
-    - Began the implementation of a unified WooCommerce payment system for both tokens and merchandise.
-- **Testing:** Successfully used the testing agent to validate the location, merchandise, and video features before starting the payment refactor.
+- **WooCommerce Payment Migration:** Fully migrated all payment processing from Stripe to WooCommerce, including token purchases and a new in-app merchandise cart. Tested and verified.
+- **Homepage Layout Update:** Standardized button colors to red and rearranged sections on the homepage per user request.
+- **Inline Admin Editing:**
+    - Implemented frontend editing capabilities for admins on the  and , allowing for direct content management without visiting the admin panel.
+    - Added the UI framework for editing on the .
+- **Menu Image and Media Features:**
+    - Added images to menu items and implemented a lightbox feature for enlarging them.
+    - Created and integrated a reusable  component with square cropping for admin use.
+- **Drinks Menu Overhaul:** Scraped, added, and later completely replaced the entire drinks menu multiple times based on evolving user requirements, with the final version being a structured list of line items.
 
 **Earlier issues found/mentioned but not fixed**
--   None. The major technical debt of using  for locations has been resolved.
+-   None.
 
 **Known issue recurrence from previous fork**
--   None. The previously recurring blank location pages issue was investigated and found to be non-reproducible.
+-   None.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Frontend:** React, React Router, TailwindCSS, PWA, Shadcn UI
+-   **Frontend:** React, React Router, TailwindCSS, PWA, Shadcn UI, 
 -   **Backend:** FastAPI, MongoDB (Motor), Pydantic
 -   **Architecture:** Full-stack monolith, REST API, Role-Based Access Control (RBAC)
 -   **Integrations:** WooCommerce API
 
 **key DB schema**
--   :  (New)
--   :  (New)
--   : (Unchanged, but  will now be updated via WooCommerce webhooks)
+-   :  (image field now actively used)
 
 **changes in tech stack**
--    added to the backend for asynchronous API calls to WooCommerce.
--    library and integration are being actively removed.
--    version pinned to  to resolve a dependency conflict.
+-   Frontend dependencies added for  and  (or equivalent custom logic).
 
 **All files of reference**
--   : Core file for the ongoing WooCommerce integration and removal of Stripe.
--   : Frontend component for token purchases, currently being refactored.
--   : The new merchandise store page that will need cart functionality.
--   : Contains all new and modified API client functions.
--   : Contains the new admin tabs for locations and videos.
--   : Contains the WooCommerce API credentials.
+-   : Core file for menu display and new inline editing features.
+-   : Updated with inline admin editing.
+-   : Partially updated with admin editing UI.
+-   : New component for handling image uploads and cropping.
+-   : New component for displaying enlarged images.
+-   : Contains API logic, including new bulk update endpoints.
+-   : Contains homepage UI changes.
 
 **Areas that need refactoring**:
--   The primary refactoring task is the complete removal of the Stripe integration code from , , and  once the WooCommerce replacement is fully functional and tested.
+-   The CSS for unifying button colors on the homepage was applied directly. This could be refactored to use a shared CSS class or theme variable for better maintainability.
 
 **key api endpoints**
--    & : (CRUD for locations) **(NEW & WORKING)**
--   : (Get WooCommerce products) **(NEW & WORKING)**
--    & : (CRUD for promo videos) **(NEW & WORKING)**
--   : (Create WC order for tokens) **(IN PROGRESS)**
--   : (Create WC order from in-app cart) **(IN PROGRESS)**
--   : (To process completed orders) **(NOT STARTED)**
--    & : (Stripe-related endpoints) **(DEPRECATED / BEING REMOVED)**
+-   : **(NEW)** Updates multiple menu items at once.
+-   : **(NEW)** Deletes all items in a given category.
+-   : Existing endpoint now used by the new  component.
 
 **Critical Info for New Agent**
--   **Your top priority is to complete the migration to WooCommerce for all payments.** The user has explicitly requested this.
--   The most critical missing part is the **backend webhook handler** to process completed WooCommerce orders and credit tokens to users. Without this, the purchase flow is incomplete.
--   The frontend needs a **cart system** for the merchandise page. This does not exist yet and needs to be built from scratch.
--   WooCommerce API keys are already in . You do not need to ask the user for them.
--   Once the WooCommerce migration is done, you should use the testing agent to perform a full regression test on the payment flows for both tokens and merchandise.
+-   Your first task is to confirm with the user that the latest, extensive update to the drinks menu is correct. Take clear screenshots of the relevant sections on the menu page.
+-   The user is highly engaged and provides detailed, specific feedback, especially regarding content and UI. Be prepared to iterate based on this feedback.
+-   The major architectural task of migrating payments to WooCommerce is complete and tested. The focus has shifted to frontend features and content management.
 
 **documents and test reports created in this job**
--    (Continuously updated)
--   Multiple reports in  confirming the stability of features implemented before the payment refactor.
+-    (Updated)
+-   Multiple reports in  confirming the stability of the WooCommerce integration, inline editing, and media features.
 
 **Last 10 User Messages and any pending HUMAN messages** 
-1.  **Request:** Fix token purchasing (it's not prompting for payment). Also asked about admin user management. - **Status: In Progress (led to current task)**
-2.  **User Choice:** Chose Stripe for payment integration. - **Status: Superseded**
-3.  **Request:** Add a merchandise tab using WooCommerce and fix the menu page. - **Status: Completed (Merch tab done, menu was already working)**
-4.  **User Choice:** Chose to integrate the merchandise store directly into the app (Option B). - **Status: Completed**
-5.  **User Input:** Provided WooCommerce API keys. - **Status: Completed**
-6.  **Request:** Use the WooCommerce API for ALL payments. - **Status: In Progress**
-7.  **User Clarification:**
-    - Token purchases should create a WooCommerce order.
-    - Merchandise should have an in-app cart and checkout via WooCommerce.
-    - Tipping/gifting drinks should remain token-based. - **Status: In Progress (This defines the current task)**
+1.  **Request:** Add signature cocktails from a URL. - **Status: Completed** (then superseded).
+2.  **Request:** Make all drinks line items for now and replace them with a large block of text for  DAILY SPECIALS. - **Status: Completed** (then superseded).
+3.  **Request:** Add all drinks (Daily Specials, Signature Cocktails, Brunch Drinks) into their own sections with updated descriptions. - **Status: In Progress (Implementation done, pending user verification).**
 
 **Project Health Check:**
 -   **Broken:**
-    -   The token purchasing feature is currently non-functional as it is in the middle of a refactor from Stripe to WooCommerce.
+    -   None. The application is stable.
 -   **Mocked:**
     -   None.
 
 **3rd Party Integrations**
--   **WooCommerce:** Used for both merchandise display and all payment processing. Requires User API Key (already provided and in ).
+-   **WooCommerce:** Used for merchandise display and all payment processing.
 -   **@dnd-kit:** Used for drag-and-drop on the homepage.
 -   **passlib/bcrypt:** Used for password hashing.
+-   **react-cropper:** Used for image cropping in the  component.
 
 **Testing status**
--   Testing agent used after significant changes: YES (for locations, videos, and merch page).
+-   Testing agent used after significant changes: YES (Multiple times, all passed).
 -   Troubleshoot agent used after agent stuck in loop: NO
 -   Test files created: None.
--   Known regressions: The token purchase flow is intentionally broken during the refactor.
+-   Known regressions: None.
 
 **Credentials to test flow:**
 -   **Admin Panel:**
@@ -185,4 +153,4 @@ A feature-rich full-stack PWA with a React frontend and FastAPI backend.
 -   **WooCommerce Credentials:** Available in .
 
 **What agent forgot to execute**
--   The previous agent did not complete the full WooCommerce payment migration. Key missing components are the backend webhook handler to confirm purchases and the entire frontend cart UI for merchandise.</analysis>
+-   The agent started adding admin editing functionality to the  by adding the admin bar, but did not complete the implementation for editing the location-specific specials. This is captured in the Upcoming Tasks.</analysis>

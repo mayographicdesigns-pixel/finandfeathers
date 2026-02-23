@@ -387,4 +387,4 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - **Admin Login**: username=`admin`, password=`admin`
 
 ## Preview URL
-https://fork-dining-1.preview.emergentagent.com
+https://menu-merch.preview.emergentagent.com
