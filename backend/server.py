@@ -3165,6 +3165,114 @@ async def admin_delete_gallery_submission(submission_id: str, username: str = De
 
 
 # ============================================================================
+# ADMIN SOCIAL POSTS (COMMENTS) MANAGEMENT
+# ============================================================================
+
+@api_router.get("/admin/social-posts")
+async def admin_get_all_social_posts(username: str = Depends(get_current_admin)):
+    """Get all social posts across all locations for admin moderation"""
+    posts = await db.social_posts.find({}, {"_id": 0}).sort("created_at", -1).to_list(500)
+    return posts
+
+
+@api_router.delete("/admin/social-posts/{post_id}")
+async def admin_delete_social_post(post_id: str, username: str = Depends(get_current_admin)):
+    """Delete a social post (admin only)"""
+    result = await db.social_posts.delete_one({"id": post_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Post not found")
+    return {"success": True, "message": "Post deleted"}
+
+
+@api_router.delete("/admin/social-posts/cleanup/old")
+async def admin_cleanup_old_posts(username: str = Depends(get_current_admin)):
+    """Manually trigger cleanup of old posts without images"""
+    cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
+    
+    # Delete posts older than 24 hours that don't have images
+    result = await db.social_posts.delete_many({
+        "created_at": {"$lt": cutoff},
+        "$or": [
+            {"image_url": None},
+            {"image_url": ""},
+            {"image_url": {"$exists": False}}
+        ]
+    })
+    
+    return {
+        "success": True, 
+        "deleted_count": result.deleted_count,
+        "message": f"Deleted {result.deleted_count} old posts without images"
+    }
+
+
+# ============================================================================
+# ADMIN USER MANAGEMENT
+# ============================================================================
+
+@api_router.delete("/admin/users/{user_id}")
+async def admin_delete_user(user_id: str, username: str = Depends(get_current_admin)):
+    """Delete a user and all their associated data"""
+    # Check if user exists
+    profile = await db.user_profiles.find_one({"id": user_id})
+    if not profile:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Don't allow deleting admin users
+    if profile.get("role") == "admin":
+        raise HTTPException(status_code=403, detail="Cannot delete admin users")
+    
+    # Delete user's data from various collections
+    await db.user_profiles.delete_one({"id": user_id})
+    await db.checkins.delete_many({"$or": [{"user_id": user_id}, {"id": user_id}]})
+    await db.social_posts.delete_many({"author_id": user_id})
+    await db.direct_messages.delete_many({"$or": [{"from_id": user_id}, {"to_id": user_id}]})
+    await db.dj_tips.delete_many({"from_id": user_id})
+    await db.drink_orders.delete_many({"$or": [{"from_id": user_id}, {"to_id": user_id}]})
+    await db.token_purchases.delete_many({"user_id": user_id})
+    await db.user_gallery_submissions.delete_many({"user_id": user_id})
+    
+    return {"success": True, "message": f"User {profile.get('name', 'Unknown')} and all their data deleted"}
+
+
+# ============================================================================
+# SCHEDULED CLEANUP ENDPOINT (can be called by cron/scheduler)
+# ============================================================================
+
+@api_router.post("/system/cleanup-old-posts")
+async def system_cleanup_old_posts(api_key: str = None):
+    """
+    System endpoint to clean up old posts without images.
+    Should be called by a scheduler at 4am EST daily.
+    Requires system API key for security.
+    """
+    # Simple security check - in production, use a proper API key
+    system_key = os.environ.get("SYSTEM_API_KEY", "ff-system-cleanup-2026")
+    if api_key != system_key:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+    
+    cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
+    
+    # Delete posts older than 24 hours that don't have images
+    result = await db.social_posts.delete_many({
+        "created_at": {"$lt": cutoff},
+        "$or": [
+            {"image_url": None},
+            {"image_url": ""},
+            {"image_url": {"$exists": False}}
+        ]
+    })
+    
+    logging.info(f"Scheduled cleanup: Deleted {result.deleted_count} old posts without images")
+    
+    return {
+        "success": True,
+        "deleted_count": result.deleted_count,
+        "cleanup_time": datetime.now(timezone.utc).isoformat()
+    }
+
+
+# ============================================================================
 # STRIPE PAYMENT ENDPOINTS
 # ============================================================================
 
