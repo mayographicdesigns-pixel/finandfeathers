@@ -736,12 +736,12 @@ const LinkTreeHomePage = () => {
           </Button>
         </div>
 
-        {/* Social Feed - Editable with Drag and Drop */}
+        {/* Gallery Preview - Links to Gallery Page */}
         <Card className="mb-6 bg-slate-800/50 border-slate-700">
           <CardContent className="p-6">
             <div className="flex items-center justify-center gap-2 mb-4">
-              <Instagram className="w-5 h-5 text-pink-500" />
-              <h2 className="text-lg font-bold text-white">Latest from Our Feed</h2>
+              <ImageIcon className="w-5 h-5 text-red-500" />
+              <h2 className="text-lg font-bold text-white">Gallery</h2>
               {editMode && (
                 <span className="bg-red-500 text-white text-xs px-2 py-1 rounded ml-2">
                   Drag to reorder • Click to edit
@@ -779,24 +779,36 @@ const LinkTreeHomePage = () => {
                 </SortableContext>
               </DndContext>
             ) : (
-              <div className="grid grid-cols-4 gap-2 mb-4">
+              <div 
+                className="grid grid-cols-4 gap-2 mb-4 cursor-pointer"
+                onClick={() => navigate('/gallery')}
+              >
                 {displayContent.social_feed_images.map((image, index) => (
                   <div key={index} className="relative group">
-                    <button
-                      onClick={() => setLightboxImage(image)}
-                      className="aspect-square rounded-lg overflow-hidden cursor-pointer block w-full"
-                      data-testid={`social-feed-image-${index}`}
+                    <div
+                      className="aspect-square rounded-lg overflow-hidden block w-full"
+                      data-testid={`gallery-preview-image-${index}`}
                     >
                       <img 
                         src={image.url}
-                        alt={image.caption || `Feed image ${index + 1}`}
+                        alt={image.caption || `Gallery image ${index + 1}`}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                       />
-                    </button>
+                    </div>
                   </div>
                 ))}
               </div>
             )}
+            
+            {/* View Full Gallery Button */}
+            <Button
+              onClick={() => navigate('/gallery')}
+              className="w-full bg-slate-700 hover:bg-slate-600 text-white mb-4"
+              data-testid="view-gallery-btn"
+            >
+              <ImageIcon className="w-4 h-4 mr-2" />
+              View Full Gallery
+            </Button>
             
             {/* Social Follow Buttons */}
             <div className="grid grid-cols-2 gap-3">
