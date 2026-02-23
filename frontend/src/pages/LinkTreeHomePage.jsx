@@ -149,7 +149,8 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
   };
 
   const handleClose = () => {
-    localStorage.setItem('ff_welcome_shown', 'true');
+    // Set sessionStorage to prevent showing again in this session
+    sessionStorage.setItem('ff_welcome_shown_session', 'true');
     onClose();
   };
 
