@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { MapPin, Phone, Clock, Home, Calendar, ShoppingBag, Instagram, Facebook, Twitter, ExternalLink, Navigation, Users, LogIn, LogOut, Smile, X, MessageCircle, Send, Heart, DollarSign, Music, Image as ImageIcon, ChevronLeft, Trash2, Wine, CreditCard, Smartphone, Edit2, Settings, Save, Plus } from 'lucide-react';
+import { MapPin, Phone, Clock, Home, Calendar, ShoppingBag, Instagram, Facebook, Twitter, ExternalLink, Navigation, Users, LogIn, LogOut, Smile, X, MessageCircle, Send, Heart, DollarSign, Music, Image as ImageIcon, ChevronLeft, Trash2, Wine, CreditCard, Smartphone, Edit2, Settings, Save, Plus, Camera, RotateCcw } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
-import { getLocationBySlug, verifyAdminToken, adminUpdateLocation } from '../services/api';
+import { getLocationBySlug, verifyAdminToken, adminUpdateLocation, uploadImage } from '../services/api';
 import { 
   checkInAtLocation, getCheckedInUsers, checkOut,
   createSocialPost, getSocialPosts, likePost, deleteSocialPost,
