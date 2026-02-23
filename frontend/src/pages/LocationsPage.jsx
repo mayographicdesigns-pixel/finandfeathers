@@ -579,6 +579,18 @@ const LocationsPage = () => {
           ))}
         </div>
       </div>
+
+      {/* Image Lightbox */}
+      {lightboxLocation && (
+        <ImageLightbox 
+          image={{ 
+            url: lightboxLocation.image, 
+            name: lightboxLocation.name,
+            description: lightboxLocation.address
+          }}
+          onClose={() => setLightboxLocation(null)}
+        />
+      )}
     </div>
   );
 };
