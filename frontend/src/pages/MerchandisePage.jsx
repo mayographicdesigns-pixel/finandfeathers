@@ -32,15 +32,37 @@ const MerchandisePage = () => {
     }
   }, []);
 
-  // Check for order return
+  // Check for order return (WooCommerce or Stripe)
   useEffect(() => {
     const orderId = searchParams.get('order_id');
     const orderStatus = searchParams.get('order');
+    const sessionId = searchParams.get('session_id');
+    const payment = searchParams.get('payment');
     
     if (orderId && orderStatus === 'success') {
       checkOrderStatus(orderId);
     }
+    
+    // Handle Stripe payment return
+    if (sessionId && payment === 'success') {
+      handleStripePaymentReturn(sessionId);
+    }
   }, [searchParams]);
+
+  const handleStripePaymentReturn = async (sessionId) => {
+    try {
+      const result = await pollStripePaymentStatus(sessionId, 10, 2000);
+      if (result.success) {
+        setOrderSuccess(true);
+        setCart([]);
+        localStorage.removeItem('ff_cart');
+        toast({ title: 'Order Confirmed!', description: 'Thank you for your purchase!' });
+      }
+      window.history.replaceState({}, '', '/merch');
+    } catch (error) {
+      console.error('Error checking Stripe payment:', error);
+    }
+  };
 
   const checkOrderStatus = async (orderId) => {
     try {
