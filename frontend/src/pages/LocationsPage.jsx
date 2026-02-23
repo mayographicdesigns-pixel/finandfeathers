@@ -118,7 +118,7 @@ const LocationsPage = () => {
   const handleDeleteLocation = async (locationId) => {
     if (!window.confirm('Delete this location?')) return;
     try {
-      await deleteLocation(locationId);
+      await adminDeleteLocation(locationId);
       await fetchLocations();
       setEditingLocation(null);
       toast({ title: 'Deleted', description: 'Location removed' });
