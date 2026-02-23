@@ -134,7 +134,7 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - [x] Add message and song request to tip
   - [x] Recent tips feed
 
-#### Admin Dashboard (AdminPage.jsx) - COMPLETED December 15, 2025
+#### Admin Dashboard (AdminPage.jsx) - UPDATED February 23, 2026
 - [x] JWT-based authentication (username: admin, password: admin)
 - [x] Protected routes with Bearer token
 - [x] Dashboard with statistics overview
@@ -156,6 +156,18 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] **Role Management** - Admin can change user roles (customer/staff/management)
 - [x] **Cashout Processing** - View and approve/reject staff cashout requests
 - [x] **Role Filter** - Filter users by role type
+- [x] **Events Management Tab** (NEW Feb 23, 2026) - Full CRUD for events displayed on /events page
+  - [x] View all events with images, dates, times, locations
+  - [x] Add new events with form (name, description, date, time, location, image, packages)
+  - [x] Edit existing events
+  - [x] Mark events as Featured (highlighted on events page)
+  - [x] Hide/Show events (toggle visibility)
+  - [x] Delete events
+  - [x] Manage ticket packages (General $25, VIP $75, Table $200)
+- [x] **Gallery Submissions Tab** (NEW Feb 23, 2026) - Moderate user-submitted photos
+  - [x] View all user photo submissions with user name, caption, date
+  - [x] Lightbox preview for full-size viewing
+  - [x] Delete inappropriate submissions (removes from gallery)
 
 #### My Account Feature (MyAccountPage.jsx) - COMPLETED February 2026
 - [x] **Profile Management:**
