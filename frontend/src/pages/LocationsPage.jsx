@@ -74,7 +74,7 @@ const LocationsPage = () => {
   const handleSaveLocation = async () => {
     if (!editingLocation) return;
     try {
-      await updateLocation(editingLocation.id, editingLocation);
+      await adminUpdateLocation(editingLocation.id, editingLocation);
       await fetchLocations();
       setEditingLocation(null);
       toast({ title: 'Success', description: 'Location updated!' });
