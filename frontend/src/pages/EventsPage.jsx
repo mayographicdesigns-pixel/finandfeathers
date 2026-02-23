@@ -188,7 +188,7 @@ const EventsPage = () => {
       </div>
 
       {/* Featured Event */}
-      {UPCOMING_EVENTS.filter(e => e.featured).map(event => (
+      {events.filter(e => e.featured).map(event => (
         <div key={event.id} className="max-w-7xl mx-auto px-4 mb-12">
           <Card className="overflow-hidden bg-gradient-to-r from-red-900/30 to-slate-900 border-red-600/30">
             <div className="md:flex">
