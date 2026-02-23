@@ -250,8 +250,224 @@ const MenuPage = () => {
 
   return (
     <div className="min-h-screen bg-black">
+      {/* Admin Bar */}
+      {isAdmin && (
+        <div className="fixed top-0 left-0 right-0 bg-red-600 text-white py-2 px-4 z-50 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Settings className="w-4 h-4" />
+            <span className="text-sm font-medium">Admin Mode - Menu Editor</span>
+          </div>
+          <div className="flex items-center gap-2">
+            {editMode ? (
+              <>
+                <Button 
+                  size="sm" 
+                  onClick={() => setShowAddModal(true)}
+                  className="bg-green-600 hover:bg-green-700 h-8"
+                  data-testid="add-menu-item-btn"
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Add Item
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={() => setEditMode(false)}
+                  className="border-white text-white hover:bg-white/20 h-8"
+                >
+                  Done Editing
+                </Button>
+              </>
+            ) : (
+              <Button 
+                size="sm" 
+                onClick={() => setEditMode(true)}
+                className="bg-white text-red-600 hover:bg-gray-100 h-8"
+                data-testid="edit-menu-btn"
+              >
+                <Edit2 className="w-3 h-3 mr-1" />
+                Edit Menu
+              </Button>
+            )}
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              onClick={() => navigate('/admin')}
+              className="text-white hover:bg-white/20 h-8"
+            >
+              Dashboard
+            </Button>
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              onClick={handleAdminLogout}
+              className="text-white hover:bg-white/20 h-8"
+            >
+              <LogOut className="w-3 h-3" />
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Item Modal */}
+      {editingItem && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <Card className="bg-slate-900 border-red-600/50 w-full max-w-md">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-white">Edit Menu Item</h2>
+                <Button variant="ghost" size="sm" onClick={() => setEditingItem(null)} className="text-slate-400">
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm text-slate-300 mb-1 block">Name</label>
+                  <Input
+                    value={editingItem.name}
+                    onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-slate-300 mb-1 block">Description</label>
+                  <Textarea
+                    value={editingItem.description || ''}
+                    onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm text-slate-300 mb-1 block">Price ($)</label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={editingItem.price}
+                      onChange={(e) => setEditingItem({ ...editingItem, price: parseFloat(e.target.value) })}
+                      className="bg-slate-800 border-slate-700 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-slate-300 mb-1 block">Category</label>
+                    <select
+                      value={editingItem.category}
+                      onChange={(e) => setEditingItem({ ...editingItem, category: e.target.value })}
+                      className="w-full h-10 px-3 rounded-md bg-slate-800 border border-slate-700 text-white"
+                    >
+                      {Object.entries(categoryNames).map(([key, name]) => (
+                        <option key={key} value={key}>{name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm text-slate-300 mb-1 block">Image URL</label>
+                  <Input
+                    value={editingItem.image_url || ''}
+                    onChange={(e) => setEditingItem({ ...editingItem, image_url: e.target.value })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    placeholder="https://..."
+                  />
+                  {editingItem.image_url && (
+                    <img src={editingItem.image_url} alt="Preview" className="mt-2 h-20 object-cover rounded" />
+                  )}
+                </div>
+                <div className="flex gap-2 pt-2">
+                  <Button onClick={handleSaveItem} className="flex-1 bg-green-600 hover:bg-green-700">
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Changes
+                  </Button>
+                  <Button 
+                    onClick={() => handleDeleteItem(editingItem.id)} 
+                    variant="outline" 
+                    className="border-red-600 text-red-500 hover:bg-red-600 hover:text-white"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Add Item Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <Card className="bg-slate-900 border-green-600/50 w-full max-w-md">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-white">Add Menu Item</h2>
+                <Button variant="ghost" size="sm" onClick={() => setShowAddModal(false)} className="text-slate-400">
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm text-slate-300 mb-1 block">Name *</label>
+                  <Input
+                    value={newItem.name}
+                    onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    placeholder="Dish name"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-slate-300 mb-1 block">Description</label>
+                  <Textarea
+                    value={newItem.description}
+                    onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    placeholder="Brief description..."
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm text-slate-300 mb-1 block">Price ($) *</label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={newItem.price}
+                      onChange={(e) => setNewItem({ ...newItem, price: e.target.value })}
+                      className="bg-slate-800 border-slate-700 text-white"
+                      placeholder="12.99"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-slate-300 mb-1 block">Category</label>
+                    <select
+                      value={newItem.category}
+                      onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
+                      className="w-full h-10 px-3 rounded-md bg-slate-800 border border-slate-700 text-white"
+                    >
+                      {Object.entries(categoryNames).map(([key, name]) => (
+                        <option key={key} value={key}>{name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm text-slate-300 mb-1 block">Image URL</label>
+                  <Input
+                    value={newItem.image_url}
+                    onChange={(e) => setNewItem({ ...newItem, image_url: e.target.value })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    placeholder="https://..."
+                  />
+                </div>
+                <Button onClick={handleAddItem} className="w-full bg-green-600 hover:bg-green-700">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add to Menu
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Header with logo and location */}
-      <div className="container mx-auto px-4 pt-8 pb-4">
+      <div className={`container mx-auto px-4 pt-8 pb-4 ${isAdmin ? 'mt-12' : ''}`}>
         <div className="flex flex-col items-center gap-4">
           {/* Logo */}
           <div className="text-center">
