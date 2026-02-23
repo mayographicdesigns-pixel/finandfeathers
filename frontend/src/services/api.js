@@ -1589,4 +1589,107 @@ export async function adminReorderLocations(order) {
   });
   if (!response.ok) throw new Error('Failed to reorder locations');
   return await response.json();
+
+
+// ==================== ADMIN EVENTS API ====================
+
+// Get all events (public)
+export async function getPublicEvents() {
+  try {
+    const response = await fetch(`${API_URL}/events`);
+    if (!response.ok) throw new Error('Failed to fetch events');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    return [];
+  }
+}
+
+// Get all events (admin)
+export async function adminGetEvents() {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/events`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error('Failed to fetch events');
+  return await response.json();
+}
+
+// Create event (admin)
+export async function adminCreateEvent(event) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/events`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(event)
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to create event');
+  }
+  return await response.json();
+}
+
+// Update event (admin)
+export async function adminUpdateEvent(eventId, update) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/events/${eventId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(update)
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to update event');
+  }
+  return await response.json();
+}
+
+// Delete event (admin)
+export async function adminDeleteEvent(eventId) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/events/${eventId}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to delete event');
+  }
+  return await response.json();
+}
+
+
+// ==================== ADMIN GALLERY SUBMISSIONS API ====================
+
+// Get all gallery submissions (admin)
+export async function adminGetGallerySubmissions() {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/gallery-submissions`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error('Failed to fetch gallery submissions');
+  return await response.json();
+}
+
+// Delete gallery submission (admin)
+export async function adminDeleteGallerySubmission(submissionId) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/gallery-submissions/${submissionId}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to delete submission');
+  }
+  return await response.json();
+}
+
 }
