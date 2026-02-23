@@ -9,11 +9,12 @@ import {
   getEventPackages, 
   createStripeEventCheckout, 
   getStripeCheckoutStatus,
-  pollStripePaymentStatus 
+  pollStripePaymentStatus,
+  getPublicEvents
 } from '../services/api';
 
-// Sample upcoming events
-const UPCOMING_EVENTS = [
+// Fallback events if API returns empty
+const FALLBACK_EVENTS = [
   {
     id: 'friday-night-live',
     name: 'Friday Night Live',
