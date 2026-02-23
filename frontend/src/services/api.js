@@ -1692,3 +1692,59 @@ export async function adminDeleteGallerySubmission(submissionId) {
   }
   return await response.json();
 }
+
+
+// ==================== ADMIN SOCIAL POSTS API ====================
+
+// Get all social posts (admin)
+export async function adminGetAllSocialPosts() {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/social-posts`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error('Failed to fetch social posts');
+  return await response.json();
+}
+
+// Delete social post (admin)
+export async function adminDeleteSocialPost(postId) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/social-posts/${postId}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to delete post');
+  }
+  return await response.json();
+}
+
+// Cleanup old posts (admin)
+export async function adminCleanupOldPosts() {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/social-posts/cleanup/old`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to cleanup posts');
+  }
+  return await response.json();
+}
+
+// Delete user (admin)
+export async function adminDeleteUser(userId) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/users/${userId}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to delete user');
+  }
+  return await response.json();
+}
+
