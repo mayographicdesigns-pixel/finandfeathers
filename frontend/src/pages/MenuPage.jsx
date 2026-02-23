@@ -476,13 +476,20 @@ const MenuPage = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm text-slate-300 mb-1 block">Image URL</label>
-                  <Input
-                    value={newItem.image_url}
-                    onChange={(e) => setNewItem({ ...newItem, image_url: e.target.value })}
-                    className="bg-slate-800 border-slate-700 text-white"
-                    placeholder="https://..."
+                  <label className="text-sm text-slate-300 mb-1 block">Image</label>
+                  <ImageUploader 
+                    currentImage={newItem.image_url}
+                    onImageUpload={(url) => setNewItem({ ...newItem, image_url: url })}
                   />
+                  <div className="mt-2">
+                    <label className="text-xs text-slate-400">Or enter URL directly:</label>
+                    <Input
+                      value={newItem.image_url}
+                      onChange={(e) => setNewItem({ ...newItem, image_url: e.target.value })}
+                      className="bg-slate-800 border-slate-700 text-white mt-1"
+                      placeholder="https://..."
+                    />
+                  </div>
                 </div>
                 <Button onClick={handleAddItem} className="w-full bg-green-600 hover:bg-green-700">
                   <Plus className="w-4 h-4 mr-2" />
