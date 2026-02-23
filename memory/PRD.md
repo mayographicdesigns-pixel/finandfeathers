@@ -387,4 +387,4 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - **Admin Login**: username=`admin`, password=`admin`
 
 ## Preview URL
-https://menu-merch.preview.emergentagent.com
+https://dine-admin-portal-1.preview.emergentagent.com
