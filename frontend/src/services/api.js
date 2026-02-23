@@ -1589,6 +1589,7 @@ export async function adminReorderLocations(order) {
   });
   if (!response.ok) throw new Error('Failed to reorder locations');
   return await response.json();
+}
 
 
 // ==================== ADMIN EVENTS API ====================
