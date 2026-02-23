@@ -3870,6 +3870,22 @@ const UsersTab = () => {
                       >
                         <Gift className="w-4 h-4" />
                       </Button>
+                      {user.role !== 'admin' && (
+                        <Button
+                          size="sm"
+                          onClick={() => handleDeleteUser(user)}
+                          disabled={deletingUser === user.id}
+                          className="bg-red-600/30 hover:bg-red-600/50 text-red-300 border border-red-600/50"
+                          data-testid={`delete-user-${user.id}`}
+                          title="Delete User"
+                        >
+                          {deletingUser === user.id ? (
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <UserX className="w-4 h-4" />
+                          )}
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
