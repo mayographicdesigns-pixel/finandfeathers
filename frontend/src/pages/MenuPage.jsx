@@ -50,29 +50,97 @@ const MenuPage = () => {
 
   // Fetch menu items from API on mount
   useEffect(() => {
-    const fetchMenuItems = async () => {
-      setLoading(true);
-      try {
-        const items = await getPublicMenuItems();
-        if (items && items.length > 0) {
-          setMenuItems(items);
-          setUsingMockData(false);
-        } else {
-          // Fallback to mock data if no items in database
-          setMenuItems(mockMenuItems);
-          setUsingMockData(true);
-        }
-      } catch (error) {
-        console.error('Failed to fetch menu items, using mock data:', error);
-        setMenuItems(mockMenuItems);
-        setUsingMockData(true);
-      } finally {
-        setLoading(false);
-      }
+    // Check if admin is logged in
+    const checkAdmin = async () => {
+      const isValid = await verifyAdminToken();
+      setIsAdmin(isValid);
     };
-
+    checkAdmin();
+    
     fetchMenuItems();
   }, []);
+
+  const fetchMenuItems = async () => {
+    setLoading(true);
+    try {
+      const items = await getPublicMenuItems();
+      if (items && items.length > 0) {
+        setMenuItems(items);
+        setUsingMockData(false);
+      } else {
+        // Fallback to mock data if no items in database
+        setMenuItems(mockMenuItems);
+        setUsingMockData(true);
+      }
+    } catch (error) {
+      console.error('Failed to fetch menu items, using mock data:', error);
+      setMenuItems(mockMenuItems);
+      setUsingMockData(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Admin functions
+  const handleEditItem = (item) => {
+    setEditingItem({ ...item });
+  };
+
+  const handleSaveItem = async () => {
+    if (!editingItem) return;
+    try {
+      await updateMenuItem(editingItem.id, editingItem);
+      await fetchMenuItems();
+      setEditingItem(null);
+      toast({ title: 'Success', description: 'Menu item updated!' });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+  };
+
+  const handleAddItem = async () => {
+    if (!newItem.name || !newItem.price) {
+      toast({ title: 'Error', description: 'Name and price are required', variant: 'destructive' });
+      return;
+    }
+    try {
+      await createMenuItem({
+        ...newItem,
+        price: parseFloat(newItem.price)
+      });
+      await fetchMenuItems();
+      setShowAddModal(false);
+      setNewItem({
+        name: '',
+        description: '',
+        price: '',
+        category: 'starters',
+        image_url: '',
+        is_available: true
+      });
+      toast({ title: 'Success', description: 'Menu item added!' });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+  };
+
+  const handleDeleteItem = async (itemId) => {
+    if (!window.confirm('Delete this menu item?')) return;
+    try {
+      await deleteMenuItem(itemId);
+      await fetchMenuItems();
+      toast({ title: 'Deleted', description: 'Menu item removed' });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+  };
+
+  const handleAdminLogout = () => {
+    localStorage.removeItem('adminToken');
+    setIsAdmin(false);
+    setEditMode(false);
+    toast({ title: 'Logged Out', description: 'Admin session ended' });
+  };
 
   // Build dynamic categories from menu items
   const categories = useMemo(() => {
