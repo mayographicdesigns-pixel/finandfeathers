@@ -366,6 +366,73 @@ const LocationDetailPage = () => {
     }
   }, [showCheckInModal]);
 
+  // Post photo capture functions
+  const startPostCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false
+      });
+      setPostCameraStream(stream);
+      setShowPostCamera(true);
+      
+      setTimeout(() => {
+        if (postVideoRef.current) {
+          postVideoRef.current.srcObject = stream;
+          postVideoRef.current.play();
+        }
+      }, 100);
+    } catch (err) {
+      console.error('Camera error:', err);
+      toast({
+        title: 'Camera Error',
+        description: 'Could not access camera. Please check permissions.',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const stopPostCamera = () => {
+    if (postCameraStream) {
+      postCameraStream.getTracks().forEach(track => track.stop());
+      setPostCameraStream(null);
+    }
+    setShowPostCamera(false);
+  };
+
+  const capturePostPhoto = async () => {
+    if (!postVideoRef.current || !postCanvasRef.current) return;
+
+    const video = postVideoRef.current;
+    const canvas = postCanvasRef.current;
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0);
+
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
+
+      setUploadingPostPhoto(true);
+      stopPostCamera();
+
+      try {
+        const file = new File([blob], `post_${Date.now()}.jpg`, { type: 'image/jpeg' });
+        const result = await uploadImage(file);
+        const backendUrl = process.env.REACT_APP_BACKEND_URL;
+        const fullUrl = `${backendUrl}${result.url}`;
+        setNewPostImage(fullUrl);
+        toast({ title: 'Photo added!', description: 'Ready to post' });
+      } catch (err) {
+        console.error('Upload error:', err);
+        toast({ title: 'Upload Failed', description: err.message, variant: 'destructive' });
+      } finally {
+        setUploadingPostPhoto(false);
+      }
+    }, 'image/jpeg', 0.85);
+  };
+
   const handleCheckIn = async () => {
     if (!displayName.trim()) {
       toast({
