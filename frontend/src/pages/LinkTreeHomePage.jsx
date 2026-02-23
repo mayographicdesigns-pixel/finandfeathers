@@ -849,6 +849,56 @@ const LinkTreeHomePage = () => {
 
         {/* Loyalty Signup Form */}
         <Card className="mb-6 bg-gradient-to-br from-slate-800/80 to-slate-900/80 border-red-600/30">
+          <CardContent className="p-6">
+            <h2 className="text-xl font-bold text-white mb-2 text-center">Join Our Loyalty Program</h2>
+            <p className="text-slate-400 text-sm mb-4 text-center">Get exclusive offers and rewards!</p>
+            
+            <form onSubmit={handleLoyaltySignup} className="space-y-3">
+              <Input
+                type="text"
+                placeholder="Full Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="bg-slate-900 border-slate-700 text-white"
+                required
+              />
+              <Input
+                type="email"
+                placeholder="Email Address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-slate-900 border-slate-700 text-white"
+                required
+              />
+              <Input
+                type="tel"
+                placeholder="Phone Number (Optional)"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="bg-slate-900 border-slate-700 text-white"
+              />
+              
+              <label className="flex items-start gap-2 text-slate-400 text-xs cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={agreeToMarketing}
+                  onChange={(e) => setAgreeToMarketing(e.target.checked)}
+                  className="mt-0.5"
+                />
+                <span>
+                  By checking this box, you agree to receive marketing communications from Fin & Feathers Restaurants via email, SMS, and push notifications
+                </span>
+              </label>
+              
+              <Button 
+                type="submit" 
+                className="w-full bg-red-600 hover:bg-red-700 text-white h-12 text-lg font-semibold"
+              >
+                Join Now
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
 
         {/* Contact Info - Editable */}
         <Card className="mb-6 bg-slate-800/50 border-slate-700">
