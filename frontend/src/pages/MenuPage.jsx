@@ -1,12 +1,16 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Home, RefreshCw } from 'lucide-react';
+import { MapPin, Home, RefreshCw, Edit2, Save, X, Settings, LogOut, Plus, Trash2, Image as ImageIcon } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Textarea } from '../components/ui/textarea';
+import { Card, CardContent } from '../components/ui/card';
 import CategoryFilter from '../components/CategoryFilter';
 import MenuCard from '../components/MenuCard';
 import MenuLineItem from '../components/MenuLineItem';
 import { categories as defaultCategories, menuItems as mockMenuItems } from '../mockData';
-import { getPublicMenuItems } from '../services/api';
+import { getPublicMenuItems, verifyAdminToken, updateMenuItem, createMenuItem, deleteMenuItem } from '../services/api';
+import { toast } from '../hooks/use-toast';
 
 const MenuPage = () => {
   const navigate = useNavigate();
