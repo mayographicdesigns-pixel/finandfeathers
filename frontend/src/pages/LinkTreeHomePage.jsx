@@ -126,7 +126,8 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
       };
       localStorage.setItem('ff_user_info', JSON.stringify(userInfo));
       
-      // Mark popup as shown
+      // Mark popup as shown (both sessionStorage and localStorage for form submission)
+      sessionStorage.setItem('ff_welcome_shown_session', 'true');
       localStorage.setItem('ff_welcome_shown', 'true');
       
       // Call onSubmit callback
