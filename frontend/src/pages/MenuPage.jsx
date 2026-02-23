@@ -86,6 +86,62 @@ const MenuPage = () => {
   // All cocktail category IDs
   const cocktailCategoryIds = ['cocktails', 'signature-cocktails', 'brunch-drinks'];
 
+  // Daily Specials by day of week
+  const dailySpecials = {
+    0: { // Sunday
+      name: "The Sunday Slide",
+      description: "Close out the weekend with $5 Daily Specials",
+      hours: "6pm – Close",
+      emoji: "🌅"
+    },
+    1: { // Monday
+      name: "Margarita Monday",
+      description: "Sip on $5 Margaritas all day long",
+      hours: "12pm – 8pm",
+      emoji: "🍹"
+    },
+    2: { // Tuesday
+      name: "Tito's, Tacos & Tequila",
+      description: "$5 Tito's, $5 Margaritas, and $5 Tacos. The perfect Tuesday trio",
+      hours: "12pm – 8pm",
+      emoji: "🌮"
+    },
+    3: { // Wednesday
+      name: "Wine Down (or Whiskey Up)",
+      description: "$5 Select wine glasses, $10 Bottles, or $5 Select Whiskey shots",
+      hours: "12pm – 8pm",
+      emoji: "🍷"
+    },
+    4: { // Thursday
+      name: "Martini Madness",
+      description: "Elevate your Thursday with $5 Martinis. Strawberry, Peach, Mango, Watermelon, Lemon Drop, Melon, Blue (+$1)",
+      hours: "12pm – 8pm",
+      emoji: "🍸"
+    },
+    5: { // Friday
+      name: "The Premium Power Hour",
+      description: "$6 Select Premium cocktails and shots",
+      hours: "6pm – 8pm",
+      emoji: "⚡"
+    },
+    6: { // Saturday
+      name: "Saturday Prime",
+      description: "Special $5 menu available",
+      hours: "5pm – 8pm",
+      emoji: "🌟"
+    }
+  };
+
+  // Get today's special
+  const getTodaysSpecial = () => {
+    const today = new Date().getDay();
+    return dailySpecials[today];
+  };
+
+  const todaysSpecial = getTodaysSpecial();
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const todayName = dayNames[new Date().getDay()];
+
   // Fetch menu items from API on mount
   useEffect(() => {
     const checkAdmin = async () => {
