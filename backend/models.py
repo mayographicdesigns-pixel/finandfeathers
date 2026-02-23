@@ -121,6 +121,7 @@ class MenuItemUpdate(BaseModel):
     image: Optional[str] = None
     category: Optional[str] = None
     badges: Optional[List[str]] = None
+    type: Optional[str] = None  # food or drink
 
 # Media/Photo Upload Model
 class Media(BaseModel):
