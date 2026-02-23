@@ -217,7 +217,7 @@ const MenuPage = () => {
     // Initialize groups for known categories
     const knownCategories = [
       'daily-specials', 'starters', 'sides', 'entrees', 
-      'seafood-grits', 'sandwiches', 'salads', 'cocktails',
+      'seafood-grits', 'sandwiches', 'salads', 'cocktails', 'signature-cocktails',
       'brunch', 'brunch-drinks', 'brunch-sides'
     ];
     
