@@ -1387,24 +1387,79 @@ const LocationDetailPage = () => {
                         maxLength={280}
                         data-testid="post-textarea"
                       />
+                      
+                      {/* Photo Preview */}
                       {newPostImage && (
-                        <div className="relative mb-2 inline-block">
-                          <img src={newPostImage} alt="Preview" className="w-20 h-20 object-cover rounded" />
-                          <button onClick={() => setNewPostImage('')} className="absolute -top-2 -right-2 bg-red-600 rounded-full p-1">
+                        <div className="relative mb-3 inline-block">
+                          <img src={newPostImage} alt="Preview" className="max-w-full max-h-40 object-cover rounded-lg border border-slate-600" />
+                          <button 
+                            onClick={() => setNewPostImage('')} 
+                            className="absolute -top-2 -right-2 bg-red-600 rounded-full p-1 shadow-lg"
+                          >
                             <X className="w-3 h-3 text-white" />
                           </button>
                         </div>
                       )}
-                      <div className="flex items-center justify-between">
-                        <Input
-                          placeholder="Image URL (optional)"
-                          value={newPostImage}
-                          onChange={(e) => setNewPostImage(e.target.value)}
-                          className="bg-slate-900 border-slate-700 text-white w-48 text-sm"
-                        />
+
+                      {/* Camera Capture for Post */}
+                      {showPostCamera && (
+                        <div className="mb-3 rounded-lg overflow-hidden bg-black relative">
+                          <video 
+                            ref={postVideoRef}
+                            autoPlay 
+                            playsInline 
+                            muted
+                            className="w-full max-h-60 object-cover"
+                          />
+                          <canvas ref={postCanvasRef} className="hidden" />
+                          <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-2">
+                            <Button
+                              onClick={stopPostCamera}
+                              variant="outline"
+                              size="sm"
+                              className="bg-slate-900/80 border-slate-600 text-white"
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              onClick={capturePostPhoto}
+                              className="bg-red-600 hover:bg-red-700 text-white px-6"
+                              data-testid="capture-post-photo-btn"
+                            >
+                              <Camera className="w-4 h-4 mr-2" /> Capture
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+
+                      {uploadingPostPhoto && (
+                        <div className="mb-3 h-32 rounded-lg bg-slate-800 flex items-center justify-center">
+                          <div className="text-center">
+                            <div className="w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                            <span className="text-slate-400 text-sm">Uploading photo...</span>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="flex items-center justify-between gap-2">
+                        {/* Take Photo Button */}
+                        {!showPostCamera && !newPostImage && (
+                          <Button
+                            onClick={startPostCamera}
+                            variant="outline"
+                            size="sm"
+                            className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                            data-testid="take-photo-btn"
+                          >
+                            <Camera className="w-4 h-4 mr-2" />
+                            Take Photo
+                          </Button>
+                        )}
+                        {(showPostCamera || newPostImage) && <div />}
+                        
                         <Button 
                           onClick={handlePostMessage} 
-                          disabled={postingMessage || !newPostText.trim()}
+                          disabled={postingMessage || !newPostText.trim() || showPostCamera}
                           className="bg-red-600 hover:bg-red-700"
                           data-testid="post-submit-btn"
                         >
