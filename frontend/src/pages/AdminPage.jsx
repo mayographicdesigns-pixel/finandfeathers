@@ -3434,6 +3434,7 @@ const UsersTab = () => {
   const [staffTitle, setStaffTitle] = useState('');
   const [cashouts, setCashouts] = useState([]);
   const [showCashouts, setShowCashouts] = useState(false);
+  const [deletingUser, setDeletingUser] = useState(null);
 
   useEffect(() => {
     fetchUsers();
@@ -3457,6 +3458,28 @@ const UsersTab = () => {
       setCashouts(data);
     } catch (err) {
       console.error('Error fetching cashouts:', err);
+    }
+  };
+
+  const handleDeleteUser = async (user) => {
+    if (user.role === 'admin') {
+      toast({ title: 'Error', description: 'Cannot delete admin users', variant: 'destructive' });
+      return;
+    }
+    
+    if (!window.confirm(`Delete user "${user.name}"? This will remove all their posts, messages, and data. This cannot be undone.`)) {
+      return;
+    }
+    
+    setDeletingUser(user.id);
+    try {
+      await adminDeleteUser(user.id);
+      setUsers(users.filter(u => u.id !== user.id));
+      toast({ title: 'Success', description: `User ${user.name} deleted` });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setDeletingUser(null);
     }
   };
 
