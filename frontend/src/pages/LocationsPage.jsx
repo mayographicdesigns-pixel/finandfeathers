@@ -91,7 +91,7 @@ const LocationsPage = () => {
     try {
       // Generate slug from name
       const slug = newLocation.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-      await createLocation({
+      await adminCreateLocation({
         ...newLocation,
         slug
       });
