@@ -1478,7 +1478,16 @@ const LocationDetailPage = () => {
                 <Card key={post.id} className="bg-slate-800/50 border-slate-700" data-testid={`post-${post.id}`}>
                   <CardContent className="p-4">
                     <div className="flex gap-3">
-                      <span className="text-2xl">{post.author_emoji}</span>
+                      {/* Author avatar - selfie or emoji */}
+                      {post.author_selfie ? (
+                        <img 
+                          src={post.author_selfie} 
+                          alt={post.author_name}
+                          className="w-10 h-10 rounded-full object-cover border-2 border-slate-600 flex-shrink-0"
+                        />
+                      ) : (
+                        <span className="text-2xl flex-shrink-0">{post.author_emoji}</span>
+                      )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
                           <p className="text-white font-medium">{post.author_name}</p>
