@@ -418,6 +418,13 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - `GET /api/admin/gallery-submissions` - Admin: Get all user photo submissions
 - `DELETE /api/admin/gallery-submissions/{submission_id}` - Admin: Delete submission
 
+## User Authentication Endpoints (Feb 24, 2026)
+- `POST /api/auth/google/session` - Process Google OAuth session_id and create user session
+- `GET /api/auth/user/me` - Get current authenticated user info (from session cookie)
+- `POST /api/auth/user/logout` - Logout user and clear session
+- `POST /api/auth/user/register` - Register new user with email/password
+- `POST /api/auth/user/login` - Login user with email/password
+
 ## 3rd Party Integrations
 - **WooCommerce**: Live product feed AND all payment processing via finandfeathersrestaurants.com store
   - Merchandise products (8 items)
