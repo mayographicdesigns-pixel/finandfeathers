@@ -769,6 +769,11 @@ class Location(BaseModel):
     weekly_specials: List[WeeklySpecial] = []
     is_active: bool = True
     display_order: int = 0
+    # Feature toggles per location
+    tip_staff_enabled: bool = False
+    dj_tips_enabled: bool = False
+    social_wall_enabled: bool = True
+    check_in_enabled: bool = True
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
