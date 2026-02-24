@@ -4,7 +4,7 @@ import {
   User, Coins, Camera, History, Gift, Calendar, 
   Instagram, Twitter, Facebook, ArrowLeft, Edit2, 
   Save, X, Plus, Trash2, CreditCard, Sparkles, Music, Wine, Upload,
-  DollarSign, Send, Award, Briefcase, BadgeCheck, ArrowRightLeft, Loader2
+  DollarSign, Send, Award, Briefcase, BadgeCheck, ArrowRightLeft, Loader2, LogOut
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
