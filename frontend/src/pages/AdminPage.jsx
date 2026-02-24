@@ -94,7 +94,7 @@ const LoginForm = ({ onLogin }) => {
             )}
             
             <div>
-              <label className="text-slate-300 text-sm block mb-2">Username</label>
+              <label className="text-slate-300 text-sm block mb-2">Username or Email</label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                 <Input
@@ -102,7 +102,7 @@ const LoginForm = ({ onLogin }) => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="pl-10 bg-slate-800 border-slate-700 text-white"
-                  placeholder="Enter username"
+                  placeholder="Enter username or email"
                   required
                   data-testid="admin-username-input"
                 />
