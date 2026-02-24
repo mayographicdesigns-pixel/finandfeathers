@@ -231,15 +231,15 @@ const SignupForm = ({ onProfileCreated, authError }) => {
         {/* Logo */}
         <div className="text-center mb-8">
           <img 
-            src="https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/logo-1.png"
+            src="https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png"
             alt="Fin & Feathers"
-            className="h-20 mx-auto mb-4"
+            className="max-h-32 md:max-h-40 w-auto mx-auto mb-4 object-contain"
           />
           <h1 className="text-2xl font-bold text-white">
-            {authMode === 'login' ? 'Welcome Back!' : 'Join Fin & Feathers'}
+            {authMode === 'login' ? 'Welcome Back!' : authMode === 'forgot' ? 'Forgot Password?' : 'Join Fin & Feathers'}
           </h1>
           <p className="text-slate-400 mt-2">
-            {authMode === 'login' ? 'Sign in to your account' : 'Create your account to start earning rewards'}
+            {authMode === 'login' ? 'Sign in to your account' : authMode === 'forgot' ? 'We\'ll send you a reset link' : 'Create your account to start earning rewards'}
           </p>
         </div>
 
