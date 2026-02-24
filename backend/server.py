@@ -295,6 +295,389 @@ async def get_current_user(username: str = Depends(get_current_admin)):
     )
 
 
+# ==================== GOOGLE OAUTH ENDPOINTS ====================
+
+from fastapi.responses import JSONResponse
+
+@api_router.post("/auth/google/session")
+async def process_google_session(request: Request):
+    """
+    Process Google OAuth session_id and create user session.
+    Frontend calls this after receiving session_id from Emergent Auth.
+    """
+    try:
+        body = await request.json()
+        session_id = body.get("session_id")
+        
+        if not session_id:
+            raise HTTPException(status_code=400, detail="session_id is required")
+        
+        # Call Emergent Auth to get user data
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
+                headers={"X-Session-ID": session_id}
+            ) as response:
+                if response.status != 200:
+                    error_text = await response.text()
+                    logging.error(f"Emergent Auth error: {error_text}")
+                    raise HTTPException(status_code=401, detail="Invalid session")
+                
+                auth_data = await response.json()
+        
+        email = auth_data.get("email")
+        name = auth_data.get("name")
+        picture = auth_data.get("picture")
+        session_token = auth_data.get("session_token")
+        
+        if not email or not session_token:
+            raise HTTPException(status_code=400, detail="Invalid auth data received")
+        
+        # Check if user already exists by email in user_profiles
+        existing_profile = await db.user_profiles.find_one({"email": email}, {"_id": 0})
+        
+        if existing_profile:
+            user_id = existing_profile["id"]
+            # Update profile with latest Google info if needed
+            await db.user_profiles.update_one(
+                {"id": user_id},
+                {"$set": {
+                    "google_picture": picture,
+                    "updated_at": datetime.now(timezone.utc)
+                }}
+            )
+        else:
+            # Create new user profile
+            user_id = f"user_{uuid.uuid4().hex[:12]}"
+            new_profile = {
+                "id": user_id,
+                "name": name or email.split("@")[0],
+                "email": email,
+                "phone": None,
+                "avatar_emoji": "😊",
+                "google_picture": picture,
+                "profile_photo_url": picture,  # Use Google picture as default
+                "token_balance": 0,
+                "total_visits": 0,
+                "total_posts": 0,
+                "total_photos": 0,
+                "special_dates": [],
+                "allow_gallery_posts": True,
+                "birthdate": None,
+                "anniversary": None,
+                "role": "customer",
+                "staff_title": None,
+                "cashout_balance": 0.0,
+                "total_earnings": 0.0,
+                "instagram_handle": None,
+                "facebook_handle": None,
+                "twitter_handle": None,
+                "tiktok_handle": None,
+                "auth_provider": "google",
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            }
+            await db.user_profiles.insert_one(new_profile)
+        
+        # Store session in database
+        session_expires = datetime.now(timezone.utc) + timedelta(days=7)
+        await db.user_sessions.update_one(
+            {"user_id": user_id},
+            {
+                "$set": {
+                    "user_id": user_id,
+                    "session_token": session_token,
+                    "expires_at": session_expires,
+                    "created_at": datetime.now(timezone.utc)
+                }
+            },
+            upsert=True
+        )
+        
+        # Fetch the complete user profile
+        user_profile = await db.user_profiles.find_one({"id": user_id}, {"_id": 0})
+        
+        # Create response with httpOnly cookie
+        response = JSONResponse(content={
+            "success": True,
+            "user": user_profile
+        })
+        
+        # Set httpOnly cookie for session
+        response.set_cookie(
+            key="session_token",
+            value=session_token,
+            httponly=True,
+            secure=True,
+            samesite="none",
+            path="/",
+            max_age=7 * 24 * 60 * 60  # 7 days
+        )
+        
+        return response
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Google session processing error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to process authentication")
+
+
+@api_router.get("/auth/user/me")
+async def get_current_google_user(request: Request):
+    """
+    Get current authenticated user info from session cookie or Authorization header.
+    This is for regular users (not admin).
+    """
+    # Try to get session token from cookie first
+    session_token = request.cookies.get("session_token")
+    
+    # Fallback to Authorization header
+    if not session_token:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            session_token = auth_header.split(" ")[1]
+    
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    # Look up session in database
+    session_doc = await db.user_sessions.find_one(
+        {"session_token": session_token},
+        {"_id": 0}
+    )
+    
+    if not session_doc:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    # Check expiry
+    expires_at = session_doc.get("expires_at")
+    if isinstance(expires_at, str):
+        expires_at = datetime.fromisoformat(expires_at)
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+    if expires_at < datetime.now(timezone.utc):
+        raise HTTPException(status_code=401, detail="Session expired")
+    
+    # Get user profile
+    user_id = session_doc.get("user_id")
+    user_profile = await db.user_profiles.find_one({"id": user_id}, {"_id": 0})
+    
+    if not user_profile:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Add default values for missing fields
+    user_profile.setdefault("role", "customer")
+    user_profile.setdefault("staff_title", None)
+    user_profile.setdefault("cashout_balance", 0.0)
+    user_profile.setdefault("total_earnings", 0.0)
+    user_profile.setdefault("profile_photo_url", None)
+    user_profile.setdefault("special_dates", [])
+    user_profile.setdefault("token_balance", 0)
+    user_profile.setdefault("total_visits", 0)
+    user_profile.setdefault("total_posts", 0)
+    user_profile.setdefault("total_photos", 0)
+    user_profile.setdefault("allow_gallery_posts", True)
+    
+    return user_profile
+
+
+@api_router.post("/auth/user/logout")
+async def logout_user(request: Request):
+    """Logout user and clear session"""
+    session_token = request.cookies.get("session_token")
+    
+    if not session_token:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            session_token = auth_header.split(" ")[1]
+    
+    if session_token:
+        # Delete session from database
+        await db.user_sessions.delete_one({"session_token": session_token})
+    
+    # Create response and clear cookie
+    response = JSONResponse(content={"success": True, "message": "Logged out"})
+    response.delete_cookie(key="session_token", path="/")
+    
+    return response
+
+
+# ==================== PASSWORD-BASED LOGIN ====================
+
+@api_router.post("/auth/user/register")
+async def register_user_with_password(request: Request):
+    """
+    Register a new user with email and password.
+    """
+    try:
+        body = await request.json()
+        email = body.get("email", "").strip().lower()
+        password = body.get("password", "")
+        name = body.get("name", "").strip()
+        
+        if not email or not password:
+            raise HTTPException(status_code=400, detail="Email and password are required")
+        
+        if len(password) < 6:
+            raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+        
+        # Check if email already exists
+        existing = await db.user_profiles.find_one({"email": email}, {"_id": 0})
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        # Hash the password
+        password_hash = get_password_hash(password)
+        
+        # Create new user profile
+        user_id = f"user_{uuid.uuid4().hex[:12]}"
+        new_profile = {
+            "id": user_id,
+            "name": name or email.split("@")[0],
+            "email": email,
+            "password_hash": password_hash,
+            "phone": None,
+            "avatar_emoji": "😊",
+            "google_picture": None,
+            "profile_photo_url": None,
+            "token_balance": 0,
+            "total_visits": 0,
+            "total_posts": 0,
+            "total_photos": 0,
+            "special_dates": [],
+            "allow_gallery_posts": True,
+            "birthdate": None,
+            "anniversary": None,
+            "role": "customer",
+            "staff_title": None,
+            "cashout_balance": 0.0,
+            "total_earnings": 0.0,
+            "instagram_handle": None,
+            "facebook_handle": None,
+            "twitter_handle": None,
+            "tiktok_handle": None,
+            "auth_provider": "email",
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc)
+        }
+        await db.user_profiles.insert_one(new_profile)
+        
+        # Create session
+        session_token = str(uuid.uuid4())
+        session_expires = datetime.now(timezone.utc) + timedelta(days=7)
+        await db.user_sessions.insert_one({
+            "user_id": user_id,
+            "session_token": session_token,
+            "expires_at": session_expires,
+            "created_at": datetime.now(timezone.utc)
+        })
+        
+        # Return user without password_hash
+        user_response = {k: v for k, v in new_profile.items() if k != "password_hash"}
+        user_response.pop("_id", None)
+        
+        response = JSONResponse(content={
+            "success": True,
+            "user": user_response
+        })
+        
+        response.set_cookie(
+            key="session_token",
+            value=session_token,
+            httponly=True,
+            secure=True,
+            samesite="none",
+            path="/",
+            max_age=7 * 24 * 60 * 60
+        )
+        
+        return response
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Registration error: {e}")
+        raise HTTPException(status_code=500, detail="Registration failed")
+
+
+@api_router.post("/auth/user/login")
+async def login_user_with_password(request: Request):
+    """
+    Login user with email and password.
+    """
+    try:
+        body = await request.json()
+        email = body.get("email", "").strip().lower()
+        password = body.get("password", "")
+        
+        if not email or not password:
+            raise HTTPException(status_code=400, detail="Email and password are required")
+        
+        # Find user by email
+        user_profile = await db.user_profiles.find_one({"email": email})
+        
+        if not user_profile:
+            raise HTTPException(status_code=401, detail="Invalid email or password")
+        
+        # Check if user has password (might be Google-only user)
+        password_hash = user_profile.get("password_hash")
+        if not password_hash:
+            raise HTTPException(status_code=400, detail="This account uses Google login. Please sign in with Google.")
+        
+        # Verify password
+        if not verify_password(password, password_hash):
+            raise HTTPException(status_code=401, detail="Invalid email or password")
+        
+        user_id = user_profile["id"]
+        
+        # Create or update session
+        session_token = str(uuid.uuid4())
+        session_expires = datetime.now(timezone.utc) + timedelta(days=7)
+        
+        await db.user_sessions.update_one(
+            {"user_id": user_id},
+            {
+                "$set": {
+                    "session_token": session_token,
+                    "expires_at": session_expires,
+                    "created_at": datetime.now(timezone.utc)
+                }
+            },
+            upsert=True
+        )
+        
+        # Return user without password_hash and _id
+        user_response = {k: v for k, v in user_profile.items() if k not in ["password_hash", "_id"]}
+        
+        # Add default values
+        user_response.setdefault("role", "customer")
+        user_response.setdefault("token_balance", 0)
+        
+        response = JSONResponse(content={
+            "success": True,
+            "user": user_response
+        })
+        
+        response.set_cookie(
+            key="session_token",
+            value=session_token,
+            httponly=True,
+            secure=True,
+            samesite="none",
+            path="/",
+            max_age=7 * 24 * 60 * 60
+        )
+        
+        return response
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Login error: {e}")
+        raise HTTPException(status_code=500, detail="Login failed")
+
+
 # ==================== ADMIN ENDPOINTS ====================
 
 # Loyalty Members (Admin)
