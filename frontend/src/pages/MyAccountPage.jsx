@@ -977,11 +977,14 @@ const MyAccountPage = () => {
   }
 
   if (!profile) {
-    return <SignupForm onProfileCreated={(newProfile) => {
-      setProfile(newProfile);
-      setEditedProfile(newProfile);
-      loadAdditionalData(newProfile.id, newProfile.role);
-    }} />;
+    return <SignupForm 
+      onProfileCreated={(newProfile) => {
+        setProfile(newProfile);
+        setEditedProfile(newProfile);
+        loadAdditionalData(newProfile.id, newProfile.role);
+      }}
+      authError={authError}
+    />;
   }
 
   return (
