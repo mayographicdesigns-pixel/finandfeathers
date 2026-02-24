@@ -485,6 +485,7 @@ const SignupForm = ({ onProfileCreated, authError }) => {
 
 const MyAccountPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -492,6 +493,13 @@ const MyAccountPage = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const profilePhotoInputRef = useRef(null);
   const [searchParams] = useSearchParams();
+  
+  // Auth error from OAuth callback
+  const authError = location.state?.authError;
+  
+  // Check if user was just logged in via OAuth
+  const justLoggedIn = location.state?.justLoggedIn;
+  const oauthUser = location.state?.user;
   
   // Token state
   const [tokenPackages, setTokenPackages] = useState({});
