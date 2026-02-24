@@ -67,7 +67,7 @@ const RoleBadge = ({ role, staffTitle }) => {
 // Signup Form Component - allows creating account with Google or email/password
 const SignupForm = ({ onProfileCreated, authError }) => {
   const navigate = useNavigate();
-  const [authMode, setAuthMode] = useState('options'); // 'options', 'signup', 'login'
+  const [authMode, setAuthMode] = useState('options'); // 'options', 'signup', 'login', 'forgot'
   const [formData, setFormData] = useState({
     name: '',
     username: '',
@@ -76,6 +76,10 @@ const SignupForm = ({ onProfileCreated, authError }) => {
     confirmPassword: '',
     phone: '',
     avatar_emoji: '😊'
+  });
+  const [forgotIdentifier, setForgotIdentifier] = useState('');
+  const [forgotSent, setForgotSent] = useState(false);
+  const [debugResetUrl, setDebugResetUrl] = useState('');
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
