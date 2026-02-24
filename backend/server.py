@@ -524,13 +524,25 @@ async def logout_user(request: Request):
 @api_router.post("/auth/user/register")
 async def register_user_with_password(request: Request):
     """
-    Register a new user with email and password.
+    Register a new user with username, email and password.
     """
     try:
         body = await request.json()
         email = body.get("email", "").strip().lower()
         password = body.get("password", "")
         name = body.get("name", "").strip()
+        username = body.get("username", "").strip().lower()
+        
+        if not username:
+            raise HTTPException(status_code=400, detail="Username is required")
+        
+        if len(username) < 3:
+            raise HTTPException(status_code=400, detail="Username must be at least 3 characters")
+        
+        # Validate username format (alphanumeric and underscores only)
+        import re
+        if not re.match(r'^[a-z0-9_]+$', username):
+            raise HTTPException(status_code=400, detail="Username can only contain letters, numbers, and underscores")
         
         if not email or not password:
             raise HTTPException(status_code=400, detail="Email and password are required")
@@ -538,9 +550,14 @@ async def register_user_with_password(request: Request):
         if len(password) < 6:
             raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
         
+        # Check if username already exists
+        existing_username = await db.user_profiles.find_one({"username": username}, {"_id": 0})
+        if existing_username:
+            raise HTTPException(status_code=400, detail="Username already taken")
+        
         # Check if email already exists
-        existing = await db.user_profiles.find_one({"email": email}, {"_id": 0})
-        if existing:
+        existing_email = await db.user_profiles.find_one({"email": email}, {"_id": 0})
+        if existing_email:
             raise HTTPException(status_code=400, detail="Email already registered")
         
         # Hash the password
@@ -550,7 +567,8 @@ async def register_user_with_password(request: Request):
         user_id = f"user_{uuid.uuid4().hex[:12]}"
         new_profile = {
             "id": user_id,
-            "name": name or email.split("@")[0],
+            "username": username,
+            "name": name or username,
             "email": email,
             "password_hash": password_hash,
             "phone": None,
