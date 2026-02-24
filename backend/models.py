@@ -792,6 +792,11 @@ class LocationCreate(BaseModel):
     social_media: LocationSocialMedia = LocationSocialMedia()
     weekly_specials: List[WeeklySpecial] = []
     display_order: int = 0
+    # Feature toggles
+    tip_staff_enabled: bool = False
+    dj_tips_enabled: bool = False
+    social_wall_enabled: bool = True
+    check_in_enabled: bool = True
 
 class LocationUpdate(BaseModel):
     slug: Optional[str] = None
