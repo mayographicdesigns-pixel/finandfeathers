@@ -1265,15 +1265,18 @@ const LocationDetailPage = () => {
 
         {/* Tab Navigation */}
         <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
-          <Button
-            onClick={() => setActiveTab('wall')}
-            variant={activeTab === 'wall' ? 'default' : 'outline'}
-            className={activeTab === 'wall' ? 'bg-red-600' : 'border-slate-600 text-slate-300'}
-            data-testid="tab-wall"
-          >
-            <MessageCircle className="w-4 h-4 mr-2" />
-            Wall
-          </Button>
+          {/* Social Wall Tab - Always shown if enabled */}
+          {(location?.social_wall_enabled !== false) && (
+            <Button
+              onClick={() => setActiveTab('wall')}
+              variant={activeTab === 'wall' ? 'default' : 'outline'}
+              className={activeTab === 'wall' ? 'bg-red-600' : 'border-slate-600 text-slate-300'}
+              data-testid="tab-wall"
+            >
+              <MessageCircle className="w-4 h-4 mr-2" />
+              Wall
+            </Button>
+          )}
           <Button
             onClick={() => { setActiveTab('dm'); if (myCheckIn) loadConversations(myCheckIn.id); }}
             variant={activeTab === 'dm' ? 'default' : 'outline'}
@@ -1297,15 +1300,30 @@ const LocationDetailPage = () => {
             <Wine className="w-4 h-4 mr-2" />
             Drinks
           </Button>
-          <Button
-            onClick={() => setActiveTab('dj')}
-            variant={activeTab === 'dj' ? 'default' : 'outline'}
-            className={activeTab === 'dj' ? 'bg-purple-600' : 'border-slate-600 text-slate-300'}
-            data-testid="tab-dj"
-          >
-            <Music className="w-4 h-4 mr-2" />
-            Tip DJ
-          </Button>
+          {/* DJ Tips Tab - Only shown if enabled for this location */}
+          {location?.dj_tips_enabled && (
+            <Button
+              onClick={() => setActiveTab('dj')}
+              variant={activeTab === 'dj' ? 'default' : 'outline'}
+              className={activeTab === 'dj' ? 'bg-purple-600' : 'border-slate-600 text-slate-300'}
+              data-testid="tab-dj"
+            >
+              <Music className="w-4 h-4 mr-2" />
+              Tip DJ
+            </Button>
+          )}
+          {/* Tip Staff Tab - Only shown if enabled for this location */}
+          {location?.tip_staff_enabled && (
+            <Button
+              onClick={() => setActiveTab('tipstaff')}
+              variant={activeTab === 'tipstaff' ? 'default' : 'outline'}
+              className={activeTab === 'tipstaff' ? 'bg-amber-600' : 'border-slate-600 text-slate-300'}
+              data-testid="tab-tipstaff"
+            >
+              <DollarSign className="w-4 h-4 mr-2" />
+              Tip Staff
+            </Button>
+          )}
           <Button
             onClick={() => setActiveTab('info')}
             variant={activeTab === 'info' ? 'default' : 'outline'}
