@@ -508,6 +508,112 @@ const SignupForm = ({ onProfileCreated, authError }) => {
                 </p>
               </form>
             )}
+
+            {/* Forgot Password Form */}
+            {authMode === 'forgot' && (
+              <div className="space-y-4">
+                {!forgotSent ? (
+                  <>
+                    <div className="text-center mb-4">
+                      <h2 className="text-lg font-semibold text-white">Forgot Password?</h2>
+                      <p className="text-slate-400 text-sm mt-1">
+                        Enter your username or email and we'll send you a reset link
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-2">
+                        Username or Email
+                      </label>
+                      <Input
+                        type="text"
+                        placeholder="Enter your username or email"
+                        value={forgotIdentifier}
+                        onChange={(e) => setForgotIdentifier(e.target.value)}
+                        className="bg-slate-800 border-slate-700 text-white"
+                        data-testid="forgot-identifier-input"
+                      />
+                    </div>
+
+                    <Button
+                      type="button"
+                      disabled={isSubmitting || !forgotIdentifier.trim()}
+                      onClick={async () => {
+                        setIsSubmitting(true);
+                        try {
+                          const result = await requestPasswordReset(forgotIdentifier);
+                          setForgotSent(true);
+                          // For testing, show the reset link
+                          if (result._debug_reset_url) {
+                            setDebugResetUrl(result._debug_reset_url);
+                          }
+                          toast({ title: 'Success', description: result.message });
+                        } catch (error) {
+                          toast({ title: 'Error', description: error.message, variant: 'destructive' });
+                        } finally {
+                          setIsSubmitting(false);
+                        }
+                      }}
+                      className="w-full bg-red-600 hover:bg-red-700 text-white h-12"
+                      data-testid="send-reset-link-btn"
+                    >
+                      {isSubmitting ? 'Sending...' : 'Send Reset Link'}
+                    </Button>
+                  </>
+                ) : (
+                  <div className="text-center py-4">
+                    <div className="w-16 h-16 bg-green-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <h2 className="text-lg font-semibold text-white mb-2">Check Your Email</h2>
+                    <p className="text-slate-400 text-sm">
+                      If an account exists with that username or email, we've sent a password reset link.
+                    </p>
+                    
+                    {/* Debug: Show reset link for testing */}
+                    {debugResetUrl && (
+                      <div className="mt-4 p-3 bg-amber-900/30 border border-amber-600/30 rounded-lg">
+                        <p className="text-amber-400 text-xs mb-2">Debug: Reset Link (remove in production)</p>
+                        <button
+                          onClick={() => navigate(debugResetUrl)}
+                          className="text-amber-300 text-sm underline hover:text-amber-200"
+                          data-testid="debug-reset-link"
+                        >
+                          Click here to reset password
+                        </button>
+                      </div>
+                    )}
+
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        setForgotSent(false);
+                        setForgotIdentifier('');
+                        setDebugResetUrl('');
+                        setAuthMode('login');
+                      }}
+                      className="mt-6 bg-slate-700 hover:bg-slate-600 text-white"
+                    >
+                      Back to Login
+                    </Button>
+                  </div>
+                )}
+
+                {!forgotSent && (
+                  <p className="text-center mt-4">
+                    <button 
+                      type="button"
+                      onClick={() => setAuthMode('login')}
+                      className="text-slate-500 hover:text-slate-400 text-sm"
+                    >
+                      ← Back to Login
+                    </button>
+                  </p>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
 
