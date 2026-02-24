@@ -1755,6 +1755,38 @@ const LocationsTab = () => {
     }
   };
 
+  const handleLocationImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ title: 'Error', description: 'Please upload a valid image (JPG, PNG, GIF, or WebP)', variant: 'destructive' });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: 'Error', description: 'Image must be less than 5MB', variant: 'destructive' });
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const result = await uploadImage(file);
+      const backendUrl = process.env.REACT_APP_BACKEND_URL;
+      const fullUrl = `${backendUrl}${result.url}`;
+      setFormData({ ...formData, image: fullUrl });
+      toast({ title: 'Success', description: 'Image uploaded successfully' });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setUploading(false);
+      if (locationFileInputRef.current) {
+        locationFileInputRef.current.value = '';
+      }
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
