@@ -739,6 +739,185 @@ async def login_user_with_password(request: Request):
         raise HTTPException(status_code=500, detail="Login failed")
 
 
+# ==================== FORGOT PASSWORD ====================
+
+@api_router.post("/auth/user/forgot-password")
+async def forgot_password(request: Request):
+    """
+    Request a password reset. Generates a reset token.
+    In production, this would send an email. For now, returns the token for testing.
+    """
+    try:
+        body = await request.json()
+        identifier = body.get("identifier", "").strip().lower()
+        
+        if not identifier:
+            raise HTTPException(status_code=400, detail="Email or username is required")
+        
+        # Find user by email or username
+        if "@" in identifier:
+            user = await db.user_profiles.find_one({"email": identifier}, {"_id": 0})
+        else:
+            user = await db.user_profiles.find_one({"username": identifier}, {"_id": 0})
+            if not user:
+                user = await db.user_profiles.find_one({"email": identifier}, {"_id": 0})
+        
+        if not user:
+            # Don't reveal if user exists - return success anyway
+            return {"success": True, "message": "If an account exists, a reset link has been sent"}
+        
+        # Check if user has password (Google-only users can't reset)
+        if not user.get("password_hash"):
+            return {"success": True, "message": "If an account exists, a reset link has been sent"}
+        
+        # Generate reset token
+        reset_token = str(uuid.uuid4())
+        reset_expires = datetime.now(timezone.utc) + timedelta(hours=1)
+        
+        # Store reset token
+        await db.password_resets.update_one(
+            {"user_id": user["id"]},
+            {
+                "$set": {
+                    "user_id": user["id"],
+                    "token": reset_token,
+                    "expires_at": reset_expires,
+                    "created_at": datetime.now(timezone.utc),
+                    "used": False
+                }
+            },
+            upsert=True
+        )
+        
+        # In production, send email here
+        # For now, return the reset link for testing
+        reset_url = f"/reset-password?token={reset_token}"
+        
+        return {
+            "success": True,
+            "message": "If an account exists, a reset link has been sent",
+            # Remove this in production - only for testing
+            "_debug_reset_url": reset_url,
+            "_debug_token": reset_token
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Forgot password error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to process request")
+
+
+@api_router.post("/auth/user/reset-password")
+async def reset_password(request: Request):
+    """
+    Reset password using a valid reset token.
+    """
+    try:
+        body = await request.json()
+        token = body.get("token", "").strip()
+        new_password = body.get("password", "")
+        
+        if not token:
+            raise HTTPException(status_code=400, detail="Reset token is required")
+        
+        if not new_password or len(new_password) < 6:
+            raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+        
+        # Find reset token
+        reset_doc = await db.password_resets.find_one({"token": token}, {"_id": 0})
+        
+        if not reset_doc:
+            raise HTTPException(status_code=400, detail="Invalid or expired reset link")
+        
+        # Check if token is expired
+        expires_at = reset_doc.get("expires_at")
+        if isinstance(expires_at, str):
+            expires_at = datetime.fromisoformat(expires_at)
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        
+        if expires_at < datetime.now(timezone.utc):
+            raise HTTPException(status_code=400, detail="Reset link has expired. Please request a new one.")
+        
+        # Check if already used
+        if reset_doc.get("used"):
+            raise HTTPException(status_code=400, detail="This reset link has already been used")
+        
+        # Get user
+        user_id = reset_doc.get("user_id")
+        user = await db.user_profiles.find_one({"id": user_id}, {"_id": 0})
+        
+        if not user:
+            raise HTTPException(status_code=400, detail="User not found")
+        
+        # Hash new password
+        new_password_hash = get_password_hash(new_password)
+        
+        # Update password
+        await db.user_profiles.update_one(
+            {"id": user_id},
+            {"$set": {
+                "password_hash": new_password_hash,
+                "updated_at": datetime.now(timezone.utc)
+            }}
+        )
+        
+        # Mark token as used
+        await db.password_resets.update_one(
+            {"token": token},
+            {"$set": {"used": True}}
+        )
+        
+        # Clear any existing sessions for security
+        await db.user_sessions.delete_many({"user_id": user_id})
+        
+        return {
+            "success": True,
+            "message": "Password has been reset successfully. Please log in with your new password."
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Reset password error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to reset password")
+
+
+@api_router.get("/auth/user/verify-reset-token")
+async def verify_reset_token(token: str):
+    """
+    Verify if a reset token is valid (not expired, not used).
+    """
+    try:
+        if not token:
+            return {"valid": False, "message": "Token is required"}
+        
+        reset_doc = await db.password_resets.find_one({"token": token}, {"_id": 0})
+        
+        if not reset_doc:
+            return {"valid": False, "message": "Invalid reset link"}
+        
+        # Check expiry
+        expires_at = reset_doc.get("expires_at")
+        if isinstance(expires_at, str):
+            expires_at = datetime.fromisoformat(expires_at)
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        
+        if expires_at < datetime.now(timezone.utc):
+            return {"valid": False, "message": "Reset link has expired"}
+        
+        if reset_doc.get("used"):
+            return {"valid": False, "message": "Reset link has already been used"}
+        
+        return {"valid": True, "message": "Token is valid"}
+        
+    except Exception as e:
+        logging.error(f"Verify token error: {e}")
+        return {"valid": False, "message": "Error verifying token"}
+
+
 # ==================== ADMIN ENDPOINTS ====================
 
 # Loyalty Members (Admin)
