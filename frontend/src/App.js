@@ -13,6 +13,7 @@ import EventsPage from "./pages/EventsPage";
 import AuthCallback from "./components/AuthCallback";
 import { Toaster } from "./components/ui/toaster";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
+import UpdatePrompt from "./components/UpdatePrompt";
 
 // Router component that handles OAuth callback detection
 function AppRouter() {
@@ -48,6 +49,7 @@ function App() {
       </BrowserRouter>
       <Toaster />
       <PWAInstallPrompt />
+      <UpdatePrompt autoUpdate={false} />
     </div>
   );
 }
