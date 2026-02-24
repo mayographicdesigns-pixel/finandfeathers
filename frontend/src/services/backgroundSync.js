@@ -5,6 +5,8 @@
  * Uses IndexedDB for persistent storage.
  */
 
+import React from 'react';
+
 const DB_NAME = 'fin-feathers-offline';
 const DB_VERSION = 1;
 const STORE_NAME = 'pending-posts';
