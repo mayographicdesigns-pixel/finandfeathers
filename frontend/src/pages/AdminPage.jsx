@@ -1979,14 +1979,37 @@ const LocationsTab = () => {
               </div>
 
               <div>
-                <label className="text-sm text-slate-300 block mb-1">Image URL *</label>
-                <Input
-                  value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  placeholder="https://..."
-                  required
-                  className="bg-slate-900 border-slate-700 text-white"
-                />
+                <label className="text-sm text-slate-300 block mb-1">Location Image *</label>
+                <div className="flex gap-2">
+                  <Input
+                    value={formData.image}
+                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                    placeholder="Image URL or upload"
+                    required
+                    className="bg-slate-900 border-slate-700 text-white flex-1"
+                  />
+                  <input
+                    type="file"
+                    ref={locationFileInputRef}
+                    onChange={handleLocationImageUpload}
+                    accept="image/jpeg,image/png,image/gif,image/webp"
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => locationFileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                  >
+                    {uploading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                  </Button>
+                </div>
+                {formData.image && (
+                  <div className="mt-2">
+                    <img src={formData.image} alt="Preview" className="w-32 h-20 object-cover rounded border border-slate-600" />
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
