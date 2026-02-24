@@ -35,7 +35,12 @@ import {
   checkTokenCheckoutStatus,
   createStripeTokenCheckout,
   getStripeCheckoutStatus,
-  pollStripePaymentStatus
+  pollStripePaymentStatus,
+  initiateGoogleLogin,
+  registerUserWithPassword,
+  loginUserWithPassword,
+  checkUserAuth,
+  userLogout
 } from '../services/api';
 
 // Role badge component
