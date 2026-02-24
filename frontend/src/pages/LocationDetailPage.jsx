@@ -1451,7 +1451,7 @@ const LocationDetailPage = () => {
           <img 
             src="https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png" 
             alt="Fin & Feathers"
-            className="max-h-24 w-auto mx-auto mb-3 cursor-pointer"
+            className="max-h-32 md:max-h-40 w-auto mx-auto mb-3 object-contain cursor-pointer"
             onClick={() => navigate('/')}
           />
           <h1 className="text-2xl font-bold text-white">{location.name}</h1>
