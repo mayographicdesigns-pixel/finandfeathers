@@ -376,6 +376,13 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - Location detail pages dynamically show/hide tabs based on enabled features
   - All 8 locations displayed as cards in admin panel
   - Settings persist in MongoDB
+- **COMPLETED**: Enhanced PWA Features v2.1.0 (Feb 24, 2026)
+  - Version changelog popup showing what's new in each release
+  - Critical update force-refresh (auto-refresh for security updates)
+  - Background sync for offline posts (queues posts when offline, syncs when back online)
+  - Offline indicator banner showing network status
+  - Offline fallback page with retry functionality
+  - IndexedDB storage for pending posts
 
 ## Prioritized Backlog
 
