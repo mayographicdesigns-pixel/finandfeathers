@@ -837,6 +837,11 @@ class LocationResponse(BaseModel):
     weekly_specials: List[WeeklySpecial]
     is_active: bool
     display_order: int
+    # Feature toggles
+    tip_staff_enabled: bool = False
+    dj_tips_enabled: bool = False
+    social_wall_enabled: bool = True
+    check_in_enabled: bool = True
     created_at: datetime
     updated_at: datetime
 
