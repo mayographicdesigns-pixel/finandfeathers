@@ -367,6 +367,15 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - Logout functionality
   - Auth provider tracking (google vs email)
   - All auth endpoints tested and verified working
+- **COMPLETED**: Admin Location Feature Toggles (Feb 24, 2026)
+  - Admin can enable/disable features per location via toggle buttons:
+    - Check-In (green toggle)
+    - Social Wall (green toggle)
+    - Tip Staff (amber toggle)
+    - DJ Tips (purple toggle)
+  - Location detail pages dynamically show/hide tabs based on enabled features
+  - All 8 locations displayed as cards in admin panel
+  - Settings persist in MongoDB
 
 ## Prioritized Backlog
 
