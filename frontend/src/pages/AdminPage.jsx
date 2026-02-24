@@ -1714,6 +1714,8 @@ const LocationsTab = () => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingLocation, setEditingLocation] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const locationFileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     slug: '',
     name: '',
