@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { 
   User, Coins, Camera, History, Gift, Calendar, 
   Instagram, Twitter, Facebook, ArrowLeft, Edit2, 
