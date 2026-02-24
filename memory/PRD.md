@@ -387,8 +387,12 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 
 ### P2 (Medium Priority)
 - [x] Geolocation for sorting locations by proximity (implemented)
+- [x] Social Login (Google OAuth) via Emergent Auth (Feb 24, 2026)
+- [x] Password-Based Login system (Feb 24, 2026)
 - [ ] Location-specific weekly specials management (per-location from admin)
 - [ ] PWA icon optimization
+- [ ] Refactor AdminPage.jsx into smaller components (4000+ lines currently)
+- [ ] Apple Sign-In integration (optional)
 
 ### P3 (Low Priority)
 - [ ] Email notifications for new loyalty signups
