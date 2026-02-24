@@ -45,6 +45,7 @@ function AppRouter() {
 function App() {
   return (
     <div className="App">
+      <OfflineIndicator />
       <BrowserRouter>
         <AppRouter />
       </BrowserRouter>
