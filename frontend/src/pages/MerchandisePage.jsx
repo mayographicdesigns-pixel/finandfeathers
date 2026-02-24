@@ -223,9 +223,10 @@ const MerchandisePage = () => {
       {/* Logo */}
       <div className="flex flex-col items-center pt-8 pb-4">
         <img 
-          src="https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/cropped-fin-and-feathers-logo-2022-1.png"
+          src="https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png"
           alt="Fin & Feathers"
-          className="h-24 w-auto mb-4"
+          className="max-h-32 md:max-h-40 w-auto mb-4 object-contain cursor-pointer"
+          onClick={() => navigate('/')}
         />
         <h1 className="text-3xl font-bold text-white mb-2">
           <ShoppingBag className="inline w-8 h-8 mr-2 text-red-500" />
