@@ -10,6 +10,7 @@ import GalleryPage from "./pages/GalleryPage";
 import MyAccountPage from "./pages/MyAccountPage";
 import MerchandisePage from "./pages/MerchandisePage";
 import EventsPage from "./pages/EventsPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import AuthCallback from "./components/AuthCallback";
 import { Toaster } from "./components/ui/toaster";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
