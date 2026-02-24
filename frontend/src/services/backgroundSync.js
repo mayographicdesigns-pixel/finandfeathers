@@ -334,6 +334,3 @@ export const useBackgroundSync = () => {
     getPendingPosts: () => backgroundSync.getPendingPosts()
   };
 };
-
-// Import React for the hook
-import React from 'react';
