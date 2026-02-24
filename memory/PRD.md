@@ -359,6 +359,14 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - **COMPLETED**: Selfie Display in Social Wall (Feb 23, 2026)
   - Posts now show author's selfie as avatar if available
   - Fallback to emoji for users without selfies
+- **COMPLETED**: Social Login (Google OAuth) & Password-Based Auth (Feb 24, 2026)
+  - Google OAuth via Emergent Auth integration
+  - Email/Password registration with bcrypt hashing
+  - Email/Password login with session cookies
+  - Session-based authentication with httpOnly cookies
+  - Logout functionality
+  - Auth provider tracking (google vs email)
+  - All auth endpoints tested and verified working
 
 ## Prioritized Backlog
 
