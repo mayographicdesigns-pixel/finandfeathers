@@ -271,7 +271,31 @@ async def submit_contact_form(form: ContactFormCreate):
 
 @api_router.post("/auth/login", response_model=Token)
 async def login(credentials: UserLogin):
-    """Admin login endpoint"""
+    """Admin login endpoint - supports both legacy username and email login"""
+    
+    # First check if there are any admin users in the database
+    admin_user = None
+    
+    # Try to find admin by email or username
+    if "@" in credentials.username:
+        # Looks like an email
+        admin_user = await db.admin_users.find_one({"email": credentials.username.lower()})
+    else:
+        # Try username
+        admin_user = await db.admin_users.find_one({"username": credentials.username.lower()})
+    
+    if admin_user:
+        # Database admin user found
+        if not verify_password(credentials.password, admin_user.get("password_hash", "")):
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+        if not admin_user.get("is_active", True):
+            raise HTTPException(status_code=401, detail="Account is disabled")
+        
+        access_token = create_access_token(data={"sub": admin_user["username"], "admin_id": admin_user["id"]})
+        return Token(access_token=access_token, token_type="bearer")
+    
+    # Fallback to legacy hardcoded admin
     if credentials.username != ADMIN_USERNAME:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
@@ -285,6 +309,20 @@ async def login(credentials: UserLogin):
 @api_router.get("/auth/me", response_model=UserResponse)
 async def get_current_user(username: str = Depends(get_current_admin)):
     """Get current authenticated admin info"""
+    # Try to get from database first
+    admin_user = await db.admin_users.find_one({"username": username}, {"_id": 0})
+    
+    if admin_user:
+        return UserResponse(
+            id=admin_user["id"],
+            username=admin_user["username"],
+            email=admin_user.get("email", ""),
+            is_admin=True,
+            is_active=admin_user.get("is_active", True),
+            created_at=admin_user.get("created_at", datetime.now(timezone.utc))
+        )
+    
+    # Fallback for legacy admin
     return UserResponse(
         id="admin-001",
         username=username,
@@ -293,6 +331,244 @@ async def get_current_user(username: str = Depends(get_current_admin)):
         is_active=True,
         created_at=datetime.now(timezone.utc)
     )
+
+
+# ==================== ADMIN USER MANAGEMENT ====================
+
+@api_router.get("/admin/users/admins")
+async def get_admin_users(username: str = Depends(get_current_admin)):
+    """Get all admin users"""
+    admins = await db.admin_users.find({}, {"_id": 0, "password_hash": 0}).to_list(100)
+    
+    # Add the legacy admin if no database admins exist
+    if not admins:
+        admins = [{
+            "id": "admin-001",
+            "username": "admin",
+            "email": "admin@finandfeathers.com",
+            "is_active": True,
+            "is_super_admin": True,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }]
+    
+    # Convert datetime to string for JSON serialization
+    for admin in admins:
+        if isinstance(admin.get("created_at"), datetime):
+            admin["created_at"] = admin["created_at"].isoformat()
+    
+    return admins
+
+
+@api_router.post("/admin/users/admins")
+async def create_admin_user(request: Request, username: str = Depends(get_current_admin)):
+    """Create a new admin user"""
+    try:
+        body = await request.json()
+        new_username = body.get("username", "").strip().lower()
+        email = body.get("email", "").strip().lower()
+        password = body.get("password", "")
+        is_super_admin = body.get("is_super_admin", False)
+        
+        if not new_username or not email or not password:
+            raise HTTPException(status_code=400, detail="Username, email, and password are required")
+        
+        if len(new_username) < 3:
+            raise HTTPException(status_code=400, detail="Username must be at least 3 characters")
+        
+        if len(password) < 6:
+            raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+        
+        # Check if username exists
+        existing = await db.admin_users.find_one({"username": new_username})
+        if existing:
+            raise HTTPException(status_code=400, detail="Username already exists")
+        
+        # Check if email exists
+        existing_email = await db.admin_users.find_one({"email": email})
+        if existing_email:
+            raise HTTPException(status_code=400, detail="Email already in use")
+        
+        # Create admin user
+        admin_id = f"admin_{uuid.uuid4().hex[:12]}"
+        password_hash = get_password_hash(password)
+        
+        new_admin = {
+            "id": admin_id,
+            "username": new_username,
+            "email": email,
+            "password_hash": password_hash,
+            "is_active": True,
+            "is_super_admin": is_super_admin,
+            "created_by": username,
+            "created_at": datetime.now(timezone.utc)
+        }
+        
+        await db.admin_users.insert_one(new_admin)
+        
+        # Return without password_hash
+        return {
+            "success": True,
+            "admin": {
+                "id": admin_id,
+                "username": new_username,
+                "email": email,
+                "is_active": True,
+                "is_super_admin": is_super_admin,
+                "created_at": new_admin["created_at"].isoformat()
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Create admin error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create admin user")
+
+
+@api_router.put("/admin/users/admins/{admin_id}")
+async def update_admin_user(admin_id: str, request: Request, username: str = Depends(get_current_admin)):
+    """Update an admin user (change password, email, status)"""
+    try:
+        body = await request.json()
+        
+        # Find the admin user
+        admin_user = await db.admin_users.find_one({"id": admin_id})
+        
+        if not admin_user:
+            # Check if it's the legacy admin
+            if admin_id == "admin-001":
+                raise HTTPException(status_code=400, detail="Cannot modify legacy admin account from here")
+            raise HTTPException(status_code=404, detail="Admin user not found")
+        
+        update_fields = {}
+        
+        # Update email if provided
+        if "email" in body and body["email"]:
+            new_email = body["email"].strip().lower()
+            # Check if email is already used by another admin
+            existing = await db.admin_users.find_one({"email": new_email, "id": {"$ne": admin_id}})
+            if existing:
+                raise HTTPException(status_code=400, detail="Email already in use")
+            update_fields["email"] = new_email
+        
+        # Update password if provided
+        if "password" in body and body["password"]:
+            if len(body["password"]) < 6:
+                raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+            update_fields["password_hash"] = get_password_hash(body["password"])
+        
+        # Update active status if provided
+        if "is_active" in body:
+            update_fields["is_active"] = body["is_active"]
+        
+        # Update super admin status if provided
+        if "is_super_admin" in body:
+            update_fields["is_super_admin"] = body["is_super_admin"]
+        
+        if update_fields:
+            update_fields["updated_at"] = datetime.now(timezone.utc)
+            await db.admin_users.update_one({"id": admin_id}, {"$set": update_fields})
+        
+        # Get updated admin
+        updated_admin = await db.admin_users.find_one({"id": admin_id}, {"_id": 0, "password_hash": 0})
+        if isinstance(updated_admin.get("created_at"), datetime):
+            updated_admin["created_at"] = updated_admin["created_at"].isoformat()
+        if isinstance(updated_admin.get("updated_at"), datetime):
+            updated_admin["updated_at"] = updated_admin["updated_at"].isoformat()
+        
+        return {"success": True, "admin": updated_admin}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Update admin error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update admin user")
+
+
+@api_router.delete("/admin/users/admins/{admin_id}")
+async def delete_admin_user(admin_id: str, username: str = Depends(get_current_admin)):
+    """Delete an admin user"""
+    try:
+        if admin_id == "admin-001":
+            raise HTTPException(status_code=400, detail="Cannot delete legacy admin account")
+        
+        admin_user = await db.admin_users.find_one({"id": admin_id})
+        if not admin_user:
+            raise HTTPException(status_code=404, detail="Admin user not found")
+        
+        # Prevent deleting yourself
+        if admin_user["username"] == username:
+            raise HTTPException(status_code=400, detail="Cannot delete your own account")
+        
+        await db.admin_users.delete_one({"id": admin_id})
+        
+        return {"success": True, "message": "Admin user deleted"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Delete admin error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to delete admin user")
+
+
+@api_router.post("/admin/users/admins/change-password")
+async def change_admin_password(request: Request, username: str = Depends(get_current_admin)):
+    """Change the current admin's password"""
+    try:
+        body = await request.json()
+        current_password = body.get("current_password", "")
+        new_password = body.get("new_password", "")
+        
+        if not current_password or not new_password:
+            raise HTTPException(status_code=400, detail="Current and new passwords are required")
+        
+        if len(new_password) < 6:
+            raise HTTPException(status_code=400, detail="New password must be at least 6 characters")
+        
+        # Find current admin user
+        admin_user = await db.admin_users.find_one({"username": username})
+        
+        if admin_user:
+            # Verify current password
+            if not verify_password(current_password, admin_user.get("password_hash", "")):
+                raise HTTPException(status_code=401, detail="Current password is incorrect")
+            
+            # Update password
+            new_hash = get_password_hash(new_password)
+            await db.admin_users.update_one(
+                {"username": username},
+                {"$set": {"password_hash": new_hash, "updated_at": datetime.now(timezone.utc)}}
+            )
+            
+            return {"success": True, "message": "Password changed successfully"}
+        else:
+            # Legacy admin - verify against hardcoded
+            if not verify_password(current_password, ADMIN_PASSWORD_HASH):
+                raise HTTPException(status_code=401, detail="Current password is incorrect")
+            
+            # Create a new admin user in the database with the new password
+            admin_id = f"admin_{uuid.uuid4().hex[:12]}"
+            new_hash = get_password_hash(new_password)
+            
+            new_admin = {
+                "id": admin_id,
+                "username": username,
+                "email": "admin@finandfeathers.com",
+                "password_hash": new_hash,
+                "is_active": True,
+                "is_super_admin": True,
+                "created_at": datetime.now(timezone.utc)
+            }
+            
+            await db.admin_users.insert_one(new_admin)
+            
+            return {"success": True, "message": "Password changed successfully. Please use your new password to login."}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Change password error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to change password")
 
 
 # ==================== GOOGLE OAUTH ENDPOINTS ====================
