@@ -69,6 +69,7 @@ const SignupForm = ({ onProfileCreated, authError }) => {
   const [authMode, setAuthMode] = useState('options'); // 'options', 'signup', 'login'
   const [formData, setFormData] = useState({
     name: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -87,6 +88,16 @@ const SignupForm = ({ onProfileCreated, authError }) => {
 
   const handleEmailSignup = async (e) => {
     e.preventDefault();
+    
+    if (!formData.username.trim()) {
+      toast({ title: 'Error', description: 'Username is required', variant: 'destructive' });
+      return;
+    }
+    
+    if (formData.username.length < 3) {
+      toast({ title: 'Error', description: 'Username must be at least 3 characters', variant: 'destructive' });
+      return;
+    }
     
     if (!formData.email.trim() || !formData.password) {
       toast({ title: 'Error', description: 'Email and password are required', variant: 'destructive' });
