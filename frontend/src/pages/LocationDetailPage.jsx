@@ -1871,6 +1871,11 @@ const LocationDetailPage = () => {
           </div>
         )}
 
+        {/* Tip Staff Tab */}
+        {activeTab === 'tipstaff' && location?.tip_staff_enabled && (
+          <TipStaffTab myCheckIn={myCheckIn} locationSlug={slug} toast={toast} />
+        )}
+
         {/* Info Tab */}
         {activeTab === 'info' && (
           <div className="space-y-4">
