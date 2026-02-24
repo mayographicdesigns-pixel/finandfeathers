@@ -40,7 +40,8 @@ import {
   registerUserWithPassword,
   loginUserWithPassword,
   checkUserAuth,
-  userLogout
+  userLogout,
+  requestPasswordReset
 } from '../services/api';
 
 // Role badge component
