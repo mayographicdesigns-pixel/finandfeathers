@@ -359,6 +359,55 @@ export async function loginUserWithPassword(identifier, password) {
   }
 }
 
+// Request password reset
+export async function requestPasswordReset(identifier) {
+  try {
+    const response = await fetch(`${API_URL}/auth/user/forgot-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ identifier })
+    });
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Reset password with token
+export async function resetPasswordWithToken(token, password) {
+  try {
+    const response = await fetch(`${API_URL}/auth/user/reset-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token, password })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to reset password');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Verify reset token
+export async function verifyResetToken(token) {
+  try {
+    const response = await fetch(`${API_URL}/auth/user/verify-reset-token?token=${encodeURIComponent(token)}`);
+    return await response.json();
+  } catch (error) {
+    return { valid: false, message: 'Error verifying token' };
+  }
+}
+
 // Get admin dashboard stats
 export async function getAdminStats() {
   const token = localStorage.getItem('adminToken');
