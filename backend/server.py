@@ -395,7 +395,15 @@ async def process_google_session(request: Request):
         )
         
         # Fetch the complete user profile
-        user_profile = await db.user_profiles.find_one({"id": user_id}, {"_id": 0})
+        user_profile_doc = await db.user_profiles.find_one({"id": user_id}, {"_id": 0})
+        
+        # Convert datetime fields to ISO strings for JSON serialization
+        user_profile = {}
+        for k, v in user_profile_doc.items():
+            if isinstance(v, datetime):
+                user_profile[k] = v.isoformat()
+            else:
+                user_profile[k] = v
         
         # Create response with httpOnly cookie
         response = JSONResponse(content={
