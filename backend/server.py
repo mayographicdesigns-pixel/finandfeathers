@@ -655,8 +655,15 @@ async def login_user_with_password(request: Request):
             upsert=True
         )
         
-        # Return user without password_hash and _id
-        user_response = {k: v for k, v in user_profile.items() if k not in ["password_hash", "_id"]}
+        # Return user without password_hash and _id, convert datetime to string
+        user_response = {}
+        for k, v in user_profile.items():
+            if k in ["password_hash", "_id"]:
+                continue
+            if isinstance(v, datetime):
+                user_response[k] = v.isoformat()
+            else:
+                user_response[k] = v
         
         # Add default values
         user_response.setdefault("role", "customer")
