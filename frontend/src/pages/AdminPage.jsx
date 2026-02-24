@@ -4660,6 +4660,7 @@ const AdminPage = () => {
         {activeTab === 'contacts' && <ContactsTab />}
         {activeTab === 'menu' && <MenuItemsTab />}
         {activeTab === 'notifications' && <NotificationsTab />}
+        {activeTab === 'admins' && <AdminAccountsTab />}
       </div>
     </div>
   );
