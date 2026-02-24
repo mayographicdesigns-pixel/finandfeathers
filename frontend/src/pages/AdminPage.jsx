@@ -2166,6 +2166,100 @@ const LocationsTab = () => {
                       </Button>
                     </div>
                   </div>
+                  
+                  {/* Feature Toggles */}
+                  <div className="mt-3 pt-3 border-t border-slate-700/50">
+                    <p className="text-xs text-slate-500 mb-2">Features</p>
+                    <div className="flex flex-wrap gap-3">
+                      {/* Check-In Toggle */}
+                      <button
+                        onClick={async () => {
+                          try {
+                            await adminUpdateLocation(location.id, { check_in_enabled: !location.check_in_enabled });
+                            toast({ title: 'Updated', description: `Check-In ${location.check_in_enabled ? 'disabled' : 'enabled'}` });
+                            fetchLocations();
+                          } catch (err) {
+                            toast({ title: 'Error', description: err.message, variant: 'destructive' });
+                          }
+                        }}
+                        className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs transition-colors ${
+                          location.check_in_enabled 
+                            ? 'bg-green-600/20 text-green-400 border border-green-600/30' 
+                            : 'bg-slate-700/30 text-slate-500 border border-slate-600/30'
+                        }`}
+                        data-testid={`toggle-checkin-${location.slug}`}
+                      >
+                        {location.check_in_enabled ? <ToggleRight className="w-3 h-3" /> : <ToggleLeft className="w-3 h-3" />}
+                        Check-In
+                      </button>
+                      
+                      {/* Social Wall Toggle */}
+                      <button
+                        onClick={async () => {
+                          try {
+                            await adminUpdateLocation(location.id, { social_wall_enabled: !location.social_wall_enabled });
+                            toast({ title: 'Updated', description: `Social Wall ${location.social_wall_enabled ? 'disabled' : 'enabled'}` });
+                            fetchLocations();
+                          } catch (err) {
+                            toast({ title: 'Error', description: err.message, variant: 'destructive' });
+                          }
+                        }}
+                        className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs transition-colors ${
+                          location.social_wall_enabled 
+                            ? 'bg-green-600/20 text-green-400 border border-green-600/30' 
+                            : 'bg-slate-700/30 text-slate-500 border border-slate-600/30'
+                        }`}
+                        data-testid={`toggle-socialwall-${location.slug}`}
+                      >
+                        {location.social_wall_enabled ? <ToggleRight className="w-3 h-3" /> : <ToggleLeft className="w-3 h-3" />}
+                        Social Wall
+                      </button>
+                      
+                      {/* Tip Staff Toggle */}
+                      <button
+                        onClick={async () => {
+                          try {
+                            await adminUpdateLocation(location.id, { tip_staff_enabled: !location.tip_staff_enabled });
+                            toast({ title: 'Updated', description: `Tip Staff ${location.tip_staff_enabled ? 'disabled' : 'enabled'}` });
+                            fetchLocations();
+                          } catch (err) {
+                            toast({ title: 'Error', description: err.message, variant: 'destructive' });
+                          }
+                        }}
+                        className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs transition-colors ${
+                          location.tip_staff_enabled 
+                            ? 'bg-amber-600/20 text-amber-400 border border-amber-600/30' 
+                            : 'bg-slate-700/30 text-slate-500 border border-slate-600/30'
+                        }`}
+                        data-testid={`toggle-tipstaff-${location.slug}`}
+                      >
+                        {location.tip_staff_enabled ? <ToggleRight className="w-3 h-3" /> : <ToggleLeft className="w-3 h-3" />}
+                        Tip Staff
+                      </button>
+                      
+                      {/* DJ Tips Toggle */}
+                      <button
+                        onClick={async () => {
+                          try {
+                            await adminUpdateLocation(location.id, { dj_tips_enabled: !location.dj_tips_enabled });
+                            toast({ title: 'Updated', description: `DJ Tips ${location.dj_tips_enabled ? 'disabled' : 'enabled'}` });
+                            fetchLocations();
+                          } catch (err) {
+                            toast({ title: 'Error', description: err.message, variant: 'destructive' });
+                          }
+                        }}
+                        className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs transition-colors ${
+                          location.dj_tips_enabled 
+                            ? 'bg-purple-600/20 text-purple-400 border border-purple-600/30' 
+                            : 'bg-slate-700/30 text-slate-500 border border-slate-600/30'
+                        }`}
+                        data-testid={`toggle-djtips-${location.slug}`}
+                      >
+                        {location.dj_tips_enabled ? <ToggleRight className="w-3 h-3" /> : <ToggleLeft className="w-3 h-3" />}
+                        DJ Tips
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>
