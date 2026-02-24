@@ -1475,12 +1475,12 @@ const LocationDetailPage = () => {
               </Button>
             </CardContent>
           </Card>
-        ) : (
+        ) : location?.check_in_enabled !== false ? (
           <Button onClick={() => setShowCheckInModal(true)} className="w-full mb-4 bg-red-600 hover:bg-red-700 text-white h-14 text-lg" data-testid="checkin-button">
             <LogIn className="w-5 h-5 mr-2" />
             Check In to Join the Vibe
           </Button>
-        )}
+        ) : null}
 
         {/* Tab Navigation */}
         <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
