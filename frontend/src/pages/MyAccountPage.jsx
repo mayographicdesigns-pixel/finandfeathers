@@ -58,21 +58,107 @@ const RoleBadge = ({ role, staffTitle }) => {
   );
 };
 
-// Signup Form Component - allows creating account without location
-const SignupForm = ({ onProfileCreated }) => {
+// Signup Form Component - allows creating account with Google or email/password
+const SignupForm = ({ onProfileCreated, authError }) => {
   const navigate = useNavigate();
+  const [authMode, setAuthMode] = useState('options'); // 'options', 'signup', 'login'
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    password: '',
+    confirmPassword: '',
     phone: '',
     avatar_emoji: '😊'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const AVATAR_EMOJIS = ['😊', '😎', '🤩', '😋', '😄', '🤙', '🔥', '💯', '🎉', '✨', '🍗', '🍺'];
 
-  const handleSubmit = async (e) => {
+  // Import the new auth functions
+  const { initiateGoogleLogin, registerUserWithPassword, loginUserWithPassword } = require('../services/api');
+
+  const handleGoogleLogin = () => {
+    initiateGoogleLogin();
+  };
+
+  const handleEmailSignup = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.email.trim() || !formData.password) {
+      toast({ title: 'Error', description: 'Email and password are required', variant: 'destructive' });
+      return;
+    }
+    
+    if (formData.password.length < 6) {
+      toast({ title: 'Error', description: 'Password must be at least 6 characters', variant: 'destructive' });
+      return;
+    }
+    
+    if (formData.password !== formData.confirmPassword) {
+      toast({ title: 'Error', description: 'Passwords do not match', variant: 'destructive' });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const result = await registerUserWithPassword(formData.email, formData.password, formData.name);
+      
+      if (result.success && result.user) {
+        localStorage.setItem('ff_user_profile_id', result.user.id);
+        localStorage.setItem('ff_user_info', JSON.stringify({
+          name: result.user.name,
+          email: result.user.email,
+          phone: result.user.phone
+        }));
+        localStorage.setItem('ff_auth_provider', 'email');
+        
+        toast({ title: 'Account Created!', description: 'Welcome to Fin & Feathers!' });
+        onProfileCreated(result.user);
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      toast({ title: 'Error', description: error.message || 'Failed to create account', variant: 'destructive' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleEmailLogin = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.email.trim() || !formData.password) {
+      toast({ title: 'Error', description: 'Email and password are required', variant: 'destructive' });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const result = await loginUserWithPassword(formData.email, formData.password);
+      
+      if (result.success && result.user) {
+        localStorage.setItem('ff_user_profile_id', result.user.id);
+        localStorage.setItem('ff_user_info', JSON.stringify({
+          name: result.user.name,
+          email: result.user.email,
+          phone: result.user.phone
+        }));
+        localStorage.setItem('ff_auth_provider', 'email');
+        
+        toast({ title: 'Welcome Back!', description: `Logged in as ${result.user.name}` });
+        onProfileCreated(result.user);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      toast({ title: 'Error', description: error.message || 'Login failed', variant: 'destructive' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Legacy quick signup (without password)
+  const handleQuickSignup = async (e) => {
     e.preventDefault();
     
     if (!formData.name.trim()) {
@@ -82,11 +168,9 @@ const SignupForm = ({ onProfileCreated }) => {
 
     setIsSubmitting(true);
     try {
-      // Check if email already exists
       if (formData.email) {
         const existing = await getUserProfileByEmail(formData.email);
         if (existing) {
-          // Found existing profile - log them in
           localStorage.setItem('ff_user_profile_id', existing.id);
           localStorage.setItem('ff_user_info', JSON.stringify({
             name: existing.name,
@@ -99,7 +183,6 @@ const SignupForm = ({ onProfileCreated }) => {
         }
       }
 
-      // Create new profile
       const newProfile = await createUserProfile({
         name: formData.name.trim(),
         email: formData.email || null,
@@ -107,7 +190,6 @@ const SignupForm = ({ onProfileCreated }) => {
         avatar_emoji: formData.avatar_emoji
       });
 
-      // Save to localStorage
       localStorage.setItem('ff_user_profile_id', newProfile.id);
       localStorage.setItem('ff_user_info', JSON.stringify({
         name: newProfile.name,
@@ -135,113 +217,254 @@ const SignupForm = ({ onProfileCreated }) => {
             alt="Fin & Feathers"
             className="h-20 mx-auto mb-4"
           />
-          <h1 className="text-2xl font-bold text-white">Join Fin & Feathers</h1>
-          <p className="text-slate-400 mt-2">Create your account to start earning rewards</p>
+          <h1 className="text-2xl font-bold text-white">
+            {authMode === 'login' ? 'Welcome Back!' : 'Join Fin & Feathers'}
+          </h1>
+          <p className="text-slate-400 mt-2">
+            {authMode === 'login' ? 'Sign in to your account' : 'Create your account to start earning rewards'}
+          </p>
         </div>
+
+        {/* Auth Error Message */}
+        {authError && (
+          <div className="bg-red-900/50 border border-red-600 text-red-300 px-4 py-3 rounded-lg mb-4 text-sm">
+            {authError}
+          </div>
+        )}
 
         <Card className="bg-slate-900 border-red-600/30">
           <CardContent className="p-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Avatar Selection */}
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Choose Your Avatar</label>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                    className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center text-4xl border-2 border-red-500 hover:border-red-400 transition-colors"
-                  >
-                    {formData.avatar_emoji}
-                  </button>
-                  {showEmojiPicker && (
-                    <div className="flex flex-wrap gap-2">
-                      {AVATAR_EMOJIS.map((emoji) => (
-                        <button
-                          key={emoji}
-                          type="button"
-                          onClick={() => {
-                            setFormData({ ...formData, avatar_emoji: emoji });
-                            setShowEmojiPicker(false);
-                          }}
-                          className={`w-10 h-10 text-2xl rounded-lg flex items-center justify-center transition-all ${
-                            formData.avatar_emoji === emoji ? 'bg-red-600 scale-110' : 'bg-slate-800 hover:bg-slate-700'
-                          }`}
-                        >
-                          {emoji}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Name */}
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Your Name *</label>
-                <Input
-                  type="text"
-                  placeholder="Enter your name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="bg-slate-800 border-slate-700 text-white"
-                  required
-                  data-testid="signup-name-input"
-                />
-              </div>
-
-              {/* Email */}
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
-                <Input
-                  type="email"
-                  placeholder="you@example.com"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="bg-slate-800 border-slate-700 text-white"
-                  data-testid="signup-email-input"
-                />
-                <p className="text-slate-500 text-xs mt-1">Used to find your account later</p>
-              </div>
-
-              {/* Phone */}
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">Phone Number</label>
-                <Input
-                  type="tel"
-                  placeholder="(555) 123-4567"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="bg-slate-800 border-slate-700 text-white"
-                  data-testid="signup-phone-input"
-                />
-              </div>
-
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-red-600 hover:bg-red-700 text-white h-12 text-lg mt-6"
-                data-testid="signup-submit-btn"
-              >
-                {isSubmitting ? 'Creating Account...' : 'Create Account'}
-              </Button>
-            </form>
-
-            <div className="mt-6 text-center">
-              <p className="text-slate-500 text-sm">
-                Already have an account?{' '}
-                <button 
-                  onClick={() => {
-                    const email = window.prompt('Enter your email to find your account:');
-                    if (email) {
-                      setFormData({ ...formData, email });
-                    }
-                  }}
-                  className="text-red-400 hover:text-red-300"
+            {/* Auth Options View */}
+            {authMode === 'options' && (
+              <div className="space-y-4">
+                {/* Google Sign In Button */}
+                <Button
+                  type="button"
+                  onClick={handleGoogleLogin}
+                  className="w-full bg-white hover:bg-gray-100 text-gray-900 h-12 text-base font-medium flex items-center justify-center gap-3"
+                  data-testid="google-login-btn"
                 >
-                  Find my account
-                </button>
-              </p>
-            </div>
+                  <svg className="w-5 h-5" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                  </svg>
+                  Continue with Google
+                </Button>
+
+                <div className="relative my-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-slate-700"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-4 bg-slate-900 text-slate-500">or</span>
+                  </div>
+                </div>
+
+                {/* Email Sign Up Button */}
+                <Button
+                  type="button"
+                  onClick={() => setAuthMode('signup')}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white h-12 text-base"
+                  data-testid="email-signup-btn"
+                >
+                  Sign up with Email
+                </Button>
+
+                <p className="text-center text-slate-400 text-sm mt-4">
+                  Already have an account?{' '}
+                  <button 
+                    onClick={() => setAuthMode('login')}
+                    className="text-red-400 hover:text-red-300 font-medium"
+                  >
+                    Sign In
+                  </button>
+                </p>
+              </div>
+            )}
+
+            {/* Email Signup Form */}
+            {authMode === 'signup' && (
+              <form onSubmit={handleEmailSignup} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Name</label>
+                  <Input
+                    type="text"
+                    placeholder="Your name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    data-testid="signup-name-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Email *</label>
+                  <Input
+                    type="email"
+                    placeholder="you@example.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    required
+                    data-testid="signup-email-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Password *</label>
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Min 6 characters"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    required
+                    data-testid="signup-password-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Confirm Password *</label>
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Confirm your password"
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    required
+                    data-testid="signup-confirm-password-input"
+                  />
+                </div>
+
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="show-password"
+                    checked={showPassword}
+                    onChange={(e) => setShowPassword(e.target.checked)}
+                    className="mr-2"
+                  />
+                  <label htmlFor="show-password" className="text-slate-400 text-sm">Show password</label>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white h-12 text-lg mt-4"
+                  data-testid="signup-submit-btn"
+                >
+                  {isSubmitting ? 'Creating Account...' : 'Create Account'}
+                </Button>
+
+                <p className="text-center text-slate-400 text-sm mt-4">
+                  <button 
+                    type="button"
+                    onClick={() => setAuthMode('options')}
+                    className="text-red-400 hover:text-red-300"
+                  >
+                    ← Back to options
+                  </button>
+                </p>
+              </form>
+            )}
+
+            {/* Email Login Form */}
+            {authMode === 'login' && (
+              <form onSubmit={handleEmailLogin} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
+                  <Input
+                    type="email"
+                    placeholder="you@example.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    required
+                    data-testid="login-email-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Your password"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    required
+                    data-testid="login-password-input"
+                  />
+                </div>
+
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="show-password-login"
+                    checked={showPassword}
+                    onChange={(e) => setShowPassword(e.target.checked)}
+                    className="mr-2"
+                  />
+                  <label htmlFor="show-password-login" className="text-slate-400 text-sm">Show password</label>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white h-12 text-lg mt-4"
+                  data-testid="login-submit-btn"
+                >
+                  {isSubmitting ? 'Signing In...' : 'Sign In'}
+                </Button>
+
+                <div className="relative my-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-slate-700"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-4 bg-slate-900 text-slate-500">or</span>
+                  </div>
+                </div>
+
+                {/* Google Sign In in login mode */}
+                <Button
+                  type="button"
+                  onClick={handleGoogleLogin}
+                  className="w-full bg-white hover:bg-gray-100 text-gray-900 h-10 text-sm font-medium flex items-center justify-center gap-2"
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                  </svg>
+                  Continue with Google
+                </Button>
+
+                <p className="text-center text-slate-400 text-sm mt-4">
+                  Don't have an account?{' '}
+                  <button 
+                    type="button"
+                    onClick={() => setAuthMode('signup')}
+                    className="text-red-400 hover:text-red-300 font-medium"
+                  >
+                    Sign Up
+                  </button>
+                </p>
+
+                <p className="text-center mt-2">
+                  <button 
+                    type="button"
+                    onClick={() => setAuthMode('options')}
+                    className="text-slate-500 hover:text-slate-400 text-sm"
+                  >
+                    ← Back to options
+                  </button>
+                </p>
+              </form>
+            )}
           </CardContent>
         </Card>
 
