@@ -469,10 +469,18 @@ async def get_current_google_user(request: Request):
     
     # Get user profile
     user_id = session_doc.get("user_id")
-    user_profile = await db.user_profiles.find_one({"id": user_id}, {"_id": 0})
+    user_profile_doc = await db.user_profiles.find_one({"id": user_id}, {"_id": 0})
     
-    if not user_profile:
+    if not user_profile_doc:
         raise HTTPException(status_code=404, detail="User not found")
+    
+    # Convert datetime fields to ISO strings for JSON serialization
+    user_profile = {}
+    for k, v in user_profile_doc.items():
+        if isinstance(v, datetime):
+            user_profile[k] = v.isoformat()
+        else:
+            user_profile[k] = v
     
     # Add default values for missing fields
     user_profile.setdefault("role", "customer")
