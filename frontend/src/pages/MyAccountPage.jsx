@@ -293,12 +293,26 @@ const SignupForm = ({ onProfileCreated, authError }) => {
                   <label className="block text-sm font-medium text-slate-300 mb-2">Name</label>
                   <Input
                     type="text"
-                    placeholder="Your name"
+                    placeholder="Your full name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="bg-slate-800 border-slate-700 text-white"
                     data-testid="signup-name-input"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Username *</label>
+                  <Input
+                    type="text"
+                    placeholder="Choose a username"
+                    value={formData.username}
+                    onChange={(e) => setFormData({ ...formData, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '') })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    required
+                    data-testid="signup-username-input"
+                  />
+                  <p className="text-slate-500 text-xs mt-1">Letters, numbers, and underscores only</p>
                 </div>
 
                 <div>
