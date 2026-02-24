@@ -116,12 +116,13 @@ const SignupForm = ({ onProfileCreated, authError }) => {
 
     setIsSubmitting(true);
     try {
-      const result = await registerUserWithPassword(formData.email, formData.password, formData.name);
+      const result = await registerUserWithPassword(formData.email, formData.password, formData.name, formData.username);
       
       if (result.success && result.user) {
         localStorage.setItem('ff_user_profile_id', result.user.id);
         localStorage.setItem('ff_user_info', JSON.stringify({
           name: result.user.name,
+          username: result.user.username,
           email: result.user.email,
           phone: result.user.phone
         }));
