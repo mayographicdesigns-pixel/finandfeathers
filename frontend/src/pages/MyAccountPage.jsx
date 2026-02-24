@@ -1002,14 +1002,31 @@ const MyAccountPage = () => {
       {/* Header */}
       <div className="bg-gradient-to-b from-red-900/40 to-slate-950 pt-6 pb-8 px-4">
         <div className="max-w-2xl mx-auto">
-          <button 
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition-colors"
-            data-testid="back-btn"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span>Back</span>
-          </button>
+          <div className="flex items-center justify-between mb-6">
+            <button 
+              onClick={() => navigate('/')}
+              className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
+              data-testid="back-btn"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span>Back</span>
+            </button>
+            
+            {/* Logout Button */}
+            <Button
+              onClick={async () => {
+                await userLogout();
+                setProfile(null);
+                toast({ title: 'Logged Out', description: 'You have been signed out' });
+              }}
+              variant="ghost"
+              className="text-slate-400 hover:text-white hover:bg-slate-800"
+              data-testid="logout-btn"
+            >
+              <X className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
           
           {/* Profile Header */}
           <div className="flex items-center gap-4">
