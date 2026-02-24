@@ -80,7 +80,6 @@ const SignupForm = ({ onProfileCreated, authError }) => {
   const [forgotIdentifier, setForgotIdentifier] = useState('');
   const [forgotSent, setForgotSent] = useState(false);
   const [debugResetUrl, setDebugResetUrl] = useState('');
-  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
