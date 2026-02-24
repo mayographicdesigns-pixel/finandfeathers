@@ -6,7 +6,7 @@ import {
   Lock, User, AlertCircle, RefreshCw, Upload, Image, Megaphone, 
   Calendar, ToggleLeft, ToggleRight, Share2, Instagram, Facebook, ExternalLink,
   ImagePlus, Grid3X3, GripVertical, Coins, Gift, Award, Briefcase, BadgeCheck, DollarSign, MapPin, Video,
-  Ticket, Star, Clock, ImageUp, MessageSquare, UserX
+  Ticket, Star, Clock, ImageUp, MessageSquare, UserX, Shield, Key
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -28,7 +28,8 @@ import {
   adminGetLocations, adminCreateLocation, adminUpdateLocation, adminDeleteLocation, adminReorderLocations,
   adminGetEvents, adminCreateEvent, adminUpdateEvent, adminDeleteEvent,
   adminGetGallerySubmissions, adminDeleteGallerySubmission,
-  adminGetAllSocialPosts, adminDeleteSocialPost, adminCleanupOldPosts, adminDeleteUser
+  adminGetAllSocialPosts, adminDeleteSocialPost, adminCleanupOldPosts, adminDeleteUser,
+  getAdminUsers, createAdminUser, updateAdminUser, deleteAdminUser, changeAdminPassword
 } from '../services/api';
 import {
   DndContext,
