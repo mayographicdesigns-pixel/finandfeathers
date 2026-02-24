@@ -408,6 +408,94 @@ export async function verifyResetToken(token) {
   }
 }
 
+// ==================== ADMIN USER MANAGEMENT ====================
+
+// Get all admin users
+export async function getAdminUsers() {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/users/admins`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  if (!response.ok) throw new Error('Failed to fetch admin users');
+  return await response.json();
+}
+
+// Create new admin user
+export async function createAdminUser(userData) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/users/admins`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(userData)
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to create admin user');
+  }
+  return await response.json();
+}
+
+// Update admin user
+export async function updateAdminUser(adminId, userData) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/users/admins/${adminId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(userData)
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to update admin user');
+  }
+  return await response.json();
+}
+
+// Delete admin user
+export async function deleteAdminUser(adminId) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/users/admins/${adminId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to delete admin user');
+  }
+  return await response.json();
+}
+
+// Change current admin's password
+export async function changeAdminPassword(currentPassword, newPassword) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/users/admins/change-password`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ current_password: currentPassword, new_password: newPassword })
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to change password');
+  }
+  return await response.json();
+}
+
 // Get admin dashboard stats
 export async function getAdminStats() {
   const token = localStorage.getItem('adminToken');
