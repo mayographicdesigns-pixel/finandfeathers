@@ -646,21 +646,32 @@ async def register_user_with_password(request: Request):
 @api_router.post("/auth/user/login")
 async def login_user_with_password(request: Request):
     """
-    Login user with email and password.
+    Login user with username or email and password.
     """
     try:
         body = await request.json()
-        email = body.get("email", "").strip().lower()
+        identifier = body.get("identifier", "").strip().lower()  # Can be username or email
+        # Also support 'email' field for backwards compatibility
+        if not identifier:
+            identifier = body.get("email", "").strip().lower()
         password = body.get("password", "")
         
-        if not email or not password:
-            raise HTTPException(status_code=400, detail="Email and password are required")
+        if not identifier or not password:
+            raise HTTPException(status_code=400, detail="Username/email and password are required")
         
-        # Find user by email
-        user_profile = await db.user_profiles.find_one({"email": email})
+        # Find user by email or username
+        if "@" in identifier:
+            # Looks like an email
+            user_profile = await db.user_profiles.find_one({"email": identifier})
+        else:
+            # Try username first, then email
+            user_profile = await db.user_profiles.find_one({"username": identifier})
+            if not user_profile:
+                # Fallback to email search
+                user_profile = await db.user_profiles.find_one({"email": identifier})
         
         if not user_profile:
-            raise HTTPException(status_code=401, detail="Invalid email or password")
+            raise HTTPException(status_code=401, detail="Invalid username/email or password")
         
         # Check if user has password (might be Google-only user)
         password_hash = user_profile.get("password_hash")
@@ -669,7 +680,7 @@ async def login_user_with_password(request: Request):
         
         # Verify password
         if not verify_password(password, password_hash):
-            raise HTTPException(status_code=401, detail="Invalid email or password")
+            raise HTTPException(status_code=401, detail="Invalid username/email or password")
         
         user_id = user_profile["id"]
         
@@ -702,6 +713,7 @@ async def login_user_with_password(request: Request):
         # Add default values
         user_response.setdefault("role", "customer")
         user_response.setdefault("token_balance", 0)
+        user_response.setdefault("username", None)
         
         response = JSONResponse(content={
             "success": True,
