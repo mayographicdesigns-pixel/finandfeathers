@@ -432,15 +432,25 @@ const SignupForm = ({ onProfileCreated, authError }) => {
                   />
                 </div>
 
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="show-password-login"
-                    checked={showPassword}
-                    onChange={(e) => setShowPassword(e.target.checked)}
-                    className="mr-2"
-                  />
-                  <label htmlFor="show-password-login" className="text-slate-400 text-sm">Show password</label>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="show-password-login"
+                      checked={showPassword}
+                      onChange={(e) => setShowPassword(e.target.checked)}
+                      className="mr-2"
+                    />
+                    <label htmlFor="show-password-login" className="text-slate-400 text-sm">Show password</label>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setAuthMode('forgot')}
+                    className="text-red-400 hover:text-red-300 text-sm"
+                    data-testid="forgot-password-link"
+                  >
+                    Forgot Password?
+                  </button>
                 </div>
 
                 <Button
