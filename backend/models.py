@@ -814,6 +814,11 @@ class LocationUpdate(BaseModel):
     weekly_specials: Optional[List[WeeklySpecial]] = None
     is_active: Optional[bool] = None
     display_order: Optional[int] = None
+    # Feature toggles
+    tip_staff_enabled: Optional[bool] = None
+    dj_tips_enabled: Optional[bool] = None
+    social_wall_enabled: Optional[bool] = None
+    check_in_enabled: Optional[bool] = None
 
 class LocationResponse(BaseModel):
     id: str
