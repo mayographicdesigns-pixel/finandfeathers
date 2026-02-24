@@ -314,7 +314,7 @@ export async function userLogout() {
 }
 
 // Register user with email and password
-export async function registerUserWithPassword(email, password, name) {
+export async function registerUserWithPassword(email, password, name, username) {
   try {
     const response = await fetch(`${API_URL}/auth/user/register`, {
       method: 'POST',
@@ -322,7 +322,7 @@ export async function registerUserWithPassword(email, password, name) {
         'Content-Type': 'application/json',
       },
       credentials: 'include',
-      body: JSON.stringify({ email, password, name })
+      body: JSON.stringify({ email, password, name, username })
     });
 
     if (!response.ok) {
@@ -336,8 +336,8 @@ export async function registerUserWithPassword(email, password, name) {
   }
 }
 
-// Login user with email and password
-export async function loginUserWithPassword(email, password) {
+// Login user with username/email and password
+export async function loginUserWithPassword(identifier, password) {
   try {
     const response = await fetch(`${API_URL}/auth/user/login`, {
       method: 'POST',
@@ -345,7 +345,7 @@ export async function loginUserWithPassword(email, password) {
         'Content-Type': 'application/json',
       },
       credentials: 'include',
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ identifier, password })
     });
 
     if (!response.ok) {
