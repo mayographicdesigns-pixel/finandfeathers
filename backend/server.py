@@ -573,9 +573,17 @@ async def register_user_with_password(request: Request):
             "created_at": datetime.now(timezone.utc)
         })
         
-        # Return user without password_hash
-        user_response = {k: v for k, v in new_profile.items() if k != "password_hash"}
-        user_response.pop("_id", None)
+        # Return user without password_hash and convert datetime to string
+        user_response = {}
+        for k, v in new_profile.items():
+            if k == "password_hash":
+                continue
+            if k == "_id":
+                continue
+            if isinstance(v, datetime):
+                user_response[k] = v.isoformat()
+            else:
+                user_response[k] = v
         
         response = JSONResponse(content={
             "success": True,
