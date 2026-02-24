@@ -596,7 +596,7 @@ const MenuPage = () => {
             <img 
               src="https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png" 
               alt="Fin & Feathers Restaurants"
-              className="h-24 md:h-32 w-auto mx-auto cursor-pointer"
+              className="max-h-32 md:max-h-40 w-auto mx-auto object-contain cursor-pointer"
               onClick={() => navigate('/')}
             />
           </div>
