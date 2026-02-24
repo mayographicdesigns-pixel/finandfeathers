@@ -656,6 +656,18 @@ const MyAccountPage = () => {
   const loadUserProfile = async () => {
     setIsLoading(true);
     try {
+      // Check if user came from OAuth callback with user data
+      if (oauthUser && justLoggedIn) {
+        setProfile(oauthUser);
+        setEditedProfile(oauthUser);
+        loadAdditionalData(oauthUser.id, oauthUser.role);
+        setIsLoading(false);
+        // Clear location state
+        window.history.replaceState({}, '', '/account');
+        toast({ title: 'Welcome!', description: `Signed in as ${oauthUser.name}` });
+        return;
+      }
+      
       // Check localStorage for user info
       const savedUser = localStorage.getItem('ff_user_info');
       const savedProfileId = localStorage.getItem('ff_user_profile_id');
@@ -670,6 +682,22 @@ const MyAccountPage = () => {
           setIsLoading(false);
           return;
         }
+      }
+      
+      // Try to check if user is authenticated via session cookie
+      const sessionUser = await checkUserAuth();
+      if (sessionUser) {
+        localStorage.setItem('ff_user_profile_id', sessionUser.id);
+        localStorage.setItem('ff_user_info', JSON.stringify({
+          name: sessionUser.name,
+          email: sessionUser.email,
+          phone: sessionUser.phone
+        }));
+        setProfile(sessionUser);
+        setEditedProfile(sessionUser);
+        loadAdditionalData(sessionUser.id, sessionUser.role);
+        setIsLoading(false);
+        return;
       }
       
       if (savedUser) {
