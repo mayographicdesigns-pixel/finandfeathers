@@ -81,9 +81,6 @@ const SignupForm = ({ onProfileCreated, authError }) => {
 
   const AVATAR_EMOJIS = ['😊', '😎', '🤩', '😋', '😄', '🤙', '🔥', '💯', '🎉', '✨', '🍗', '🍺'];
 
-  // Import the new auth functions
-  const { initiateGoogleLogin, registerUserWithPassword, loginUserWithPassword } = require('../services/api');
-
   const handleGoogleLogin = () => {
     initiateGoogleLogin();
   };
