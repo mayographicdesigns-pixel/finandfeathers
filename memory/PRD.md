@@ -383,6 +383,14 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - Offline indicator banner showing network status
   - Offline fallback page with retry functionality
   - IndexedDB storage for pending posts
+- **COMPLETED**: Forgot Password Flow (Feb 24, 2026)
+  - "Forgot Password?" link on login form
+  - Request reset via username or email
+  - Reset token generation with 1-hour expiry
+  - Dedicated /reset-password page with token verification
+  - Password reset with confirmation
+  - Security: clears all existing sessions after reset
+  - Debug mode shows reset link (remove for production)
 
 ## Prioritized Backlog
 
