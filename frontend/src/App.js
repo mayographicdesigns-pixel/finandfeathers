@@ -14,6 +14,7 @@ import AuthCallback from "./components/AuthCallback";
 import { Toaster } from "./components/ui/toaster";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import UpdatePrompt from "./components/UpdatePrompt";
+import OfflineIndicator from "./components/OfflineIndicator";
 
 // Router component that handles OAuth callback detection
 function AppRouter() {
