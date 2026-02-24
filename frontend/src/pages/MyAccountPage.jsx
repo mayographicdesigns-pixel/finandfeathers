@@ -376,10 +376,10 @@ const SignupForm = ({ onProfileCreated, authError }) => {
             {authMode === 'login' && (
               <form onSubmit={handleEmailLogin} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Username or Email</label>
                   <Input
-                    type="email"
-                    placeholder="you@example.com"
+                    type="text"
+                    placeholder="Username or email address"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="bg-slate-800 border-slate-700 text-white"
