@@ -247,6 +247,118 @@ export async function checkAdminAuth() {
   }
 }
 
+// ==================== USER AUTH API ====================
+
+// Initiate Google OAuth login
+// REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
+export function initiateGoogleLogin() {
+  const redirectUrl = window.location.origin + '/account';
+  window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+}
+
+// Process Google OAuth session (called from AuthCallback)
+export async function processGoogleSession(sessionId) {
+  try {
+    const response = await fetch(`${API_URL}/auth/google/session`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ session_id: sessionId })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Authentication failed');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Check if user is authenticated (via session cookie)
+export async function checkUserAuth() {
+  try {
+    const response = await fetch(`${API_URL}/auth/user/me`, {
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    return await response.json();
+  } catch (error) {
+    return null;
+  }
+}
+
+// User logout (clears session)
+export async function userLogout() {
+  try {
+    await fetch(`${API_URL}/auth/user/logout`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+  }
+  
+  // Clear local storage
+  localStorage.removeItem('ff_user_profile_id');
+  localStorage.removeItem('ff_user_info');
+  localStorage.removeItem('ff_auth_provider');
+}
+
+// Register user with email and password
+export async function registerUserWithPassword(email, password, name) {
+  try {
+    const response = await fetch(`${API_URL}/auth/user/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ email, password, name })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Registration failed');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Login user with email and password
+export async function loginUserWithPassword(email, password) {
+  try {
+    const response = await fetch(`${API_URL}/auth/user/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ email, password })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Login failed');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}
+
 // Get admin dashboard stats
 export async function getAdminStats() {
   const token = localStorage.getItem('adminToken');
