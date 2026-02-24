@@ -429,4 +429,4 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - **Admin Login**: username=`admin`, password=`admin`
 
 ## Preview URL
-https://dine-admin-portal-1.preview.emergentagent.com
+https://feather-fork-test.preview.emergentagent.com
