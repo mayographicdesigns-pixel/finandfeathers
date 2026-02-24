@@ -39,6 +39,7 @@ function AppRouter() {
       <Route path="/checkin" element={<CheckInPage />} />
       <Route path="/gallery" element={<GalleryPage />} />
       <Route path="/account" element={<MyAccountPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
     </Routes>
   );
 }
