@@ -876,9 +876,9 @@ const MenuPage = () => {
               // Show only selected sub-category
               <>
                 {activeSubCategory === 'brunch-drinks' ? (
-                  renderSection(categoryNames[activeSubCategory], filteredItems, 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true)
+                  renderSection(categoryNames[activeSubCategory], filteredItems, 'compact', 'grid-cols-1', true)
                 ) : (
-                  renderSection(categoryNames[activeSubCategory] || 'Signature Cocktails', filteredItems)
+                  renderSection(categoryNames[activeSubCategory] || 'Signature Cocktails', filteredItems, 'compact', 'grid-cols-1', true)
                 )}
               </>
             ) : (
