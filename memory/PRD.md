@@ -430,7 +430,7 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Geolocation for sorting locations by proximity (implemented)
 - [x] Social Login (Google OAuth) via Emergent Auth (Feb 24, 2026)
 - [x] Password-Based Login system (Feb 24, 2026)
-- [x] Gmail receipt emails for free event reservations (requires Google API credentials)
+- [ ] Gmail receipt emails for free event reservations (requires Google API credentials)
 - [ ] Location-specific weekly specials management (per-location from admin)
 - [x] PWA icon optimization
 - [x] Refactor AdminPage.jsx into smaller components (now under /components/admin)
