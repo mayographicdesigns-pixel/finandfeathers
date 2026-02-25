@@ -88,13 +88,13 @@
       "name": "Menu",
       "short_name": "Menu",
       "url": "/menu",
-      "icons": [{"src": "/logo192.png", "sizes": "192x192"}]
+      "icons": [{"src": "/icon-192.png", "sizes": "192x192"}]
     },
     {
       "name": "Locations",
       "short_name": "Locations",
       "url": "/locations",
-      "icons": [{"src": "/logo192.png", "sizes": "192x192"}]
+      "icons": [{"src": "/icon-192.png", "sizes": "192x192"}]
     }
   ]
 }
