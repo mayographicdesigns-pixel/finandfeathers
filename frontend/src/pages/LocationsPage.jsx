@@ -13,9 +13,15 @@ import { toast } from '../hooks/use-toast';
 const LocationsPage = () => {
   const navigate = useNavigate();
   const [userLocation, setUserLocation] = useState(null);
+  const [locations, setLocations] = useState([]);
   const [sortedLocations, setSortedLocations] = useState([]);
   const [locationPermission, setLocationPermission] = useState('prompt');
   const [isLoading, setIsLoading] = useState(true);
+  const [closestLocationId, setClosestLocationId] = useState(null);
+  const [hasAutoScrolled, setHasAutoScrolled] = useState(false);
+  const locationRefs = useRef({});
+  const [searchParams] = useSearchParams();
+  const isOrderFlow = searchParams.get('order') === '1';
   
   // Admin editing state
   const [isAdmin, setIsAdmin] = useState(false);
