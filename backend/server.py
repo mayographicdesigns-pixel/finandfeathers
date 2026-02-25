@@ -3943,9 +3943,11 @@ DEFAULT_EVENTS = [
         "date": "Every Friday",
         "time": "9PM - 2AM",
         "location": "Edgewood (Atlanta)",
+        "location_slug": "edgewood-atlanta",
         "image": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6657.jpg",
         "featured": True,
         "packages": ["general", "vip", "table"],
+        "package_prices": {"general": 25.00, "vip": 75.00, "table": 200.00},
         "is_active": True,
         "display_order": 0
     },
@@ -3956,9 +3958,11 @@ DEFAULT_EVENTS = [
         "date": "Every Sunday",
         "time": "11AM - 4PM",
         "location": "All Locations",
+        "location_slug": None,
         "image": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/a3e08521f140462cbedf10dedd32f879.jpeg",
         "featured": False,
         "packages": ["general", "vip"],
+        "package_prices": {"general": 25.00, "vip": 75.00},
         "is_active": True,
         "display_order": 1
     },
@@ -3969,9 +3973,11 @@ DEFAULT_EVENTS = [
         "date": "Every Wednesday",
         "time": "6PM - 10PM",
         "location": "Midtown (Atlanta)",
+        "location_slug": "midtown-atlanta",
         "image": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6656.jpg",
         "featured": False,
         "packages": ["general"],
+        "package_prices": {"general": 25.00},
         "is_active": True,
         "display_order": 2
     }
