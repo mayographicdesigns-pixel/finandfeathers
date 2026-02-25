@@ -113,25 +113,8 @@ const LocationsPage = () => {
 
   const fetchLocations = async () => {
     setIsLoading(true);
-    const locations = await getLocations();
-    
-    // If we already have user location, calculate distances
-    if (userLocation) {
-      const locationsWithDistance = locations.map(loc => {
-        const coords = loc.coordinates || { lat: 0, lng: 0 };
-        const distance = calculateDistance(
-          userLocation.lat, 
-          userLocation.lng, 
-          coords.lat, 
-          coords.lng
-        );
-        return { ...loc, distance };
-      });
-      locationsWithDistance.sort((a, b) => a.distance - b.distance);
-      setSortedLocations(locationsWithDistance);
-    } else {
-      setSortedLocations(locations);
-    }
+    const fetchedLocations = await getLocations();
+    setLocations(fetchedLocations || []);
     setIsLoading(false);
   };
 
