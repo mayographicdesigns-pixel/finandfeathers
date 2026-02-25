@@ -401,6 +401,10 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - Added per-event package pricing + location slug mapping for free tickets
 - **COMPLETED**: Global ALL CAPS styling for headings, titles, and buttons (Feb 25, 2026)
   - Applies to headings, section titles, tabs, and button labels across the site
+- **COMPLETED**: Order Online Location Selection Flow (Feb 25, 2026)
+  - Homepage Order Online CTA routes to /locations?order=1
+  - Locations page highlights the closest restaurant and adds a selection banner
+  - Suite placeholders added to all location addresses ("Suite TBD")
 - **FIXED**: Auth page logo asset on /account (Feb 25, 2026)
 
 ## Prioritized Backlog
