@@ -459,6 +459,7 @@ const SignupForm = ({ onProfileCreated, authError }) => {
                       checked={showPassword}
                       onChange={(e) => setShowPassword(e.target.checked)}
                       className="mr-2"
+                      data-testid="login-show-password-toggle"
                     />
                     <label htmlFor="show-password-login" className="text-slate-400 text-sm">Show password</label>
                   </div>
