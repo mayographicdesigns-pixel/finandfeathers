@@ -857,9 +857,11 @@ class Event(BaseModel):
     date: str  # e.g., "Every Friday" or "December 25, 2025"
     time: str  # e.g., "9PM - 2AM"
     location: str  # e.g., "Edgewood (Atlanta)" or "All Locations"
+    location_slug: Optional[str] = None  # Used for reservation SMS link
     image: str
     featured: bool = False
     packages: List[str] = ["general"]  # List of package IDs available
+    package_prices: Dict[str, float] = Field(default_factory=dict)
     is_active: bool = True
     display_order: int = 0
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -871,9 +873,11 @@ class EventCreate(BaseModel):
     date: str
     time: str
     location: str
+    location_slug: Optional[str] = None
     image: str
     featured: bool = False
     packages: List[str] = ["general"]
+    package_prices: Dict[str, float] = Field(default_factory=dict)
     display_order: int = 0
 
 class EventUpdate(BaseModel):
@@ -882,9 +886,11 @@ class EventUpdate(BaseModel):
     date: Optional[str] = None
     time: Optional[str] = None
     location: Optional[str] = None
+    location_slug: Optional[str] = None
     image: Optional[str] = None
     featured: Optional[bool] = None
     packages: Optional[List[str]] = None
+    package_prices: Optional[Dict[str, float]] = None
     is_active: Optional[bool] = None
     display_order: Optional[int] = None
 
