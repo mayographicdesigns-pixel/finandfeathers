@@ -305,7 +305,7 @@ async def login(credentials: UserLogin):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     # Fallback to legacy hardcoded admin
-    if credentials.username != ADMIN_USERNAME:
+    if credentials.username.lower() != ADMIN_USERNAME:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     if not verify_password(credentials.password, ADMIN_PASSWORD_HASH):
