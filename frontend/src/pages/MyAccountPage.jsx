@@ -232,9 +232,10 @@ const SignupForm = ({ onProfileCreated, authError }) => {
         {/* Logo */}
         <div className="text-center mb-8">
           <img 
-            src="https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png"
+            src="/logo-original.png"
             alt="Fin & Feathers"
             className="max-h-32 md:max-h-40 w-auto mx-auto mb-4 object-contain"
+            data-testid="auth-logo"
           />
           <h1 className="text-2xl font-bold text-white">
             {authMode === 'login' ? 'Welcome Back!' : authMode === 'forgot' ? 'Forgot Password?' : 'Join Fin & Feathers'}
