@@ -427,8 +427,8 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - **UPDATED**: Cocktail menu layout (Feb 25, 2026)
   - Cocktails/drinks now render as line items instead of cards
   - Daily specials drink list uses line-item layout
-- **UPDATED**: Food menu images (Feb 25, 2026)
-  - Filled missing food item images in database to enable lightbox on click
+- **UPDATED**: Menu image storage (Feb 25, 2026)
+  - Downloaded external menu images to /api/uploads and stored URLs in DB
 - **FIXED**: Admin login response parsing error (Feb 25, 2026)
   - Removed double-read of response body to prevent "body stream already read" errors
 
