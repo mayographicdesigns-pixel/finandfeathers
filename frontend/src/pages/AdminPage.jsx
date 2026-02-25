@@ -3313,6 +3313,7 @@ const SocialTab = () => {
 // Events Tab - Manage events and ticketing
 const EventsTab = () => {
   const [events, setEvents] = useState([]);
+  const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
