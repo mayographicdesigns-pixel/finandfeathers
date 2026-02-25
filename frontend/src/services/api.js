@@ -570,6 +570,24 @@ export async function updateContactStatus(contactId, status) {
   return await response.json();
 }
 
+// Delete contact (soft delete)
+export async function deleteContact(contactId) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/contacts/${contactId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to delete contact');
+  }
+  return await response.json();
+}
+
 // Get menu items (admin)
 export async function getAdminMenuItems() {
   const token = localStorage.getItem('adminToken');
