@@ -101,3 +101,84 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Test frontend flows: 1) /account admin login with username 'admin' and password 'admin' should redirect to /admin and show dashboard. 2) /events page should show 'From Free' for Friday Night Live. Open ticket modal and verify package list shows General Admission as Free, total shows Free, and CTA text changes to 'Reserve Tickets'. 3) Click Reserve Tickets and confirm it attempts to navigate to sms: reservation link (location Edgewood). 4) Verify login form on /account shows logo and no broken image. Capture any console errors."
+
+frontend:
+  - task: "Admin login at /account"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/MyAccountPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Tested admin login flow. Successfully logged in with username 'admin' and password 'admin'. Redirected to /admin page as expected. Dashboard shows 5 dashboard cards (Loyalty Members, New Contacts, Menu Items, Notifications Sent, and additional stats). Admin login flow working correctly."
+
+  - task: "Login form logo on /account"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/MyAccountPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Verified logo on /account login page. Logo element found with data-testid='auth-logo', visible on page, and image loaded successfully with width of 1080px. No broken image detected. Logo displays correctly."
+
+  - task: "Events page - Friday Night Live pricing"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/EventsPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Tested events page. Friday Night Live featured event displays 'Get Tickets - From Free' pricing as expected. Event is properly configured with general package set to $0, showing 'From Free' label correctly."
+
+  - task: "Ticket modal for free event"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/EventsPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Tested ticket modal functionality. Modal opens successfully when clicking on Friday Night Live event. Package list displays correctly: General Admission shows as 'Free', VIP Experience shows $75.00, Table Reservation shows $200.00. When General Admission (free package) is selected, total displays 'Free' as expected. CTA button text correctly changes to 'Reserve Tickets' for free event (instead of 'Purchase Tickets'). All modal elements working correctly."
+
+  - task: "Reserve Tickets SMS navigation"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/EventsPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Tested Reserve Tickets flow for free event. When clicking 'Reserve Tickets' button, the system successfully creates a free reservation (confirmed by green banner: 'Your tickets have been purchased! Check your email for details'). Toast notification displays 'Reservation Confirmed' with message 'Opening reservation SMS...'. Backend API returns SMS link for Edgewood location (sms:14046921252). Browser security prevents actual navigation to sms: protocol (expected behavior), but the reservation is created successfully and SMS link is returned. The flow works correctly - reservation created, SMS link attempted, location is Edgewood as expected."
+
+metadata:
+  created_by: "testing_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: true
+  test_date: "2026-02-25"
+
+test_plan:
+  current_focus:
+    - "All tests completed"
+  stuck_tasks: []
+  test_all: true
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "testing"
+    message: "Completed comprehensive testing of all requested frontend flows. All 5 test scenarios passed successfully: 1) Admin login redirects to /admin dashboard ✓, 2) Logo displays correctly on /account ✓, 3) Friday Night Live shows 'From Free' pricing ✓, 4) Ticket modal shows correct package pricing and 'Reserve Tickets' CTA ✓, 5) Reserve Tickets creates reservation and attempts SMS navigation ✓. No console errors detected. All functionality working as expected."
