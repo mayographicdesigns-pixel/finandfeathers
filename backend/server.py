@@ -4032,6 +4032,58 @@ async def get_public_events():
     return events
 
 
+@api_router.post("/events/free-reserve")
+async def free_reserve_event(reservation: FreeEventReservationRequest):
+    event = await fetch_event_by_id(reservation.event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    if reservation.package_id not in EVENT_PACKAGES:
+        raise HTTPException(status_code=400, detail="Invalid event package")
+
+    package_prices = event.get("package_prices") or {}
+    package_amount = float(package_prices.get(reservation.package_id, EVENT_PACKAGES[reservation.package_id]["amount"]))
+
+    if package_amount > 0:
+        raise HTTPException(status_code=400, detail="Selected package requires payment")
+
+    quantity = max(1, reservation.quantity)
+    reservation_id = f"free_evt_{uuid.uuid4().hex[:12]}"
+
+    record = {
+        "id": reservation_id,
+        "event_id": reservation.event_id,
+        "event_name": event.get("name"),
+        "event_date": event.get("date"),
+        "event_time": event.get("time"),
+        "event_location": event.get("location"),
+        "package_id": reservation.package_id,
+        "quantity": quantity,
+        "amount": 0.0,
+        "email": reservation.email,
+        "phone": reservation.phone,
+        "status": "reserved",
+        "created_at": datetime.now(timezone.utc)
+    }
+
+    await db.event_reservations.insert_one(record)
+
+    reservation_link, location = await resolve_event_reservation_link(event)
+    if not reservation_link:
+        reservation_link = "/locations"
+
+    receipt_status = "pending_setup" if reservation.email else "not_requested"
+
+    return {
+        "success": True,
+        "reservation_id": reservation_id,
+        "reservation_link": reservation_link,
+        "reservation_location": location.get("name") if location else None,
+        "receipt_status": receipt_status,
+        "message": "Reservation confirmed. Email receipts will send once Gmail is configured."
+    }
+
+
 @api_router.get("/admin/events")
 async def admin_get_events(username: str = Depends(get_current_admin)):
     """Get all events including inactive (admin only)"""
