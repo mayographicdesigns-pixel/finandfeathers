@@ -126,12 +126,30 @@ const EventsPage = () => {
     }
   };
 
-  const getPackagePrice = (packageId) => {
+  const getPackagePrice = (event, packageId) => {
+    if (!event) return packages[packageId]?.amount || 0;
+    const eventPrices = event.package_prices || {};
+    const eventPrice = eventPrices[packageId];
+    if (eventPrice !== undefined && eventPrice !== null) {
+      return parseFloat(eventPrice) || 0;
+    }
     return packages[packageId]?.amount || 0;
   };
 
+  const getEventStartingPrice = (event) => {
+    if (!event || !event.packages || event.packages.length === 0) return 0;
+    const prices = event.packages.map(pkgId => getPackagePrice(event, pkgId));
+    return Math.min(...prices);
+  };
+
+  const formatPrice = (value) => {
+    if (value <= 0) return 'Free';
+    return `$${value.toFixed(2)}`;
+  };
+
   const getTotalPrice = () => {
-    return getPackagePrice(selectedPackage) * quantity;
+    if (!selectedEvent) return 0;
+    return getPackagePrice(selectedEvent, selectedPackage) * quantity;
   };
 
   return (
