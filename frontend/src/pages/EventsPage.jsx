@@ -185,10 +185,11 @@ const EventsPage = () => {
             Home
           </Button>
           <div className="flex gap-2">
-            <Button
+            <Button
               onClick={() => navigate('/locations')}
               variant="outline"
               className="border-slate-600 text-slate-300 hover:bg-slate-700"
+              data-testid="locations-btn"
             >
               <MapPin className="w-4 h-4 mr-2" />
               Locations
