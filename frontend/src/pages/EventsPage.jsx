@@ -432,6 +432,11 @@ const EventsPage = () => {
                       <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                       Processing...
                     </>
+                  ) : totalPrice <= 0 ? (
+                    <>
+                      <Ticket className="w-5 h-5 mr-2" />
+                      Reserve Tickets
+                    </>
                   ) : (
                     <>
                       <CreditCard className="w-5 h-5 mr-2" />
@@ -440,8 +445,10 @@ const EventsPage = () => {
                   )}
                 </Button>
                 
-                <p className="text-xs text-slate-500 text-center mt-3">
-                  Secure checkout powered by Stripe
+                <p className="text-xs text-slate-500 text-center mt-3" data-testid="ticket-checkout-note">
+                  {totalPrice <= 0
+                    ? "Free reservation will open the location's SMS line. Email receipts require Gmail setup."
+                    : 'Secure checkout powered by Stripe'}
                 </p>
               </div>
             </CardContent>
