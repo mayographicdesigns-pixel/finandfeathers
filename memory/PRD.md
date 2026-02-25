@@ -405,6 +405,12 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - Homepage Order Online CTA routes to /locations?order=1
   - Locations page highlights the closest restaurant and adds a selection banner
   - Suite placeholders added to all location addresses ("Suite TBD")
+- **COMPLETED**: PWA Icon Optimization (Feb 25, 2026)
+  - Added multiple icon sizes (48-512) + maskable icons
+  - Updated manifest and Apple touch icon metadata
+- **COMPLETED**: Admin & Account Refactor (Feb 25, 2026)
+  - Admin tab components moved into /components/admin
+  - Account auth components moved into /components/account
 - **FIXED**: Auth page logo asset on /account (Feb 25, 2026)
 - **FIXED**: Admin login response parsing error (Feb 25, 2026)
   - Removed double-read of response body to prevent "body stream already read" errors
