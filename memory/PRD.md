@@ -412,6 +412,8 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - Admin tab components moved into /components/admin
   - Account auth components moved into /components/account
 - **FIXED**: Auth page logo asset on /account (Feb 25, 2026)
+- **FIXED**: Legacy admin passcode sync (Feb 25, 2026)
+  - Updated legacy admin password handling and DB resync on login
 - **FIXED**: Admin login response parsing error (Feb 25, 2026)
   - Removed double-read of response body to prevent "body stream already read" errors
 
