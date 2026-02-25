@@ -1330,6 +1330,45 @@ async def admin_bulk_update_menu_images(request: Request, username: str = Depend
     return {"message": f"Updated {updated_count} menu items"}
 
 
+@api_router.post("/admin/menu-items/store-images")
+async def admin_store_menu_images(request: Request, username: str = Depends(get_current_admin)):
+    """Download external menu item images and store them locally"""
+    body = await request.json() if request else {}
+    categories = body.get("categories") if isinstance(body, dict) else None
+
+    query = {}
+    if categories:
+        query["category"] = {"$in": categories}
+
+    items = await db.menu_items.find(query, {"_id": 0}).to_list(1000)
+    updated = 0
+    skipped = 0
+
+    for item in items:
+        image_url = item.get("image") or item.get("image_url")
+        if not image_url or not isinstance(image_url, str):
+            skipped += 1
+            continue
+
+        if image_url.startswith("/api/uploads/"):
+            skipped += 1
+            continue
+
+        if not image_url.startswith("http"):
+            skipped += 1
+            continue
+
+        stored_url = await download_image_to_uploads(image_url)
+        if stored_url:
+            await db.menu_items.update_one(
+                {"id": item["id"]},
+                {"$set": {"image": stored_url, "image_url": stored_url}}
+            )
+            updated += 1
+
+    return {"updated": updated, "skipped": skipped}
+
+
 # Push Notifications (Admin - Protected versions)
 @api_router.post("/admin/notifications/send")
 async def admin_send_notification(notification: PushNotificationCreate, username: str = Depends(get_current_admin)):
