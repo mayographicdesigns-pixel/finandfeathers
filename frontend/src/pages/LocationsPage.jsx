@@ -517,8 +517,12 @@ const LocationsPage = () => {
           {sortedLocations.map((location, index) => (
             <Card 
               key={location.id} 
-              className={`overflow-hidden bg-slate-800/80 border-slate-700/50 hover:bg-slate-800 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl group cursor-pointer ${editMode ? 'ring-2 ring-red-500/50 ring-dashed' : ''}`}
+              ref={(el) => {
+                if (el) locationRefs.current[location.id] = el;
+              }}
+              className={`overflow-hidden bg-slate-800/80 border-slate-700/50 hover:bg-slate-800 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl group cursor-pointer ${editMode ? 'ring-2 ring-red-500/50 ring-dashed' : ''} ${closestLocationId === location.id && location.distance ? 'ring-2 ring-amber-500/60' : ''}`}
               onClick={() => editMode ? handleEditLocation(location) : navigate(`/locations/${location.slug}`)}
+              data-testid={`location-card-${location.id}`}
             >
               {/* Location Image */}
               <div 
