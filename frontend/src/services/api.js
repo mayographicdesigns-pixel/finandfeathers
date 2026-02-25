@@ -1327,10 +1327,12 @@ export async function createStripeTokenCheckout(packageId, userId) {
 }
 
 // Create Stripe checkout for event tickets
-export async function createStripeEventCheckout(packageId, quantity = 1, userId = null) {
+export async function createStripeEventCheckout(packageId, quantity = 1, userId = null, eventId = null, customerEmail = null) {
   const originUrl = window.location.origin;
   let url = `${API_URL}/stripe/events/checkout?package_id=${packageId}&quantity=${quantity}&origin_url=${encodeURIComponent(originUrl)}`;
   if (userId) url += `&user_id=${userId}`;
+  if (eventId) url += `&event_id=${eventId}`;
+  if (customerEmail) url += `&customer_email=${encodeURIComponent(customerEmail)}`;
   
   const response = await fetch(url, {
     method: 'POST',
@@ -1339,6 +1341,20 @@ export async function createStripeEventCheckout(packageId, quantity = 1, userId 
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.detail || 'Failed to create checkout session');
+  }
+  return await response.json();
+}
+
+// Reserve free event tickets (no checkout)
+export async function createFreeEventReservation(payload) {
+  const response = await fetch(`${API_URL}/events/free-reserve`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to reserve tickets');
   }
   return await response.json();
 }
