@@ -414,6 +414,8 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - **FIXED**: Auth page logo asset on /account (Feb 25, 2026)
 - **FIXED**: Legacy admin passcode sync (Feb 25, 2026)
   - Updated legacy admin password handling and DB resync on login
+- **UPDATED**: Menu specials hours copy (Feb 25, 2026)
+  - Mon-Fri 12pm-8pm • Saturday 5pm-8pm • Sunday 6pm-Close
 - **UPDATED**: Tagline capitalization (Feb 25, 2026)
   - "ELEVATED DINING MEETS SOUTHERN SOUL. EVERY DISH CRAFTED WITH FRESH INGREDIENTS AND GENUINE HOSPITALITY."
 - **FIXED**: Admin login response parsing error (Feb 25, 2026)
