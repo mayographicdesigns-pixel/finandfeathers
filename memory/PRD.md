@@ -472,4 +472,4 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - **Admin Login**: username=`admin`, password=`admin`
 
 ## Preview URL
-https://feather-fork-test.preview.emergentagent.com
+https://restaurant-admin-hub.preview.emergentagent.com
