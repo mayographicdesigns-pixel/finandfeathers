@@ -154,6 +154,21 @@ const SignupForm = ({ onProfileCreated, authError }) => {
 
     setIsSubmitting(true);
     try {
+      // Try admin login first (redirects to /admin on success)
+      try {
+        const adminResult = await adminLogin(formData.email.trim(), formData.password);
+        if (adminResult?.access_token) {
+          localStorage.removeItem('ff_user_profile_id');
+          localStorage.removeItem('ff_user_info');
+          localStorage.removeItem('ff_auth_provider');
+          toast({ title: 'Admin Access Granted', description: 'Redirecting to admin dashboard...' });
+          navigate('/admin');
+          return;
+        }
+      } catch (adminError) {
+        // Continue to user login if admin login fails
+      }
+
       const result = await loginUserWithPassword(formData.email, formData.password);
       
       if (result.success && result.user) {
