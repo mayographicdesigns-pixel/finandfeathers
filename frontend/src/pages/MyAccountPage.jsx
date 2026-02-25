@@ -36,14 +36,11 @@ import {
   createStripeTokenCheckout,
   getStripeCheckoutStatus,
   pollStripePaymentStatus,
-  initiateGoogleLogin,
-  registerUserWithPassword,
-  loginUserWithPassword,
-  adminLogin,
   checkUserAuth,
-  userLogout,
-  requestPasswordReset
+  userLogout
 } from '../services/api';
+import SignupForm from '../components/account/SignupForm';
+import RoleBadge from '../components/account/RoleBadge';
 
 const MyAccountPage = () => {
   const navigate = useNavigate();
