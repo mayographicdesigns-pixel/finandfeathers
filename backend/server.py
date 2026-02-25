@@ -3983,6 +3983,45 @@ DEFAULT_EVENTS = [
     }
 ]
 
+class FreeEventReservationRequest(BaseModel):
+    event_id: str
+    package_id: str
+    quantity: int = 1
+    email: Optional[str] = None
+    phone: Optional[str] = None
+
+async def fetch_event_by_id(event_id: str):
+    event = await db.events.find_one({"id": event_id}, {"_id": 0})
+    if event:
+        return event
+    for default_event in DEFAULT_EVENTS:
+        if default_event["id"] == event_id:
+            return default_event
+    return None
+
+async def resolve_event_reservation_link(event: dict):
+    location_slug = event.get("location_slug")
+    if location_slug:
+        location = await db.locations.find_one({"slug": location_slug}, {"_id": 0})
+        if location and location.get("reservations"):
+            return location.get("reservations"), location
+
+    event_location = (event.get("location") or "").strip().lower()
+    if not event_location:
+        return None, None
+
+    if "all locations" in event_location:
+        return "/locations", None
+
+    locations = await db.locations.find({}, {"_id": 0, "name": 1, "slug": 1, "reservations": 1}).to_list(100)
+    for location in locations:
+        name = (location.get("name") or "").lower()
+        if event_location in name or name in event_location:
+            if location.get("reservations"):
+                return location.get("reservations"), location
+
+    return None, None
+
 
 @api_router.get("/events")
 async def get_public_events():
