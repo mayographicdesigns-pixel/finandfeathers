@@ -15,7 +15,7 @@ import { toast } from '../../hooks/use-toast';
 import { 
   adminLogin, adminLogout, getAdminStats,
   getLoyaltyMembers, deleteLoyaltyMember,
-  getContacts, updateContactStatus,
+  getContacts, updateContactStatus, deleteContact,
   getAdminMenuItems, createMenuItem, updateMenuItem, deleteMenuItem,
   sendPushNotification, getNotificationHistory,
   uploadImage, listUploads, deleteUpload,
