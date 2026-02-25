@@ -796,7 +796,7 @@ const MenuPage = () => {
         {/* DAILY SPECIALS VIEW */}
         {activeCategory === 'daily-specials' && (
           <div>
-            <p className="text-slate-400 text-sm mb-4">Mon-Fri 12pm-8pm • Saturday 5pm-8pm • Sunday 5pm-Close</p>
+            <p className="text-slate-400 text-sm mb-4">MON-FRI 12PM-8PM • SATURDAY 5PM-8PM • SUNDAY 6PM-CLOSE</p>
             
             {/* Today's Special Highlight */}
             <div className="bg-gradient-to-r from-red-600/20 to-orange-600/20 border border-red-500/30 rounded-xl p-4 mb-6">
