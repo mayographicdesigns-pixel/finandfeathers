@@ -3582,7 +3582,7 @@ const EventsTab = () => {
                     <option key={loc.id} value={loc.slug}>{loc.name}</option>
                   ))}
                 </select>
-                <p className="text-xs text-slate-500 mt-1">Used to open the location 5s reservation SMS link for free tickets.</p>
+                <p className="text-xs text-slate-500 mt-1">Used to open the location's reservation SMS link for free tickets.</p>
               </div>
 
               <div>
