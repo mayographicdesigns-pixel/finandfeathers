@@ -327,6 +327,7 @@ const ContactsTab = () => {
                     variant="outline"
                     onClick={() => handleStatusChange(contact.id, 'reviewed')}
                     className="border-blue-600 text-blue-400 hover:bg-blue-900/30"
+                    data-testid={`contact-review-${contact.id}`}
                   >
                     <Eye className="w-3 h-3 mr-1" /> Mark Reviewed
                   </Button>
@@ -335,8 +336,18 @@ const ContactsTab = () => {
                     variant="outline"
                     onClick={() => handleStatusChange(contact.id, 'resolved')}
                     className="border-green-600 text-green-400 hover:bg-green-900/30"
+                    data-testid={`contact-resolve-${contact.id}`}
                   >
                     <Check className="w-3 h-3 mr-1" /> Resolved
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleDeleteContact(contact.id)}
+                    className="border-red-600 text-red-400 hover:bg-red-900/30"
+                    data-testid={`contact-delete-${contact.id}`}
+                  >
+                    <Trash2 className="w-3 h-3 mr-1" /> Delete
                   </Button>
                 </div>
               </CardContent>
