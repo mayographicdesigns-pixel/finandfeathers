@@ -205,12 +205,20 @@ export async function adminLogin(username, password) {
       body: JSON.stringify({ username, password })
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Login failed');
+    const responseText = await response.text();
+    let data = {};
+    if (responseText) {
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        data = {};
+      }
     }
 
-    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.detail || 'Login failed');
+    }
+
     localStorage.setItem('adminToken', data.access_token);
     return data;
   } catch (error) {
