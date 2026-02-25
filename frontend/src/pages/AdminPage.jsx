@@ -3325,9 +3325,15 @@ const EventsTab = () => {
     date: '',
     time: '',
     location: '',
+    location_slug: '',
     image: '',
     featured: false,
-    packages: ['general']
+    packages: ['general'],
+    package_prices: {
+      general: 25,
+      vip: 75,
+      table: 200
+    }
   });
 
   useEffect(() => {
