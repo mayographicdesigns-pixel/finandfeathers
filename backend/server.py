@@ -18,6 +18,7 @@ import os
 import logging
 from typing import List, Optional
 from datetime import datetime, timezone, timedelta
+import re
 import shutil
 from models import (
     LoyaltyMember, LoyaltyMemberCreate, PushSubscription,
@@ -3273,6 +3274,25 @@ async def get_location_by_slug(slug: str):
     )
     if not location:
         raise HTTPException(status_code=404, detail="Location not found")
+    return location
+
+
+# Admin Location Endpoints
+async def ensure_suite_placeholder(address: str):
+    if not address:
+        return address
+    lower = address.lower()
+    if "suite" in lower or "ste" in lower or "unit" in lower or "apt" in lower or "#" in address:
+        return address
+    return f"{address}, Suite TBD"
+
+
+def normalize_location_response(location: dict):
+    if not location:
+        return location
+    address = location.get("address")
+    if address:
+        location["address"] = ensure_suite_placeholder(address)
     return location
 
 
