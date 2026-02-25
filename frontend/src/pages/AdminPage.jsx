@@ -3655,10 +3655,9 @@ const EventsTab = () => {
                           ? 'border-red-500 bg-red-500/20 text-red-400'
                           : 'border-slate-600 text-slate-400 hover:border-slate-500'
                       }`}
+                      data-testid={`event-package-toggle-${pkg}`}
                     >
-                      {pkg === 'general' && 'General ($25)'}
-                      {pkg === 'vip' && 'VIP ($75)'}
-                      {pkg === 'table' && 'Table ($200)'}
+                      {getPackageLabel(pkg)}
                     </button>
                   ))}
                 </div>
