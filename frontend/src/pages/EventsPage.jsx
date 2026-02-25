@@ -113,15 +113,31 @@ const EventsPage = () => {
       return;
     }
 
+    const totalAmount = getTotalPrice();
     setIsPurchasing(true);
     try {
+      if (totalAmount <= 0) {
+        const result = await createFreeEventReservation({
+          event_id: selectedEvent.id,
+          package_id: selectedPackage,
+          quantity,
+          email: customerEmail || null
+        });
+        toast({ title: 'Reservation Confirmed', description: 'Opening reservation SMS...' });
+        setPurchaseSuccess(true);
+        setSelectedEvent(null);
+        window.location.href = result?.reservation_link || '/locations';
+        return;
+      }
+
       const userProfile = localStorage.getItem('userProfile');
       const userId = userProfile ? JSON.parse(userProfile).id : null;
       
-      const result = await createStripeEventCheckout(selectedPackage, quantity, userId);
+      const result = await createStripeEventCheckout(selectedPackage, quantity, userId, selectedEvent.id, customerEmail || null);
       window.location.href = result.checkout_url;
     } catch (error) {
       toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    } finally {
       setIsPurchasing(false);
     }
   };
