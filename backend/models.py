@@ -85,6 +85,8 @@ class ContactForm(BaseModel):
     phone: Optional[str] = None
     message: str
     status: str = "new"
+    is_deleted: bool = False
+    deleted_at: Optional[datetime] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class ContactFormCreate(BaseModel):

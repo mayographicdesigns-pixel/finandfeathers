@@ -1226,7 +1226,7 @@ async def admin_delete_loyalty_member(member_id: str, username: str = Depends(ge
 @api_router.get("/admin/contacts")
 async def admin_get_contacts(username: str = Depends(get_current_admin)):
     """Get all contact form submissions"""
-    contacts = await db.contact_forms.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    contacts = await db.contact_forms.find({"is_deleted": {"$ne": True}}, {"_id": 0}).sort("created_at", -1).to_list(1000)
     return contacts
 
 
