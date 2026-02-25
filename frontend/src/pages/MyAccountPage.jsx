@@ -39,6 +39,7 @@ import {
   initiateGoogleLogin,
   registerUserWithPassword,
   loginUserWithPassword,
+  adminLogin,
   checkUserAuth,
   userLogout,
   requestPasswordReset
