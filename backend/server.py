@@ -18,7 +18,6 @@ import os
 import logging
 from typing import List, Optional
 from datetime import datetime, timezone, timedelta
-import re
 import shutil
 from models import (
     LoyaltyMember, LoyaltyMemberCreate, PushSubscription,
