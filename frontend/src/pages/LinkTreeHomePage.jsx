@@ -724,8 +724,9 @@ const LinkTreeHomePage = () => {
           </Button>
 
           <Button
-            onClick={() => window.open('https://order.toasttab.com/online/fin-feathers-edgewood-2nd-location-345-edgewood-ave-se', '_blank')}
+            onClick={() => navigate('/locations?order=1')}
             className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+            data-testid="order-online-btn"
           >
             <ExternalLink className="w-5 h-5 mr-2" />
             Order Online
