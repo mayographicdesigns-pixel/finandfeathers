@@ -758,11 +758,11 @@ const MenuPage = () => {
                 {itemsByCategory['daily-specials'].filter(item => item.type === 'drink').length > 0 && (
                   <div>
                     <h4 className="text-xl font-semibold text-slate-300 mb-4">Drinks</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                    <div className="space-y-3">
                       {itemsByCategory['daily-specials']
                         .filter(item => item.type === 'drink')
                         .map((item) => (
-                          <MenuCard key={item.id} item={item} variant="compact" editMode={editMode} onEdit={handleEditItem} onImageClick={handleImageClick} />
+                          <MenuLineItem key={item.id} item={item} />
                         ))}
                     </div>
                   </div>
