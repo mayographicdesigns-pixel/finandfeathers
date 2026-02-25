@@ -1,53 +1,30 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Home, Send, Bell, Users, Mail, UtensilsCrossed, 
-  LogOut, BarChart3, Trash2, Eye, Check, X, Plus, Edit2, 
-  Lock, User, AlertCircle, RefreshCw, Upload, Image, Megaphone, 
-  Calendar, ToggleLeft, ToggleRight, Share2, Instagram, Facebook, ExternalLink,
-  ImagePlus, Grid3X3, GripVertical, Coins, Gift, Award, Briefcase, BadgeCheck, DollarSign, MapPin, Video,
-  Ticket, Star, Clock, ImageUp, MessageSquare, UserX, Shield, Key
+  Home, LogOut, BarChart3, Megaphone, Ticket, Grid3X3, ImageUp, MessageSquare,
+  MapPin, Video, Share2, UtensilsCrossed, Coins, Users, Mail, Bell, Shield
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { Textarea } from '../components/ui/textarea';
-import { toast } from '../hooks/use-toast';
-import { 
-  adminLogin, adminLogout, checkAdminAuth, getAdminStats,
-  getLoyaltyMembers, deleteLoyaltyMember,
-  getContacts, updateContactStatus,
-  getAdminMenuItems, createMenuItem, updateMenuItem, deleteMenuItem,
-  sendPushNotification, getNotificationHistory,
-  uploadImage, listUploads, deleteUpload,
-  getAdminSpecials, createSpecial, updateSpecial, deleteSpecial, resendSpecialNotification,
-  getAdminSocialLinks, createSocialLink, updateSocialLink, deleteSocialLink,
-  getAdminInstagramPosts, createInstagramPost, updateInstagramPost, deleteInstagramPost,
-  getAdminGallery, createGalleryItem, updateGalleryItem, deleteGalleryItem,
-  adminGetUsers, adminGiftTokens, adminUpdateUserRole, adminGetCashouts, adminProcessCashout,
-  adminGetLocations, adminCreateLocation, adminUpdateLocation, adminDeleteLocation, adminReorderLocations,
-  adminGetEvents, adminCreateEvent, adminUpdateEvent, adminDeleteEvent,
-  adminGetGallerySubmissions, adminDeleteGallerySubmission,
-  adminGetAllSocialPosts, adminDeleteSocialPost, adminCleanupOldPosts, adminDeleteUser,
-  getAdminUsers, createAdminUser, updateAdminUser, deleteAdminUser, changeAdminPassword
-} from '../services/api';
+import { Card, CardContent } from '../components/ui/card';
+import { adminLogout, checkAdminAuth, getAdminStats } from '../services/api';
 import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  rectSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-
+  LoginForm,
+  DashboardStats,
+  LoyaltyMembersTab,
+  ContactsTab,
+  MenuItemsTab,
+  AdminAccountsTab,
+  NotificationsTab,
+  SpecialsTab,
+  GalleryTab,
+  LocationsTab,
+  VideosTab,
+  SocialTab,
+  EventsTab,
+  GallerySubmissionsTab,
+  SocialPostsTab,
+  UsersTab
+} from '../components/admin/AdminTabs';
 // Main Admin Page Component
 const AdminPage = () => {
   const navigate = useNavigate();
