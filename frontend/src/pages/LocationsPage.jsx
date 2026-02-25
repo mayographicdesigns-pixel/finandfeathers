@@ -120,6 +120,21 @@ const LocationsPage = () => {
     }
   }, [locations, userLocation]);
 
+  useEffect(() => {
+    if (isOrderFlow) {
+      setHasAutoScrolled(false);
+    }
+  }, [isOrderFlow]);
+
+  useEffect(() => {
+    if (!isOrderFlow || !closestLocationId || hasAutoScrolled) return;
+    const target = locationRefs.current[closestLocationId];
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setHasAutoScrolled(true);
+    }
+  }, [isOrderFlow, closestLocationId, hasAutoScrolled]);
+
   const fetchLocations = async () => {
     setIsLoading(true);
     const fetchedLocations = await getLocations();
