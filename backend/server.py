@@ -3262,6 +3262,7 @@ async def get_public_locations():
         {"is_active": True},
         {"_id": 0}
     ).sort("display_order", 1).to_list(100)
+    locations = [normalize_location_response(loc) for loc in locations]
     return locations
 
 
@@ -3274,6 +3275,7 @@ async def get_location_by_slug(slug: str):
     )
     if not location:
         raise HTTPException(status_code=404, detail="Location not found")
+    location = normalize_location_response(location)
     return location
 
 
@@ -3301,6 +3303,7 @@ def normalize_location_response(location: dict):
 async def get_all_locations(admin: str = Depends(get_current_admin)):
     """Get all locations (including inactive) for admin"""
     locations = await db.locations.find({}, {"_id": 0}).sort("display_order", 1).to_list(100)
+    locations = [normalize_location_response(loc) for loc in locations]
     return locations
 
 
