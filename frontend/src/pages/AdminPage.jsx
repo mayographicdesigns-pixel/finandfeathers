@@ -3426,9 +3426,15 @@ const EventsTab = () => {
       date: event.date,
       time: event.time,
       location: event.location || '',
+      location_slug: event.location_slug || '',
       image: event.image || '',
       featured: event.featured || false,
-      packages: event.packages || ['general']
+      packages: event.packages || ['general'],
+      package_prices: event.package_prices || {
+        general: 25,
+        vip: 75,
+        table: 200
+      }
     });
     setShowForm(true);
   };
