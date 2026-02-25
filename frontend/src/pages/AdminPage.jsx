@@ -3339,6 +3339,7 @@ const EventsTab = () => {
 
   useEffect(() => {
     fetchEvents();
+    fetchLocations();
   }, []);
 
   const fetchEvents = async () => {
