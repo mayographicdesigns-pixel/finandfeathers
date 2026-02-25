@@ -424,6 +424,11 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - **UPDATED**: Cocktail menu refresh (Feb 25, 2026)
   - Daily specials, signature cocktails, and brunch drinks updated per latest list
   - Added imagery for cocktails/daily specials/brunch drinks
+- **UPDATED**: Cocktail menu layout (Feb 25, 2026)
+  - Cocktails/drinks now render as line items instead of cards
+  - Daily specials drink list uses line-item layout
+- **UPDATED**: Food menu images (Feb 25, 2026)
+  - Filled missing food item images in database to enable lightbox on click
 - **FIXED**: Admin login response parsing error (Feb 25, 2026)
   - Removed double-read of response body to prevent "body stream already read" errors
 
