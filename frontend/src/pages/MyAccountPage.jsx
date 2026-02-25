@@ -389,12 +389,13 @@ const SignupForm = ({ onProfileCreated, authError }) => {
                 </div>
 
                 <div className="flex items-center">
-                  <input
+                  <input
                     type="checkbox"
                     id="show-password"
                     checked={showPassword}
                     onChange={(e) => setShowPassword(e.target.checked)}
                     className="mr-2"
+                    data-testid="signup-show-password-toggle"
                   />
                   <label htmlFor="show-password" className="text-slate-400 text-sm">Show password</label>
                 </div>
