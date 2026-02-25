@@ -205,14 +205,11 @@ export async function adminLogin(username, password) {
       body: JSON.stringify({ username, password })
     });
 
-    const responseText = await response.text();
     let data = {};
-    if (responseText) {
-      try {
-        data = JSON.parse(responseText);
-      } catch (parseError) {
-        data = {};
-      }
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      data = {};
     }
 
     if (!response.ok) {
