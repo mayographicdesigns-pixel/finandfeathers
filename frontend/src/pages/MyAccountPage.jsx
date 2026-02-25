@@ -389,7 +389,7 @@ const SignupForm = ({ onProfileCreated, authError }) => {
                 </div>
 
                 <div className="flex items-center">
-                  <input
+                  <input
                     type="checkbox"
                     id="show-password"
                     checked={showPassword}
