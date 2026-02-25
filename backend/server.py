@@ -4435,7 +4435,7 @@ async def create_stripe_event_checkout(
         stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
 
         # Create success and cancel URLs
-        success_url = f"{origin_url}/?payment=success&session_id={{CHECKOUT_SESSION_ID}}&transaction_id={transaction_id}&type=event"
+        success_url = f"{origin_url}/?payment=success&session_id={{CHECKOUT_SESSION_ID}}&transaction_id={transaction_id}&type=event"
         cancel_url = f"{origin_url}/?payment=cancelled"
 
         # Create checkout session
