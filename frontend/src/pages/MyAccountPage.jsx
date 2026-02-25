@@ -509,7 +509,7 @@ const SignupForm = ({ onProfileCreated, authError }) => {
 
                 <p className="text-center text-slate-400 text-sm mt-4">
                   Don't have an account?{' '}
-                  <button 
+                  <button 
                     type="button"
                     onClick={() => setAuthMode('signup')}
                     className="text-red-400 hover:text-red-300 font-medium"
