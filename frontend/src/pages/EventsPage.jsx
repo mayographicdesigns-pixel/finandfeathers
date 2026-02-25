@@ -380,6 +380,7 @@ const EventsPage = () => {
                     size="sm"
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                     className="border-slate-600"
+                    data-testid="ticket-qty-minus"
                   >
                     -
                   </Button>
