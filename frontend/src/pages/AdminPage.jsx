@@ -3498,6 +3498,27 @@ const EventsTab = () => {
     setFormData({ ...formData, packages: newPackages });
   };
 
+  const updatePackagePrice = (pkg, value) => {
+    const parsed = value === '' ? 0 : parseFloat(value);
+    const normalized = Number.isNaN(parsed) ? 0 : Math.max(0, parsed);
+    setFormData(prev => ({
+      ...prev,
+      package_prices: {
+        ...prev.package_prices,
+        [pkg]: normalized
+      }
+    }));
+  };
+
+  const getPackageLabel = (pkg) => {
+    const amount = formData.package_prices?.[pkg] ?? 0;
+    const priceLabel = amount <= 0 ? 'Free' : `$${amount}`;
+    if (pkg === 'general') return `General (${priceLabel})`;
+    if (pkg === 'vip') return `VIP (${priceLabel})`;
+    if (pkg === 'table') return `Table (${priceLabel})`;
+    return pkg;
+  };
+
   if (loading) return <div className="text-white text-center py-8">Loading...</div>;
 
   return (
