@@ -1370,8 +1370,8 @@ async def admin_get_notification_history(username: str = Depends(get_current_adm
 async def admin_get_stats(username: str = Depends(get_current_admin)):
     """Get dashboard statistics"""
     loyalty_count = await db.loyalty_members.count_documents({})
-    contacts_count = await db.contact_forms.count_documents({})
-    new_contacts_count = await db.contact_forms.count_documents({"status": "new"})
+    contacts_count = await db.contact_forms.count_documents({"is_deleted": {"$ne": True}})
+    new_contacts_count = await db.contact_forms.count_documents({"status": "new", "is_deleted": {"$ne": True}})
     menu_items_count = await db.menu_items.count_documents({})
     notifications_count = await db.push_notifications.count_documents({})
     specials_count = await db.specials.count_documents({"is_active": True})
