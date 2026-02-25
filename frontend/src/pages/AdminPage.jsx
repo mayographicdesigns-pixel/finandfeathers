@@ -3663,6 +3663,29 @@ const EventsTab = () => {
                 </div>
               </div>
 
+              {/* Ticket Prices */}
+              <div>
+                <label className="text-slate-300 text-sm block mb-2">Ticket Prices (can be $0 for free)</label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {['general', 'vip', 'table'].map(pkg => (
+                    <div key={pkg} className="space-y-2">
+                      <label className="text-xs text-slate-400 uppercase tracking-wide">
+                        {pkg === 'general' ? 'General' : pkg === 'vip' ? 'VIP' : 'Table'} Price
+                      </label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={formData.package_prices?.[pkg] ?? 0}
+                        onChange={(e) => updatePackagePrice(pkg, e.target.value)}
+                        className="bg-slate-900 border-slate-700 text-white"
+                        data-testid={`event-price-${pkg}-input`}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               {/* Featured Toggle */}
               <div className="flex items-center gap-2">
                 <input
