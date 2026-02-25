@@ -215,6 +215,7 @@ const EventsPage = () => {
           alt="Fin & Feathers"
           className="max-h-32 md:max-h-40 w-auto mx-auto mb-6 object-contain cursor-pointer"
           onClick={() => navigate('/')}
+          data-testid="events-logo"
         />
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
           <Calendar className="inline w-10 h-10 mr-3 text-red-500" />
