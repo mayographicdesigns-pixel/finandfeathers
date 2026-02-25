@@ -423,6 +423,7 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - "ELEVATED DINING MEETS SOUTHERN SOUL. EVERY DISH CRAFTED WITH FRESH INGREDIENTS AND GENUINE HOSPITALITY."
 - **UPDATED**: Cocktail menu refresh (Feb 25, 2026)
   - Daily specials, signature cocktails, and brunch drinks updated per latest list
+  - Added imagery for cocktails/daily specials/brunch drinks
 - **FIXED**: Admin login response parsing error (Feb 25, 2026)
   - Removed double-read of response body to prevent "body stream already read" errors
 
