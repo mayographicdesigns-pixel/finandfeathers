@@ -8,6 +8,7 @@ import { toast } from '../hooks/use-toast';
 import { 
   getEventPackages, 
   createStripeEventCheckout, 
+  createFreeEventReservation,
   getStripeCheckoutStatus,
   pollStripePaymentStatus,
   getPublicEvents
