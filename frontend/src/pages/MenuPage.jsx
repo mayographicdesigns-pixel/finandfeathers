@@ -727,7 +727,7 @@ const MenuPage = () => {
                 <h3 className="text-2xl font-bold text-white mb-2 border-b border-slate-700 pb-3">
                   $5 Daily Specials
                 </h3>
-                <p className="text-slate-400 text-sm mb-4">Mon-Fri 12pm-8pm • Saturday 5pm-8pm • Sunday 5pm-Close</p>
+                <p className="text-slate-400 text-sm mb-4">Mon-Fri 12pm-8pm • Saturday 5pm-8pm • Sunday 6pm-Close</p>
                 
                 {/* Today's Special Highlight */}
                 <div className="bg-gradient-to-r from-red-600/20 to-orange-600/20 border border-red-500/30 rounded-xl p-4 mb-6">
