@@ -361,7 +361,7 @@ const EventsPage = () => {
                           <p className="text-white font-semibold">{packages[pkgId]?.name || pkgId}</p>
                           <p className="text-slate-400 text-sm">{packages[pkgId]?.description}</p>
                         </div>
-                        <span className="text-red-500 font-bold text-lg">${packages[pkgId]?.amount || 0}</span>
+                        <span className="text-red-500 font-bold text-lg">{formatPrice(getPackagePrice(selectedEvent, pkgId))}</span>
                       </div>
                     </button>
                   ))}
