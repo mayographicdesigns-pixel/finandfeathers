@@ -411,7 +411,7 @@ const EventsPage = () => {
               <div className="border-t border-slate-700 pt-4">
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-slate-300">Total</span>
-                  <span className="text-2xl font-bold text-white">${getTotalPrice().toFixed(2)}</span>
+                  <span className="text-2xl font-bold text-white" data-testid="ticket-total-amount">{formatPrice(totalPrice)}</span>
                 </div>
                 
                 <Button
