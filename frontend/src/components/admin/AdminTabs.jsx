@@ -1192,7 +1192,7 @@ const NotificationsTab = () => {
 
 // Specials Tab - Post specials that auto-send to app users
 // Import locations from mockData
-import { locations } from '../mockData';
+import { locations } from '../../mockData';
 
 const SpecialsTab = () => {
   const [specials, setSpecials] = useState([]);
