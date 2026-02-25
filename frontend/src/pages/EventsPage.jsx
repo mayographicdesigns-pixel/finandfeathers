@@ -285,6 +285,7 @@ const EventsPage = () => {
               key={event.id} 
               className="overflow-hidden bg-slate-800/50 border-slate-700 hover:border-red-600/50 transition-all duration-300 group cursor-pointer"
               onClick={() => setSelectedEvent(event)}
+              data-testid={`event-card-${event.id}`}
             >
               <div className="relative h-48 overflow-hidden">
                 <img 
