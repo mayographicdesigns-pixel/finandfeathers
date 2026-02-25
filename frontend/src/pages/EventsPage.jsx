@@ -347,7 +347,7 @@ const EventsPage = () => {
                 <label className="text-sm text-slate-300 mb-2 block">Select Package</label>
                 <div className="space-y-2">
                   {selectedEvent.packages.map(pkgId => (
-                    <button
+                    <button
                       key={pkgId}
                       onClick={() => setSelectedPackage(pkgId)}
                       className={`w-full p-4 rounded-lg border transition-all ${
@@ -355,6 +355,7 @@ const EventsPage = () => {
                           ? 'border-red-500 bg-red-500/10'
                           : 'border-slate-700 bg-slate-800 hover:border-slate-600'
                       }`}
+                      data-testid={`ticket-package-${pkgId}-btn`}
                     >
                       <div className="flex justify-between items-center">
                         <div className="text-left">
