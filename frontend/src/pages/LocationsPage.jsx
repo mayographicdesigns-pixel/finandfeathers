@@ -504,6 +504,14 @@ const LocationsPage = () => {
           </div>
         )}
 
+        {isOrderFlow && (
+          <div className="text-center mb-8" data-testid="order-flow-banner">
+            <p className="text-amber-400 text-sm">
+              Select a restaurant to order online. The closest location is highlighted for you.
+            </p>
+          </div>
+        )}
+
         {/* Location Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
           {sortedLocations.map((location, index) => (
