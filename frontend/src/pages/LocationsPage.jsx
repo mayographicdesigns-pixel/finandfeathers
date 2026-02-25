@@ -546,7 +546,7 @@ const LocationsPage = () => {
                     </div>
                   </div>
                 )}
-                {!editMode && location.distance && index === 0 && (
+                {!editMode && location.distance && location.id === closestLocationId && (
                   <div className="absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
                     Nearest Location
                   </div>
