@@ -168,6 +168,8 @@ const EventsPage = () => {
     return getPackagePrice(selectedEvent, selectedPackage) * quantity;
   };
 
+  const totalPrice = getTotalPrice();
+
   return (
     <div className="min-h-screen bg-black">
       {/* Header */}
