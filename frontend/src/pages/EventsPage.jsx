@@ -315,7 +315,7 @@ const EventsPage = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-red-500 font-semibold">From {formatPrice(getEventStartingPrice(event))}</span>
-                  <Button size="sm" className="bg-red-600 hover:bg-red-700">
+                  <Button size="sm" className="bg-red-600 hover:bg-red-700" data-testid={`event-tickets-btn-${event.id}`}>
                     <Ticket className="w-3 h-3 mr-1" />
                     Tickets
                   </Button>
