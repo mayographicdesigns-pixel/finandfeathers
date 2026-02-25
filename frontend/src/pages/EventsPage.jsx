@@ -410,6 +410,7 @@ const EventsPage = () => {
                   onChange={(e) => setCustomerEmail(e.target.value)}
                   placeholder="your@email.com"
                   className="bg-slate-800 border-slate-700 text-white"
+                  data-testid="ticket-email-input"
                 />
               </div>
 
