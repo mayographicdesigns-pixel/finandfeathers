@@ -376,6 +376,21 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - Location detail pages dynamically show/hide tabs based on enabled features
   - All 8 locations displayed as cards in admin panel
   - Settings persist in MongoDB
+- **COMPLETED**: Enhanced PWA Features v2.1.0 (Feb 24, 2026)
+  - Version changelog popup showing what's new in each release
+  - Critical update force-refresh (auto-refresh for security updates)
+  - Background sync for offline posts (queues posts when offline, syncs when back online)
+  - Offline indicator banner showing network status
+  - Offline fallback page with retry functionality
+  - IndexedDB storage for pending posts
+- **COMPLETED**: Forgot Password Flow (Feb 24, 2026)
+  - "Forgot Password?" link on login form
+  - Request reset via username or email
+  - Reset token generation with 1-hour expiry
+  - Dedicated /reset-password page with token verification
+  - Password reset with confirmation
+  - Security: clears all existing sessions after reset
+  - Debug mode shows reset link (remove for production)
 - **COMPLETED**: Enhanced Admin Login via /account (Feb 25, 2026)
   - Admins can sign in from the main user login page with username/email + password
   - Redirects directly to /admin without creating a user session
