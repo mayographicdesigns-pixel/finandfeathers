@@ -349,7 +349,7 @@ const EventsPage = () => {
                 <label className="text-sm text-slate-300 mb-2 block">Select Package</label>
                 <div className="space-y-2">
                   {selectedEvent.packages.map(pkgId => (
-                    <button
+                    <button
                       key={pkgId}
                       onClick={() => setSelectedPackage(pkgId)}
                       className={`w-full p-4 rounded-lg border transition-all ${
@@ -364,7 +364,7 @@ const EventsPage = () => {
                           <p className="text-white font-semibold">{packages[pkgId]?.name || pkgId}</p>
                           <p className="text-slate-400 text-sm">{packages[pkgId]?.description}</p>
                         </div>
-                        <span className="text-red-500 font-bold text-lg">{formatPrice(getPackagePrice(selectedEvent, pkgId))}</span>
+                        <span className="text-red-500 font-bold text-lg">{formatPrice(getPackagePrice(selectedEvent, pkgId))}</span>
                       </div>
                     </button>
                   ))}
