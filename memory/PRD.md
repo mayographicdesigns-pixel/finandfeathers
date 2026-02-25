@@ -421,6 +421,8 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - MON-FRI 12PM-8PM • SATURDAY 5PM-8PM • SUNDAY 6PM-CLOSE
 - **UPDATED**: Tagline capitalization (Feb 25, 2026)
   - "ELEVATED DINING MEETS SOUTHERN SOUL. EVERY DISH CRAFTED WITH FRESH INGREDIENTS AND GENUINE HOSPITALITY."
+- **UPDATED**: Cocktail menu refresh (Feb 25, 2026)
+  - Daily specials, signature cocktails, and brunch drinks updated per latest list
 - **FIXED**: Admin login response parsing error (Feb 25, 2026)
   - Removed double-read of response body to prevent "body stream already read" errors
 
