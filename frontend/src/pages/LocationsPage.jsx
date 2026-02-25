@@ -213,33 +213,6 @@ const LocationsPage = () => {
     }
   };
 
-  // Get user's geolocation and sort locations
-  useEffect(() => {
-    if (sortedLocations.length === 0) return;
-    
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setUserLocation({ lat: latitude, lng: longitude });
-          setLocationPermission('granted');
-          
-          // Sort locations by distance
-          const sorted = [...sortedLocations].map(loc => ({
-            ...loc,
-            distance: calculateDistance(latitude, longitude, loc.coordinates.lat, loc.coordinates.lng)
-          })).sort((a, b) => a.distance - b.distance);
-          
-          setSortedLocations(sorted);
-        },
-        (error) => {
-          console.log('Geolocation error:', error);
-          setLocationPermission('denied');
-        }
-      );
-    }
-  }, [sortedLocations.length > 0]);
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
