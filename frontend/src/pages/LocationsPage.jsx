@@ -473,7 +473,7 @@ const LocationsPage = () => {
             />
           </div>
           <p className="text-slate-300 text-lg max-w-2xl mx-auto mb-6">
-            Elevated dining meets Southern soul. Find a location near you.
+            ELEVATED DINING MEETS SOUTHERN SOUL. EVERY DISH CRAFTED WITH FRESH INGREDIENTS AND GENUINE HOSPITALITY.
           </p>
           
           {/* Home Button */}

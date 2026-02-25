@@ -630,8 +630,8 @@ const MenuPage = () => {
           Our Menu
         </h2>
         <p className="text-slate-300 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-          Elevated dining meets Southern soul. Every dish crafted with fresh
-          ingredients and genuine hospitality.
+          ELEVATED DINING MEETS SOUTHERN SOUL. EVERY DISH CRAFTED WITH FRESH
+          INGREDIENTS AND GENUINE HOSPITALITY.
         </p>
         {usingMockData && (
           <p className="text-yellow-500 text-sm mt-2">

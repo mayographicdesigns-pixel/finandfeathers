@@ -261,7 +261,7 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
 
 // Default content
 const defaultContent = {
-  tagline: "Elevated dining meets Southern soul",
+  tagline: "ELEVATED DINING MEETS SOUTHERN SOUL. EVERY DISH CRAFTED WITH FRESH INGREDIENTS AND GENUINE HOSPITALITY",
   logo_url: "https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png",
   contact_phone: "(404) 855-5524",
   contact_email: "info@finandfeathersrestaurants.com",
