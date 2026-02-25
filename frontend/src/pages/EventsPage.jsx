@@ -261,7 +261,7 @@ const EventsPage = () => {
                   data-testid={`get-tickets-${event.id}`}
                 >
                   <Ticket className="w-4 h-4 mr-2" />
-                  Get Tickets - From ${getPackagePrice('general')}
+                  Get Tickets - From {formatPrice(getEventStartingPrice(event))}
                 </Button>
               </CardContent>
             </div>
