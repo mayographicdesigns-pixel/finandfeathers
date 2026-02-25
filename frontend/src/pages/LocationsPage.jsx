@@ -91,25 +91,34 @@ const LocationsPage = () => {
     }
   };
 
-  // Sort locations by distance when user location changes
+  // Sort locations by distance when locations or user location changes
   useEffect(() => {
-    if (userLocation && sortedLocations.length > 0) {
-      const locationsWithDistance = sortedLocations.map(loc => {
+    if (locations.length === 0) {
+      setSortedLocations([]);
+      setClosestLocationId(null);
+      return;
+    }
+
+    if (userLocation) {
+      const locationsWithDistance = locations.map(loc => {
         const coords = loc.coordinates || { lat: 0, lng: 0 };
         const distance = calculateDistance(
-          userLocation.lat, 
-          userLocation.lng, 
-          coords.lat, 
+          userLocation.lat,
+          userLocation.lng,
+          coords.lat,
           coords.lng
         );
         return { ...loc, distance };
       });
-      
-      // Sort by distance (closest first)
+
       locationsWithDistance.sort((a, b) => a.distance - b.distance);
       setSortedLocations(locationsWithDistance);
+      setClosestLocationId(locationsWithDistance[0]?.id || null);
+    } else {
+      setSortedLocations(locations);
+      setClosestLocationId(null);
     }
-  }, [userLocation]);
+  }, [locations, userLocation]);
 
   const fetchLocations = async () => {
     setIsLoading(true);
