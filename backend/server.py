@@ -286,14 +286,23 @@ async def login(credentials: UserLogin):
     
     if admin_user:
         # Database admin user found
-        if not verify_password(credentials.password, admin_user.get("password_hash", "")):
-            raise HTTPException(status_code=401, detail="Invalid credentials")
-        
         if not admin_user.get("is_active", True):
             raise HTTPException(status_code=401, detail="Account is disabled")
-        
-        access_token = create_access_token(data={"sub": admin_user["username"], "admin_id": admin_user["id"]})
-        return Token(access_token=access_token, token_type="bearer")
+
+        if verify_password(credentials.password, admin_user.get("password_hash", "")):
+            access_token = create_access_token(data={"sub": admin_user["username"], "admin_id": admin_user["id"]})
+            return Token(access_token=access_token, token_type="bearer")
+
+        # Allow legacy admin passcode to re-sync password hash
+        if credentials.username.lower() == ADMIN_USERNAME and verify_password(credentials.password, ADMIN_PASSWORD_HASH):
+            await db.admin_users.update_one(
+                {"id": admin_user["id"]},
+                {"$set": {"password_hash": ADMIN_PASSWORD_HASH, "updated_at": datetime.now(timezone.utc)}}
+            )
+            access_token = create_access_token(data={"sub": admin_user["username"], "admin_id": admin_user["id"]})
+            return Token(access_token=access_token, token_type="bearer")
+
+        raise HTTPException(status_code=401, detail="Invalid credentials")
     
     # Fallback to legacy hardcoded admin
     if credentials.username != ADMIN_USERNAME:
