@@ -3278,7 +3278,7 @@ async def get_location_by_slug(slug: str):
 
 
 # Admin Location Endpoints
-async def ensure_suite_placeholder(address: str):
+def ensure_suite_placeholder(address: str):
     if not address:
         return address
     lower = address.lower()
