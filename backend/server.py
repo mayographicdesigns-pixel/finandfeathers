@@ -1711,10 +1711,12 @@ async def download_image_to_uploads(image_url: str):
         async with aiohttp.ClientSession() as session:
             async with session.get(image_url) as response:
                 if response.status != 200:
-                    raise HTTPException(status_code=400, detail=f"Failed to download image: {response.status}")
+                    logging.warning(f"Image download failed {response.status} for {image_url}")
+                    return None
                 content = await response.read()
                 if len(content) > MAX_FILE_SIZE:
-                    raise HTTPException(status_code=400, detail="Image too large. Maximum size is 5MB")
+                    logging.warning(f"Image too large for {image_url}")
+                    return None
 
                 parsed_path = urlparse(image_url).path
                 ext = Path(parsed_path).suffix.lower()
@@ -1732,10 +1734,9 @@ async def download_image_to_uploads(image_url: str):
                     f.write(content)
 
                 return f"/api/uploads/{filename}"
-    except HTTPException:
-        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to store image: {str(e)}")
+        logging.error(f"Failed to store image {image_url}: {e}")
+        return None
 
 @api_router.post("/admin/upload")
 async def admin_upload_file(
