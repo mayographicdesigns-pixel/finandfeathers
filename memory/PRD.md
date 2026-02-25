@@ -399,6 +399,8 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - Admins can set ticket package prices to $0
   - Free reservations skip checkout and redirect to the location's SMS reservation link
   - Added per-event package pricing + location slug mapping for free tickets
+- **COMPLETED**: Global ALL CAPS styling for headings, titles, and buttons (Feb 25, 2026)
+  - Applies to headings, section titles, tabs, and button labels across the site
 - **FIXED**: Auth page logo asset on /account (Feb 25, 2026)
 
 ## Prioritized Backlog
