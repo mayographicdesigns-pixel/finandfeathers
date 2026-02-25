@@ -411,6 +411,9 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - **COMPLETED**: Admin & Account Refactor (Feb 25, 2026)
   - Admin tab components moved into /components/admin
   - Account auth components moved into /components/account
+- **COMPLETED**: Soft delete for contact submissions (Feb 25, 2026)
+  - Delete button in Admin > Contacts (soft delete)
+  - Deleted contacts removed from list and stats
 - **FIXED**: Auth page logo asset on /account (Feb 25, 2026)
 - **FIXED**: Legacy admin passcode sync (Feb 25, 2026)
   - Updated legacy admin password handling and DB resync on login
