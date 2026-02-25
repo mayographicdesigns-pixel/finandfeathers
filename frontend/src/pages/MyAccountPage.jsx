@@ -312,6 +312,7 @@ const SignupForm = ({ onProfileCreated, authError }) => {
                   <button 
                     onClick={() => setAuthMode('login')}
                     className="text-red-400 hover:text-red-300 font-medium"
+                    data-testid="auth-goto-login-btn"
                   >
                     Sign In
                   </button>
