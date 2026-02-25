@@ -341,6 +341,7 @@ const EventsPage = () => {
                   size="sm" 
                   onClick={() => setSelectedEvent(null)}
                   className="text-slate-400 hover:text-white"
+                  data-testid="close-ticket-modal-btn"
                 >
                   ✕
                 </Button>
