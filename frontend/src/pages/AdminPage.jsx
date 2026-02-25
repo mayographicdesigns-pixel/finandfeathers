@@ -3570,6 +3570,22 @@ const EventsTab = () => {
               </div>
 
               <div>
+                <label className="text-slate-300 text-sm block mb-2">Reservation Location (for free ticket SMS)</label>
+                <select
+                  value={formData.location_slug}
+                  onChange={(e) => setFormData({ ...formData, location_slug: e.target.value })}
+                  className="w-full bg-slate-900 border border-slate-700 text-white rounded-md px-3 py-2"
+                  data-testid="event-location-slug-select"
+                >
+                  <option value="">Use event location text</option>
+                  {locations.map(loc => (
+                    <option key={loc.id} value={loc.slug}>{loc.name}</option>
+                  ))}
+                </select>
+                <p className="text-xs text-slate-500 mt-1">Used to open the location 5s reservation SMS link for free tickets.</p>
+              </div>
+
+              <div>
                 <label className="text-slate-300 text-sm block mb-2">Description *</label>
                 <Textarea
                   placeholder="Describe the event..."
