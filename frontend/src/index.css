@@ -88,6 +88,26 @@ code {
 }
 
 @layer base {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    .ff-title,
+    .ff-heading,
+    [class*="font-bold"],
+    [class*="font-semibold"] {
+        text-transform: uppercase;
+    }
+
+    button,
+    [role="button"] {
+        text-transform: uppercase;
+    }
+}
+
+@layer base {
     [data-debug-wrapper="true"] {
         display: contents !important;
     }
