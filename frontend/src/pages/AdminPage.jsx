@@ -3353,6 +3353,15 @@ const EventsTab = () => {
     }
   };
 
+  const fetchLocations = async () => {
+    try {
+      const data = await adminGetLocations();
+      setLocations(data);
+    } catch (err) {
+      console.error('Failed to load locations', err);
+    }
+  };
+
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
