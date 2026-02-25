@@ -16,6 +16,8 @@ from apscheduler.triggers.cron import CronTrigger
 import aiohttp
 import os
 import logging
+import mimetypes
+from urllib.parse import urlparse
 from typing import List, Optional
 from datetime import datetime, timezone, timedelta
 import shutil
@@ -1661,6 +1663,40 @@ ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
 ALLOWED_VIDEO_EXTENSIONS = {'.mp4', '.mov', '.webm', '.avi'}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 MAX_VIDEO_SIZE = 50 * 1024 * 1024  # 50MB
+
+async def download_image_to_uploads(image_url: str):
+    if not image_url:
+        return None
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(image_url) as response:
+                if response.status != 200:
+                    raise HTTPException(status_code=400, detail=f"Failed to download image: {response.status}")
+                content = await response.read()
+                if len(content) > MAX_FILE_SIZE:
+                    raise HTTPException(status_code=400, detail="Image too large. Maximum size is 5MB")
+
+                parsed_path = urlparse(image_url).path
+                ext = Path(parsed_path).suffix.lower()
+                if ext not in ALLOWED_EXTENSIONS:
+                    content_type = response.headers.get("Content-Type", "").split(";")[0].strip()
+                    guessed_ext = mimetypes.guess_extension(content_type) if content_type else None
+                    if guessed_ext and guessed_ext.lower() in ALLOWED_EXTENSIONS:
+                        ext = guessed_ext.lower()
+                    else:
+                        ext = ".jpg"
+
+                filename = f"{uuid.uuid4()}{ext}"
+                file_path = UPLOAD_DIR / filename
+                with open(file_path, "wb") as f:
+                    f.write(content)
+
+                return f"/api/uploads/{filename}"
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to store image: {str(e)}")
 
 @api_router.post("/admin/upload")
 async def admin_upload_file(
