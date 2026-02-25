@@ -384,7 +384,7 @@ const EventsPage = () => {
                   >
                     -
                   </Button>
-                  <span className="text-white text-xl font-bold w-8 text-center">{quantity}</span>
+                  <span className="text-white text-xl font-bold w-8 text-center" data-testid="ticket-qty-value">{quantity}</span>
                   <Button
                     variant="outline"
                     size="sm"
