@@ -1234,12 +1234,24 @@ async def admin_get_contacts(username: str = Depends(get_current_admin)):
 async def admin_update_contact(contact_id: str, update: ContactFormUpdate, username: str = Depends(get_current_admin)):
     """Update contact form status"""
     result = await db.contact_forms.update_one(
-        {"id": contact_id},
+        {"id": contact_id, "is_deleted": {"$ne": True}},
         {"$set": {"status": update.status}}
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Contact not found")
     return {"message": "Contact updated successfully"}
+
+
+@api_router.delete("/admin/contacts/{contact_id}")
+async def admin_delete_contact(contact_id: str, username: str = Depends(get_current_admin)):
+    """Soft delete a contact form"""
+    result = await db.contact_forms.update_one(
+        {"id": contact_id, "is_deleted": {"$ne": True}},
+        {"$set": {"is_deleted": True, "deleted_at": datetime.now(timezone.utc)}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Contact not found")
+    return {"message": "Contact deleted successfully"}
 
 
 # Menu Items (Admin)
