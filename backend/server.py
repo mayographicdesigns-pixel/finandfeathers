@@ -4373,16 +4373,38 @@ async def create_stripe_token_checkout(request: Request, package_id: str, user_i
 
 
 @api_router.post("/stripe/events/checkout")
-async def create_stripe_event_checkout(request: Request, package_id: str, quantity: int = 1, user_id: str = None, origin_url: str = None):
+async def create_stripe_event_checkout(
+    request: Request,
+    package_id: str,
+    quantity: int = 1,
+    user_id: str = None,
+    origin_url: str = None,
+    event_id: str = None,
+    customer_email: str = None
+):
     """Create Stripe checkout session for event tickets"""
+    if not event_id:
+        raise HTTPException(status_code=400, detail="event_id is required")
+
     # Validate package
     if package_id not in EVENT_PACKAGES:
         raise HTTPException(status_code=400, detail="Invalid event package")
-    
-    package = EVENT_PACKAGES[package_id]
-    amount = float(package["amount"]) * quantity
-    name = package["name"]
-    
+
+    event = await fetch_event_by_id(event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    quantity = max(1, quantity)
+    package_prices = event.get("package_prices") or {}
+    package_amount = float(package_prices.get(package_id, EVENT_PACKAGES[package_id]["amount"]))
+
+    if package_amount <= 0:
+        raise HTTPException(status_code=400, detail="Free package should use the free reservation endpoint")
+
+    amount = package_amount * quantity
+    name = EVENT_PACKAGES[package_id]["name"]
+    event_name = event.get("name", "Event")
+
     # Create transaction record
     transaction_id = str(uuid.uuid4())
     transaction = {
@@ -4390,28 +4412,32 @@ async def create_stripe_event_checkout(request: Request, package_id: str, quanti
         "type": "event_ticket",
         "payment_provider": "stripe",
         "user_id": user_id,
+        "event_id": event_id,
+        "event_name": event_name,
         "amount": amount,
         "currency": "usd",
         "package_id": package_id,
+        "package_price": package_amount,
         "quantity": quantity,
+        "customer_email": customer_email,
         "payment_status": "pending",
         "stripe_session_id": None,
         "created_at": datetime.now(timezone.utc),
         "updated_at": datetime.now(timezone.utc)
     }
     await db.payment_transactions.insert_one(transaction)
-    
+
     try:
         # Initialize Stripe checkout
         stripe_api_key = os.environ.get("STRIPE_API_KEY")
         host_url = str(request.base_url).rstrip('/')
         webhook_url = f"{host_url}/api/webhook/stripe"
         stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
-        
+
         # Create success and cancel URLs
-        success_url = f"{origin_url}/?payment=success&session_id={{CHECKOUT_SESSION_ID}}&transaction_id={transaction_id}&type=event"
+        success_url = f"{origin_url}/?payment=success&session_id={{CHECKOUT_SESSION_ID}}&transaction_id={transaction_id}&type=event"
         cancel_url = f"{origin_url}/?payment=cancelled"
-        
+
         # Create checkout session
         checkout_request = CheckoutSessionRequest(
             amount=amount,
@@ -4424,18 +4450,21 @@ async def create_stripe_event_checkout(request: Request, package_id: str, quanti
                 "type": "event_ticket",
                 "package_id": package_id,
                 "quantity": str(quantity),
-                "package_name": name
+                "package_name": name,
+                "event_id": event_id,
+                "event_name": event_name,
+                "customer_email": customer_email or ""
             }
         )
-        
+
         session = await stripe_checkout.create_checkout_session(checkout_request)
-        
+
         # Update transaction with Stripe session ID
         await db.payment_transactions.update_one(
             {"id": transaction_id},
             {"$set": {"stripe_session_id": session.session_id, "updated_at": datetime.now(timezone.utc)}}
         )
-        
+
         return {
             "checkout_url": session.url,
             "session_id": session.session_id,
