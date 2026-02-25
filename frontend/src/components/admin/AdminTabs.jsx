@@ -273,6 +273,16 @@ const ContactsTab = () => {
     }
   };
 
+  const handleDeleteContact = async (id) => {
+    try {
+      await deleteContact(id);
+      setContacts(contacts.filter(c => c.id !== id));
+      toast({ title: 'Deleted', description: 'Contact removed' });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+  };
+
   if (loading) return <div className="text-white text-center py-8">Loading...</div>;
 
   const statusColors = {
