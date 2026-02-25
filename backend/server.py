@@ -68,7 +68,7 @@ security = HTTPBearer()
 
 # Admin credentials (hardcoded as requested)
 ADMIN_USERNAME = "admin"
-ADMIN_PASSWORD_HASH = get_password_hash("admin")
+ADMIN_PASSWORD_HASH = get_password_hash("$outhcentral")
 
 # Create the main app without a prefix
 app = FastAPI()
