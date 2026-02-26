@@ -399,6 +399,7 @@ const LinkTreeHomePage = () => {
   const [editMode, setEditMode] = useState(false);
   const [content, setContent] = useState(defaultContent);
   const [editingContent, setEditingContent] = useState(defaultContent);
+  const [pageContent, setPageContent] = useState({});
   const [saving, setSaving] = useState(false);
   const [editingImageIndex, setEditingImageIndex] = useState(null);
   const fileInputRef = useRef(null);
