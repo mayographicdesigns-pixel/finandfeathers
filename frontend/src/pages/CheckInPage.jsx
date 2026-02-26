@@ -26,7 +26,7 @@ const CheckInPage = () => {
   const [distance, setDistance] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [pageContent, setPageContent] = useState({});
-  const heroHtml = pageContent.hero || 'Find the closest Fin \u0026 Feathers location to check in.';
+  const heroHtml = pageContent.hero || 'Find the closest Fin & Feathers location to check in.';
 
   const requestLocationAndFindNearest = () => {
     setStatus('requesting');
