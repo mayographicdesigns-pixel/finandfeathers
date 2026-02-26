@@ -672,7 +672,7 @@ const MyAccountPage = () => {
               )}
               {/* Upload overlay */}
               <button
-                onClick={() => profilePhotoInputRef.current?.click()}
+                onClick={() => setShowPhotoOptions(true)}
                 disabled={uploadingProfilePhoto}
                 className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                 data-testid="upload-photo-btn"
