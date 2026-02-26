@@ -317,7 +317,11 @@ const GalleryPage = () => {
             </Button>
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-white">Gallery</h1>
-              <p className="text-slate-400 text-sm">Photos & Videos from Fin & Feathers</p>
+              <div
+                className="text-slate-400 text-sm"
+                data-testid="page-content-gallery-hero"
+                dangerouslySetInnerHTML={{ __html: heroHtml }}
+              />
             </div>
           </div>
           
