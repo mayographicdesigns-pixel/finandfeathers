@@ -23,9 +23,11 @@ import {
   EventsTab,
   GallerySubmissionsTab,
   SocialPostsTab,
-  UsersTab
+  UsersTab,
+  SettingsTab
 } from '../components/admin/AdminTabs';
 import PageContentTab from '../components/admin/PageContentTab';
+import { Settings } from 'lucide-react';
 // Main Admin Page Component
 const AdminPage = () => {
   const navigate = useNavigate();
