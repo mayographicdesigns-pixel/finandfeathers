@@ -17,6 +17,55 @@ function urlBase64ToUint8Array(base64String) {
   return outputArray;
 }
 
+// ==================== APP SETTINGS API ====================
+
+// Get public app settings
+export async function getAppSettings() {
+  try {
+    const response = await fetch(`${API_URL}/settings`);
+    if (!response.ok) throw new Error('Failed to fetch settings');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching app settings:', error);
+    return { token_program_enabled: true, loyalty_program_enabled: true };
+  }
+}
+
+// Get admin settings
+export async function getAdminSettings() {
+  try {
+    const token = localStorage.getItem('admin-token');
+    const response = await fetch(`${API_URL}/admin/settings`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) throw new Error('Failed to fetch admin settings');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching admin settings:', error);
+    return { token_program_enabled: true, loyalty_program_enabled: true };
+  }
+}
+
+// Update admin settings
+export async function updateAdminSettings(settings) {
+  try {
+    const token = localStorage.getItem('admin-token');
+    const response = await fetch(`${API_URL}/admin/settings`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(settings)
+    });
+    if (!response.ok) throw new Error('Failed to update settings');
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating settings:', error);
+    throw error;
+  }
+}
+
 // ==================== PUBLIC API ====================
 
 // Get public menu items (no auth required)
