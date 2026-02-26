@@ -434,6 +434,9 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - Location images now navigate to the location detail page (no lightbox)
 - **FIXED**: Location detail save refresh (Feb 26, 2026)
   - Location detail page now re-fetches after save to ensure persisted updates display
+- **UPDATED**: Location details & links (Feb 26, 2026)
+  - Updated addresses, phones, review links, and directions links for all locations
+  - Location cards now show Review + Directions actions from stored links
 - **UPDATED**: Hookah flavors list (Feb 26, 2026)
   - Signature mixes now render as image cards with close-up fruit/smoke visuals
   - Added signature mixes, special flavors, classic blends, and safety notes under Hookah
