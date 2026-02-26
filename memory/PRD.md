@@ -432,6 +432,9 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - Public pages now read hero content from /api/page-content/{page}
 - **COMPLETED**: Location card image behavior (Feb 26, 2026)
   - Location images now navigate to the location detail page (no lightbox)
+- **UPDATED**: Menu item inline expansion (Feb 26, 2026)
+  - Click any menu item (cards or line items) to expand/collapse full description
+  - Image zoom remains available via the zoom button
 - **FIXED**: Default admin seed on startup (Feb 26, 2026)
   - Ensures admin/$outhcentral exists for dashboard access
 - **UPDATED**: Menu image storage (Feb 25, 2026)
