@@ -1487,6 +1487,80 @@ const LocationDetailPage = () => {
           <p className="text-slate-400 text-sm">{location.address}</p>
         </div>
 
+        {/* DJ IS LIVE Banner */}
+        {currentDJ && (
+          <div className="mb-4 animate-pulse">
+            <Card className="bg-gradient-to-r from-purple-900/80 via-pink-800/80 to-purple-900/80 border-purple-500/50 overflow-hidden">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-purple-600/50 flex items-center justify-center text-2xl border-2 border-purple-400 animate-bounce">
+                      {currentDJ.avatar_emoji}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+                        <span className="text-green-400 font-bold text-sm uppercase tracking-wide">LIVE NOW</span>
+                      </div>
+                      <h3 className="text-xl font-bold text-white">{currentDJ.stage_name || currentDJ.name}</h3>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={() => setActiveTab('dj')}
+                    className="bg-purple-600 hover:bg-purple-700"
+                    data-testid="tip-dj-btn"
+                  >
+                    <DollarSign className="w-4 h-4 mr-1" />
+                    Tip DJ
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Upcoming DJ Schedule */}
+        {!currentDJ && djSchedules.length > 0 && (
+          <Card className="mb-4 bg-slate-800/50 border-slate-700">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Music className="w-5 h-5 text-purple-400" />
+                <h3 className="font-bold text-white">Upcoming DJs</h3>
+              </div>
+              <div className="space-y-2">
+                {djSchedules.slice(0, 3).map((schedule) => {
+                  const dateObj = new Date(schedule.scheduled_date + 'T00:00:00');
+                  const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
+                  const monthDay = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                  const formatTime = (t) => {
+                    const [h, m] = t.split(':');
+                    const hr = parseInt(h);
+                    return `${hr > 12 ? hr - 12 : hr}:${m} ${hr >= 12 ? 'PM' : 'AM'}`;
+                  };
+                  return (
+                    <div key={schedule.id} className="flex items-center justify-between bg-slate-700/50 rounded-lg p-3">
+                      <div className="flex items-center gap-3">
+                        <span className="text-xl">{schedule.dj_photo_url ? '🎧' : '🎧'}</span>
+                        <div>
+                          <p className="font-medium text-white">{schedule.dj_stage_name || schedule.dj_name}</p>
+                          <p className="text-xs text-slate-400">
+                            {schedule.is_recurring && <span className="text-blue-400">Every {dayName} • </span>}
+                            {!schedule.is_recurring && `${dayName}, ${monthDay} • `}
+                            {formatTime(schedule.start_time)} - {formatTime(schedule.end_time)}
+                          </p>
+                        </div>
+                      </div>
+                      {schedule.notes && (
+                        <span className="text-xs text-purple-400 bg-purple-500/20 px-2 py-1 rounded">{schedule.notes}</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Check-in Status Bar */}
         {myCheckIn ? (
           <Card className="mb-4 bg-green-900/30 border-green-600/30">
