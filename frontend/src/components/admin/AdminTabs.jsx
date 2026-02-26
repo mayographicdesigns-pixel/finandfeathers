@@ -1218,6 +1218,8 @@ import { locations } from '../../mockData';
 
 const SpecialsTab = () => {
   const [specials, setSpecials] = useState([]);
+  const [dailySpecials, setDailySpecials] = useState([]);
+  const [dailySaving, setDailySaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
