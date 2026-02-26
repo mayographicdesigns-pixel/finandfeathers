@@ -38,7 +38,8 @@ import {
   getStripeCheckoutStatus,
   pollStripePaymentStatus,
   checkUserAuth,
-  userLogout
+  userLogout,
+  getAppSettings
 } from '../services/api';
 import SignupForm from '../components/account/SignupForm';
 import RoleBadge from '../components/account/RoleBadge';
