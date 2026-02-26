@@ -566,14 +566,13 @@ const MenuItemsTab = () => {
               
               {/* Image Upload Section */}
               <div className="space-y-2">
-                <label className="text-slate-300 text-sm block">Menu Item Image</label>
+                <label className="text-slate-300 text-sm block">Menu Item Image (optional for drinks)</label>
                 <div className="flex gap-2">
                   <Input
                     placeholder="Image URL (or upload below)"
                     value={formData.image}
                     onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                     className="bg-slate-900 border-slate-700 text-white flex-1"
-                    required
                   />
                   <input
                     type="file"
