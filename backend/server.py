@@ -4952,6 +4952,7 @@ async def startup_scheduler():
         replace_existing=True
     )
     scheduler.start()
+    await ensure_default_admin_user()
     logging.info("Scheduler started: Post cleanup scheduled for 4am EST (9am UTC) daily")
 
 
