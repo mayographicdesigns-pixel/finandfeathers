@@ -17,6 +17,87 @@ const ReservationModal = ({ isOpen, onClose, location }) => {
   const [time, setTime] = useState('');
   const [guests, setGuests] = useState('2');
   const [occasion, setOccasion] = useState('Just Dining');
+  const [availableTimes, setAvailableTimes] = useState([]);
+
+  // Generate time slots based on day of week
+  const generateTimeSlots = (selectedDate) => {
+    if (!selectedDate) return [];
+    
+    const dateObj = new Date(selectedDate + 'T12:00:00'); // Add time to avoid timezone issues
+    const dayOfWeek = dateObj.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    
+    let startHour, endHour, startMinute = 0;
+    
+    // Operating hours based on day:
+    // Mon-Thu (1-4): 11am-10pm, last seating 8pm (2hr before close)
+    // Fri-Sat (5-6): 11am-11:30pm, last seating 9:30pm
+    // Sun (0): 10am-10pm, last seating 8pm
+    
+    if (dayOfWeek === 0) { // Sunday
+      startHour = 10; // 10am
+      endHour = 20;   // Last seating 8pm (closes 10pm)
+    } else if (dayOfWeek >= 1 && dayOfWeek <= 4) { // Mon-Thu
+      startHour = 11; // 11am
+      endHour = 20;   // Last seating 8pm (closes 10pm)
+    } else { // Fri-Sat
+      startHour = 11;  // 11am
+      endHour = 21;    // Last seating 9:30pm (closes 11:30pm)
+    }
+    
+    const slots = [];
+    for (let hour = startHour; hour <= endHour; hour++) {
+      // Add :00 slot
+      const time24 = `${hour.toString().padStart(2, '0')}:00`;
+      const hour12 = hour > 12 ? hour - 12 : (hour === 0 ? 12 : hour);
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      slots.push({
+        value: time24,
+        label: `${hour12}:00 ${ampm}`
+      });
+      
+      // Add :30 slot (except for last hour on Fri-Sat which goes to 9:30)
+      if (hour < endHour || (dayOfWeek >= 5 && hour === 21)) {
+        const time24Half = `${hour.toString().padStart(2, '0')}:30`;
+        slots.push({
+          value: time24Half,
+          label: `${hour12}:30 ${ampm}`
+        });
+      }
+    }
+    
+    return slots;
+  };
+
+  // Update available times when date changes
+  React.useEffect(() => {
+    if (date) {
+      const slots = generateTimeSlots(date);
+      setAvailableTimes(slots);
+      // Reset time if previously selected time is no longer available
+      if (time && !slots.find(s => s.value === time)) {
+        setTime('');
+      }
+    } else {
+      setAvailableTimes([]);
+    }
+  }, [date]);
+
+  // Get day name for display
+  const getDayInfo = () => {
+    if (!date) return null;
+    const dateObj = new Date(date + 'T12:00:00');
+    const dayOfWeek = dateObj.getDay();
+    
+    if (dayOfWeek === 0) {
+      return { day: 'Sunday', hours: '10AM - 10PM', lastSeating: '8:00 PM' };
+    } else if (dayOfWeek >= 1 && dayOfWeek <= 4) {
+      return { day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'][dayOfWeek], hours: '11AM - 10PM', lastSeating: '8:00 PM' };
+    } else {
+      return { day: dayOfWeek === 5 ? 'Friday' : 'Saturday', hours: '11AM - 11:30PM', lastSeating: '9:30 PM' };
+    }
+  };
+
+  const dayInfo = getDayInfo();
 
   if (!isOpen || !location) return null;
 
@@ -41,20 +122,26 @@ const ReservationModal = ({ isOpen, onClose, location }) => {
     }
 
     // Format the date for display
-    const formattedDate = new Date(date).toLocaleDateString('en-US', { 
+    const formattedDate = new Date(date + 'T12:00:00').toLocaleDateString('en-US', { 
       weekday: 'short', 
       month: 'short', 
       day: 'numeric' 
     });
+
+    // Format time for display
+    const selectedTimeSlot = availableTimes.find(t => t.value === time);
+    const formattedTime = selectedTimeSlot ? selectedTimeSlot.label : time;
 
     // Create the SMS body with reservation details
     const smsBody = `Hi! I'd like to make a reservation at Fin & Feathers ${locationShortName}.
 
 Name: ${guestName}
 Date: ${formattedDate}
-Time: ${time}
+Time: ${formattedTime}
 Guests: ${guests}
 Occasion: ${occasion}
+
+I understand reservations are for 2 hours starting when the first guest arrives.
 
 Please confirm availability. Thank you!`;
 
@@ -72,8 +159,8 @@ Please confirm availability. Thank you!`;
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
-      <Card className="bg-slate-900 border-slate-700 w-full max-w-md relative overflow-hidden rounded-3xl">
+    <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 overflow-y-auto">
+      <Card className="bg-slate-900 border-slate-700 w-full max-w-md relative overflow-hidden rounded-3xl my-4">
         {/* Close button */}
         <button
           onClick={onClose}
@@ -111,37 +198,50 @@ Please confirm availability. Thank you!`;
               />
             </div>
 
-            {/* Date and Time Row */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-slate-400 text-xs font-semibold tracking-widest uppercase mb-2">
-                  Date
-                </label>
-                <div className="relative">
-                  <Input
-                    type="date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    min={new Date().toISOString().split('T')[0]}
-                    className="bg-slate-800 border-slate-700 text-white h-14 rounded-xl text-base [&::-webkit-calendar-picker-indicator]:opacity-100 [&::-webkit-calendar-picker-indicator]:invert"
-                    data-testid="reservation-date"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-slate-400 text-xs font-semibold tracking-widest uppercase mb-2">
-                  Time
-                </label>
-                <div className="relative">
-                  <Input
-                    type="time"
-                    value={time}
-                    onChange={(e) => setTime(e.target.value)}
-                    className="bg-slate-800 border-slate-700 text-white h-14 rounded-xl text-base [&::-webkit-calendar-picker-indicator]:opacity-100 [&::-webkit-calendar-picker-indicator]:invert"
-                    data-testid="reservation-time"
-                  />
-                </div>
-              </div>
+            {/* Date */}
+            <div>
+              <label className="block text-slate-400 text-xs font-semibold tracking-widest uppercase mb-2">
+                Date
+              </label>
+              <Input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                min={new Date().toISOString().split('T')[0]}
+                className="bg-slate-800 border-slate-700 text-white h-14 rounded-xl text-base [&::-webkit-calendar-picker-indicator]:opacity-100 [&::-webkit-calendar-picker-indicator]:invert"
+                data-testid="reservation-date"
+              />
+              {dayInfo && (
+                <p className="text-slate-500 text-xs mt-1">
+                  {dayInfo.day} hours: {dayInfo.hours}
+                </p>
+              )}
+            </div>
+
+            {/* Time */}
+            <div>
+              <label className="block text-slate-400 text-xs font-semibold tracking-widest uppercase mb-2">
+                Time {dayInfo && <span className="text-slate-600 normal-case">(Last seating {dayInfo.lastSeating})</span>}
+              </label>
+              <Select value={time} onValueChange={setTime} disabled={!date}>
+                <SelectTrigger 
+                  className="bg-slate-800 border-slate-700 text-white h-14 rounded-xl text-base disabled:opacity-50"
+                  data-testid="reservation-time"
+                >
+                  <SelectValue placeholder={date ? "Select a time" : "Select date first"} />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-800 border-slate-700 max-h-60">
+                  {availableTimes.map((slot) => (
+                    <SelectItem 
+                      key={slot.value} 
+                      value={slot.value} 
+                      className="text-white hover:bg-slate-700"
+                    >
+                      {slot.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Guests and Occasion Row */}
@@ -196,10 +296,18 @@ Please confirm availability. Thank you!`;
               </div>
             </div>
 
+            {/* Time Limit Notice */}
+            <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-3">
+              <p className="text-slate-400 text-xs text-center">
+                <Clock className="w-3 h-3 inline mr-1" />
+                Reservations are limited to <span className="text-white font-semibold">2 hours</span> and begin when the first guest arrives
+              </p>
+            </div>
+
             {/* Send Button */}
             <Button
               onClick={handleSendBooking}
-              className="w-full bg-red-600 hover:bg-red-700 text-white h-14 rounded-xl text-base font-bold tracking-wide mt-2"
+              className="w-full bg-red-600 hover:bg-red-700 text-white h-14 rounded-xl text-base font-bold tracking-wide"
               data-testid="reservation-send-btn"
             >
               <MessageSquare className="w-5 h-5 mr-2" />
