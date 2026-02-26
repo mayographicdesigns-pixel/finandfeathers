@@ -185,6 +185,7 @@ const AdminPage = () => {
         {activeTab === 'members' && <LoyaltyMembersTab />}
         {activeTab === 'contacts' && <ContactsTab />}
         {activeTab === 'menu' && <MenuItemsTab />}
+        {activeTab === 'page-content' && <PageContentTab />}
         {activeTab === 'notifications' && <NotificationsTab />}
         {activeTab === 'admins' && <AdminAccountsTab />}
       </div>
