@@ -222,24 +222,6 @@ const LocationsPage = () => {
     toast({ title: 'Logged Out', description: 'Admin session ended' });
   };
 
-  // Lightbox keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (lightboxLocation && e.key === 'Escape') {
-        setLightboxLocation(null);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [lightboxLocation]);
-
-  const handleImageClick = (e, location) => {
-    e.stopPropagation();
-    if (!editMode) {
-      setLightboxLocation(location);
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
