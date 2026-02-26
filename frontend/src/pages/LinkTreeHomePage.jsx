@@ -700,7 +700,11 @@ const LinkTreeHomePage = () => {
               data-testid="edit-tagline-input"
             />
           ) : (
-            <p className="text-slate-300 text-sm">{displayContent.tagline}</p>
+            <div
+              className="text-slate-300 text-sm"
+              data-testid="page-content-home-hero"
+              dangerouslySetInnerHTML={{ __html: heroHtml }}
+            />
           )}
         </div>
 
