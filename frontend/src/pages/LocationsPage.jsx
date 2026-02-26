@@ -634,10 +634,27 @@ const LocationsPage = () => {
                     Make Reservation (Text)
                   </Button>
                   
+                  {location.review_link && (
+                    <Button
+                      onClick={(e) => { e.stopPropagation(); window.open(location.review_link, '_blank'); }}
+                      variant="outline"
+                      className="w-full border-slate-600 text-slate-300 hover:bg-slate-700"
+                      data-testid={`review-link-${location.id}`}
+                    >
+                      <Star className="w-4 h-4 mr-2" />
+                      Leave a Review
+                    </Button>
+                  )}
+
                   <Button
-                    onClick={(e) => { e.stopPropagation(); window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location.address)}`, '_blank'); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const directionsUrl = location.directions_link || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location.address)}`;
+                      window.open(directionsUrl, '_blank');
+                    }}
                     variant="outline"
                     className="w-full border-slate-600 text-slate-300 hover:bg-slate-700"
+                    data-testid={`directions-link-${location.id}`}
                   >
                     <MapPin className="w-4 h-4 mr-2" />
                     Get Directions
