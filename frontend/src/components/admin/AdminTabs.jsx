@@ -367,6 +367,8 @@ const MenuItemsTab = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
   const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     name: '', description: '', price: '', category: '', image: '', badges: ''
