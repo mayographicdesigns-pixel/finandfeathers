@@ -590,6 +590,27 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - getAdminSettings() and updateAdminSettings() were using 'admin-token' instead of 'adminToken'
   - Fixed to use consistent 'adminToken' key matching other admin API functions
 
+## New Features (February 26, 2026 - Session 3)
+- **COMPLETED**: DJ Schedule System (Feb 26, 2026)
+  - **Admin DJ Schedule Tab**: New tab in admin panel for managing DJ profiles and schedules
+    - DJ Profiles: Create/edit/delete DJs with name, stage name, emoji, bio, photo, payment methods (Cash App, Venmo, Apple Pay)
+    - DJ Schedules: Schedule DJs at specific locations with date, time, recurring option, and notes/theme
+    - Toggle between "Schedules" and "DJ Profiles" views
+  - **DJ is LIVE Banner**: Beautiful animated banner on location pages when DJ is checked in
+    - Pulsing green "LIVE NOW" indicator
+    - DJ name and emoji
+    - Quick "Tip DJ" button that navigates to DJ tipping tab
+    - Purple gradient background with animation
+  - **Upcoming DJs Section**: Shows on location pages when no DJ is live but schedules exist
+    - Displays up to 3 upcoming performances
+    - Shows DJ name, date, time, and optional theme badge (e.g., "R&B Night", "Hip Hop Night")
+    - Supports recurring weekly schedules
+  - **Backend APIs**:
+    - `GET /api/dj/schedules` - All upcoming schedules (public)
+    - `GET /api/dj/schedules/location/{slug}` - Location-specific schedules
+    - `GET /api/dj/at-location/{slug}` - Get live DJ at location
+    - Admin CRUD endpoints for DJ profiles and schedules (authenticated)
+
 ## Credentials
 - **Admin Login**: username=`admin`, password=`$outhcentral`
 
