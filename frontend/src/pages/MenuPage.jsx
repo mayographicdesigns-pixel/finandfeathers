@@ -171,6 +171,15 @@ const MenuPage = () => {
   const todayName = dayNames[new Date().getDay()];
   const heroHtml = pageContent.hero || 'ELEVATED DINING MEETS SOUTHERN SOUL. EVERY DISH CRAFTED WITH FRESH INGREDIENTS AND GENUINE HOSPITALITY.';
 
+  const renderHookahSection = () => (
+    <div className="space-y-4" data-testid="hookah-section">
+      <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
+        <h3 className="text-2xl font-bold text-white mb-2">Hookah</h3>
+        <p className="text-slate-300 text-sm">Special happy hour pricing M-F 12pm-8pm</p>
+      </div>
+    </div>
+  );
+
   const renderLineItems = (items) => (
     <div className="space-y-3">
       {items.map((item) => (
