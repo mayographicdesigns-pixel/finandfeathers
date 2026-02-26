@@ -191,6 +191,7 @@ const AdminPage = () => {
         {activeTab === 'page-content' && <PageContentTab />}
         {activeTab === 'notifications' && <NotificationsTab />}
         {activeTab === 'admins' && <AdminAccountsTab />}
+        {activeTab === 'settings' && <SettingsTab />}
       </div>
     </div>
   );
