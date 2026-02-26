@@ -1257,6 +1257,30 @@ async def admin_delete_contact(contact_id: str, username: str = Depends(get_curr
     return {"message": "Contact deleted successfully"}
 
 
+# Page Content (Public)
+@api_router.get("/page-content/{page_key}")
+async def get_page_content(page_key: str):
+    content = await db.page_content.find({"page_key": page_key}, {"_id": 0}).to_list(100)
+    return content
+
+
+# Page Content (Admin)
+@api_router.put("/admin/page-content/{page_key}/{section_key}")
+async def update_page_content(page_key: str, section_key: str, update: PageContentUpdate, username: str = Depends(get_current_admin)):
+    update_doc = {
+        "page_key": page_key,
+        "section_key": section_key,
+        "html": update.html,
+        "updated_at": datetime.now(timezone.utc)
+    }
+    await db.page_content.update_one(
+        {"page_key": page_key, "section_key": section_key},
+        {"$set": update_doc, "$setOnInsert": {"id": str(uuid.uuid4()), "created_at": datetime.now(timezone.utc)}},
+        upsert=True
+    )
+    return {"success": True}
+
+
 # Menu Items (Admin)
 @api_router.get("/admin/menu-items")
 async def admin_get_menu_items(username: str = Depends(get_current_admin)):
