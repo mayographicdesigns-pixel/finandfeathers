@@ -106,7 +106,7 @@ const MenuCard = ({ item, variant = 'default', editMode = false, onEdit, onImage
       </div>
       <CardContent className={isCompact ? 'p-4' : 'p-5'}>
         <h3 className={`${isCompact ? 'text-lg' : 'text-xl'} font-semibold text-white mb-2`}>{item.name}</h3>
-        <p className={`text-slate-300 ${isCompact ? 'text-xs' : 'text-sm'} leading-relaxed mb-3 line-clamp-2`}>
+        <p className={`text-slate-300 ${isCompact ? 'text-xs' : 'text-sm'} leading-relaxed mb-3 ${isExpandedState ? '' : 'line-clamp-2'}`} data-testid={`menu-item-description-${item.id}`}>
           {item.description}
         </p>
         <div className="flex flex-wrap gap-1.5">
