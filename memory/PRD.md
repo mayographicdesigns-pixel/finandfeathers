@@ -434,6 +434,7 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - Location images now navigate to the location detail page (no lightbox)
 - **UPDATED**: Cocktails menu refresh (Feb 26, 2026)
   - Added full drink list and grouped $5 Specials, Signature, Brunch Drinks in cocktails view
+  - Added non-alcoholic sections (Handcrafted Mocktails, Classic Refreshments, Custom Fruit Lemonades)
 - **COMPLETED**: Daily Specials editor (Feb 26, 2026)
   - Admins can edit Today\'s Special by day (title, description, hours, emoji)
   - Menu page rotates the highlight by day using DB values
