@@ -977,6 +977,18 @@ const MenuPage = () => {
             )}
             {renderSection('Signature Cocktails', [...(itemsByCategory['cocktails'] || []), ...(itemsByCategory['signature-cocktails'] || [])], 'compact', 'grid-cols-1', true)}
             {renderSection('Brunch Drinks', itemsByCategory['brunch-drinks'], 'compact', 'grid-cols-1', true)}
+            {renderSection('Handcrafted Mocktails ($5.50)', itemsByCategory['mocktails'], 'compact', 'grid-cols-1', true)}
+            {renderClassicRefreshments()}
+            {renderSection('Custom Fruit Lemonades ($3.50)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true)}
+          </div>
+        )}
+
+        {/* NON-ALCOHOLIC VIEW */}
+        {activeCategory === 'non-alcoholic' && (
+          <div className="space-y-10">
+            {renderSection('Handcrafted Mocktails ($5.50)', itemsByCategory['mocktails'], 'compact', 'grid-cols-1', true)}
+            {renderClassicRefreshments()}
+            {renderSection('Custom Fruit Lemonades ($3.50)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true)}
           </div>
         )}
 
