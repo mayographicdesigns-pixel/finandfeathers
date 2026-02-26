@@ -81,7 +81,6 @@ const MenuCard = ({ item, variant = 'default', editMode = false, onEdit, onImage
     >
       <div 
         className={`relative ${isCompact ? 'h-44' : 'h-56'} overflow-hidden ${!editMode ? 'cursor-pointer' : ''}`}
-        onClick={handleImageClick}
       >
         <img
           src={imageUrl}
