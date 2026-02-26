@@ -432,6 +432,8 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - Public pages now read hero content from /api/page-content/{page}
 - **COMPLETED**: Location card image behavior (Feb 26, 2026)
   - Location images now navigate to the location detail page (no lightbox)
+- **FIXED**: Location detail save refresh (Feb 26, 2026)
+  - Location detail page now re-fetches after save to ensure persisted updates display
 - **UPDATED**: Hookah flavors list (Feb 26, 2026)
   - Signature mixes now render as image cards with close-up fruit/smoke visuals
   - Added signature mixes, special flavors, classic blends, and safety notes under Hookah
