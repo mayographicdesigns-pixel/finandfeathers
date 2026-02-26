@@ -2150,14 +2150,25 @@ const LocationDetailPage = () => {
                 <CardContent className="p-4">
                   <h2 className="text-lg font-bold text-white mb-3">Contact</h2>
                   <div className="space-y-3">
-                    <a href={`tel:${location.phone}`} className="flex items-center gap-3 text-slate-300 hover:text-red-400">
+                    <a href={`tel:${location.phone}`} className="flex items-center gap-3 text-slate-300 hover:text-red-400" data-testid="location-phone-link">
                       <Phone className="w-4 h-4 text-red-500" />
                       {location.phone}
                     </a>
-                    <div className="flex items-center gap-3 text-slate-300">
+                    <div className="flex items-center gap-3 text-slate-300" data-testid="location-address">
                       <MapPin className="w-4 h-4 text-red-500" />
                       <span className="text-sm">{location.address}</span>
                     </div>
+                    {location.review_link && (
+                      <Button
+                        onClick={() => window.open(location.review_link, '_blank')}
+                        variant="outline"
+                        className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                        data-testid="location-review-button"
+                      >
+                        <Star className="w-4 h-4 mr-2" />
+                        Leave a Review
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
