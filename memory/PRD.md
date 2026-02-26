@@ -487,6 +487,8 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - `POST /api/webhook/woocommerce` - Handle WooCommerce order webhooks
 - `GET /api/events` - Get all active events (public)
 - `POST /api/events/free-reserve` - Reserve free event tickets and return SMS reservation link
+- `GET /api/page-content/{page_key}` - Public page content sections for WYSIWYG
+- `PUT /api/admin/page-content/{page_key}/{section_key}` - Admin update page content section
 - `GET /api/admin/events` - Admin: Get all events including inactive
 - `POST /api/admin/events` - Admin: Create new event
 - `PUT /api/admin/events/{event_id}` - Admin: Update event
