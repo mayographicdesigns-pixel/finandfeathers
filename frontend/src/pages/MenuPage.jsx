@@ -535,6 +535,22 @@ const MenuPage = () => {
       return menuItems.filter(item => foodCategoryIds.includes(item.category));
     }
     
+    if (activeCategory === 'drinks') {
+      // If a drinks subcategory is selected
+      if (activeSubCategory === 'beer-wine') {
+        return menuItems.filter(item => beerWineCategoryIds.includes(item.category));
+      }
+      if (activeSubCategory === 'cocktails') {
+        return menuItems.filter(item => cocktailCategoryIds.includes(item.category));
+      }
+      if (activeSubCategory === 'non-alcoholic') {
+        return menuItems.filter(item => nonAlcoholicCategoryIds.includes(item.category));
+      }
+      // Show all drinks if no subcategory selected
+      return menuItems.filter(item => drinksCategoryIds.includes(item.category));
+    }
+    
+    // Legacy support for direct cocktails/non-alcoholic access
     if (activeCategory === 'cocktails') {
       if (activeSubCategory) {
         return menuItems.filter(item => item.category === activeSubCategory);
