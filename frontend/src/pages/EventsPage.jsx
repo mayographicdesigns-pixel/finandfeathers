@@ -64,6 +64,7 @@ const EventsPage = () => {
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [pageContent, setPageContent] = useState({});
 
   useEffect(() => {
     fetchData();
