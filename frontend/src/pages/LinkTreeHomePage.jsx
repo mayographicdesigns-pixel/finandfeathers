@@ -407,6 +407,9 @@ const LinkTreeHomePage = () => {
   // PWA Install state
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isAppInstalled, setIsAppInstalled] = useState(false);
+  const [showInstallModal, setShowInstallModal] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const [isAndroid, setIsAndroid] = useState(false);
 
   // DnD sensors for image reordering
   const sensors = useSensors(
