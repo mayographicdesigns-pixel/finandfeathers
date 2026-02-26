@@ -449,15 +449,22 @@ const LinkTreeHomePage = () => {
     // Fetch all data
     const fetchData = async () => {
       try {
-        const [links, feed, activeSpecials, homepageContent] = await Promise.all([
+        const [links, feed, activeSpecials, homepageContent, homePageContent] = await Promise.all([
           getPublicSocialLinks(),
           getPublicInstagramFeed(),
           getPublicSpecials(),
-          getHomepageContent()
+          getHomepageContent(),
+          getPageContent('home')
         ]);
         setSocialLinks(links);
         setInstagramFeed(feed);
         setSpecials(activeSpecials);
+
+        const pageContentMap = {};
+        (homePageContent || []).forEach((entry) => {
+          pageContentMap[entry.section_key] = entry.html || '';
+        });
+        setPageContent(pageContentMap);
         
         // Set homepage content - merge with defaults to ensure all fields exist
         if (homepageContent) {
