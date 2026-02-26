@@ -1255,12 +1255,12 @@ const SpecialsTab = () => {
   const fetchDailySpecials = async () => {
     try {
       const data = await adminGetDailySpecials();
-      if (data && data.length > 0) {
-        const ordered = [...data].sort((a, b) => a.day_index - b.day_index);
-        setDailySpecials(ordered);
-      } else {
-        setDailySpecials(defaultDailySpecials);
-      }
+      const map = new Map((data || []).map((item) => [item.day_index, item]));
+      const merged = defaultDailySpecials.map((def) => ({
+        ...def,
+        ...(map.get(def.day_index) || {})
+      }));
+      setDailySpecials(merged);
     } catch (err) {
       setDailySpecials(defaultDailySpecials);
     }
