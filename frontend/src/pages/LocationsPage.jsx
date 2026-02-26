@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { MapPin, Phone, ExternalLink, Calendar, ShoppingBag, Home, Edit2, Save, X, Settings, LogOut, Plus, Trash2, Star, MessageSquare, Clock, Users } from 'lucide-react';
+import { MapPin, Phone, ExternalLink, Calendar, ShoppingBag, Home, Edit2, Save, X, Settings, LogOut, Plus, Trash2, Star, MessageSquare, Clock, Users, Music } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import ImageUploader from '../components/ImageUploader';
-import { getLocations, verifyAdminToken, adminUpdateLocation, adminCreateLocation, adminDeleteLocation, getPageContent } from '../services/api';
+import { getLocations, verifyAdminToken, adminUpdateLocation, adminCreateLocation, adminDeleteLocation, getPageContent, getDJSchedulesForLocation, getDJAtLocation } from '../services/api';
 import { toast } from '../hooks/use-toast';
 
 // Reservation Modal Component
