@@ -588,6 +588,33 @@ export async function deleteContact(contactId) {
   return await response.json();
 }
 
+// Page content (public)
+export async function getPageContent(pageKey) {
+  const response = await fetch(`${API_URL}/page-content/${pageKey}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch page content');
+  }
+  return await response.json();
+}
+
+// Page content (admin)
+export async function updatePageContent(pageKey, sectionKey, html) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/page-content/${pageKey}/${sectionKey}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ html })
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to update page content');
+  }
+  return await response.json();
+}
+
 // Get menu items (admin)
 export async function getAdminMenuItems() {
   const token = localStorage.getItem('adminToken');
