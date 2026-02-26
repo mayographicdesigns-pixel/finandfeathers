@@ -92,6 +92,7 @@ const AdminPage = () => {
     { id: 'contacts', label: 'Contacts', icon: Mail },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'admins', label: 'Admin Accounts', icon: Shield },
+    { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   return (
