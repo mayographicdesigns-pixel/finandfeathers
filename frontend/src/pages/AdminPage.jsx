@@ -23,8 +23,10 @@ import {
   EventsTab,
   GallerySubmissionsTab,
   SocialPostsTab,
-  UsersTab
+  UsersTab,
+  PageContentTab
 } from '../components/admin/AdminTabs';
+import PageContentTab from '../components/admin/PageContentTab';
 // Main Admin Page Component
 const AdminPage = () => {
   const navigate = useNavigate();
