@@ -69,6 +69,7 @@ const LocationsPage = () => {
     
     fetchLocations();
     requestUserLocation();
+    fetchPageContent();
   }, []);
 
   // Request user's location for sorting
