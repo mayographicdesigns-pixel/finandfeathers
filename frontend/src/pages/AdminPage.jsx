@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Home, LogOut, BarChart3, Megaphone, Ticket, Grid3X3, ImageUp, MessageSquare,
-  MapPin, Video, Share2, UtensilsCrossed, Coins, Users, Mail, Bell, Shield
+  MapPin, Video, Share2, UtensilsCrossed, Coins, Users, Mail, Bell, Shield, FileText
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
