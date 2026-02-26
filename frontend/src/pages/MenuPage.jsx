@@ -142,6 +142,7 @@ const MenuPage = () => {
   const todaysSpecial = getTodaysSpecial();
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const todayName = dayNames[new Date().getDay()];
+  const heroHtml = pageContent.hero || 'ELEVATED DINING MEETS SOUTHERN SOUL. EVERY DISH CRAFTED WITH FRESH INGREDIENTS AND GENUINE HOSPITALITY.';
 
   // Fetch menu items from API on mount
   useEffect(() => {
