@@ -24,10 +24,11 @@ import {
   GallerySubmissionsTab,
   SocialPostsTab,
   UsersTab,
+  DJScheduleTab,
   SettingsTab
 } from '../components/admin/AdminTabs';
 import PageContentTab from '../components/admin/PageContentTab';
-import { Settings } from 'lucide-react';
+import { Settings, Music } from 'lucide-react';
 // Main Admin Page Component
 const AdminPage = () => {
   const navigate = useNavigate();
