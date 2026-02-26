@@ -29,7 +29,8 @@ import {
   adminGetEvents, adminCreateEvent, adminUpdateEvent, adminDeleteEvent,
   adminGetGallerySubmissions, adminDeleteGallerySubmission,
   adminGetAllSocialPosts, adminDeleteSocialPost, adminCleanupOldPosts, adminDeleteUser,
-  getAdminUsers, createAdminUser, updateAdminUser, deleteAdminUser, changeAdminPassword
+  getAdminUsers, createAdminUser, updateAdminUser, deleteAdminUser, changeAdminPassword,
+  getAdminSettings, updateAdminSettings
 } from '../../services/api';
 import {
   DndContext,
