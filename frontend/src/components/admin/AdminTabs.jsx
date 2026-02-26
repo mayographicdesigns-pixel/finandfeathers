@@ -689,15 +689,17 @@ const MenuItemsTab = () => {
         </Card>
       )}
 
-      {items.length === 0 ? (
+      {filteredItems.length === 0 ? (
         <Card className="bg-slate-800/50 border-slate-700">
           <CardContent className="p-8 text-center text-slate-400">
-            No menu items in database yet. Add items or they will be loaded from mock data.
+            {items.length === 0 
+              ? "No menu items in database yet. Add items or they will be loaded from mock data."
+              : "No items match your search or filter."}
           </CardContent>
         </Card>
       ) : (
         <div className="grid gap-3">
-          {items.map((item) => (
+          {filteredItems.map((item) => (
             <Card key={item.id} className="bg-slate-800/50 border-slate-700">
               <CardContent className="p-4 flex items-center gap-4">
                 <img 
