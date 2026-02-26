@@ -1,9 +1,14 @@
 import React from 'react';
 import { Badge } from './ui/badge';
 
-const MenuLineItem = ({ item }) => {
+const MenuLineItem = ({ item, isExpanded = false, onToggleExpand }) => {
+  const handleToggle = () => {
+    if (onToggleExpand) {
+      onToggleExpand(item);
+    }
+  };
   return (
-    <div className="flex items-center justify-between py-3 px-4 bg-slate-800/50 rounded-lg hover:bg-slate-800/70 transition-all duration-200 border border-slate-700/30">
+    <div className="flex items-center justify-between py-3 px-4 bg-slate-800/50 rounded-lg hover:bg-slate-800/70 transition-all duration-200 border border-slate-700/30 cursor-pointer" onClick={handleToggle} data-testid={`menu-line-item-${item.id}`}>
       <div className="flex-1">
         <div className="flex items-center gap-2 flex-wrap">
           <h3 className="text-base font-medium text-white">{item.name}</h3>
