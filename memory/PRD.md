@@ -566,6 +566,30 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - "SEND BOOKING REQUEST" button generates SMS with all details and opens phone's SMS app
   - SMS is pre-filled with reservation details and sent to location's reservation phone number
 
+## Bug Fixes (February 26, 2026 - Session 3)
+- **COMPLETED**: Admin Settings Tab for Token/Loyalty Program Control (Feb 26, 2026)
+  - Added new "Settings" tab to Admin Panel with toggle switches
+  - Token Program toggle: Controls visibility of tokens, balance, tip staff features across the app
+  - Loyalty Program toggle: For future loyalty membership features
+  - Status indicators show current state (Active/Disabled with green/red dots)
+  - Settings persist in MongoDB `app_settings` collection
+  - Public `/api/settings` endpoint returns current settings without authentication
+  - Admin `/api/admin/settings` endpoint for GET/PUT with authentication
+- **COMPLETED**: Camera for Profile Photo (Feb 26, 2026)
+  - Added photo options modal on MyAccountPage with "Take Photo" and "Choose from Gallery" options
+  - Camera input uses HTML5 `capture="user"` attribute for front-facing camera on mobile devices
+  - Profile photo upload works for both camera capture and file selection
+  - Users can update their profile photo from the profile tab header or settings
+- **COMPLETED**: Conditional Token/Loyalty UI Rendering (Feb 26, 2026)
+  - MyAccountPage now fetches app settings on mount via getAppSettings()
+  - Token balance badge in header hidden when token_program_enabled=false
+  - Tokens tab hidden when token_program_enabled=false
+  - Tip Staff tab hidden when token_program_enabled=false
+  - Staff Earnings tab hidden when token_program_enabled=false
+- **FIXED**: Admin Settings API localStorage key mismatch (Feb 26, 2026)
+  - getAdminSettings() and updateAdminSettings() were using 'admin-token' instead of 'adminToken'
+  - Fixed to use consistent 'adminToken' key matching other admin API functions
+
 ## Credentials
 - **Admin Login**: username=`admin`, password=`$outhcentral`
 
