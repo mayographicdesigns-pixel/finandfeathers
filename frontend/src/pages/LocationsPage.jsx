@@ -487,9 +487,11 @@ const LocationsPage = () => {
               onClick={() => navigate('/')}
             />
           </div>
-          <p className="text-slate-300 text-lg max-w-2xl mx-auto mb-6">
-            ELEVATED DINING MEETS SOUTHERN SOUL. EVERY DISH CRAFTED WITH FRESH INGREDIENTS AND GENUINE HOSPITALITY.
-          </p>
+          <div
+            className="text-slate-300 text-lg max-w-2xl mx-auto mb-6"
+            data-testid="page-content-locations-hero"
+            dangerouslySetInnerHTML={{ __html: heroHtml }}
+          />
           
           {/* Home Button */}
           <Button
