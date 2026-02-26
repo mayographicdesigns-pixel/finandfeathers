@@ -2131,8 +2131,12 @@ const LocationDetailPage = () => {
                   />
                 </div>
                 <Button
-                  onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(location.address)}`, '_blank')}
+                  onClick={() => {
+                    const directionsUrl = location.directions_link || `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(location.address)}`;
+                    window.open(directionsUrl, '_blank');
+                  }}
                   className="w-full bg-red-600 hover:bg-red-700"
+                  data-testid="location-directions-button"
                 >
                   <Navigation className="w-4 h-4 mr-2" />
                   Get Directions
