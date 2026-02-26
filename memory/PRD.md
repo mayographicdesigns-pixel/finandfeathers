@@ -428,7 +428,7 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - Cocktails/drinks now render as line items instead of cards
   - Daily specials drink list uses line-item layout
 - **COMPLETED**: WYSIWYG page content editing (Feb 26, 2026)
-  - Added Admin e Page Content tab with toolbar + image upload
+  - Added Admin > Page Content tab with toolbar + image upload
   - Public pages now read hero content from /api/page-content/{page}
 - **COMPLETED**: Location card image behavior (Feb 26, 2026)
   - Location images now navigate to the location detail page (no lightbox)
