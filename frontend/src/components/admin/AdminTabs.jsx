@@ -20,6 +20,7 @@ import {
   sendPushNotification, getNotificationHistory,
   uploadImage, listUploads, deleteUpload,
   getAdminSpecials, createSpecial, updateSpecial, deleteSpecial, resendSpecialNotification,
+  adminGetDailySpecials, adminUpdateDailySpecials,
   getAdminSocialLinks, createSocialLink, updateSocialLink, deleteSocialLink,
   getAdminInstagramPosts, createInstagramPost, updateInstagramPost, deleteInstagramPost,
   getAdminGallery, createGalleryItem, updateGalleryItem, deleteGalleryItem,
