@@ -729,16 +729,18 @@ const MyAccountPage = () => {
               </div>
             )}
             
-            {/* Token Balance */}
-            <div className="bg-gradient-to-r from-amber-600 to-amber-500 rounded-xl px-4 py-2 text-center">
-              <div className="flex items-center gap-1.5">
-                <Coins className="w-5 h-5 text-amber-100" />
-                <span className="text-2xl font-bold text-white" data-testid="token-balance">
-                  {profile.token_balance || 0}
-                </span>
+            {/* Token Balance - Only show if token program is enabled */}
+            {appSettings.token_program_enabled && (
+              <div className="bg-gradient-to-r from-amber-600 to-amber-500 rounded-xl px-4 py-2 text-center">
+                <div className="flex items-center gap-1.5">
+                  <Coins className="w-5 h-5 text-amber-100" />
+                  <span className="text-2xl font-bold text-white" data-testid="token-balance">
+                    {profile.token_balance || 0}
+                  </span>
+                </div>
+                <div className="text-xs text-amber-100">F&F Tokens</div>
               </div>
-              <div className="text-xs text-amber-100">F&F Tokens</div>
-            </div>
+            )}
           </div>
         </div>
       </div>
