@@ -1273,7 +1273,6 @@ const MenuPage = () => {
           <div className="space-y-10">
             {renderSection('Handcrafted Mocktails ($7)', itemsByCategory['mocktails'], 'compact', 'grid-cols-1', true)}
             {renderClassicRefreshments()}
-            {renderSection('Chilled Juices ($3)', itemsByCategory['chilled-juices'], 'compact', 'grid-cols-1', true)}
             {renderSection('Custom Fruit Lemonades ($3.50)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true)}
           </div>
         )}
