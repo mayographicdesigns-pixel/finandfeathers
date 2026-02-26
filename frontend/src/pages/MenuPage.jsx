@@ -319,7 +319,7 @@ const MenuPage = () => {
 
     return (
       <div className="mb-10">
-        <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">Classic Refreshments ($2.50)</h3>
+        <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">Classic Refreshments ($3)</h3>
         {sodas.length > 0 && (
           <div className="mb-6">
             <h4 className="text-lg font-semibold text-slate-300 mb-3">Sodas & Spritzers</h4>
