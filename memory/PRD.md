@@ -560,6 +560,11 @@ Build a pixel-perfect clone of a restaurant website with the following features:
     - **Android/Chrome**: Tap menu → Add to Home screen/Install app → Install
     - **Desktop browsers**: Look for install icon or use browser menu
   - Falls back to instructional modal on unsupported browsers
+- **ADDED**: Reservation Form Modal on Locations Page
+  - Clicking "Make Reservation" opens a beautiful popup form
+  - Form fields: Guest Name, Date, Time, Number of Guests (1-10+), Occasion (Just Dining, Birthday, Anniversary, etc.)
+  - "SEND BOOKING REQUEST" button generates SMS with all details and opens phone's SMS app
+  - SMS is pre-filled with reservation details and sent to location's reservation phone number
 
 ## Credentials
 - **Admin Login**: username=`admin`, password=`$outhcentral`
