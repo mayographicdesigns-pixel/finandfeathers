@@ -145,9 +145,11 @@ const CheckInPage = () => {
           {status === 'idle' && (
             <>
               <h1 className="text-2xl font-bold text-white mb-4">Welcome!</h1>
-              <p className="text-slate-300 mb-6">
-                Let us find your nearest Fin & Feathers location to check you in.
-              </p>
+              <div
+                className="text-slate-300 mb-6"
+                data-testid="page-content-checkin-hero"
+                dangerouslySetInnerHTML={{ __html: heroHtml }}
+              />
               <Button
                 onClick={requestLocationAndFindNearest}
                 className="w-full bg-red-600 hover:bg-red-700 h-14 text-lg"
