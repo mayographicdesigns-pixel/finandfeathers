@@ -66,6 +66,156 @@ export async function updateAdminSettings(settings) {
   }
 }
 
+// ==================== DJ SCHEDULE API ====================
+
+// Get all public DJ schedules
+export async function getDJSchedules() {
+  try {
+    const response = await fetch(`${API_URL}/dj/schedules`);
+    if (!response.ok) throw new Error('Failed to fetch DJ schedules');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching DJ schedules:', error);
+    return [];
+  }
+}
+
+// Get DJ schedules for a specific location
+export async function getDJSchedulesForLocation(locationSlug) {
+  try {
+    const response = await fetch(`${API_URL}/dj/schedules/location/${locationSlug}`);
+    if (!response.ok) throw new Error('Failed to fetch location DJ schedules');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching location DJ schedules:', error);
+    return [];
+  }
+}
+
+// Get DJ currently at a location
+export async function getDJAtLocation(locationSlug) {
+  try {
+    const response = await fetch(`${API_URL}/dj/at-location/${locationSlug}`);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching DJ at location:', error);
+    return null;
+  }
+}
+
+// Admin: Get all DJ profiles
+export async function getAdminDJProfiles() {
+  try {
+    const token = localStorage.getItem('adminToken');
+    const response = await fetch(`${API_URL}/admin/dj/profiles`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) throw new Error('Failed to fetch DJ profiles');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching DJ profiles:', error);
+    return [];
+  }
+}
+
+// Admin: Create DJ profile
+export async function createAdminDJProfile(profile) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/dj/profiles`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(profile)
+  });
+  if (!response.ok) throw new Error('Failed to create DJ profile');
+  return await response.json();
+}
+
+// Admin: Update DJ profile
+export async function updateAdminDJProfile(djId, update) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/dj/profiles/${djId}`, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(update)
+  });
+  if (!response.ok) throw new Error('Failed to update DJ profile');
+  return await response.json();
+}
+
+// Admin: Delete DJ profile
+export async function deleteAdminDJProfile(djId) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/dj/profiles/${djId}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error('Failed to delete DJ profile');
+  return await response.json();
+}
+
+// Admin: Get all DJ schedules
+export async function getAdminDJSchedules() {
+  try {
+    const token = localStorage.getItem('adminToken');
+    const response = await fetch(`${API_URL}/admin/dj/schedules`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) throw new Error('Failed to fetch DJ schedules');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching DJ schedules:', error);
+    return [];
+  }
+}
+
+// Admin: Create DJ schedule
+export async function createAdminDJSchedule(schedule) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/dj/schedules`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(schedule)
+  });
+  if (!response.ok) throw new Error('Failed to create DJ schedule');
+  return await response.json();
+}
+
+// Admin: Update DJ schedule
+export async function updateAdminDJSchedule(scheduleId, update) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/dj/schedules/${scheduleId}`, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(update)
+  });
+  if (!response.ok) throw new Error('Failed to update DJ schedule');
+  return await response.json();
+}
+
+// Admin: Delete DJ schedule
+export async function deleteAdminDJSchedule(scheduleId) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/dj/schedules/${scheduleId}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error('Failed to delete DJ schedule');
+  return await response.json();
+}
+
 // ==================== PUBLIC API ====================
 
 // Get public menu items (no auth required)
