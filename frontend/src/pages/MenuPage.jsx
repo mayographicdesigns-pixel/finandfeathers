@@ -52,6 +52,11 @@ const MenuPage = () => {
     'salads': 'Salads',
     'cocktails': 'Signature Cocktails',
     'signature-cocktails': 'Signature Cocktails',
+    'mocktails': 'Handcrafted Mocktails',
+    'sodas-spritzers': 'Sodas & Spritzers',
+    'teas-lemonades': 'Teas & Lemonades',
+    'chilled-juices': 'Chilled Juices',
+    'custom-lemonades': 'Custom Fruit Lemonades',
     'brunch': 'Brunch',
     'brunch-drinks': 'Brunch Drinks',
     'brunch-sides': 'Brunch Sides'
@@ -62,7 +67,8 @@ const MenuPage = () => {
     { id: 'all', name: 'All', icon: '✨' },
     { id: 'daily-specials', name: '$5 Daily Specials', icon: '⭐' },
     { id: 'food', name: 'Food', icon: '🍽️' },
-    { id: 'cocktails', name: 'Cocktails', icon: '🍹' }
+    { id: 'cocktails', name: 'Cocktails', icon: '🍹' },
+    { id: 'non-alcoholic', name: 'Non-Alcoholic', icon: '🥤' }
   ];
 
   // Food sub-categories
@@ -88,6 +94,7 @@ const MenuPage = () => {
   
   // All cocktail category IDs
   const cocktailCategoryIds = ['cocktails', 'signature-cocktails', 'brunch-drinks'];
+  const nonAlcoholicCategoryIds = ['mocktails', 'sodas-spritzers', 'teas-lemonades', 'chilled-juices', 'custom-lemonades'];
 
   // Daily Specials by day of week
   const DEFAULT_DAILY_SPECIALS = {
