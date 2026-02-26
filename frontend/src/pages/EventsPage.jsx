@@ -11,7 +11,8 @@ import {
   createFreeEventReservation,
   getStripeCheckoutStatus,
   pollStripePaymentStatus,
-  getPublicEvents
+  getPublicEvents,
+  getPageContent
 } from '../services/api';
 
 // Fallback events if API returns empty
