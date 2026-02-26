@@ -169,6 +169,46 @@ const MenuPage = () => {
   const todayName = dayNames[new Date().getDay()];
   const heroHtml = pageContent.hero || 'ELEVATED DINING MEETS SOUTHERN SOUL. EVERY DISH CRAFTED WITH FRESH INGREDIENTS AND GENUINE HOSPITALITY.';
 
+  const renderLineItems = (items) => (
+    <div className="space-y-3">
+      {items.map((item) => (
+        <MenuLineItem key={item.id} item={item} isExpanded={expandedItemId === item.id} onToggleExpand={handleToggleExpand} />
+      ))}
+    </div>
+  );
+
+  const renderClassicRefreshments = () => {
+    const sodas = itemsByCategory['sodas-spritzers'] || [];
+    const teas = itemsByCategory['teas-lemonades'] || [];
+    const juices = itemsByCategory['chilled-juices'] || [];
+
+    if (sodas.length === 0 && teas.length === 0 && juices.length === 0) return null;
+
+    return (
+      <div className="mb-10">
+        <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">Classic Refreshments ($2.50)</h3>
+        {sodas.length > 0 && (
+          <div className="mb-6">
+            <h4 className="text-lg font-semibold text-slate-300 mb-3">Sodas & Spritzers</h4>
+            {renderLineItems(sodas)}
+          </div>
+        )}
+        {teas.length > 0 && (
+          <div className="mb-6">
+            <h4 className="text-lg font-semibold text-slate-300 mb-3">Teas & Lemonades</h4>
+            {renderLineItems(teas)}
+          </div>
+        )}
+        {juices.length > 0 && (
+          <div>
+            <h4 className="text-lg font-semibold text-slate-300 mb-3">Chilled Juices</h4>
+            {renderLineItems(juices)}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const handleToggleExpand = (item) => {
     setExpandedItemId((prev) => (prev === item.id ? null : item.id));
   };
