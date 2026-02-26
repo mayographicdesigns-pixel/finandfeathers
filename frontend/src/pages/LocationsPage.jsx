@@ -523,7 +523,6 @@ const LocationsPage = () => {
               {/* Location Image */}
               <div 
                 className="relative h-48 overflow-hidden"
-                onClick={(e) => handleImageClick(e, location)}
               >
                 <img
                   src={location.image}
@@ -537,9 +536,7 @@ const LocationsPage = () => {
                   </div>
                 ) : (
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <div className="bg-white/90 rounded-full p-2">
-                      <ZoomIn className="w-5 h-5 text-slate-800" />
-                    </div>
+                    <span className="text-white text-sm font-semibold">View Location</span>
                   </div>
                 )}
                 {!editMode && location.distance && location.id === closestLocationId && (
