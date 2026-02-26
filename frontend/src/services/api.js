@@ -34,7 +34,7 @@ export async function getAppSettings() {
 // Get admin settings
 export async function getAdminSettings() {
   try {
-    const token = localStorage.getItem('admin-token');
+    const token = localStorage.getItem('adminToken');
     const response = await fetch(`${API_URL}/admin/settings`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -49,7 +49,7 @@ export async function getAdminSettings() {
 // Update admin settings
 export async function updateAdminSettings(settings) {
   try {
-    const token = localStorage.getItem('admin-token');
+    const token = localStorage.getItem('adminToken');
     const response = await fetch(`${API_URL}/admin/settings`, {
       method: 'PUT',
       headers: {
