@@ -1,9 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import {
+  Editor,
+  Toolbar,
+  BtnBold,
+  BtnItalic,
+  BtnUnderline,
+  BtnStrikeThrough,
+  BtnLink,
+  BtnBulletList,
+  BtnNumberedList,
+  BtnClearFormatting,
+  BtnRedo,
+  BtnUndo
+} from 'react-simple-wysiwyg';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { UploadCloud, Save, RefreshCw } from 'lucide-react';
+import { UploadCloud, Save, RefreshCw, Image as ImageIcon } from 'lucide-react';
 import { toast } from '../../hooks/use-toast';
 import { getPageContent, updatePageContent, uploadImage } from '../../services/api';
 
@@ -22,7 +34,6 @@ const PageContentTab = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState({});
   const [uploadTarget, setUploadTarget] = useState(null);
-  const quillRefs = useRef({});
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -86,14 +97,10 @@ const PageContentTab = () => {
       const result = await uploadImage(file);
       const backendUrl = process.env.REACT_APP_BACKEND_URL;
       const fullUrl = `${backendUrl}${result.url}`;
-      const refKey = `${uploadTarget.pageKey}-${uploadTarget.sectionKey}`;
-      const editorRef = quillRefs.current[refKey];
-      const editor = editorRef?.getEditor();
-      if (editor) {
-        const range = editor.getSelection(true) || { index: editor.getLength() };
-        editor.insertEmbed(range.index, 'image', fullUrl, 'user');
-        editor.setSelection(range.index + 1, 0);
-      }
+      const currentHtml = contentMap?.[uploadTarget.pageKey]?.[uploadTarget.sectionKey] || '';
+      const nextHtml = `${currentHtml}
+<p><img src="${fullUrl}" alt="Uploaded" /></p>`;
+      handleContentChange(uploadTarget.pageKey, uploadTarget.sectionKey, nextHtml);
       toast({ title: 'Uploaded', description: 'Image added to content' });
     } catch (error) {
       toast({ title: 'Error', description: error.message, variant: 'destructive' });
@@ -104,22 +111,6 @@ const PageContentTab = () => {
       setUploadTarget(null);
     }
   };
-
-  const getModules = (pageKey, sectionKey) => ({
-    toolbar: {
-      container: [
-        [{ header: [1, 2, 3, false] }],
-        ['bold', 'italic', 'underline', 'strike'],
-        [{ list: 'ordered' }, { list: 'bullet' }],
-        [{ align: [] }],
-        ['link', 'image'],
-        ['clean']
-      ],
-      handlers: {
-        image: () => handleImageUpload(pageKey, sectionKey)
-      }
-    }
-  });
 
   if (loading) {
     return (
@@ -177,21 +168,38 @@ const PageContentTab = () => {
                       )}
                     </Button>
                   </div>
-                  <div className="bg-white rounded-lg overflow-hidden">
-                    <ReactQuill
-                      ref={(el) => {
-                        quillRefs.current[editorKey] = el;
-                      }}
-                      theme="snow"
+                  <div className="bg-white rounded-lg p-2">
+                    <Toolbar>
+                      <BtnUndo />
+                      <BtnRedo />
+                      <BtnBold />
+                      <BtnItalic />
+                      <BtnUnderline />
+                      <BtnStrikeThrough />
+                      <BtnNumberedList />
+                      <BtnBulletList />
+                      <BtnLink />
+                      <BtnClearFormatting />
+                      <button
+                        type="button"
+                        onClick={() => handleImageUpload(page.key, section.key)}
+                        className="px-2 py-1 text-xs border border-slate-300 rounded"
+                        data-testid={`page-content-image-btn-${page.key}-${section.key}`}
+                      >
+                        <ImageIcon className="w-4 h-4" />
+                      </button>
+                    </Toolbar>
+                    <Editor
                       value={contentMap?.[page.key]?.[section.key] || ''}
-                      onChange={(value) => handleContentChange(page.key, section.key, value)}
-                      modules={getModules(page.key, section.key)}
-                      data-testid={`page-content-editor-${page.key}-${section.key}`}
+                      onChange={(e) => handleContentChange(page.key, section.key, e.target.value)}
+                      containerProps={{
+                        'data-testid': `page-content-editor-${page.key}-${section.key}`
+                      }}
                     />
                   </div>
                   <div className="text-xs text-slate-500 flex items-center gap-2">
                     <UploadCloud className="w-3 h-3" />
-                    Use the image tool in the toolbar to upload and insert photos.
+                    Use the image button to upload and insert photos.
                   </div>
                 </div>
               );
