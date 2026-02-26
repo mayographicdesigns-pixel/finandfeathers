@@ -1243,12 +1243,12 @@ const SpecialsTab = () => {
   }, []);
 
   const defaultDailySpecials = [
-    { day_index: 0, name: "Sunday Slide", description: "$5 select cocktails and house drinks", hours: "6pm – Close", emoji: "🍹" },
-    { day_index: 1, name: "Monday Chill", description: "Half-off appetizers and $5 wells", hours: "5pm – 8pm", emoji: "🍤" },
-    { day_index: 2, name: "Taco Tuesday", description: "$2 tacos and $5 margaritas", hours: "12pm – 8pm", emoji: "🌮" },
-    { day_index: 3, name: "Wine Down Wednesday", description: "$5 wine pours and select cocktails", hours: "12pm – 8pm", emoji: "🍷" },
-    { day_index: 4, name: "Thirsty Thursday", description: "$5 signature drinks and shots", hours: "12pm – 8pm", emoji: "🍸" },
-    { day_index: 5, name: "Premium Power Hour", description: "$6 select premium cocktails and shots", hours: "6pm – 8pm", emoji: "⚡" },
+    { day_index: 0, name: "The Sunday Slide", description: "Close out the weekend with $5 Daily Specials", hours: "6pm – Close", emoji: "🌅" },
+    { day_index: 1, name: "Margarita Monday", description: "Sip on $5 Margaritas all day long", hours: "12pm – 8pm", emoji: "🍹" },
+    { day_index: 2, name: "Tito's, Tacos & Tequila", description: "$5 Tito's, $5 Margaritas, and $5 Tacos. The perfect Tuesday trio", hours: "12pm – 8pm", emoji: "🌮" },
+    { day_index: 3, name: "Wine Down (or Whiskey Up)", description: "$5 Select wine glasses, $10 Bottles, or $5 Select Whiskey shots", hours: "12pm – 8pm", emoji: "🍷" },
+    { day_index: 4, name: "Martini Madness", description: "Elevate your Thursday with $5 Martinis. Strawberry, Peach, Mango, Watermelon, Lemon Drop, Melon, Blue (+$1)", hours: "12pm – 8pm", emoji: "🍸" },
+    { day_index: 5, name: "Friday Re-Up", description: "$5 cocktails and $5 shots all day long", hours: "12pm – 8pm", emoji: "🍾" },
     { day_index: 6, name: "Saturday Prime", description: "Special $5 menu available", hours: "5pm – 8pm", emoji: "🌟" }
   ];
 
