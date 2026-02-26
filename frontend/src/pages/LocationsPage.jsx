@@ -41,9 +41,6 @@ const LocationsPage = () => {
     online_ordering: '',
     reservations: ''
   });
-  
-  // Lightbox state
-  const [lightboxLocation, setLightboxLocation] = useState(null);
 
   // Calculate distance between two coordinates using Haversine formula
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
