@@ -248,9 +248,11 @@ const MerchandisePage = () => {
           <ShoppingBag className="inline w-8 h-8 mr-2 text-red-500" />
           F&F Merch Shop
         </h1>
-        <p className="text-slate-400 text-center max-w-lg">
-          Rep your favorite restaurant! Official Fin & Feathers merchandise.
-        </p>
+        <div
+          className="text-slate-400 text-center max-w-lg"
+          data-testid="page-content-merch-hero"
+          dangerouslySetInnerHTML={{ __html: heroHtml }}
+        />
       </div>
 
       {/* Category Filter */}
