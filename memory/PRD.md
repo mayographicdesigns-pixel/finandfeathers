@@ -549,4 +549,4 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - **Admin Login**: username=`admin`, password=`admin`
 
 ## Preview URL
-https://restaurant-admin-hub.preview.emergentagent.com
+https://restaurant-admin-hub-1.preview.emergentagent.com
