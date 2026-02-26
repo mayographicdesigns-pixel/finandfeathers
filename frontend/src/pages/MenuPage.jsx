@@ -10,7 +10,7 @@ import MenuLineItem from '../components/MenuLineItem';
 import ImageUploader from '../components/ImageUploader';
 import ImageLightbox from '../components/ImageLightbox';
 import { menuItems as mockMenuItems } from '../mockData';
-import { getPublicMenuItems, verifyAdminToken, updateMenuItem, createMenuItem, deleteMenuItem } from '../services/api';
+import { getPublicMenuItems, verifyAdminToken, updateMenuItem, createMenuItem, deleteMenuItem, getPageContent } from '../services/api';
 import { toast } from '../hooks/use-toast';
 
 const MenuPage = () => {
