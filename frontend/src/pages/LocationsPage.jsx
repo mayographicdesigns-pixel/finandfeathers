@@ -839,12 +839,13 @@ const LocationsPage = () => {
                   </Button>
                   
                   <Button
-                    onClick={(e) => { e.stopPropagation(); window.location.href = location.reservations; }}
+                    onClick={(e) => { e.stopPropagation(); setReservationLocation(location); }}
                     variant="outline"
                     className="w-full border-red-600 text-red-500 hover:bg-slate-700"
+                    data-testid={`reservation-btn-${location.id}`}
                   >
                     <Calendar className="w-4 h-4 mr-2" />
-                    Make Reservation (Text)
+                    Make Reservation
                   </Button>
                   
                   {location.review_link && (
