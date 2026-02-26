@@ -645,10 +645,11 @@ const MenuPage = () => {
         <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
           Our Menu
         </h2>
-        <p className="text-slate-300 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-          ELEVATED DINING MEETS SOUTHERN SOUL. EVERY DISH CRAFTED WITH FRESH
-          INGREDIENTS AND GENUINE HOSPITALITY.
-        </p>
+        <div
+          className="text-slate-300 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed"
+          data-testid="page-content-menu-hero"
+          dangerouslySetInnerHTML={{ __html: heroHtml }}
+        />
         {usingMockData && (
           <p className="text-yellow-500 text-sm mt-2">
             Showing sample menu. Admin can add items via the dashboard.
