@@ -1076,6 +1076,34 @@ const LinkTreeHomePage = () => {
           </CardContent>
         </Card>
 
+        {/* Install App Button */}
+        <Card className="mb-6 bg-gradient-to-br from-slate-800/80 to-slate-900/80 border-red-600/30">
+          <CardContent className="p-4">
+            <Button
+              onClick={handleInstallApp}
+              className="w-full bg-red-600 hover:bg-red-700 text-white h-12 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+              data-testid="install-app-btn"
+            >
+              {isAppInstalled ? (
+                <>
+                  <RefreshCw className="w-5 h-5 mr-2" />
+                  Update App
+                </>
+              ) : (
+                <>
+                  <Download className="w-5 h-5 mr-2" />
+                  Install App
+                </>
+              )}
+            </Button>
+            <p className="text-slate-400 text-xs text-center mt-2">
+              {isAppInstalled 
+                ? 'Check for the latest version' 
+                : 'Add to your home screen for quick access'}
+            </p>
+          </CardContent>
+        </Card>
+
         {/* Social Links Footer */}
         <div className="flex justify-center gap-4 mb-4">
           {displaySocialLinks.map((link, index) => {
