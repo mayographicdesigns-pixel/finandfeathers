@@ -169,35 +169,37 @@ const PageContentTab = () => {
                       )}
                     </Button>
                   </div>
-                  <div className="bg-white rounded-lg p-2">
-                    <Toolbar>
-                      <BtnUndo />
-                      <BtnRedo />
-                      <BtnBold />
-                      <BtnItalic />
-                      <BtnUnderline />
-                      <BtnStrikeThrough />
-                      <BtnNumberedList />
-                      <BtnBulletList />
-                      <BtnLink />
-                      <BtnClearFormatting />
-                      <button
-                        type="button"
-                        onClick={() => handleImageUpload(page.key, section.key)}
-                        className="px-2 py-1 text-xs border border-slate-300 rounded"
-                        data-testid={`page-content-image-btn-${page.key}-${section.key}`}
-                      >
-                        <ImageIcon className="w-4 h-4" />
-                      </button>
-                    </Toolbar>
-                    <Editor
-                      value={contentMap?.[page.key]?.[section.key] || ''}
-                      onChange={(e) => handleContentChange(page.key, section.key, e.target.value)}
-                      containerProps={{
-                        'data-testid': `page-content-editor-${page.key}-${section.key}`
-                      }}
-                    />
-                  </div>
+                  <EditorProvider>
+                    <div className="bg-white rounded-lg p-2">
+                      <Toolbar>
+                        <BtnUndo />
+                        <BtnRedo />
+                        <BtnBold />
+                        <BtnItalic />
+                        <BtnUnderline />
+                        <BtnStrikeThrough />
+                        <BtnNumberedList />
+                        <BtnBulletList />
+                        <BtnLink />
+                        <BtnClearFormatting />
+                        <button
+                          type="button"
+                          onClick={() => handleImageUpload(page.key, section.key)}
+                          className="px-2 py-1 text-xs border border-slate-300 rounded"
+                          data-testid={`page-content-image-btn-${page.key}-${section.key}`}
+                        >
+                          <ImageIcon className="w-4 h-4" />
+                        </button>
+                      </Toolbar>
+                      <Editor
+                        value={contentMap?.[page.key]?.[section.key] || ''}
+                        onChange={(e) => handleContentChange(page.key, section.key, e.target.value)}
+                        containerProps={{
+                          'data-testid': `page-content-editor-${page.key}-${section.key}`
+                        }}
+                      />
+                    </div>
+                  </EditorProvider>
                   <div className="text-xs text-slate-500 flex items-center gap-2">
                     <UploadCloud className="w-3 h-3" />
                     Use the image button to upload and insert photos.
