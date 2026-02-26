@@ -98,6 +98,18 @@ class ContactFormCreate(BaseModel):
 class ContactFormUpdate(BaseModel):
     status: Optional[str] = None
 
+
+class PageContent(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    page_key: str
+    section_key: str
+    html: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class PageContentUpdate(BaseModel):
+    html: str
+
 # Menu Item Model
 class MenuItem(BaseModel):
     id: str
