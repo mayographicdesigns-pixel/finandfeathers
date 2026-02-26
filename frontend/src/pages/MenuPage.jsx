@@ -57,6 +57,7 @@ const MenuPage = () => {
     'teas-lemonades': 'Teas & Lemonades',
     'chilled-juices': 'Chilled Juices',
     'custom-lemonades': 'Custom Fruit Lemonades',
+    'hookah': 'Hookah',
     'brunch': 'Brunch',
     'brunch-drinks': 'Brunch Drinks',
     'brunch-sides': 'Brunch Sides'
@@ -68,7 +69,8 @@ const MenuPage = () => {
     { id: 'daily-specials', name: '$5 Daily Specials', icon: '⭐' },
     { id: 'food', name: 'Food', icon: '🍽️' },
     { id: 'cocktails', name: 'Cocktails', icon: '🍹' },
-    { id: 'non-alcoholic', name: 'Non-Alcoholic', icon: '🥤' }
+    { id: 'non-alcoholic', name: 'Non-Alcoholic', icon: '🥤' },
+    { id: 'hookah', name: 'Hookah', icon: '💨' }
   ];
 
   // Food sub-categories
