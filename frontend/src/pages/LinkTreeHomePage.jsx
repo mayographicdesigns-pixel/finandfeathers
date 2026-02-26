@@ -594,6 +594,7 @@ const LinkTreeHomePage = () => {
 
   const displaySocialLinks = socialLinks.length > 0 ? socialLinks : defaultSocialLinks;
   const displayContent = editMode ? editingContent : content;
+  const heroHtml = pageContent.hero || displayContent.tagline;
 
   const getSocialIcon = (platform) => {
     switch (platform) {
