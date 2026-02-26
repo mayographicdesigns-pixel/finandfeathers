@@ -110,6 +110,24 @@ class PageContent(BaseModel):
 class PageContentUpdate(BaseModel):
     html: str
 
+
+class DailySpecial(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    day_index: int
+    name: str
+    description: str
+    hours: str
+    emoji: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class DailySpecialUpdate(BaseModel):
+    day_index: int
+    name: str
+    description: str
+    hours: str
+    emoji: str
+
 # Menu Item Model
 class MenuItem(BaseModel):
     id: str

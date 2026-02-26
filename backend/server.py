@@ -26,6 +26,7 @@ from models import (
     PushNotification, PushNotificationCreate,
     ContactForm, ContactFormCreate, ContactFormUpdate,
     PageContent, PageContentUpdate,
+    DailySpecial, DailySpecialUpdate,
     MenuItem, MenuItemCreate, MenuItemUpdate,
     UserLogin, Token, UserResponse,
     Special, SpecialCreate, SpecialUpdate,
