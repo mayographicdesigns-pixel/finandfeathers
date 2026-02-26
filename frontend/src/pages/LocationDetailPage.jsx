@@ -300,6 +300,7 @@ const LocationDetailPage = () => {
   
   // DJ Tipping state
   const [currentDJ, setCurrentDJ] = useState(null);
+  const [djSchedules, setDjSchedules] = useState([]); // Upcoming DJ schedules
   const [djTips, setDjTips] = useState([]);
   const [djTipsTotal, setDjTipsTotal] = useState({ total: 0, count: 0 });
   const [selectedTipAmount, setSelectedTipAmount] = useState(10);
