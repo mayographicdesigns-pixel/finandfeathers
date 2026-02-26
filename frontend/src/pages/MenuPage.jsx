@@ -327,7 +327,8 @@ const MenuPage = () => {
     const knownCategories = [
       'daily-specials', 'starters', 'sides', 'entrees', 
       'seafood-grits', 'sandwiches', 'salads', 'brunch', 'brunch-sides',
-      'cocktails', 'signature-cocktails', 'brunch-drinks'
+      'cocktails', 'signature-cocktails', 'brunch-drinks',
+      'mocktails', 'sodas-spritzers', 'teas-lemonades', 'chilled-juices', 'custom-lemonades'
     ];
     
     knownCategories.forEach(cat => {
