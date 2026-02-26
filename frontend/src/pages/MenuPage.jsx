@@ -596,6 +596,40 @@ const MenuPage = () => {
     );
   };
 
+  // Render compact 2-column drink items (for beers, wines with short descriptions)
+  const renderCompactDrinkSection = (title, items) => {
+    if (!items || items.length === 0) return null;
+    
+    return (
+      <div className="mb-10">
+        <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
+          {title}
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          {items.map((item) => (
+            <div 
+              key={item.id} 
+              className="flex items-center justify-between py-2 px-3 bg-slate-800/50 rounded-lg hover:bg-slate-800/70 transition-all duration-200 border border-slate-700/30"
+              data-testid={`compact-drink-${item.id}`}
+            >
+              <div className="flex-1 min-w-0">
+                <h4 className="text-sm font-medium text-white truncate">{item.name}</h4>
+                {item.description && item.description.length > 0 && (
+                  <p className="text-slate-500 text-xs truncate">{item.description}</p>
+                )}
+              </div>
+              <div className="ml-3 flex-shrink-0">
+                <span className="text-red-500 font-bold text-sm">
+                  {item.price > 0 ? `$${item.price}` : 'MKT'}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
