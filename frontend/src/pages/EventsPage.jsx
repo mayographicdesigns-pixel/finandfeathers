@@ -73,12 +73,18 @@ const EventsPage = () => {
 
   const fetchData = async () => {
     try {
-      const [packagesData, eventsData] = await Promise.all([
+      const [packagesData, eventsData, contentData] = await Promise.all([
         getEventPackages(),
-        getPublicEvents()
+        getPublicEvents(),
+        getPageContent('events')
       ]);
       setPackages(packagesData);
       setEvents(eventsData.length > 0 ? eventsData : FALLBACK_EVENTS);
+      const map = {};
+      (contentData || []).forEach((entry) => {
+        map[entry.section_key] = entry.html || '';
+      });
+      setPageContent(map);
     } catch (error) {
       console.error('Error fetching data:', error);
       setEvents(FALLBACK_EVENTS);
