@@ -51,6 +51,8 @@ const MyAccountPage = () => {
   const [editedProfile, setEditedProfile] = useState(null);
   const [activeTab, setActiveTab] = useState('profile');
   const profilePhotoInputRef = useRef(null);
+  const cameraInputRef = useRef(null);
+  const [showPhotoOptions, setShowPhotoOptions] = useState(false);
   const [searchParams] = useSearchParams();
   
   // Auth error from OAuth callback
