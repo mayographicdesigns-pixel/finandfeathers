@@ -143,6 +143,19 @@ const LocationsPage = () => {
     setIsLoading(false);
   };
 
+  const fetchPageContent = async () => {
+    try {
+      const content = await getPageContent('locations');
+      const map = {};
+      (content || []).forEach((entry) => {
+        map[entry.section_key] = entry.html || '';
+      });
+      setPageContent(map);
+    } catch (error) {
+      console.error('Failed to fetch page content', error);
+    }
+  };
+
   // Admin functions
   const handleEditLocation = (location) => {
     setEditingLocation({ ...location });
