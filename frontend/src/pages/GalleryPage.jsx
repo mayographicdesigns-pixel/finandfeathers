@@ -110,6 +110,19 @@ const GalleryPage = () => {
     }
   };
 
+  const fetchPageContent = async () => {
+    try {
+      const content = await getPageContent('gallery');
+      const map = {};
+      (content || []).forEach((entry) => {
+        map[entry.section_key] = entry.html || '';
+      });
+      setPageContent(map);
+    } catch (error) {
+      console.error('Failed to fetch page content', error);
+    }
+  };
+
   // Close modal on Escape key
   useEffect(() => {
     const handleEscape = (e) => {
