@@ -450,12 +450,21 @@ const LocationDetailPage = () => {
 
   const loadDJData = async () => {
     try {
-      // Load DJ profile first
+      // Load DJ profile first (currently live)
       const dj = await getDJAtLocation(slug);
       setCurrentDJ(dj);
     } catch (e) {
       console.error('Error loading DJ:', e);
       setCurrentDJ(null);
+    }
+    
+    try {
+      // Load upcoming DJ schedules
+      const schedules = await getDJSchedulesForLocation(slug);
+      setDjSchedules(schedules || []);
+    } catch (e) {
+      console.error('Error loading DJ schedules:', e);
+      setDjSchedules([]);
     }
     
     try {
