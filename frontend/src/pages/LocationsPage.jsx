@@ -141,8 +141,6 @@ Time: ${formattedTime}
 Guests: ${guests}
 Occasion: ${occasion}
 
-I understand reservations are for 2 hours starting when the first guest arrives.
-
 Please confirm availability. Thank you!`;
 
     // Encode the SMS body for URL
