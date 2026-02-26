@@ -699,43 +699,61 @@ const MenuItemsTab = () => {
         </Card>
       ) : (
         <div className="grid gap-3">
-          {filteredItems.map((item) => (
-            <Card key={item.id} className="bg-slate-800/50 border-slate-700">
-              <CardContent className="p-4 flex items-center gap-4">
-                <img 
-                  src={item.image} 
-                  alt={item.name} 
-                  className="w-16 h-16 object-cover rounded"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="text-white font-medium">{item.name}</p>
-                    <span className="text-red-400 font-semibold">${item.price}</span>
+          {filteredItems.map((item) => {
+            // Handle different image formats
+            const getImageSrc = (img) => {
+              if (!img) return '/placeholder-food.jpg';
+              if (img.startsWith('data:')) return img; // Base64
+              if (img.startsWith('http')) return img; // Full URL
+              if (img.startsWith('/api/')) return `${process.env.REACT_APP_BACKEND_URL}${img}`; // API path
+              return img;
+            };
+            
+            return (
+              <Card key={item.id} className="bg-slate-800/50 border-slate-700">
+                <CardContent className="p-4 flex items-center gap-4">
+                  {item.image ? (
+                    <img 
+                      src={getImageSrc(item.image)} 
+                      alt={item.name} 
+                      className="w-16 h-16 object-cover rounded bg-slate-700"
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                    />
+                  ) : (
+                    <div className="w-16 h-16 bg-slate-700 rounded flex items-center justify-center text-slate-500 text-xs">
+                      No Image
+                    </div>
+                  )}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="text-white font-medium">{item.name}</p>
+                      <span className="text-red-400 font-semibold">${item.price}</span>
+                    </div>
+                    <p className="text-slate-400 text-sm">{item.category}</p>
+                    <p className="text-slate-500 text-xs truncate">{item.description}</p>
                   </div>
-                  <p className="text-slate-400 text-sm">{item.category}</p>
-                  <p className="text-slate-500 text-xs truncate">{item.description}</p>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleEdit(item)}
-                    className="text-blue-400 hover:bg-blue-900/30"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDelete(item.id)}
-                    className="text-red-400 hover:bg-red-900/30"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEdit(item)}
+                      className="text-blue-400 hover:bg-blue-900/30"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDelete(item.id)}
+                      className="text-red-400 hover:bg-red-900/30"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>
