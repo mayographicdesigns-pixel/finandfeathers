@@ -30,7 +30,9 @@ import {
   adminGetGallerySubmissions, adminDeleteGallerySubmission,
   adminGetAllSocialPosts, adminDeleteSocialPost, adminCleanupOldPosts, adminDeleteUser,
   getAdminUsers, createAdminUser, updateAdminUser, deleteAdminUser, changeAdminPassword,
-  getAdminSettings, updateAdminSettings
+  getAdminSettings, updateAdminSettings,
+  getAdminDJProfiles, createAdminDJProfile, updateAdminDJProfile, deleteAdminDJProfile,
+  getAdminDJSchedules, createAdminDJSchedule, updateAdminDJSchedule, deleteAdminDJSchedule
 } from '../../services/api';
 import {
   DndContext,
