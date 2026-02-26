@@ -823,6 +823,8 @@ class LocationCreate(BaseModel):
     online_ordering: Optional[str] = None
     reservations: Optional[str] = None
     delivery: Optional[str] = None
+    review_link: Optional[str] = None
+    directions_link: Optional[str] = None
     social_media: LocationSocialMedia = LocationSocialMedia()
     weekly_specials: List[WeeklySpecial] = []
     display_order: int = 0
