@@ -494,6 +494,65 @@ class DJProfileResponse(BaseModel):
     checked_in_at: Optional[datetime]
 
 
+
+# DJ Schedule - Admin schedules DJs at locations
+class DJSchedule(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    dj_id: str  # Reference to DJProfile
+    dj_name: str  # Denormalized for quick display
+    dj_stage_name: Optional[str] = None
+    dj_photo_url: Optional[str] = None
+    location_slug: str
+    location_name: str  # Denormalized for quick display
+    scheduled_date: str  # YYYY-MM-DD format
+    start_time: str  # HH:MM format (24hr)
+    end_time: str  # HH:MM format (24hr)
+    is_recurring: bool = False  # If true, repeats weekly
+    day_of_week: Optional[int] = None  # 0=Monday, 6=Sunday (for recurring)
+    notes: Optional[str] = None
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class DJScheduleCreate(BaseModel):
+    dj_id: str
+    location_slug: str
+    scheduled_date: str  # YYYY-MM-DD
+    start_time: str  # HH:MM
+    end_time: str  # HH:MM
+    is_recurring: bool = False
+    day_of_week: Optional[int] = None
+    notes: Optional[str] = None
+
+class DJScheduleUpdate(BaseModel):
+    dj_id: Optional[str] = None
+    location_slug: Optional[str] = None
+    scheduled_date: Optional[str] = None
+    start_time: Optional[str] = None
+    end_time: Optional[str] = None
+    is_recurring: Optional[bool] = None
+    day_of_week: Optional[int] = None
+    notes: Optional[str] = None
+    is_active: Optional[bool] = None
+
+class DJScheduleResponse(BaseModel):
+    id: str
+    dj_id: str
+    dj_name: str
+    dj_stage_name: Optional[str]
+    dj_photo_url: Optional[str]
+    location_slug: str
+    location_name: str
+    scheduled_date: str
+    start_time: str
+    end_time: str
+    is_recurring: bool
+    day_of_week: Optional[int]
+    notes: Optional[str]
+    is_active: bool
+    created_at: datetime
+
+
+
 # Send a Drink - Users can send drinks to each other
 class DrinkOrder(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
