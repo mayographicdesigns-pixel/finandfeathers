@@ -25,6 +25,8 @@ const CheckInPage = () => {
   const [nearestLocation, setNearestLocation] = useState(null);
   const [distance, setDistance] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const [pageContent, setPageContent] = useState({});
+  const heroHtml = pageContent.hero || 'Find the closest Fin eathers location to check in.';
 
   const requestLocationAndFindNearest = () => {
     setStatus('requesting');
