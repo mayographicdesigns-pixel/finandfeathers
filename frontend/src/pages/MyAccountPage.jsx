@@ -93,6 +93,25 @@ const MyAccountPage = () => {
   const [cashoutDetails, setCashoutDetails] = useState('');
   const [isRequestingCashout, setIsRequestingCashout] = useState(false);
   const [transferToPersonalAmount, setTransferToPersonalAmount] = useState(0);
+  
+  // App settings state - controls visibility of token/loyalty features
+  const [appSettings, setAppSettings] = useState({
+    token_program_enabled: true,
+    loyalty_program_enabled: true
+  });
+
+  // Load app settings on mount
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const settings = await getAppSettings();
+        setAppSettings(settings);
+      } catch (error) {
+        console.error('Error loading app settings:', error);
+      }
+    };
+    loadSettings();
+  }, []);
 
   // Load token packages on mount
   useEffect(() => {
