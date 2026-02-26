@@ -432,6 +432,10 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - Public pages now read hero content from /api/page-content/{page}
 - **COMPLETED**: Location card image behavior (Feb 26, 2026)
   - Location images now navigate to the location detail page (no lightbox)
+- **FIXED**: Admin auth for all admin users (Feb 26, 2026)
+  - Admin token validation now allows any active admin account, not just legacy admin
+- **UPDATED**: Mobile full-height layout (Feb 26, 2026)
+  - html/body/root set to 100% height with 100svh for phone sizing
 - **UPDATED**: Menu item inline expansion (Feb 26, 2026)
   - Click any menu item (cards or line items) to expand/collapse full description
   - Image zoom remains available via the zoom button
