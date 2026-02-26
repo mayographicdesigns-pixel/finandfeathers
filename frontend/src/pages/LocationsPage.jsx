@@ -303,14 +303,6 @@ Please confirm availability. Thank you!`;
               </div>
             </div>
 
-            {/* Time Limit Notice */}
-            <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-3">
-              <p className="text-slate-400 text-xs text-center">
-                <Clock className="w-3 h-3 inline mr-1" />
-                Reservations are limited to <span className="text-white font-semibold">2 hours</span> and begin when the first guest arrives
-              </p>
-            </div>
-
             {/* Send Button */}
             <Button
               onClick={handleSendBooking}
