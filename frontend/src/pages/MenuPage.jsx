@@ -634,9 +634,9 @@ const MenuPage = () => {
   const categorizeBeerWineItems = (items) => {
     if (!items) return {};
     
-    const beerNames = ['Angry Orchard', 'Blue Moon', 'Bud Light', 'Corona', 'Guinness', 'Heineken', 'Mich Ultra', 'Modelo', 'Modelo Negro', 'Stella', 'Yuengling'];
+    const beerNames = ['Angry Orchard', 'Blue Moon', 'Bud Light', 'Corona', 'Guinness', 'Heineken', 'Mich Ultra', 'Modelo', 'Modelo Negro', 'Stella Artois', 'Yuengling'];
     const champagneNames = ['Belaire', 'House Champagne', 'Moet'];
-    const redWineNames = ['Cabernet', 'Merlot', 'Pinot Noir', 'Malbec', 'Stella Rosa Black', 'Cardinale Sweet'];
+    const redWineNames = ['Cabernet', 'Merlot', 'Pinot Noir', 'Malbec', 'Stella Rosa', 'Cardinale'];
     const whiteWineNames = ['Sauvignon Blanc', 'Prosecco', 'Chardonnay', 'Moscato', 'Pinot Grigio', 'Riesling'];
     const liqueurNames = ['Amaretto', 'Grand Marnier', 'Jager'];
     const energyNames = ['Red Bull'];
@@ -657,7 +657,10 @@ const MenuPage = () => {
       const name = item.name.toLowerCase();
       const desc = (item.description || '').toLowerCase();
       
-      if (beerNames.some(b => name.includes(b.toLowerCase()))) {
+      // Check for specific wine types first (before generic "Stella" beer match)
+      if (name.includes('stella rosa')) {
+        categories.redWine.push(item);
+      } else if (beerNames.some(b => name.includes(b.toLowerCase())) || (name === 'stella' && !name.includes('rosa'))) {
         categories.beer.push(item);
       } else if (champagneNames.some(c => name.includes(c.toLowerCase()))) {
         categories.champagne.push(item);
