@@ -1220,6 +1220,7 @@ const SpecialsTab = () => {
   const [specials, setSpecials] = useState([]);
   const [dailySpecials, setDailySpecials] = useState([]);
   const [dailySaving, setDailySaving] = useState(false);
+  const dayLabels = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
