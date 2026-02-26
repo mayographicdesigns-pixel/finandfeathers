@@ -1273,7 +1273,7 @@ const MenuPage = () => {
             {/* Beer & Wine selected */}
             {activeSubCategory === 'beer-wine' && (
               <>
-                {renderCompactDrinkSection('Beer & Wine', itemsByCategory['beer-wine'])}
+                {renderBeerWineSections()}
               </>
             )}
             
