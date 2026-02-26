@@ -358,6 +358,25 @@ const LocationsPage = () => {
                     value={editingLocation.online_ordering || ''}
                     onChange={(e) => setEditingLocation({ ...editingLocation, online_ordering: e.target.value })}
                     className="bg-slate-800 border-slate-700 text-white"
+                    data-testid="location-online-ordering-input"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-slate-300 mb-1 block">Review Link</label>
+                  <Input
+                    value={editingLocation.review_link || ''}
+                    onChange={(e) => setEditingLocation({ ...editingLocation, review_link: e.target.value })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    data-testid="location-review-link-input"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-slate-300 mb-1 block">Directions Link</label>
+                  <Input
+                    value={editingLocation.directions_link || ''}
+                    onChange={(e) => setEditingLocation({ ...editingLocation, directions_link: e.target.value })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    data-testid="location-directions-link-input"
                   />
                 </div>
                 <div className="flex gap-2 pt-2">
