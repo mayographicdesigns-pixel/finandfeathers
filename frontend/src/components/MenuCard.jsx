@@ -61,7 +61,7 @@ const MenuCard = ({ item, variant = 'default', editMode = false, onEdit, onImage
             ))}
           </div>
           {item.description && (
-            <p className="text-slate-400 text-xs mt-1 line-clamp-1">{item.description}</p>
+            <p className={`text-slate-400 text-xs mt-1 ${isExpandedState ? '' : 'line-clamp-1'}`} data-testid={`menu-item-description-${item.id}`}>{item.description}</p>
           )}
         </div>
         <div className="ml-4 flex-shrink-0">
