@@ -28,6 +28,23 @@ const CheckInPage = () => {
   const [pageContent, setPageContent] = useState({});
   const heroHtml = pageContent.hero || 'Find the closest Fin & Feathers location to check in.';
 
+  useEffect(() => {
+    fetchPageContent();
+  }, []);
+
+  const fetchPageContent = async () => {
+    try {
+      const content = await getPageContent('checkin');
+      const map = {};
+      (content || []).forEach((entry) => {
+        map[entry.section_key] = entry.html || '';
+      });
+      setPageContent(map);
+    } catch (error) {
+      console.error('Failed to fetch page content', error);
+    }
+  };
+
   const requestLocationAndFindNearest = () => {
     setStatus('requesting');
 
