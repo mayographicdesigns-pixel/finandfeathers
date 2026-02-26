@@ -102,79 +102,94 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test frontend flows: 1) /account admin login with username 'admin' and password 'admin' should redirect to /admin and show dashboard. 2) /events page should show 'From Free' for Friday Night Live. Open ticket modal and verify package list shows General Admission as Free, total shows Free, and CTA text changes to 'Reserve Tickets'. 3) Click Reserve Tickets and confirm it attempts to navigate to sms: reservation link (location Edgewood). 4) Verify login form on /account shows logo and no broken image. Capture any console errors."
+user_problem_statement: "Re-test WYSIWYG content + location image changes after admin seed fix: 1) Login to /admin with admin/$outhcentral and open Page Content tab; editor/toolbar visible with no runtime errors. 2) Update Menu Page hero content with short text, save, then visit /menu to confirm hero text updates. 3) Visit /locations and click a location card image; should navigate to location detail page (no lightbox). 4) Verify cocktails/drinks display as line items (no cards). Capture console errors."
 
 frontend:
-  - task: "Admin login at /account"
+  - task: "Admin login to /admin with new credentials"
     implemented: true
     working: true
-    file: "/app/frontend/src/pages/MyAccountPage.jsx"
+    file: "/app/frontend/src/pages/AdminPage.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
+      - working: false
+        agent: "testing"
+        comment: "Previous test (2026-02-26): CRITICAL BLOCKER - Admin login NOT POSSIBLE - database had zero admin users."
       - working: true
         agent: "testing"
-        comment: "Tested admin login flow. Successfully logged in with username 'admin' and password 'admin'. Redirected to /admin page as expected. Dashboard shows 5 dashboard cards (Loyalty Members, New Contacts, Menu Items, Notifications Sent, and additional stats). Admin login flow working correctly."
+        comment: "Re-tested (2026-02-26): Admin login FIXED. Successfully logged in with credentials admin/$outhcentral. Admin dashboard loads correctly with all tabs visible. Database seeding successful."
 
-  - task: "Login form logo on /account"
+  - task: "Page Content tab - WYSIWYG editor visibility"
     implemented: true
     working: true
-    file: "/app/frontend/src/pages/MyAccountPage.jsx"
+    file: "/app/frontend/src/components/admin/PageContentTab.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
       - working: true
         agent: "testing"
-        comment: "Verified logo on /account login page. Logo element found with data-testid='auth-logo', visible on page, and image loaded successfully with width of 1080px. No broken image detected. Logo displays correctly."
+        comment: "Page Content tab opens successfully. WYSIWYG editor (react-simple-wysiwyg) renders correctly for Menu Page hero section. Toolbar visible with 77 buttons (Bold, Italic, Underline, Lists, Links, Image upload, etc.). No runtime errors detected in console. Editor is fully functional."
 
-  - task: "Events page - Friday Night Live pricing"
+  - task: "Update Menu Page hero content"
     implemented: true
     working: true
-    file: "/app/frontend/src/pages/EventsPage.jsx"
+    file: "/app/frontend/src/components/admin/PageContentTab.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
       - working: true
         agent: "testing"
-        comment: "Tested events page. Friday Night Live featured event displays 'Get Tickets - From Free' pricing as expected. Event is properly configured with general package set to $0, showing 'From Free' label correctly."
+        comment: "Successfully updated Menu Page hero content via WYSIWYG editor. Changed text to 'Fresh seafood and southern hospitality daily'. Save button clicked, content saved successfully to database without errors."
 
-  - task: "Ticket modal for free event"
+  - task: "Verify hero text updates on /menu page"
     implemented: true
     working: true
-    file: "/app/frontend/src/pages/EventsPage.jsx"
+    file: "/app/frontend/src/pages/MenuPage.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
       - working: true
         agent: "testing"
-        comment: "Tested ticket modal functionality. Modal opens successfully when clicking on Friday Night Live event. Package list displays correctly: General Admission shows as 'Free', VIP Experience shows $75.00, Table Reservation shows $200.00. When General Admission (free package) is selected, total displays 'Free' as expected. CTA button text correctly changes to 'Reserve Tickets' for free event (instead of 'Purchase Tickets'). All modal elements working correctly."
+        comment: "Navigated to /menu page. Hero content displays updated text correctly: 'Fresh seafood and southern hospitality daily'. Content update persists from database. Page content management system working as expected."
 
-  - task: "Reserve Tickets SMS navigation"
+  - task: "Location card image navigation (no lightbox)"
     implemented: true
     working: true
-    file: "/app/frontend/src/pages/EventsPage.jsx"
+    file: "/app/frontend/src/pages/LocationsPage.jsx"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
       - working: true
         agent: "testing"
-        comment: "Tested Reserve Tickets flow for free event. When clicking 'Reserve Tickets' button, the system successfully creates a free reservation (confirmed by green banner: 'Your tickets have been purchased! Check your email for details'). Toast notification displays 'Reservation Confirmed' with message 'Opening reservation SMS...'. Backend API returns SMS link for Edgewood location (sms:14046921252). Browser security prevents actual navigation to sms: protocol (expected behavior), but the reservation is created successfully and SMS link is returned. The flow works correctly - reservation created, SMS link attempted, location is Edgewood as expected."
+        comment: "Tested on /locations page. Found 8 location cards. Clicked first location card (Edgewood Atlanta). Successfully navigated to detail page URL: /locations/edgewood-atlanta. No lightbox/modal opened - correct behavior. Location cards navigate properly to detail pages."
+
+  - task: "Cocktails display as line items (not cards)"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/MenuLineItem.jsx, /app/frontend/src/pages/MenuPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Verified on /menu page in Cocktails category. Found 10 cocktail line items (LAX Sidecar, The 405, Baldwin Hills, California Dreaming, Sunset Blvd, Marina Del Rey, etc.). Drinks correctly display as line items with name, description, and price - NO image cards. MenuLineItem component renders correctly without images. Implementation correct."
 
 metadata:
   created_by: "testing_agent"
-  version: "1.0"
-  test_sequence: 1
+  version: "1.1"
+  test_sequence: 2
   run_ui: true
-  test_date: "2026-02-25"
+  test_date: "2026-02-26"
 
 test_plan:
   current_focus:
-    - "All tests completed"
+    - "WYSIWYG re-test after admin seed fix - COMPLETED"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
@@ -185,4 +200,6 @@ agent_communication:
   - agent: "testing"
     message: "Completed refactor + PWA icon verification testing (2025-02-25). All critical tests PASSED: 1) /account page loads successfully with signup options (Google login, email signup, logo displays correctly - 1080px) ✓, 2) /admin page shows login card with username/email and password fields ✓, 3) manifest.json fetches successfully (200 OK, 2244 bytes) ✓, 4) All PWA icons return 200 status (icon-192.png, icon-512.png, icon-192-maskable.png) ✓, 5) No console page errors or network failures (only expected 401 auth checks) ✓. No build errors detected. Refactor completed successfully with all routes and PWA assets working as expected."
   - agent: "testing"
-    message: "Completed testing for WYSIWYG content and location image changes (2026-02-26). **CRITICAL BLOCKER**: Admin login NOT POSSIBLE - database has zero admin users. Cannot test: 1) Page Content tab WYSIWYG editor, 2) Menu hero content update flow. **TESTS PASSED**: 3) Location image navigation works correctly (navigates to detail page, no lightbox) ✓, 4) Cocktails/drinks render as line items (20 items found, no image cards) ✓, 5) Menu page content renders correctly ✓. No console errors detected. Main agent must create admin users in database to enable admin panel testing."
+    message: "FIRST TEST (2026-02-26): Completed testing for WYSIWYG content and location image changes. **CRITICAL BLOCKER**: Admin login NOT POSSIBLE - database has zero admin users. Cannot test: 1) Page Content tab WYSIWYG editor, 2) Menu hero content update flow. **TESTS PASSED**: 3) Location image navigation works correctly (navigates to detail page, no lightbox) ✓, 4) Cocktails/drinks render as line items (20 items found, no image cards) ✓, 5) Menu page content renders correctly ✓. No console errors detected. Main agent must create admin users in database to enable admin panel testing."
+  - agent: "testing"
+    message: "RE-TEST COMPLETE (2026-02-26): Admin seed fix successful! All 6 tests PASSED: 1) ✅ Admin login with admin/$outhcentral works correctly - dashboard loads, 2) ✅ Page Content tab opens with WYSIWYG editor visible (react-simple-wysiwyg, 77 toolbar buttons, no runtime errors), 3) ✅ Menu hero content updated successfully ('Fresh seafood and southern hospitality daily' saved to DB), 4) ✅ Menu page displays updated hero text correctly, 5) ✅ Location card image navigation works (8 cards found, clicked Edgewood, navigated to /locations/edgewood-atlanta detail page, NO lightbox), 6) ✅ Cocktails display as line items (10 items found: LAX Sidecar, The 405, Baldwin Hills, etc. - correct MenuLineItem rendering, NO image cards). Zero console errors. Zero network errors. All functionality working as expected after admin seed fix."
