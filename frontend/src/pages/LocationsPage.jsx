@@ -22,6 +22,7 @@ const LocationsPage = () => {
   const [searchParams] = useSearchParams();
   const isOrderFlow = searchParams.get('order') === '1';
   const [pageContent, setPageContent] = useState({});
+  const heroHtml = pageContent.hero || 'ELEVATED DINING MEETS SOUTHERN SOUL. EVERY DISH CRAFTED WITH FRESH INGREDIENTS AND GENUINE HOSPITALITY.';
   
   // Admin editing state
   const [isAdmin, setIsAdmin] = useState(false);
