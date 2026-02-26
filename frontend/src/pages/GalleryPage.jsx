@@ -11,7 +11,8 @@ import {
   uploadImage,
   verifyAdminToken,
   createGalleryItem,
-  deleteGalleryItem
+  deleteGalleryItem,
+  getPageContent
 } from '../services/api';
 
 // Default gallery content using actual Fin & Feathers images (fallback)
