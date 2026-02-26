@@ -82,6 +82,7 @@ const GalleryPage = () => {
     
     checkUserStatus();
     fetchGallery();
+    fetchPageContent();
   }, []);
 
   const fetchGallery = async () => {
