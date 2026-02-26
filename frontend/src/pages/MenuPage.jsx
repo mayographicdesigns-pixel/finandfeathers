@@ -786,7 +786,7 @@ const MenuPage = () => {
                       {itemsByCategory['daily-specials']
                         .filter(item => item.type === 'drink')
                         .map((item) => (
-                          <MenuLineItem key={item.id} item={item} />
+                          <MenuLineItem key={item.id} item={item} isExpanded={expandedItemId === item.id} onToggleExpand={handleToggleExpand} />
                         ))}
                     </div>
                   </div>
