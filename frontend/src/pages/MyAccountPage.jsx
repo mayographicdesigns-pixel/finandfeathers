@@ -550,7 +550,7 @@ const MyAccountPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-950">
-      {/* Hidden file input for profile photo */}
+      {/* Hidden file input for profile photo from gallery */}
       <input
         type="file"
         ref={profilePhotoInputRef}
@@ -559,6 +559,71 @@ const MyAccountPage = () => {
         className="hidden"
         data-testid="profile-photo-input"
       />
+      
+      {/* Hidden camera input for profile photo */}
+      <input
+        type="file"
+        ref={cameraInputRef}
+        onChange={handleProfilePhotoUpload}
+        accept="image/*"
+        capture="user"
+        className="hidden"
+        data-testid="camera-photo-input"
+      />
+
+      {/* Photo Options Modal */}
+      {showPhotoOptions && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-end sm:items-center justify-center p-4">
+          <div className="bg-slate-900 rounded-2xl w-full max-w-sm overflow-hidden">
+            <div className="p-4 border-b border-slate-700">
+              <h3 className="text-lg font-semibold text-white text-center">Profile Photo</h3>
+            </div>
+            <div className="p-2">
+              <button
+                onClick={() => {
+                  cameraInputRef.current?.click();
+                  setShowPhotoOptions(false);
+                }}
+                className="w-full flex items-center gap-3 p-4 hover:bg-slate-800 rounded-xl transition-colors"
+                data-testid="take-photo-btn"
+              >
+                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                  <Camera className="w-5 h-5 text-white" />
+                </div>
+                <div className="text-left">
+                  <p className="text-white font-medium">Take Photo</p>
+                  <p className="text-slate-400 text-sm">Use your camera</p>
+                </div>
+              </button>
+              <button
+                onClick={() => {
+                  profilePhotoInputRef.current?.click();
+                  setShowPhotoOptions(false);
+                }}
+                className="w-full flex items-center gap-3 p-4 hover:bg-slate-800 rounded-xl transition-colors"
+                data-testid="choose-photo-btn"
+              >
+                <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
+                  <ImageIcon className="w-5 h-5 text-white" />
+                </div>
+                <div className="text-left">
+                  <p className="text-white font-medium">Choose from Gallery</p>
+                  <p className="text-slate-400 text-sm">Select an existing photo</p>
+                </div>
+              </button>
+            </div>
+            <div className="p-2 border-t border-slate-700">
+              <button
+                onClick={() => setShowPhotoOptions(false)}
+                className="w-full p-3 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors"
+                data-testid="cancel-photo-btn"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Header */}
       <div className="bg-gradient-to-b from-red-900/40 to-slate-950 pt-6 pb-8 px-4">
