@@ -97,9 +97,14 @@ const MenuCard = ({ item, variant = 'default', editMode = false, onEdit, onImage
           </div>
         ) : (
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-            <div className="bg-white/90 rounded-full p-2">
+            <button
+              type="button"
+              className="bg-white/90 rounded-full p-2"
+              onClick={handleImageClick}
+              data-testid={`menu-item-image-zoom-${item.id}`}
+            >
               <ZoomIn className="w-5 h-5 text-slate-800" />
-            </div>
+            </button>
           </div>
         )}
       </div>
