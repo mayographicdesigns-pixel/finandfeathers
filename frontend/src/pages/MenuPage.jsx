@@ -1337,6 +1337,13 @@ const MenuPage = () => {
             <p className="text-slate-400 text-lg">No items in this category yet.</p>
           </div>
         )}
+
+        {/* Service Charge Notice - Appears on all pages */}
+        <div className="mt-12 p-4 bg-red-900/20 border border-red-600/50 rounded-xl">
+          <p className="text-red-400 text-sm text-center font-medium">
+            <strong>Service Charge:</strong> A 20% automatic gratuity will be added to all checks.
+          </p>
+        </div>
       </div>
     </div>
   );
