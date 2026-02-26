@@ -1164,6 +1164,53 @@ const MenuPage = () => {
           </div>
         )}
 
+        {/* DRINKS VIEW - Main drinks category with subcategories */}
+        {activeCategory === 'drinks' && (
+          <div className="space-y-10">
+            {/* Beer & Wine selected */}
+            {activeSubCategory === 'beer-wine' && (
+              <>
+                {renderSection('Beer & Wine', itemsByCategory['beer-wine'], 'compact', 'grid-cols-1', true)}
+              </>
+            )}
+            
+            {/* Cocktails selected */}
+            {activeSubCategory === 'cocktails' && (
+              <>
+                {renderSection('$5 Daily Specials',
+                  (itemsByCategory['daily-specials'] || []).filter(item => item.type === 'drink'),
+                  'compact',
+                  'grid-cols-1',
+                  true
+                )}
+                {renderSection('Signature Cocktails', [...(itemsByCategory['cocktails'] || []), ...(itemsByCategory['signature-cocktails'] || [])], 'compact', 'grid-cols-1', true)}
+                {renderSection('Brunch Drinks', itemsByCategory['brunch-drinks'], 'compact', 'grid-cols-1', true)}
+              </>
+            )}
+            
+            {/* Non-Alcoholic selected */}
+            {activeSubCategory === 'non-alcoholic' && (
+              <>
+                {renderSection('Handcrafted Mocktails ($5.50)', itemsByCategory['mocktails'], 'compact', 'grid-cols-1', true)}
+                {renderClassicRefreshments()}
+                {renderSection('Custom Fruit Lemonades ($3.50)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true)}
+              </>
+            )}
+            
+            {/* No subcategory - show all drinks */}
+            {!activeSubCategory && (
+              <>
+                {renderSection('Beer & Wine', itemsByCategory['beer-wine'], 'compact', 'grid-cols-1', true)}
+                {renderSection('Signature Cocktails', [...(itemsByCategory['cocktails'] || []), ...(itemsByCategory['signature-cocktails'] || [])], 'compact', 'grid-cols-1', true)}
+                {renderSection('Brunch Drinks', itemsByCategory['brunch-drinks'], 'compact', 'grid-cols-1', true)}
+                {renderSection('Handcrafted Mocktails ($5.50)', itemsByCategory['mocktails'], 'compact', 'grid-cols-1', true)}
+                {renderClassicRefreshments()}
+                {renderSection('Custom Fruit Lemonades ($3.50)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true)}
+              </>
+            )}
+          </div>
+        )}
+
         {/* HOOKAH VIEW */}
         {activeCategory === 'hookah' && (
           <div className="space-y-10">
