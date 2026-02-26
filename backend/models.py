@@ -797,6 +797,8 @@ class Location(BaseModel):
     online_ordering: Optional[str] = None  # ToastTab or similar URL
     reservations: Optional[str] = None  # SMS link for reservations
     delivery: Optional[str] = None
+    review_link: Optional[str] = None
+    directions_link: Optional[str] = None
     social_media: LocationSocialMedia = LocationSocialMedia()
     weekly_specials: List[WeeklySpecial] = []
     is_active: bool = True
