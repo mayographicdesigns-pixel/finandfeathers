@@ -50,6 +50,7 @@ const MenuPage = () => {
     'seafood-grits': 'Seafood & Grits',
     'sandwiches': 'Sandwiches',
     'salads': 'Salads',
+    'beer-wine': 'Beer & Wine',
     'cocktails': 'Signature Cocktails',
     'signature-cocktails': 'Signature Cocktails',
     'mocktails': 'Handcrafted Mocktails',
@@ -63,13 +64,12 @@ const MenuPage = () => {
     'brunch-sides': 'Brunch Sides'
   };
 
-  // Main categories (4 buttons)
+  // Main categories (6 buttons)
   const mainCategories = [
     { id: 'all', name: 'All', icon: '✨' },
     { id: 'daily-specials', name: '$5 Daily Specials', icon: '⭐' },
     { id: 'food', name: 'Food', icon: '🍽️' },
-    { id: 'cocktails', name: 'Cocktails', icon: '🍹' },
-    { id: 'non-alcoholic', name: 'Non-Alcoholic', icon: '🥤' },
+    { id: 'drinks', name: 'Drinks', icon: '🍹' },
     { id: 'hookah', name: 'Hookah', icon: '💨' }
   ];
 
@@ -85,10 +85,26 @@ const MenuPage = () => {
     { id: 'brunch-sides', name: 'Brunch Sides', icon: '🥓' }
   ];
 
-  // Cocktails sub-categories
+  // Drinks sub-categories (Beer & Wine, Cocktails, Non-Alcoholic)
+  const drinksSubCategories = [
+    { id: 'beer-wine', name: 'Beer & Wine', icon: '🍺' },
+    { id: 'cocktails', name: 'Cocktails', icon: '🍸' },
+    { id: 'non-alcoholic', name: 'Non-Alcoholic', icon: '🥤' }
+  ];
+
+  // Cocktails sub-categories (nested under Drinks > Cocktails)
   const cocktailSubCategories = [
     { id: 'signature-cocktails', name: 'Signature Cocktails', icon: '🍸' },
     { id: 'brunch-drinks', name: 'Brunch Drinks', icon: '🥂' }
+  ];
+
+  // Non-Alcoholic sub-categories (nested under Drinks > Non-Alcoholic)
+  const nonAlcoholicSubCategories = [
+    { id: 'mocktails', name: 'Handcrafted Mocktails', icon: '🍹' },
+    { id: 'sodas-spritzers', name: 'Sodas & Spritzers', icon: '🥤' },
+    { id: 'teas-lemonades', name: 'Teas & Lemonades', icon: '🍵' },
+    { id: 'chilled-juices', name: 'Chilled Juices', icon: '🧃' },
+    { id: 'custom-lemonades', name: 'Custom Fruit Lemonades', icon: '🍋' }
   ];
 
   // All food category IDs
@@ -97,6 +113,8 @@ const MenuPage = () => {
   // All cocktail category IDs
   const cocktailCategoryIds = ['cocktails', 'signature-cocktails', 'brunch-drinks'];
   const nonAlcoholicCategoryIds = ['mocktails', 'sodas-spritzers', 'teas-lemonades', 'chilled-juices', 'custom-lemonades'];
+  const beerWineCategoryIds = ['beer-wine'];
+  const drinksCategoryIds = [...beerWineCategoryIds, ...cocktailCategoryIds, ...nonAlcoholicCategoryIds];
 
   // Daily Specials by day of week
   const DEFAULT_DAILY_SPECIALS = {
