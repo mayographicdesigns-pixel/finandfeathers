@@ -1025,6 +1025,24 @@ const LocationDetailPage = () => {
                 />
               </div>
               <div>
+                <label className="text-sm text-slate-300 mb-1 block">Review Link</label>
+                <Input
+                  value={editingLocation.review_link || ''}
+                  onChange={(e) => setEditingLocation({ ...editingLocation, review_link: e.target.value })}
+                  className="bg-slate-900 border-slate-700 text-white"
+                  data-testid="location-detail-review-link-input"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-slate-300 mb-1 block">Directions Link</label>
+                <Input
+                  value={editingLocation.directions_link || ''}
+                  onChange={(e) => setEditingLocation({ ...editingLocation, directions_link: e.target.value })}
+                  className="bg-slate-900 border-slate-700 text-white"
+                  data-testid="location-detail-directions-link-input"
+                />
+              </div>
+              <div>
                 <label className="text-sm text-slate-300 mb-1 block">Image URL</label>
                 <Input
                   value={editingLocation.image || ''}
