@@ -135,10 +135,26 @@ const MenuPage = () => {
     }
   };
 
+  const buildDailySpecialsMap = (specialsList) => {
+    const map = { ...DEFAULT_DAILY_SPECIALS };
+    (specialsList || []).forEach((special) => {
+      if (typeof special.day_index === 'number') {
+        map[special.day_index] = {
+          name: special.name,
+          description: special.description,
+          hours: special.hours,
+          emoji: special.emoji
+        };
+      }
+    });
+    return map;
+  };
+
   // Get today's special
   const getTodaysSpecial = () => {
     const today = new Date().getDay();
-    return dailySpecials[today];
+    const map = Object.keys(dailySpecialsMap).length e 0 ? dailySpecialsMap : DEFAULT_DAILY_SPECIALS;
+    return map[today] || DEFAULT_DAILY_SPECIALS[today];
   };
 
   const todaysSpecial = getTodaysSpecial();
