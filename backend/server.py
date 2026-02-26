@@ -39,6 +39,7 @@ from models import (
     DirectMessage, DirectMessageCreate, DirectMessageResponse,
     DJTip, DJTipCreate, DJTipResponse,
     DJProfile, DJProfileCreate, DJProfileUpdate, DJProfileResponse,
+    DJSchedule, DJScheduleCreate, DJScheduleUpdate, DJScheduleResponse,
     DrinkOrder, DrinkOrderCreate, DrinkOrderResponse,
     UserProfile, UserProfileCreate, UserProfileUpdate, UserProfileResponse,
     TokenPurchase, TokenPurchaseCreate, TokenGiftCreate, TokenPurchaseResponse,
