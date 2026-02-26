@@ -1133,8 +1133,9 @@ const MyAccountPage = () => {
             </Card>
           </TabsContent>
 
-          {/* Tokens Tab */}
-          <TabsContent value="tokens" className="space-y-4">
+          {/* Tokens Tab - Only show if token program is enabled */}
+          {appSettings.token_program_enabled && (
+            <TabsContent value="tokens" className="space-y-4">
             {/* Balance Card */}
             <Card className="bg-gradient-to-r from-amber-900/50 to-amber-800/30 border-amber-600/30">
               <CardContent className="p-6">
