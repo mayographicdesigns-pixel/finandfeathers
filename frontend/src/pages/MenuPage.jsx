@@ -145,6 +145,10 @@ const MenuPage = () => {
   const todayName = dayNames[new Date().getDay()];
   const heroHtml = pageContent.hero || 'ELEVATED DINING MEETS SOUTHERN SOUL. EVERY DISH CRAFTED WITH FRESH INGREDIENTS AND GENUINE HOSPITALITY.';
 
+  const handleToggleExpand = (item) => {
+    setExpandedItemId((prev) => (prev === item.id ? null : item.id));
+  };
+
   // Fetch menu items from API on mount
   useEffect(() => {
     const checkAdmin = async () => {
