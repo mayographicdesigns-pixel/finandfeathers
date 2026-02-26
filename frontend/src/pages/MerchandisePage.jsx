@@ -5,7 +5,7 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { toast } from '../hooks/use-toast';
-import { createCartCheckout, getCartOrderStatus, createStripeMerchCheckout, getStripeCheckoutStatus, pollStripePaymentStatus } from '../services/api';
+import { createCartCheckout, getCartOrderStatus, createStripeMerchCheckout, getStripeCheckoutStatus, pollStripePaymentStatus, getPageContent } from '../services/api';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
