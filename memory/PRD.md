@@ -551,6 +551,11 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - **VERIFIED**: LocationsPage renders with all 8 locations showing correctly
 - **VERIFIED**: Admin dashboard loads successfully after login with stats and quick actions
 - **TESTED**: All 13 backend tests pass (admin auth, location CRUD, public endpoints)
+- **ADDED**: Install App button on homepage below Contact Us section
+  - Shows "INSTALL APP" with download icon when not installed
+  - Changes to "UPDATE APP" with refresh icon when app is already installed (standalone mode)
+  - Uses beforeinstallprompt event for native install experience
+  - Falls back to instructional toast on unsupported browsers
 
 ## Credentials
 - **Admin Login**: username=`admin`, password=`$outhcentral`
