@@ -438,6 +438,13 @@ const LocationsPage = () => {
 
   return (
     <div className="min-h-screen bg-black">
+      {/* Reservation Modal */}
+      <ReservationModal
+        isOpen={!!reservationLocation}
+        onClose={() => setReservationLocation(null)}
+        location={reservationLocation}
+      />
+
       {/* Admin Bar */}
       {isAdmin && (
         <div className="fixed top-0 left-0 right-0 bg-red-600 text-white py-2 px-4 z-50 flex items-center justify-between">
