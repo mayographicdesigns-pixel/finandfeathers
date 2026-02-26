@@ -757,23 +757,27 @@ const MyAccountPage = () => {
               <User className="w-4 h-4 mr-2" />
               Profile
             </TabsTrigger>
-            <TabsTrigger 
-              value="tokens" 
-              className="flex-1 data-[state=active]:bg-red-600"
-              data-testid="tab-tokens"
-            >
-              <Coins className="w-4 h-4 mr-2" />
-              Tokens
-            </TabsTrigger>
-            <TabsTrigger 
-              value="tip" 
-              className="flex-1 data-[state=active]:bg-red-600"
-              data-testid="tab-tip"
-            >
-              <Gift className="w-4 h-4 mr-2" />
-              Tip Staff
-            </TabsTrigger>
-            {profile.role === 'staff' && (
+            {appSettings.token_program_enabled && (
+              <TabsTrigger 
+                value="tokens" 
+                className="flex-1 data-[state=active]:bg-red-600"
+                data-testid="tab-tokens"
+              >
+                <Coins className="w-4 h-4 mr-2" />
+                Tokens
+              </TabsTrigger>
+            )}
+            {appSettings.token_program_enabled && (
+              <TabsTrigger 
+                value="tip" 
+                className="flex-1 data-[state=active]:bg-red-600"
+                data-testid="tab-tip"
+              >
+                <Gift className="w-4 h-4 mr-2" />
+                Tip Staff
+              </TabsTrigger>
+            )}
+            {profile.role === 'staff' && appSettings.token_program_enabled && (
               <TabsTrigger 
                 value="earnings" 
                 className="flex-1 data-[state=active]:bg-green-600"
