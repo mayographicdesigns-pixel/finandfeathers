@@ -3,8 +3,9 @@ import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 import { Edit2, ZoomIn } from 'lucide-react';
 
-const MenuCard = ({ item, variant = 'default', editMode = false, onEdit, onImageClick }) => {
+const MenuCard = ({ item, variant = 'default', editMode = false, onEdit, onImageClick, isExpanded = false, onToggleExpand }) => {
   const isCompact = variant === 'compact';
+  const isExpandedState = isExpanded;
   // Support both image and image_url properties
   const imageUrl = item.image_url || item.image;
   const hasImage = imageUrl && imageUrl.trim() !== '';
@@ -18,13 +19,24 @@ const MenuCard = ({ item, variant = 'default', editMode = false, onEdit, onImage
       onImageClick(item);
     }
   };
+
+  const handleToggle = () => {
+    if (editMode && onEdit) {
+      onEdit(item);
+      return;
+    }
+    if (onToggleExpand) {
+      onToggleExpand(item);
+    }
+  };
   
   // If it's marked as line layout or has no image, render as line item
   if (isLineLayout || !hasImage) {
     return (
       <div 
-        className={`flex items-center justify-between py-3 px-4 bg-slate-800/50 rounded-lg hover:bg-slate-800/70 transition-all duration-200 border border-slate-700/30 ${editMode ? 'cursor-pointer ring-2 ring-red-500/50 ring-dashed' : ''}`}
-        onClick={editMode && onEdit ? () => onEdit(item) : undefined}
+        className={`flex items-center justify-between py-3 px-4 bg-slate-800/50 rounded-lg hover:bg-slate-800/70 transition-all duration-200 border border-slate-700/30 ${editMode ? 'cursor-pointer ring-2 ring-red-500/50 ring-dashed' : 'cursor-pointer'}`}
+        onClick={handleToggle}
+        data-testid={`menu-line-card-${item.id}`}
       >
         <div className="flex-1">
           <div className="flex items-center gap-2 flex-wrap">
