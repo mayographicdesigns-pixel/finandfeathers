@@ -914,22 +914,14 @@ const MenuPage = () => {
         {/* COCKTAILS VIEW */}
         {activeCategory === 'cocktails' && (
           <div className="space-y-10">
-            {activeSubCategory ? (
-              // Show only selected sub-category
-              <>
-                {activeSubCategory === 'brunch-drinks' ? (
-                  renderSection(categoryNames[activeSubCategory], filteredItems, 'compact', 'grid-cols-1', true)
-                ) : (
-                  renderSection(categoryNames[activeSubCategory] || 'Signature Cocktails', filteredItems, 'compact', 'grid-cols-1', true)
-                )}
-              </>
-            ) : (
-              // Show all cocktail categories
-              <>
-                {renderSection('Signature Cocktails', [...(itemsByCategory['cocktails'] || []), ...(itemsByCategory['signature-cocktails'] || [])], 'compact', 'grid-cols-1', true)}
-                {renderSection('Brunch Drinks', itemsByCategory['brunch-drinks'], 'compact', 'grid-cols-1', true)}
-              </>
+            {renderSection('$5 Daily Specials',
+              (itemsByCategory['daily-specials'] || []).filter(item => item.type === 'drink'),
+              'compact',
+              'grid-cols-1',
+              true
             )}
+            {renderSection('Signature Cocktails', [...(itemsByCategory['cocktails'] || []), ...(itemsByCategory['signature-cocktails'] || [])], 'compact', 'grid-cols-1', true)}
+            {renderSection('Brunch Drinks', itemsByCategory['brunch-drinks'], 'compact', 'grid-cols-1', true)}
           </div>
         )}
 
