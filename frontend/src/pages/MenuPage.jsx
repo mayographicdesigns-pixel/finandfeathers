@@ -748,25 +748,11 @@ const MenuPage = () => {
         </div>
       )}
 
-      {/* Sub-Category Filter for Cocktails */}
+      {/* Cocktails Sections Header Only */}
       {activeCategory === 'cocktails' && (
         <div className="container mx-auto px-4 mb-6">
           <div className="flex flex-wrap gap-2 justify-center">
-            {cocktailSubCategories.map((subCat) => (
-              <button
-                key={subCat.id}
-                onClick={() => handleSubCategoryChange(subCat.id)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${
-                  activeSubCategory === subCat.id
-                    ? 'bg-red-500/80 text-white'
-                    : 'bg-slate-700/50 text-slate-400 hover:bg-slate-700 hover:text-slate-200'
-                }`}
-                data-testid={`subcategory-${subCat.id}`}
-              >
-                <span>{subCat.icon}</span>
-                <span>{subCat.name}</span>
-              </button>
-            ))}
+            <span className="text-slate-400 text-sm">$5 Specials • Signature • Brunch Drinks</span>
           </div>
         </div>
       )}
