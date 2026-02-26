@@ -191,14 +191,14 @@ frontend:
 
 metadata:
   created_by: "testing_agent"
-  version: "1.1"
-  test_sequence: 2
+  version: "1.2"
+  test_sequence: 3
   run_ui: true
   test_date: "2026-02-26"
 
 test_plan:
   current_focus:
-    - "WYSIWYG re-test after admin seed fix - COMPLETED"
+    - "Image visibility verification - COMPLETED"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
