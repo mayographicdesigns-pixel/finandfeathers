@@ -500,6 +500,8 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - `GET /api/events` - Get all active events (public)
 - `POST /api/events/free-reserve` - Reserve free event tickets and return SMS reservation link
 - `GET /api/daily-specials` - Public daily specials data for Today\'s Special
+- `GET /api/admin/daily-specials` - Admin: Get daily specials
+- `PUT /api/admin/daily-specials` - Admin: Update daily specials
 - `GET /api/page-content/{page_key}` - Public page content sections for WYSIWYG
 - `PUT /api/admin/page-content/{page_key}/{section_key}` - Admin update page content section
 - `GET /api/admin/events` - Admin: Get all events including inactive
