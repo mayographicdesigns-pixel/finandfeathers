@@ -21,13 +21,13 @@ import { toast } from '../../hooks/use-toast';
 import { getPageContent, updatePageContent, uploadImage } from '../../services/api';
 
 const PAGE_CONFIG = [
-  { key: 'home', label: 'Home Page', sections: [{ key: 'hero', label: 'Hero Content' }] },
-  { key: 'menu', label: 'Menu Page', sections: [{ key: 'hero', label: 'Hero Content' }] },
-  { key: 'locations', label: 'Locations Page', sections: [{ key: 'hero', label: 'Hero Content' }] },
-  { key: 'events', label: 'Events Page', sections: [{ key: 'hero', label: 'Hero Content' }] },
-  { key: 'gallery', label: 'Gallery Page', sections: [{ key: 'hero', label: 'Hero Content' }] },
-  { key: 'merch', label: 'Merchandise Page', sections: [{ key: 'hero', label: 'Hero Content' }] },
-  { key: 'checkin', label: 'Check-In Page', sections: [{ key: 'hero', label: 'Hero Content' }] }
+  { key: 'home', label: 'Home Page', sections: [{ key: 'hero', label: 'Hero Content', defaultHtml: '<p>ELEVATED DINING MEETS SOUTHERN SOUL. EVERY DISH CRAFTED WITH FRESH INGREDIENTS AND GENUINE HOSPITALITY.</p>' }] },
+  { key: 'menu', label: 'Menu Page', sections: [{ key: 'hero', label: 'Hero Content', defaultHtml: '<p>ELEVATED DINING MEETS SOUTHERN SOUL. EVERY DISH CRAFTED WITH FRESH INGREDIENTS AND GENUINE HOSPITALITY.</p>' }] },
+  { key: 'locations', label: 'Locations Page', sections: [{ key: 'hero', label: 'Hero Content', defaultHtml: '<p>ELEVATED DINING MEETS SOUTHERN SOUL. EVERY DISH CRAFTED WITH FRESH INGREDIENTS AND GENUINE HOSPITALITY.</p>' }] },
+  { key: 'events', label: 'Events Page', sections: [{ key: 'hero', label: 'Hero Content', defaultHtml: '<p>From live music to exclusive tastings, discover unforgettable experiences at Fin &amp; Feathers.</p>' }] },
+  { key: 'gallery', label: 'Gallery Page', sections: [{ key: 'hero', label: 'Hero Content', defaultHtml: '<p>Photos &amp; Videos from Fin &amp; Feathers</p>' }] },
+  { key: 'merch', label: 'Merchandise Page', sections: [{ key: 'hero', label: 'Hero Content', defaultHtml: '<p>Official Fin &amp; Feathers merchandise. Fresh drops and limited-edition favorites.</p>' }] },
+  { key: 'checkin', label: 'Check-In Page', sections: [{ key: 'hero', label: 'Hero Content', defaultHtml: '<p>Find the closest Fin &amp; Feathers location to check in.</p>' }] }
 ];
 
 const PageContentTab = () => {
