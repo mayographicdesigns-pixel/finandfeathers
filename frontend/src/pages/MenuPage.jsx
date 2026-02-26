@@ -210,6 +210,20 @@ const MenuPage = () => {
     }
   };
 
+  const fetchDailySpecials = async () => {
+    try {
+      const data = await getDailySpecials();
+      if (data && data.length > 0) {
+        setDailySpecialsMap(buildDailySpecialsMap(data));
+      } else {
+        setDailySpecialsMap(DEFAULT_DAILY_SPECIALS);
+      }
+    } catch (error) {
+      console.error('Failed to fetch daily specials', error);
+      setDailySpecialsMap(DEFAULT_DAILY_SPECIALS);
+    }
+  };
+
   // Handle main category change
   const handleCategoryChange = (categoryId) => {
     setActiveCategory(categoryId);
