@@ -80,6 +80,7 @@ const AdminPage = () => {
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { id: 'specials', label: 'Post Special', icon: Megaphone },
     { id: 'events', label: 'Events', icon: Ticket },
+    { id: 'dj-schedule', label: 'DJ Schedule', icon: Music },
     { id: 'gallery', label: 'Gallery', icon: Grid3X3 },
     { id: 'submissions', label: 'Submissions', icon: ImageUp },
     { id: 'posts', label: 'Posts', icon: MessageSquare },
