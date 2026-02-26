@@ -4,6 +4,7 @@ import { MapPin, Loader2, Navigation, AlertCircle } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { locations } from '../mockData';
+import { getPageContent } from '../services/api';
 
 // Calculate distance between two coordinates using Haversine formula
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
