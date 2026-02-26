@@ -404,6 +404,10 @@ const LinkTreeHomePage = () => {
   const [editingImageIndex, setEditingImageIndex] = useState(null);
   const fileInputRef = useRef(null);
 
+  // PWA Install state
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isAppInstalled, setIsAppInstalled] = useState(false);
+
   // DnD sensors for image reordering
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
