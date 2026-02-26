@@ -343,9 +343,10 @@ const LocationDetailPage = () => {
     if (!editingLocation) return;
     try {
       await adminUpdateLocation(location.id, editingLocation);
-      setLocation(editingLocation);
+      const refreshed = await getLocationBySlug(slug);
+      setLocation(refreshed);
+      setEditingLocation(refreshed);
       setEditMode(false);
-      setEditingLocation(null);
       toast({ title: 'Success', description: 'Location updated!' });
     } catch (err) {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
