@@ -1302,12 +1302,6 @@ const MenuPage = () => {
             {/* Cocktails selected */}
             {activeSubCategory === 'cocktails' && (
               <>
-                {renderSection('$5 Daily Specials',
-                  (itemsByCategory['daily-specials'] || []).filter(item => item.type === 'drink'),
-                  'compact',
-                  'grid-cols-1',
-                  true
-                )}
                 {renderSection('Signature Cocktails', [...(itemsByCategory['cocktails'] || []), ...(itemsByCategory['signature-cocktails'] || [])], 'compact', 'grid-cols-1', true)}
                 {renderSection('Brunch Drinks', itemsByCategory['brunch-drinks'], 'compact', 'grid-cols-1', true)}
                 {/* Responsible Drinking Notice */}
