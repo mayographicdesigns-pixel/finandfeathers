@@ -108,9 +108,19 @@ async def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(
     if payload is None:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
     username = payload.get("sub")
-    if username != ADMIN_USERNAME:
-        raise HTTPException(status_code=403, detail="Not authorized")
-    return username
+    if not username:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    admin_user = await db.admin_users.find_one({"username": username}, {"_id": 0})
+    if admin_user:
+        if not admin_user.get("is_active", True):
+            raise HTTPException(status_code=403, detail="Account is disabled")
+        return username
+
+    if username == ADMIN_USERNAME:
+        return username
+
+    raise HTTPException(status_code=403, detail="Not authorized")
 
 
 # Health check
