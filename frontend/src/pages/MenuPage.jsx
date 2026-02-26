@@ -596,16 +596,16 @@ const MenuPage = () => {
     );
   };
 
-  // Render compact 2-column drink items (for beers, wines with short descriptions)
+  // Render compact 3-column drink items (for beers, wines with short descriptions)
   const renderCompactDrinkSection = (title, items) => {
     if (!items || items.length === 0) return null;
     
     return (
-      <div className="mb-10">
-        <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
+      <div className="mb-8">
+        <h3 className="text-xl font-bold text-white mb-4 border-b border-slate-700 pb-2">
           {title}
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
           {items.map((item) => (
             <div 
               key={item.id} 
@@ -626,6 +626,75 @@ const MenuPage = () => {
             </div>
           ))}
         </div>
+      </div>
+    );
+  };
+
+  // Categorize beer & wine items by type
+  const categorizeBeerWineItems = (items) => {
+    if (!items) return {};
+    
+    const beerNames = ['Angry Orchard', 'Blue Moon', 'Bud Light', 'Corona', 'Guinness', 'Heineken', 'Mich Ultra', 'Modelo', 'Modelo Negro', 'Stella', 'Yuengling'];
+    const champagneNames = ['Belaire', 'House Champagne', 'Moet'];
+    const redWineNames = ['Cabernet', 'Merlot', 'Pinot Noir', 'Malbec', 'Stella Rosa Black', 'Cardinale Sweet'];
+    const whiteWineNames = ['Sauvignon Blanc', 'Prosecco', 'Chardonnay', 'Moscato', 'Pinot Grigio', 'Riesling'];
+    const liqueurNames = ['Amaretto', 'Grand Marnier', 'Jager'];
+    const energyNames = ['Red Bull'];
+    
+    const categories = {
+      beer: [],
+      champagne: [],
+      redWine: [],
+      whiteWine: [],
+      liqueur: [],
+      energy: [],
+      juice: [],
+      water: [],
+      other: []
+    };
+    
+    items.forEach(item => {
+      const name = item.name.toLowerCase();
+      const desc = (item.description || '').toLowerCase();
+      
+      if (beerNames.some(b => name.includes(b.toLowerCase()))) {
+        categories.beer.push(item);
+      } else if (champagneNames.some(c => name.includes(c.toLowerCase()))) {
+        categories.champagne.push(item);
+      } else if (redWineNames.some(r => name.includes(r.toLowerCase())) || desc.includes('red wine')) {
+        categories.redWine.push(item);
+      } else if (whiteWineNames.some(w => name.includes(w.toLowerCase())) || desc.includes('white wine')) {
+        categories.whiteWine.push(item);
+      } else if (liqueurNames.some(l => name.includes(l.toLowerCase()))) {
+        categories.liqueur.push(item);
+      } else if (energyNames.some(e => name.includes(e.toLowerCase())) || desc.includes('energy')) {
+        categories.energy.push(item);
+      } else if (name.includes('juice') || desc.includes('juice')) {
+        categories.juice.push(item);
+      } else if (name.includes('water')) {
+        categories.water.push(item);
+      } else {
+        categories.other.push(item);
+      }
+    });
+    
+    return categories;
+  };
+
+  // Render all beer & wine sections by type
+  const renderBeerWineSections = () => {
+    const categories = categorizeBeerWineItems(itemsByCategory['beer-wine']);
+    
+    return (
+      <div className="space-y-6">
+        {renderCompactDrinkSection('🍺 Beer', categories.beer)}
+        {renderCompactDrinkSection('🍾 Champagne', categories.champagne)}
+        {renderCompactDrinkSection('🍷 Red Wine', categories.redWine)}
+        {renderCompactDrinkSection('🥂 White Wine', categories.whiteWine)}
+        {renderCompactDrinkSection('🥃 Liqueur', categories.liqueur)}
+        {renderCompactDrinkSection('⚡ Energy Drinks', categories.energy)}
+        {renderCompactDrinkSection('💧 Water', categories.water)}
+        {categories.other.length > 0 && renderCompactDrinkSection('Other', categories.other)}
       </div>
     );
   };
