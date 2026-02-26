@@ -1265,6 +1265,12 @@ const MenuPage = () => {
             {renderSection('Handcrafted Mocktails ($7)', itemsByCategory['mocktails'], 'compact', 'grid-cols-1', true)}
             {renderClassicRefreshments()}
             {renderSection('Custom Fruit Lemonades ($3.50)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true)}
+            {/* Responsible Drinking Notice */}
+            <div className="mt-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl">
+              <p className="text-red-400 text-sm text-center font-medium">
+                Please drink responsibly—never drink and drive. We encourage the use of rideshare services for a safe trip home. We reserve the right to refuse service to any guest who appears intoxicated.
+              </p>
+            </div>
           </div>
         )}
 
