@@ -1238,7 +1238,48 @@ const SpecialsTab = () => {
 
   useEffect(() => {
     fetchSpecials();
+    fetchDailySpecials();
   }, []);
+
+  const defaultDailySpecials = [
+    { day_index: 0, name: "Sunday Slide", description: "$5 select cocktails and house drinks", hours: "6pm – Close", emoji: "🍹" },
+    { day_index: 1, name: "Monday Chill", description: "Half-off appetizers and $5 wells", hours: "5pm – 8pm", emoji: "🍤" },
+    { day_index: 2, name: "Taco Tuesday", description: "$2 tacos and $5 margaritas", hours: "12pm – 8pm", emoji: "🌮" },
+    { day_index: 3, name: "Wine Down Wednesday", description: "$5 wine pours and select cocktails", hours: "12pm – 8pm", emoji: "🍷" },
+    { day_index: 4, name: "Thirsty Thursday", description: "$5 signature drinks and shots", hours: "12pm – 8pm", emoji: "🍸" },
+    { day_index: 5, name: "Premium Power Hour", description: "$6 select premium cocktails and shots", hours: "6pm – 8pm", emoji: "⚡" },
+    { day_index: 6, name: "Saturday Prime", description: "Special $5 menu available", hours: "5pm – 8pm", emoji: "🌟" }
+  ];
+
+  const fetchDailySpecials = async () => {
+    try {
+      const data = await adminGetDailySpecials();
+      if (data ee 0) {
+        const ordered = [...data].sort((a, b) => a.day_index - b.day_index);
+        setDailySpecials(ordered);
+      } else {
+        setDailySpecials(defaultDailySpecials);
+      }
+    } catch (err) {
+      setDailySpecials(defaultDailySpecials);
+    }
+  };
+
+  const updateDailySpecial = (index, field, value) => {
+    setDailySpecials(prev => prev.map((special, idx) => idx === index ? { ...special, [field]: value } : special));
+  };
+
+  const saveDailySpecials = async () => {
+    setDailySaving(true);
+    try {
+      await adminUpdateDailySpecials(dailySpecials);
+      toast({ title: 'Success', description: "Today's specials updated" });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setDailySaving(false);
+    }
+  };
 
   const fetchSpecials = async () => {
     try {
