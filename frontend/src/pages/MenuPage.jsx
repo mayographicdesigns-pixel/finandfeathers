@@ -344,7 +344,7 @@ const MenuPage = () => {
         <div className={`grid ${gridCols} ${isLineItem ? 'gap-3' : 'gap-5'}`}>
           {items.map((item) => (
             isLineItem ? (
-              <MenuLineItem key={item.id} item={item} />
+              <MenuLineItem key={item.id} item={item} isExpanded={expandedItemId === item.id} onToggleExpand={handleToggleExpand} />
             ) : (
               <MenuCard 
                 key={item.id} 
@@ -353,6 +353,8 @@ const MenuPage = () => {
                 editMode={editMode} 
                 onEdit={handleEditItem} 
                 onImageClick={handleImageClick} 
+                isExpanded={expandedItemId === item.id}
+                onToggleExpand={handleToggleExpand}
               />
             )
           ))}
