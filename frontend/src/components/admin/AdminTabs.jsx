@@ -1254,7 +1254,7 @@ const SpecialsTab = () => {
   const fetchDailySpecials = async () => {
     try {
       const data = await adminGetDailySpecials();
-      if (data ee 0) {
+      if (data && data.length > 0) {
         const ordered = [...data].sort((a, b) => a.day_index - b.day_index);
         setDailySpecials(ordered);
       } else {
