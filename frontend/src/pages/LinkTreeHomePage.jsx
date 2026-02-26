@@ -457,6 +457,13 @@ const LinkTreeHomePage = () => {
     
     checkInstalled();
     
+    // Detect platform
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    const isIOSDevice = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+    const isAndroidDevice = /android/i.test(userAgent);
+    setIsIOS(isIOSDevice);
+    setIsAndroid(isAndroidDevice);
+    
     // Listen for display mode changes
     const mediaQuery = window.matchMedia('(display-mode: standalone)');
     const handleChange = (e) => setIsAppInstalled(e.matches);
@@ -474,6 +481,7 @@ const LinkTreeHomePage = () => {
     const handleAppInstalled = () => {
       setIsAppInstalled(true);
       setDeferredPrompt(null);
+      setShowInstallModal(false);
       toast({ title: 'App Installed!', description: 'Fin & Feathers has been added to your home screen.' });
     };
     
