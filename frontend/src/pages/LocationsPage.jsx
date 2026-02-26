@@ -21,6 +21,7 @@ const LocationsPage = () => {
   const locationRefs = useRef({});
   const [searchParams] = useSearchParams();
   const isOrderFlow = searchParams.get('order') === '1';
+  const [pageContent, setPageContent] = useState({});
   
   // Admin editing state
   const [isAdmin, setIsAdmin] = useState(false);
