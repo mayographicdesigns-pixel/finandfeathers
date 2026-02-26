@@ -1618,6 +1618,75 @@ const SpecialsTab = () => {
         </CardContent>
       </Card>
 
+      <Card className="bg-slate-800/50 border-slate-700">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center gap-2">
+            <Star className="w-5 h-5 text-amber-400" />
+            Todays Special (Rotates by Day)
+          </CardTitle>
+          <p className="text-slate-400 text-sm">
+            Update the daily special fields used on the menu page. This rotates automatically by day.
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {dailySpecials.map((special, index) => (
+            <div key={special.day_index} className="grid grid-cols-1 md:grid-cols-12 gap-3 p-3 rounded-lg border border-slate-700/50 bg-slate-900/40">
+              <div className="md:col-span-2 text-slate-300 font-semibold flex items-center">
+                {dayLabels[special.day_index] || `Day ${special.day_index}`}
+              </div>
+              <div className="md:col-span-3">
+                <Input
+                  value={special.name}
+                  onChange={(e) => updateDailySpecial(index, 'name', e.target.value)}
+                  className="bg-slate-800 border-slate-700 text-white"
+                  placeholder="Special title"
+                  data-testid={`daily-special-name-${special.day_index}`}
+                />
+              </div>
+              <div className="md:col-span-4">
+                <Textarea
+                  value={special.description}
+                  onChange={(e) => updateDailySpecial(index, 'description', e.target.value)}
+                  className="bg-slate-800 border-slate-700 text-white"
+                  placeholder="Special description"
+                  rows={2}
+                  data-testid={`daily-special-description-${special.day_index}`}
+                />
+              </div>
+              <div className="md:col-span-2">
+                <Input
+                  value={special.hours}
+                  onChange={(e) => updateDailySpecial(index, 'hours', e.target.value)}
+                  className="bg-slate-800 border-slate-700 text-white"
+                  placeholder="Hours"
+                  data-testid={`daily-special-hours-${special.day_index}`}
+                />
+              </div>
+              <div className="md:col-span-1">
+                <Input
+                  value={special.emoji}
+                  onChange={(e) => updateDailySpecial(index, 'emoji', e.target.value)}
+                  className="bg-slate-800 border-slate-700 text-white"
+                  placeholder="⭐"
+                  data-testid={`daily-special-emoji-${special.day_index}`}
+                />
+              </div>
+            </div>
+          ))}
+
+          <div className="flex justify-end">
+            <Button
+              onClick={saveDailySpecials}
+              className="bg-red-600 hover:bg-red-700"
+              disabled={dailySaving}
+              data-testid="save-daily-specials-btn"
+            >
+              {dailySaving ? 'Saving...' : 'Save Today\'s Specials'}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Location Filter */}
       <div className="flex items-center gap-4">
         <label className="text-slate-300 text-sm">Filter by Location:</label>
