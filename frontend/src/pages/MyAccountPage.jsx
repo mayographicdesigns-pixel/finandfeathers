@@ -840,7 +840,7 @@ const MyAccountPage = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => profilePhotoInputRef.current?.click()}
+                        onClick={() => setShowPhotoOptions(true)}
                         disabled={uploadingProfilePhoto}
                         className="border-slate-600 text-slate-300"
                         data-testid="change-photo-btn"
@@ -852,12 +852,12 @@ const MyAccountPage = () => {
                           </>
                         ) : (
                           <>
-                            <Upload className="w-4 h-4 mr-2" />
-                            {profile.profile_photo_url ? 'Change Photo' : 'Upload Photo'}
+                            <Camera className="w-4 h-4 mr-2" />
+                            {profile.profile_photo_url ? 'Change Photo' : 'Take/Upload Photo'}
                           </>
                         )}
                       </Button>
-                      <p className="text-xs text-slate-500">JPG, PNG, GIF, WebP up to 5MB</p>
+                      <p className="text-xs text-slate-500">Take a photo or choose from gallery</p>
                     </div>
                   </div>
                 </div>
