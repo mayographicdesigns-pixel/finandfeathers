@@ -97,6 +97,19 @@ const MerchandisePage = () => {
     }
   };
 
+  const fetchPageContent = async () => {
+    try {
+      const content = await getPageContent('merch');
+      const map = {};
+      (content || []).forEach((entry) => {
+        map[entry.section_key] = entry.html || '';
+      });
+      setPageContent(map);
+    } catch (error) {
+      console.error('Failed to fetch page content', error);
+    }
+  };
+
   // Save cart to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('ff_cart', JSON.stringify(cart));
