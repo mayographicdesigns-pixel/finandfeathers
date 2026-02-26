@@ -829,6 +829,14 @@ const LinkTreeHomePage = () => {
         />
       )}
 
+      {/* Install App Modal */}
+      <InstallAppModal
+        isOpen={showInstallModal}
+        onClose={() => setShowInstallModal(false)}
+        isIOS={isIOS}
+        isAndroid={isAndroid}
+      />
+
       {/* Admin Bar */}
       {isAdmin && (
         <div className="fixed top-0 left-0 right-0 bg-red-600 text-white py-2 px-4 z-50 flex items-center justify-between">
