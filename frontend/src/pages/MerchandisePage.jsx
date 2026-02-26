@@ -27,6 +27,7 @@ const MerchandisePage = () => {
 
   useEffect(() => {
     fetchProducts();
+    fetchPageContent();
     // Load cart from localStorage
     const savedCart = localStorage.getItem('ff_cart');
     if (savedCart) {
