@@ -1241,6 +1241,13 @@ const MenuPage = () => {
                 {renderSection('Brunch Sides', itemsByCategory['brunch-sides'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true)}
               </>
             )}
+            
+            {/* Allergy Warning */}
+            <div className="mt-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl">
+              <p className="text-red-400 text-sm text-center font-medium">
+                <strong>Allergy Warning:</strong> Food prepared in our kitchen may contain wheat, milk, eggs, soybeans, peanuts, tree nuts, fish, and shellfish. Please notify your server of any food allergies before ordering.
+              </p>
+            </div>
           </div>
         )}
 
