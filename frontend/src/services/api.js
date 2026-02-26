@@ -1550,14 +1550,6 @@ export async function djCheckout(djId) {
   return await response.json();
 }
 
-// Get DJ currently at location
-export async function getDJAtLocation(locationSlug) {
-  const response = await fetch(`${API_URL}/dj/at-location/${locationSlug}`);
-  if (!response.ok) return null;
-  const data = await response.json();
-  return data;
-}
-
 
 // ==================== SEND A DRINK API ====================
 
