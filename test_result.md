@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Re-test WYSIWYG content + location image changes after admin seed fix: 1) Login to /admin with admin/$outhcentral and open Page Content tab; editor/toolbar visible with no runtime errors. 2) Update Menu Page hero content with short text, save, then visit /menu to confirm hero text updates. 3) Visit /locations and click a location card image; should navigate to location detail page (no lightbox). 4) Verify cocktails/drinks display as line items (no cards). Capture console errors."
+user_problem_statement: "Verify image visibility across site: 1) Home page hero/logo and any hero/gallery preview images render (not broken). 2) Menu page food card images load; daily specials highlight visible. 3) Locations page location card images load. 4) Events page event images load. 5) Gallery page images grid loads (fallback/default or API). Capture any broken-image icons or console errors."
 
 frontend:
   - task: "Admin login to /admin with new credentials"
