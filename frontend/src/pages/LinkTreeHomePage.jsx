@@ -512,22 +512,18 @@ const LinkTreeHomePage = () => {
       return;
     }
     
-    if (!deferredPrompt) {
-      // Can't install - show instructions
-      toast({ 
-        title: 'Install App', 
-        description: 'Use your browser\'s "Add to Home Screen" option to install this app.',
-      });
+    // If we have the deferred prompt (Chrome/Android), use it directly
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
       return;
     }
-
-    // Show the install prompt
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
     
-    if (outcome === 'accepted') {
-      setDeferredPrompt(null);
-    }
+    // Otherwise show installation instructions modal
+    setShowInstallModal(true);
   };
 
   useEffect(() => {
