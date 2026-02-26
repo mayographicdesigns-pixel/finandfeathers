@@ -1011,7 +1011,7 @@ const MenuPage = () => {
         )}
 
         {/* Empty state */}
-        {filteredItems.length === 0 && (
+        {filteredItems.length === 0 && activeCategory !== 'hookah' && (
           <div className="text-center py-12">
             <p className="text-slate-400 text-lg">No items in this category yet.</p>
           </div>
