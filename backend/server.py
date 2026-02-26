@@ -2508,6 +2508,165 @@ async def get_dj_at_location(location_slug: str):
 
 
 # =====================================================
+# DJ SCHEDULE ENDPOINTS
+# =====================================================
+
+@api_router.get("/dj/schedules")
+async def get_all_dj_schedules():
+    """Get all upcoming DJ schedules (public)"""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    schedules = await db.dj_schedules.find(
+        {
+            "is_active": True,
+            "$or": [
+                {"scheduled_date": {"$gte": today}},
+                {"is_recurring": True}
+            ]
+        },
+        {"_id": 0}
+    ).sort("scheduled_date", 1).to_list(100)
+    return [DJScheduleResponse(**s) for s in schedules]
+
+
+@api_router.get("/dj/schedules/location/{location_slug}")
+async def get_dj_schedules_for_location(location_slug: str):
+    """Get upcoming DJ schedules for a specific location"""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    schedules = await db.dj_schedules.find(
+        {
+            "location_slug": location_slug,
+            "is_active": True,
+            "$or": [
+                {"scheduled_date": {"$gte": today}},
+                {"is_recurring": True}
+            ]
+        },
+        {"_id": 0}
+    ).sort("scheduled_date", 1).to_list(50)
+    return [DJScheduleResponse(**s) for s in schedules]
+
+
+@api_router.get("/admin/dj/schedules")
+async def admin_get_all_dj_schedules(username: str = Depends(get_current_admin)):
+    """Get all DJ schedules (admin)"""
+    schedules = await db.dj_schedules.find({}, {"_id": 0}).sort("scheduled_date", -1).to_list(200)
+    return [DJScheduleResponse(**s) for s in schedules]
+
+
+@api_router.get("/admin/dj/profiles")
+async def admin_get_all_dj_profiles(username: str = Depends(get_current_admin)):
+    """Get all DJ profiles (admin)"""
+    profiles = await db.dj_profiles.find({}, {"_id": 0}).to_list(100)
+    return [DJProfileResponse(**p) for p in profiles]
+
+
+@api_router.post("/admin/dj/profiles")
+async def admin_create_dj_profile(profile: DJProfileCreate, username: str = Depends(get_current_admin)):
+    """Create a new DJ profile (admin)"""
+    profile_dict = profile.dict()
+    dj_profile = DJProfile(**profile_dict)
+    profile_data = dj_profile.dict()
+    await db.dj_profiles.insert_one(profile_data)
+    return DJProfileResponse(**profile_data)
+
+
+@api_router.put("/admin/dj/profiles/{dj_id}")
+async def admin_update_dj_profile(dj_id: str, update: DJProfileUpdate, username: str = Depends(get_current_admin)):
+    """Update a DJ profile (admin)"""
+    profile = await db.dj_profiles.find_one({"id": dj_id})
+    if not profile:
+        raise HTTPException(status_code=404, detail="DJ profile not found")
+    
+    update_dict = {k: v for k, v in update.dict().items() if v is not None}
+    if update_dict:
+        await db.dj_profiles.update_one({"id": dj_id}, {"$set": update_dict})
+    
+    updated = await db.dj_profiles.find_one({"id": dj_id}, {"_id": 0})
+    return DJProfileResponse(**updated)
+
+
+@api_router.delete("/admin/dj/profiles/{dj_id}")
+async def admin_delete_dj_profile(dj_id: str, username: str = Depends(get_current_admin)):
+    """Delete a DJ profile (admin)"""
+    result = await db.dj_profiles.delete_one({"id": dj_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="DJ profile not found")
+    # Also delete their schedules
+    await db.dj_schedules.delete_many({"dj_id": dj_id})
+    return {"message": "DJ profile deleted"}
+
+
+@api_router.post("/admin/dj/schedules")
+async def admin_create_dj_schedule(schedule: DJScheduleCreate, username: str = Depends(get_current_admin)):
+    """Create a new DJ schedule (admin)"""
+    # Get DJ info
+    dj = await db.dj_profiles.find_one({"id": schedule.dj_id}, {"_id": 0})
+    if not dj:
+        raise HTTPException(status_code=404, detail="DJ profile not found")
+    
+    # Get location info
+    location = await db.locations.find_one({"slug": schedule.location_slug}, {"_id": 0})
+    if not location:
+        raise HTTPException(status_code=404, detail="Location not found")
+    
+    schedule_dict = schedule.dict()
+    schedule_dict["dj_name"] = dj.get("name", "Unknown DJ")
+    schedule_dict["dj_stage_name"] = dj.get("stage_name")
+    schedule_dict["dj_photo_url"] = dj.get("photo_url")
+    schedule_dict["location_name"] = location.get("name", "Unknown Location")
+    
+    # Set day_of_week if recurring
+    if schedule.is_recurring and schedule.scheduled_date:
+        date_obj = datetime.strptime(schedule.scheduled_date, "%Y-%m-%d")
+        schedule_dict["day_of_week"] = date_obj.weekday()
+    
+    dj_schedule = DJSchedule(**schedule_dict)
+    schedule_data = dj_schedule.dict()
+    await db.dj_schedules.insert_one(schedule_data)
+    
+    return DJScheduleResponse(**schedule_data)
+
+
+@api_router.put("/admin/dj/schedules/{schedule_id}")
+async def admin_update_dj_schedule(schedule_id: str, update: DJScheduleUpdate, username: str = Depends(get_current_admin)):
+    """Update a DJ schedule (admin)"""
+    schedule = await db.dj_schedules.find_one({"id": schedule_id})
+    if not schedule:
+        raise HTTPException(status_code=404, detail="Schedule not found")
+    
+    update_dict = {k: v for k, v in update.dict().items() if v is not None}
+    
+    # If DJ changed, update DJ info
+    if "dj_id" in update_dict:
+        dj = await db.dj_profiles.find_one({"id": update_dict["dj_id"]}, {"_id": 0})
+        if dj:
+            update_dict["dj_name"] = dj.get("name", "Unknown DJ")
+            update_dict["dj_stage_name"] = dj.get("stage_name")
+            update_dict["dj_photo_url"] = dj.get("photo_url")
+    
+    # If location changed, update location info
+    if "location_slug" in update_dict:
+        location = await db.locations.find_one({"slug": update_dict["location_slug"]}, {"_id": 0})
+        if location:
+            update_dict["location_name"] = location.get("name", "Unknown Location")
+    
+    if update_dict:
+        await db.dj_schedules.update_one({"id": schedule_id}, {"$set": update_dict})
+    
+    updated = await db.dj_schedules.find_one({"id": schedule_id}, {"_id": 0})
+    return DJScheduleResponse(**updated)
+
+
+@api_router.delete("/admin/dj/schedules/{schedule_id}")
+async def admin_delete_dj_schedule(schedule_id: str, username: str = Depends(get_current_admin)):
+    """Delete a DJ schedule (admin)"""
+    result = await db.dj_schedules.delete_one({"id": schedule_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Schedule not found")
+    return {"message": "Schedule deleted"}
+
+
+# =====================================================
 # SEND A DRINK ENDPOINTS
 # =====================================================
 
