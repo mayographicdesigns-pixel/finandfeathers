@@ -442,6 +442,83 @@ const LinkTreeHomePage = () => {
     }
   }, []);
 
+  // PWA Install detection
+  useEffect(() => {
+    // Check if app is running in standalone mode (installed)
+    const checkInstalled = () => {
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
+        || window.navigator.standalone 
+        || document.referrer.includes('android-app://');
+      setIsAppInstalled(isStandalone);
+    };
+    
+    checkInstalled();
+    
+    // Listen for display mode changes
+    const mediaQuery = window.matchMedia('(display-mode: standalone)');
+    const handleChange = (e) => setIsAppInstalled(e.matches);
+    mediaQuery.addEventListener('change', handleChange);
+
+    // Capture the beforeinstallprompt event
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    
+    // Listen for successful install
+    const handleAppInstalled = () => {
+      setIsAppInstalled(true);
+      setDeferredPrompt(null);
+      toast({ title: 'App Installed!', description: 'Fin & Feathers has been added to your home screen.' });
+    };
+    
+    window.addEventListener('appinstalled', handleAppInstalled);
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
+  }, []);
+
+  // Handle PWA install
+  const handleInstallApp = async () => {
+    if (isAppInstalled) {
+      // App is installed, check for updates
+      if ('serviceWorker' in navigator) {
+        try {
+          const registration = await navigator.serviceWorker.getRegistration();
+          if (registration) {
+            await registration.update();
+            toast({ title: 'Checking for Updates', description: 'Looking for the latest version...' });
+          }
+        } catch (error) {
+          console.error('Update check failed:', error);
+        }
+      }
+      return;
+    }
+    
+    if (!deferredPrompt) {
+      // Can't install - show instructions
+      toast({ 
+        title: 'Install App', 
+        description: 'Use your browser\'s "Add to Home Screen" option to install this app.',
+      });
+      return;
+    }
+
+    // Show the install prompt
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+    }
+  };
+
   useEffect(() => {
     // Check if admin is logged in
     const checkAdmin = async () => {
