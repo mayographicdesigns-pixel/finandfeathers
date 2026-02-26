@@ -184,7 +184,7 @@ Please confirm availability. Thank you!`;
           {/* 2-Hour Limit Notice - Red */}
           <div className="bg-red-900/30 border border-red-600/50 rounded-xl p-3 mb-5">
             <p className="text-red-400 text-xs text-center font-medium">
-              Table reservations are limited to 2 hours. Time commences at the scheduled reservation time or upon arrival of the first guest.
+              I understand that my reservation is for a maximum of 2 hours, starting from my scheduled time or when the first member of my party arrives.
             </p>
           </div>
 
