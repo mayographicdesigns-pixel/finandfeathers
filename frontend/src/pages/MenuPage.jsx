@@ -1003,6 +1003,13 @@ const MenuPage = () => {
           </div>
         )}
 
+        {/* HOOKAH VIEW */}
+        {activeCategory === 'hookah' && (
+          <div className="space-y-10">
+            {renderHookahSection()}
+          </div>
+        )}
+
         {/* Empty state */}
         {filteredItems.length === 0 && (
           <div className="text-center py-12">
