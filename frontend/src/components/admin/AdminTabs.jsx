@@ -483,6 +483,15 @@ const MenuItemsTab = () => {
 
   if (loading) return <div className="text-white text-center py-8">Loading...</div>;
 
+  // Filter items based on search and category
+  const filteredItems = items.filter(item => {
+    const matchesSearch = searchQuery === '' || 
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesCategory = filterCategory === '' || item.category === filterCategory;
+    return matchesSearch && matchesCategory;
+  });
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -491,6 +500,58 @@ const MenuItemsTab = () => {
           <Plus className="w-4 h-4 mr-2" /> Add Item
         </Button>
       </div>
+
+      {/* Search and Filter */}
+      <div className="flex gap-3">
+        <Input
+          placeholder="Search by name or description..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="bg-slate-900 border-slate-700 text-white flex-1"
+        />
+        <select
+          value={filterCategory}
+          onChange={(e) => setFilterCategory(e.target.value)}
+          className="bg-slate-900 border border-slate-700 text-white rounded-md px-3 py-2 min-w-[180px]"
+        >
+          <option value="">All Categories</option>
+          <optgroup label="Food">
+            <option value="starters">Starters</option>
+            <option value="sides">Sides</option>
+            <option value="entrees">Entrees</option>
+            <option value="seafood-grits">Seafood & Grits</option>
+            <option value="sandwiches">Sandwiches</option>
+            <option value="salads">Salads</option>
+            <option value="brunch">Brunch</option>
+            <option value="brunch-sides">Brunch Sides</option>
+          </optgroup>
+          <optgroup label="Drinks - Beer & Wine">
+            <option value="beer-wine">Beer & Wine</option>
+          </optgroup>
+          <optgroup label="Drinks - Cocktails">
+            <option value="cocktails">Cocktails</option>
+            <option value="signature-cocktails">Signature Cocktails</option>
+            <option value="brunch-drinks">Brunch Drinks</option>
+          </optgroup>
+          <optgroup label="Drinks - Non-Alcoholic">
+            <option value="mocktails">Mocktails</option>
+            <option value="sodas-spritzers">Sodas & Spritzers</option>
+            <option value="teas-lemonades">Teas & Lemonades</option>
+            <option value="chilled-juices">Chilled Juices</option>
+            <option value="custom-lemonades">Custom Lemonades</option>
+          </optgroup>
+          <optgroup label="Other">
+            <option value="daily-specials">$5 Daily Specials</option>
+            <option value="hookah">Hookah</option>
+          </optgroup>
+        </select>
+      </div>
+
+      {searchQuery || filterCategory ? (
+        <p className="text-slate-400 text-sm">
+          Showing {filteredItems.length} of {items.length} items
+        </p>
+      ) : null}
 
       {showForm && (
         <Card className="bg-slate-800 border-slate-700">
