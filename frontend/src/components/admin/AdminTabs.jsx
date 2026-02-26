@@ -1622,7 +1622,7 @@ const SpecialsTab = () => {
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
             <Star className="w-5 h-5 text-amber-400" />
-            Todays Special (Rotates by Day)
+            Today's Special (Rotates by Day)
           </CardTitle>
           <p className="text-slate-400 text-sm">
             Update the daily special fields used on the menu page. This rotates automatically by day.
