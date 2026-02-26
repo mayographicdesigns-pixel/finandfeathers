@@ -1303,7 +1303,7 @@ const MenuPage = () => {
             {/* No subcategory - show all drinks */}
             {!activeSubCategory && (
               <>
-                {renderCompactDrinkSection('Beer & Wine', itemsByCategory['beer-wine'])}
+                {renderBeerWineSections()}
                 {renderSection('Signature Cocktails', [...(itemsByCategory['cocktails'] || []), ...(itemsByCategory['signature-cocktails'] || [])], 'compact', 'grid-cols-1', true)}
                 {renderSection('Brunch Drinks', itemsByCategory['brunch-drinks'], 'compact', 'grid-cols-1', true)}
                 {renderSection('Handcrafted Mocktails ($7)', itemsByCategory['mocktails'], 'compact', 'grid-cols-1', true)}
