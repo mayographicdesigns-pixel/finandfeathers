@@ -1,13 +1,216 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { MapPin, Phone, ExternalLink, Calendar, ShoppingBag, Home, Edit2, Save, X, Settings, LogOut, Plus, Trash2, Star } from 'lucide-react';
+import { MapPin, Phone, ExternalLink, Calendar, ShoppingBag, Home, Edit2, Save, X, Settings, LogOut, Plus, Trash2, Star, MessageSquare, Clock, Users } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import ImageUploader from '../components/ImageUploader';
 import { getLocations, verifyAdminToken, adminUpdateLocation, adminCreateLocation, adminDeleteLocation, getPageContent } from '../services/api';
 import { toast } from '../hooks/use-toast';
+
+// Reservation Modal Component
+const ReservationModal = ({ isOpen, onClose, location }) => {
+  const [guestName, setGuestName] = useState('');
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
+  const [guests, setGuests] = useState('2');
+  const [occasion, setOccasion] = useState('Just Dining');
+
+  if (!isOpen || !location) return null;
+
+  // Extract location short name (remove "Fin & Feathers - " prefix)
+  const locationShortName = location.name.replace('Fin & Feathers - ', '').toUpperCase();
+
+  // Extract phone number from reservation_phone (remove formatting)
+  const phoneNumber = location.reservation_phone?.replace(/[^0-9]/g, '') || '';
+
+  const handleSendBooking = () => {
+    if (!guestName.trim()) {
+      toast({ title: 'Required', description: 'Please enter your name', variant: 'destructive' });
+      return;
+    }
+    if (!date) {
+      toast({ title: 'Required', description: 'Please select a date', variant: 'destructive' });
+      return;
+    }
+    if (!time) {
+      toast({ title: 'Required', description: 'Please select a time', variant: 'destructive' });
+      return;
+    }
+
+    // Format the date for display
+    const formattedDate = new Date(date).toLocaleDateString('en-US', { 
+      weekday: 'short', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+
+    // Create the SMS body with reservation details
+    const smsBody = `Hi! I'd like to make a reservation at Fin & Feathers ${locationShortName}.
+
+Name: ${guestName}
+Date: ${formattedDate}
+Time: ${time}
+Guests: ${guests}
+Occasion: ${occasion}
+
+Please confirm availability. Thank you!`;
+
+    // Encode the SMS body for URL
+    const encodedBody = encodeURIComponent(smsBody);
+
+    // Create SMS link - works on both iOS and Android
+    const smsLink = `sms:${phoneNumber}?body=${encodedBody}`;
+
+    // Open SMS app
+    window.location.href = smsLink;
+
+    // Close modal after sending
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+      <Card className="bg-slate-900 border-slate-700 w-full max-w-md relative overflow-hidden rounded-3xl">
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-colors z-10"
+          data-testid="reservation-modal-close"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        <CardContent className="p-6 pt-8">
+          {/* Header */}
+          <div className="mb-6">
+            <h2 className="text-2xl font-black text-white tracking-tight">
+              BOOK {locationShortName}
+            </h2>
+            <p className="text-slate-500 text-sm tracking-widest uppercase mt-1">
+              Secure your table via SMS
+            </p>
+          </div>
+
+          {/* Form */}
+          <div className="space-y-5">
+            {/* Guest Name */}
+            <div>
+              <label className="block text-slate-400 text-xs font-semibold tracking-widest uppercase mb-2">
+                Guest Name
+              </label>
+              <Input
+                type="text"
+                placeholder="Who is dining?"
+                value={guestName}
+                onChange={(e) => setGuestName(e.target.value)}
+                className="bg-slate-800 border-slate-700 text-white h-14 rounded-xl text-base placeholder:text-slate-600"
+                data-testid="reservation-guest-name"
+              />
+            </div>
+
+            {/* Date and Time Row */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-slate-400 text-xs font-semibold tracking-widest uppercase mb-2">
+                  Date
+                </label>
+                <div className="relative">
+                  <Input
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="bg-slate-800 border-slate-700 text-white h-14 rounded-xl text-base [&::-webkit-calendar-picker-indicator]:opacity-100 [&::-webkit-calendar-picker-indicator]:invert"
+                    data-testid="reservation-date"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-slate-400 text-xs font-semibold tracking-widest uppercase mb-2">
+                  Time
+                </label>
+                <div className="relative">
+                  <Input
+                    type="time"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                    className="bg-slate-800 border-slate-700 text-white h-14 rounded-xl text-base [&::-webkit-calendar-picker-indicator]:opacity-100 [&::-webkit-calendar-picker-indicator]:invert"
+                    data-testid="reservation-time"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Guests and Occasion Row */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-slate-400 text-xs font-semibold tracking-widest uppercase mb-2">
+                  Guests
+                </label>
+                <Select value={guests} onValueChange={setGuests}>
+                  <SelectTrigger 
+                    className="bg-slate-800 border-slate-700 text-white h-14 rounded-xl text-base"
+                    data-testid="reservation-guests"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-800 border-slate-700">
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, '10+'].map((num) => (
+                      <SelectItem 
+                        key={num} 
+                        value={String(num)} 
+                        className="text-white hover:bg-slate-700"
+                      >
+                        {num} {num === 1 ? 'Guest' : 'Guests'}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="block text-slate-400 text-xs font-semibold tracking-widest uppercase mb-2">
+                  Occasion
+                </label>
+                <Select value={occasion} onValueChange={setOccasion}>
+                  <SelectTrigger 
+                    className="bg-slate-800 border-slate-700 text-white h-14 rounded-xl text-base"
+                    data-testid="reservation-occasion"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-800 border-slate-700">
+                    {['Just Dining', 'Birthday', 'Anniversary', 'Date Night', 'Business', 'Celebration', 'Other'].map((occ) => (
+                      <SelectItem 
+                        key={occ} 
+                        value={occ} 
+                        className="text-white hover:bg-slate-700"
+                      >
+                        {occ}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Send Button */}
+            <Button
+              onClick={handleSendBooking}
+              className="w-full bg-red-600 hover:bg-red-700 text-white h-14 rounded-xl text-base font-bold tracking-wide mt-2"
+              data-testid="reservation-send-btn"
+            >
+              <MessageSquare className="w-5 h-5 mr-2" />
+              SEND BOOKING REQUEST
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
 
 const LocationsPage = () => {
   const navigate = useNavigate();
@@ -23,6 +226,9 @@ const LocationsPage = () => {
   const isOrderFlow = searchParams.get('order') === '1';
   const [pageContent, setPageContent] = useState({});
   const heroHtml = pageContent.hero || 'ELEVATED DINING MEETS SOUTHERN SOUL. EVERY DISH CRAFTED WITH FRESH INGREDIENTS AND GENUINE HOSPITALITY.';
+  
+  // Reservation modal state
+  const [reservationLocation, setReservationLocation] = useState(null);
   
   // Admin editing state
   const [isAdmin, setIsAdmin] = useState(false);
