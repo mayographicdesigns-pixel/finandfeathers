@@ -433,6 +433,7 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - **COMPLETED**: Location card image behavior (Feb 26, 2026)
   - Location images now navigate to the location detail page (no lightbox)
 - **UPDATED**: Hookah flavors list (Feb 26, 2026)
+  - Signature mixes now render as image cards with close-up fruit/smoke visuals
   - Added signature mixes, special flavors, classic blends, and safety notes under Hookah
 - **UPDATED**: Cocktails menu refresh (Feb 26, 2026)
   - Added full drink list and grouped $5 Specials, Signature, Brunch Drinks in cocktails view
