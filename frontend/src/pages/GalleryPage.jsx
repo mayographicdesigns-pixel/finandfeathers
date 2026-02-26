@@ -45,6 +45,7 @@ const GalleryPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
   const [activeFilter, setActiveFilter] = useState('all');
+  const [pageContent, setPageContent] = useState({});
   
   // User/Admin state
   const [isAdmin, setIsAdmin] = useState(false);
