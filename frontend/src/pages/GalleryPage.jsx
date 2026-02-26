@@ -46,6 +46,7 @@ const GalleryPage = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [activeFilter, setActiveFilter] = useState('all');
   const [pageContent, setPageContent] = useState({});
+  const heroHtml = pageContent.hero || 'Photos & Videos from Fin & Feathers';
   
   // User/Admin state
   const [isAdmin, setIsAdmin] = useState(false);
