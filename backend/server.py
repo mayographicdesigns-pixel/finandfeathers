@@ -130,6 +130,48 @@ async def root():
     return {"message": "Fin & Feathers API is running"}
 
 
+# App Settings Endpoints
+@api_router.get("/settings")
+async def get_app_settings():
+    """Get public app settings"""
+    settings = await db.app_settings.find_one({"_id": "global"}, {"_id": 0})
+    if not settings:
+        # Return default settings
+        settings = {
+            "token_program_enabled": True,
+            "loyalty_program_enabled": True
+        }
+    return settings
+
+
+@api_router.get("/admin/settings")
+async def get_admin_settings(admin: str = Depends(get_current_admin)):
+    """Get all app settings for admin"""
+    settings = await db.app_settings.find_one({"_id": "global"})
+    if not settings:
+        settings = {
+            "_id": "global",
+            "token_program_enabled": True,
+            "loyalty_program_enabled": True
+        }
+        await db.app_settings.insert_one(settings)
+    return {k: v for k, v in settings.items() if k != "_id"}
+
+
+@api_router.put("/admin/settings")
+async def update_admin_settings(settings: dict, admin: str = Depends(get_current_admin)):
+    """Update app settings"""
+    allowed_keys = ["token_program_enabled", "loyalty_program_enabled"]
+    update_data = {k: v for k, v in settings.items() if k in allowed_keys}
+    
+    await db.app_settings.update_one(
+        {"_id": "global"},
+        {"$set": update_data},
+        upsert=True
+    )
+    return {"message": "Settings updated successfully"}
+
+
 # Public Menu Endpoints (no auth required)
 @api_router.get("/menu/items")
 async def get_public_menu_items():
