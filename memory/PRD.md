@@ -554,8 +554,12 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - **ADDED**: Install App button on homepage below Contact Us section
   - Shows "INSTALL APP" with download icon when not installed
   - Changes to "UPDATE APP" with refresh icon when app is already installed (standalone mode)
-  - Uses beforeinstallprompt event for native install experience
-  - Falls back to instructional toast on unsupported browsers
+  - Uses beforeinstallprompt event for native install experience on Chrome/Android
+  - Shows platform-specific installation modal with step-by-step instructions:
+    - **iOS/Safari**: Tap Share → Add to Home Screen → Add
+    - **Android/Chrome**: Tap menu → Add to Home screen/Install app → Install
+    - **Desktop browsers**: Look for install icon or use browser menu
+  - Falls back to instructional modal on unsupported browsers
 
 ## Credentials
 - **Admin Login**: username=`admin`, password=`$outhcentral`
