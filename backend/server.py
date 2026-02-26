@@ -25,6 +25,7 @@ from models import (
     LoyaltyMember, LoyaltyMemberCreate, PushSubscription,
     PushNotification, PushNotificationCreate,
     ContactForm, ContactFormCreate, ContactFormUpdate,
+    PageContent, PageContentUpdate,
     MenuItem, MenuItemCreate, MenuItemUpdate,
     UserLogin, Token, UserResponse,
     Special, SpecialCreate, SpecialUpdate,
