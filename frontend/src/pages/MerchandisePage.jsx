@@ -22,6 +22,8 @@ const MerchandisePage = () => {
   const [customerEmail, setCustomerEmail] = useState('');
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('stripe'); // 'stripe' or 'woocommerce'
+  const [pageContent, setPageContent] = useState({});
+  const heroHtml = pageContent.hero || 'Official Fin & Feathers merchandise. Fresh drops and limited-edition favorites.';
 
   useEffect(() => {
     fetchProducts();
