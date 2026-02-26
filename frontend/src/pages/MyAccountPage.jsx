@@ -1272,8 +1272,10 @@ const MyAccountPage = () => {
               </CardContent>
             </Card>
           </TabsContent>
+          )}
 
-          {/* Tip Staff Tab */}
+          {/* Tip Staff Tab - Only show if token program is enabled */}
+          {appSettings.token_program_enabled && (
           <TabsContent value="tip" className="space-y-4">
             <Card className="bg-slate-900 border-slate-700">
               <CardHeader>
