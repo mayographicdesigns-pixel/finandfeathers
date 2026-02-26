@@ -260,6 +260,128 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
   );
 };
 
+// Install App Modal Component - Shows platform-specific instructions
+const InstallAppModal = ({ isOpen, onClose, isIOS, isAndroid }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+      <Card className="bg-slate-900 border-red-600/50 w-full max-w-md relative overflow-hidden">
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-slate-400 hover:text-white z-10"
+          data-testid="install-modal-close-btn"
+        >
+          <X className="w-6 h-6" />
+        </button>
+
+        <CardContent className="p-6 pt-8">
+          {/* Logo */}
+          <div className="text-center mb-6">
+            <div className="w-20 h-20 bg-red-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+              <Download className="w-10 h-10 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-2">
+              INSTALL FIN & FEATHERS
+            </h2>
+            <p className="text-slate-400 text-sm">
+              Add our app to your home screen for quick access
+            </p>
+          </div>
+
+          {/* Platform-specific instructions */}
+          {isIOS ? (
+            <div className="space-y-4">
+              <div className="bg-slate-800 rounded-lg p-4">
+                <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                  <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded">Safari</span>
+                  Installation Steps
+                </h3>
+                <ol className="space-y-3 text-slate-300 text-sm">
+                  <li className="flex items-start gap-3">
+                    <span className="bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
+                    <span>Tap the <Share className="w-4 h-4 inline mx-1 text-blue-400" /> Share button at the bottom of Safari</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
+                    <span>Scroll down and tap <strong className="text-white">"Add to Home Screen"</strong></span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
+                    <span>Tap <strong className="text-white">"Add"</strong> in the top right corner</span>
+                  </li>
+                </ol>
+              </div>
+              <p className="text-slate-500 text-xs text-center">
+                The app will appear on your home screen like a native app
+              </p>
+            </div>
+          ) : isAndroid ? (
+            <div className="space-y-4">
+              <div className="bg-slate-800 rounded-lg p-4">
+                <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                  <span className="bg-green-500 text-white text-xs px-2 py-1 rounded">Chrome</span>
+                  Installation Steps
+                </h3>
+                <ol className="space-y-3 text-slate-300 text-sm">
+                  <li className="flex items-start gap-3">
+                    <span className="bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
+                    <span>Tap the <MoreVertical className="w-4 h-4 inline mx-1 text-slate-400" /> menu button (3 dots) in Chrome</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
+                    <span>Tap <strong className="text-white">"Add to Home screen"</strong> or <strong className="text-white">"Install app"</strong></span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
+                    <span>Tap <strong className="text-white">"Install"</strong> to confirm</span>
+                  </li>
+                </ol>
+              </div>
+              <p className="text-slate-500 text-xs text-center">
+                The app will be added to your home screen and app drawer
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="bg-slate-800 rounded-lg p-4">
+                <h3 className="text-white font-semibold mb-3">Installation Steps</h3>
+                <ol className="space-y-3 text-slate-300 text-sm">
+                  <li className="flex items-start gap-3">
+                    <span className="bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
+                    <span>Look for the install icon <Plus className="w-4 h-4 inline mx-1 text-slate-400" /> in the address bar</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
+                    <span>Or use browser menu → <strong className="text-white">"Install Fin & Feathers"</strong></span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="bg-red-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
+                    <span>Click <strong className="text-white">"Install"</strong> to add to your device</span>
+                  </li>
+                </ol>
+              </div>
+              <p className="text-slate-500 text-xs text-center">
+                Works best in Chrome, Edge, or Safari browsers
+              </p>
+            </div>
+          )}
+
+          {/* Close Button */}
+          <Button
+            onClick={onClose}
+            className="w-full mt-6 bg-red-600 hover:bg-red-700 text-white h-12 text-lg"
+            data-testid="install-modal-got-it-btn"
+          >
+            Got It!
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
 // Default content
 const defaultContent = {
   tagline: "ELEVATED DINING MEETS SOUTHERN SOUL. EVERY DISH CRAFTED WITH FRESH INGREDIENTS AND GENUINE HOSPITALITY",
