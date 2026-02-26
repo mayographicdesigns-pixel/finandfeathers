@@ -65,6 +65,7 @@ const EventsPage = () => {
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
   const [loading, setLoading] = useState(true);
   const [pageContent, setPageContent] = useState({});
+  const heroHtml = pageContent.hero || 'From live music to exclusive tastings, discover unforgettable experiences at Fin & Feathers.';
 
   useEffect(() => {
     fetchData();
