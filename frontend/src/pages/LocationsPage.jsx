@@ -172,12 +172,19 @@ Please confirm availability. Thank you!`;
 
         <CardContent className="p-6 pt-8">
           {/* Header */}
-          <div className="mb-6">
+          <div className="mb-4">
             <h2 className="text-2xl font-black text-white tracking-tight">
               BOOK {locationShortName}
             </h2>
             <p className="text-slate-500 text-sm tracking-widest uppercase mt-1">
               Secure your table via SMS
+            </p>
+          </div>
+
+          {/* 2-Hour Limit Notice - Red */}
+          <div className="bg-red-900/30 border border-red-600/50 rounded-xl p-3 mb-5">
+            <p className="text-red-400 text-xs text-center font-medium">
+              Table reservations are limited to 2 hours. Time commences at the scheduled reservation time or upon arrival of the first guest.
             </p>
           </div>
 
