@@ -73,6 +73,23 @@ security = HTTPBearer()
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD_HASH = get_password_hash("$outhcentral")
 
+async def ensure_default_admin_user():
+    existing = await db.admin_users.find_one({"username": ADMIN_USERNAME})
+    if existing:
+        return
+
+    new_admin = {
+        "id": f"admin_{uuid.uuid4().hex[:12]}",
+        "username": ADMIN_USERNAME,
+        "email": "admin@finandfeathers.com",
+        "password_hash": ADMIN_PASSWORD_HASH,
+        "is_active": True,
+        "is_super_admin": True,
+        "created_at": datetime.now(timezone.utc)
+    }
+    await db.admin_users.insert_one(new_admin)
+
+
 # Create the main app without a prefix
 app = FastAPI()
 
