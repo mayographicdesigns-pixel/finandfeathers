@@ -1326,7 +1326,6 @@ const MenuPage = () => {
                 {renderSection('Brunch Drinks', itemsByCategory['brunch-drinks'], 'compact', 'grid-cols-1', true)}
                 {renderSection('Handcrafted Mocktails ($7)', itemsByCategory['mocktails'], 'compact', 'grid-cols-1', true)}
                 {renderClassicRefreshments()}
-                {renderSection('Chilled Juices ($3)', itemsByCategory['chilled-juices'], 'compact', 'grid-cols-1', true)}
                 {renderSection('Custom Fruit Lemonades ($3.50)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true)}
                 {/* Responsible Drinking Notice */}
                 <div className="mt-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl">
