@@ -545,8 +545,15 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 | XL      | $25   | 250    |
 | XXL     | $50   | 500    |
 
+## Bug Fixes (February 26, 2026 - Session 2)
+- **VERIFIED**: Admin login working from both /account page and /admin page
+- **VERIFIED**: Location updates saving correctly via PUT /api/admin/locations/{id}
+- **VERIFIED**: LocationsPage renders with all 8 locations showing correctly
+- **VERIFIED**: Admin dashboard loads successfully after login with stats and quick actions
+- **TESTED**: All 13 backend tests pass (admin auth, location CRUD, public endpoints)
+
 ## Credentials
-- **Admin Login**: username=`admin`, password=`admin`
+- **Admin Login**: username=`admin`, password=`$outhcentral`
 
 ## Preview URL
 https://restaurant-admin-hub-1.preview.emergentagent.com
