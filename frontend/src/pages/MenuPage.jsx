@@ -21,6 +21,7 @@ const MenuPage = () => {
   const [loading, setLoading] = useState(true);
   const [usingMockData, setUsingMockData] = useState(false);
   const [pageContent, setPageContent] = useState({});
+  const [expandedItemId, setExpandedItemId] = useState(null);
   
   // Admin editing state
   const [isAdmin, setIsAdmin] = useState(false);
