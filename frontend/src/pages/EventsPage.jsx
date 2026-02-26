@@ -230,9 +230,11 @@ const EventsPage = () => {
           <Calendar className="inline w-10 h-10 mr-3 text-red-500" />
           Events & Experiences
         </h1>
-        <p className="text-slate-300 text-lg max-w-2xl mx-auto">
-          From live music to exclusive tastings, discover unforgettable experiences at Fin & Feathers.
-        </p>
+        <div
+          className="text-slate-300 text-lg max-w-2xl mx-auto"
+          data-testid="page-content-events-hero"
+          dangerouslySetInnerHTML={{ __html: heroHtml }}
+        />
       </div>
 
       {/* Featured Event */}
