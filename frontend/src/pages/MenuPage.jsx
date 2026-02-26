@@ -10,7 +10,7 @@ import MenuLineItem from '../components/MenuLineItem';
 import ImageUploader from '../components/ImageUploader';
 import ImageLightbox from '../components/ImageLightbox';
 import { menuItems as mockMenuItems } from '../mockData';
-import { getPublicMenuItems, verifyAdminToken, updateMenuItem, createMenuItem, deleteMenuItem, getPageContent } from '../services/api';
+import { getPublicMenuItems, verifyAdminToken, updateMenuItem, createMenuItem, deleteMenuItem, getPageContent, getDailySpecials } from '../services/api';
 import { toast } from '../hooks/use-toast';
 
 const MenuPage = () => {
@@ -22,6 +22,7 @@ const MenuPage = () => {
   const [usingMockData, setUsingMockData] = useState(false);
   const [pageContent, setPageContent] = useState({});
   const [expandedItemId, setExpandedItemId] = useState(null);
+  const [dailySpecialsMap, setDailySpecialsMap] = useState({});
   
   // Admin editing state
   const [isAdmin, setIsAdmin] = useState(false);
