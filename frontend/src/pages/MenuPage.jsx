@@ -153,7 +153,7 @@ const MenuPage = () => {
   // Get today's special
   const getTodaysSpecial = () => {
     const today = new Date().getDay();
-    const map = Object.keys(dailySpecialsMap).length e 0 ? dailySpecialsMap : DEFAULT_DAILY_SPECIALS;
+    const map = Object.keys(dailySpecialsMap).length > 0 ? dailySpecialsMap : DEFAULT_DAILY_SPECIALS;
     return map[today] || DEFAULT_DAILY_SPECIALS[today];
   };
 
