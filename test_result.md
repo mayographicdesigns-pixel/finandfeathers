@@ -210,7 +210,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Image visibility verification - COMPLETED"
+    - "Location detail update persistence - COMPLETED"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
