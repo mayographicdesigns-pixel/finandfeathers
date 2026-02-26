@@ -871,6 +871,8 @@ class LocationResponse(BaseModel):
     online_ordering: Optional[str]
     reservations: Optional[str]
     delivery: Optional[str]
+    review_link: Optional[str]
+    directions_link: Optional[str]
     social_media: LocationSocialMedia
     weekly_specials: List[WeeklySpecial]
     is_active: bool
