@@ -1309,6 +1309,50 @@ async def update_page_content(page_key: str, section_key: str, update: PageConte
     return {"success": True}
 
 
+# Daily Specials (Public)
+@api_router.get("/daily-specials")
+async def get_daily_specials():
+    specials = await db.daily_specials.find({}, {"_id": 0}).to_list(20)
+    return specials
+
+
+# Daily Specials (Admin)
+@api_router.get("/admin/daily-specials")
+async def admin_get_daily_specials(username: str = Depends(get_current_admin)):
+    specials = await db.daily_specials.find({}, {"_id": 0}).to_list(20)
+    return specials
+
+
+@api_router.put("/admin/daily-specials")
+async def admin_update_daily_specials(request: Request, username: str = Depends(get_current_admin)):
+    body = await request.json()
+    if not isinstance(body, list):
+        raise HTTPException(status_code=400, detail="Expected a list of daily specials")
+
+    updated = 0
+    for item in body:
+        try:
+            update = DailySpecialUpdate(**item)
+        except Exception:
+            continue
+        update_doc = {
+            "day_index": update.day_index,
+            "name": update.name,
+            "description": update.description,
+            "hours": update.hours,
+            "emoji": update.emoji,
+            "updated_at": datetime.now(timezone.utc)
+        }
+        await db.daily_specials.update_one(
+            {"day_index": update.day_index},
+            {"$set": update_doc, "$setOnInsert": {"id": str(uuid.uuid4()), "created_at": datetime.now(timezone.utc)}},
+            upsert=True
+        )
+        updated += 1
+
+    return {"updated": updated}
+
+
 # Menu Items (Admin)
 @api_router.get("/admin/menu-items")
 async def admin_get_menu_items(username: str = Depends(get_current_admin)):
