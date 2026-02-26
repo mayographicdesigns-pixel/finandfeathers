@@ -84,6 +84,7 @@ const AdminPage = () => {
     { id: 'videos', label: 'Videos', icon: Video },
     { id: 'social', label: 'Social Links', icon: Share2 },
     { id: 'menu', label: 'Menu Items', icon: UtensilsCrossed },
+    { id: 'page-content', label: 'Page Content', icon: FileText },
     { id: 'users', label: 'Users', icon: Coins },
     { id: 'members', label: 'Loyalty', icon: Users },
     { id: 'contacts', label: 'Contacts', icon: Mail },
