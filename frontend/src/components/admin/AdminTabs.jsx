@@ -513,20 +513,49 @@ const MenuItemsTab = () => {
                 />
               </div>
               <Textarea
-                placeholder="Description"
+                placeholder="Description (optional)"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="bg-slate-900 border-slate-700 text-white"
-                required
               />
               <div className="grid grid-cols-2 gap-4">
-                <Input
-                  placeholder="Category (e.g., starters, entrees)"
+                <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="bg-slate-900 border-slate-700 text-white"
+                  className="bg-slate-900 border border-slate-700 text-white rounded-md px-3 py-2"
                   required
-                />
+                >
+                  <option value="">Select Category</option>
+                  <optgroup label="Food">
+                    <option value="starters">Starters</option>
+                    <option value="sides">Sides</option>
+                    <option value="entrees">Entrees</option>
+                    <option value="seafood-grits">Seafood & Grits</option>
+                    <option value="sandwiches">Sandwiches</option>
+                    <option value="salads">Salads</option>
+                    <option value="brunch">Brunch</option>
+                    <option value="brunch-sides">Brunch Sides</option>
+                  </optgroup>
+                  <optgroup label="Drinks - Beer & Wine">
+                    <option value="beer-wine">Beer & Wine</option>
+                  </optgroup>
+                  <optgroup label="Drinks - Cocktails">
+                    <option value="cocktails">Cocktails</option>
+                    <option value="signature-cocktails">Signature Cocktails</option>
+                    <option value="brunch-drinks">Brunch Drinks</option>
+                  </optgroup>
+                  <optgroup label="Drinks - Non-Alcoholic">
+                    <option value="mocktails">Mocktails</option>
+                    <option value="sodas-spritzers">Sodas & Spritzers</option>
+                    <option value="teas-lemonades">Teas & Lemonades</option>
+                    <option value="chilled-juices">Chilled Juices</option>
+                    <option value="custom-lemonades">Custom Lemonades</option>
+                  </optgroup>
+                  <optgroup label="Other">
+                    <option value="daily-specials">$5 Daily Specials</option>
+                    <option value="hookah">Hookah</option>
+                  </optgroup>
+                </select>
                 <Input
                   placeholder="Badges (comma separated)"
                   value={formData.badges}
