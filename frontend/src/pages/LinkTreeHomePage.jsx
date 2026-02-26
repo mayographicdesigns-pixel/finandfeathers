@@ -32,7 +32,8 @@ import {
   getHomepageContent,
   updateHomepageContent,
   verifyAdminToken,
-  uploadImage
+  uploadImage,
+  getPageContent
 } from '../services/api';
 
 // Welcome Popup Component
