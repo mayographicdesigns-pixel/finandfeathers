@@ -1429,9 +1429,10 @@ const MyAccountPage = () => {
               </CardContent>
             </Card>
           </TabsContent>
+          )}
 
-          {/* Staff Earnings Tab (only for staff role) */}
-          {profile.role === 'staff' && (
+          {/* Staff Earnings Tab (only for staff role and token program enabled) */}
+          {profile.role === 'staff' && appSettings.token_program_enabled && (
             <TabsContent value="earnings" className="space-y-4">
               {/* Earnings Summary */}
               <Card className="bg-gradient-to-r from-green-900/50 to-green-800/30 border-green-600/30">
