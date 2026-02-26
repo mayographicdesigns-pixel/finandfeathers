@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List, Dict
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 
 # User/Admin Model
