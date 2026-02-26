@@ -846,6 +846,8 @@ class LocationUpdate(BaseModel):
     online_ordering: Optional[str] = None
     reservations: Optional[str] = None
     delivery: Optional[str] = None
+    review_link: Optional[str] = None
+    directions_link: Optional[str] = None
     social_media: Optional[LocationSocialMedia] = None
     weekly_specials: Optional[List[WeeklySpecial]] = None
     is_active: Optional[bool] = None
