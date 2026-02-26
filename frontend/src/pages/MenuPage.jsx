@@ -368,6 +368,10 @@ const MenuPage = () => {
       }
       return menuItems.filter(item => cocktailCategoryIds.includes(item.category));
     }
+
+    if (activeCategory === 'non-alcoholic') {
+      return menuItems.filter(item => nonAlcoholicCategoryIds.includes(item.category));
+    }
     
     return menuItems.filter(item => item.category === activeCategory);
   }, [activeCategory, activeSubCategory, menuItems]);
