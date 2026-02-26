@@ -75,8 +75,9 @@ const MenuCard = ({ item, variant = 'default', editMode = false, onEdit, onImage
 
   return (
     <Card 
-      className={`overflow-hidden bg-slate-800/80 border-slate-700/50 hover:bg-slate-800 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl group ${editMode ? 'cursor-pointer ring-2 ring-red-500/50 ring-dashed' : ''}`}
-      onClick={editMode && onEdit ? () => onEdit(item) : undefined}
+      className={`overflow-hidden bg-slate-800/80 border-slate-700/50 hover:bg-slate-800 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl group ${editMode ? 'cursor-pointer ring-2 ring-red-500/50 ring-dashed' : 'cursor-pointer'}`}
+      onClick={handleToggle}
+      data-testid={`menu-card-${item.id}`}
     >
       <div 
         className={`relative ${isCompact ? 'h-44' : 'h-56'} overflow-hidden ${!editMode ? 'cursor-pointer' : ''}`}
