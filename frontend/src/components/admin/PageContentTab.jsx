@@ -48,6 +48,9 @@ const PageContentTab = () => {
       for (const page of PAGE_CONFIG) {
         const result = await getPageContent(page.key);
         pageContent[page.key] = {};
+        page.sections.forEach((section) => {
+          pageContent[page.key][section.key] = section.defaultHtml || '';
+        });
         (result || []).forEach((entry) => {
           pageContent[page.key][entry.section_key] = entry.html || '';
         });
