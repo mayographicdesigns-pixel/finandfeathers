@@ -3474,12 +3474,7 @@ async def get_location_by_slug(slug: str):
 
 # Admin Location Endpoints
 def ensure_suite_placeholder(address: str):
-    if not address:
-        return address
-    lower = address.lower()
-    if "suite" in lower or "ste" in lower or "unit" in lower or "apt" in lower or "#" in address:
-        return address
-    return f"{address}, Suite TBD"
+    return address
 
 
 def normalize_location_response(location: dict):
