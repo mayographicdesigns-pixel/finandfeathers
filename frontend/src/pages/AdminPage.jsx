@@ -23,8 +23,7 @@ import {
   EventsTab,
   GallerySubmissionsTab,
   SocialPostsTab,
-  UsersTab,
-  PageContentTab
+  UsersTab
 } from '../components/admin/AdminTabs';
 import PageContentTab from '../components/admin/PageContentTab';
 // Main Admin Page Component
