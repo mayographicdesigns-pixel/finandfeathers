@@ -786,14 +786,14 @@ const MenuPage = () => {
                 <p className="text-slate-400 text-sm mb-4">MON-FRI 12PM-8PM • SATURDAY 5PM-8PM • SUNDAY 6PM-CLOSE</p>
                 
                 {/* Today's Special Highlight */}
-                <div className="bg-gradient-to-r from-red-600/20 to-orange-600/20 border border-red-500/30 rounded-xl p-4 mb-6">
+                <div className="bg-gradient-to-r from-red-600/20 to-orange-600/20 border border-red-500/30 rounded-xl p-4 mb-6" data-testid="todays-special-highlight">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">{todaysSpecial.emoji}</span>
-                    <span className="text-red-400 font-semibold text-sm uppercase tracking-wide">Today's Special • {todayName}</span>
+                    <span className="text-2xl" data-testid="todays-special-emoji">{todaysSpecial.emoji}</span>
+                    <span className="text-red-400 font-semibold text-sm uppercase tracking-wide" data-testid="todays-special-day">Today's Special • {todayName}</span>
                   </div>
-                  <h4 className="text-xl font-bold text-white mb-1">{todaysSpecial.name}</h4>
-                  <p className="text-slate-300 text-sm mb-2">{todaysSpecial.description}</p>
-                  <p className="text-red-400 text-xs font-medium">{todaysSpecial.hours}</p>
+                  <h4 className="text-xl font-bold text-white mb-1" data-testid="todays-special-title">{todaysSpecial.name}</h4>
+                  <p className="text-slate-300 text-sm mb-2" data-testid="todays-special-description">{todaysSpecial.description}</p>
+                  <p className="text-red-400 text-xs font-medium" data-testid="todays-special-hours">{todaysSpecial.hours}</p>
                 </div>
                 
                 {/* Food Items */}
