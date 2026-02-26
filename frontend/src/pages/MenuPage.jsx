@@ -90,7 +90,7 @@ const MenuPage = () => {
   const cocktailCategoryIds = ['cocktails', 'signature-cocktails', 'brunch-drinks'];
 
   // Daily Specials by day of week
-  const dailySpecials = {
+  const DEFAULT_DAILY_SPECIALS = {
     0: { // Sunday
       name: "The Sunday Slide",
       description: "Close out the weekend with $5 Daily Specials",
