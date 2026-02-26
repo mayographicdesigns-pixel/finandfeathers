@@ -20,6 +20,7 @@ const MenuPage = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [usingMockData, setUsingMockData] = useState(false);
+  const [pageContent, setPageContent] = useState({});
   
   // Admin editing state
   const [isAdmin, setIsAdmin] = useState(false);
