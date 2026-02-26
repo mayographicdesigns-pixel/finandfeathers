@@ -615,6 +615,46 @@ export async function updatePageContent(pageKey, sectionKey, html) {
   return await response.json();
 }
 
+// Daily specials (public)
+export async function getDailySpecials() {
+  const response = await fetch(`${API_URL}/daily-specials`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch daily specials');
+  }
+  return await response.json();
+}
+
+// Daily specials (admin)
+export async function adminGetDailySpecials() {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/daily-specials`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  if (!response.ok) {
+    throw new Error('Failed to fetch daily specials');
+  }
+  return await response.json();
+}
+
+export async function adminUpdateDailySpecials(payload) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/daily-specials`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(payload)
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to update daily specials');
+  }
+  return await response.json();
+}
+
 // Get menu items (admin)
 export async function getAdminMenuItems() {
   const token = localStorage.getItem('adminToken');
