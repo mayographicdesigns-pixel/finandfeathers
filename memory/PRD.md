@@ -432,6 +432,8 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - Public pages now read hero content from /api/page-content/{page}
 - **COMPLETED**: Location card image behavior (Feb 26, 2026)
   - Location images now navigate to the location detail page (no lightbox)
+- **UPDATED**: Hookah flavors list (Feb 26, 2026)
+  - Added signature mixes, special flavors, classic blends, and safety notes under Hookah
 - **UPDATED**: Cocktails menu refresh (Feb 26, 2026)
   - Added full drink list and grouped $5 Specials, Signature, Brunch Drinks in cocktails view
   - Added non-alcoholic sections (Handcrafted Mocktails, Classic Refreshments, Custom Fruit Lemonades)
