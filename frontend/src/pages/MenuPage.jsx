@@ -175,6 +175,7 @@ const MenuPage = () => {
     checkAdmin();
     fetchMenuItems();
     fetchPageContent();
+    fetchDailySpecials();
   }, []);
 
   const fetchMenuItems = async () => {
