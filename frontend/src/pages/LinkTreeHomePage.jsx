@@ -175,6 +175,8 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
               src="https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png"
               alt="Fin & Feathers"
               className="max-h-20 w-auto mx-auto mb-4"
+              loading="eager"
+              decoding="async"
             />
             <h2 className="text-2xl font-bold text-white mb-2">
               Welcome to Fin & Feathers!
