@@ -891,11 +891,13 @@ class LocationCreate(BaseModel):
     social_media: LocationSocialMedia = LocationSocialMedia()
     weekly_specials: List[WeeklySpecial] = []
     display_order: int = 0
+    location_type: str = "restaurant"
     # Feature toggles
     tip_staff_enabled: bool = False
     dj_tips_enabled: bool = False
     social_wall_enabled: bool = True
     check_in_enabled: bool = True
+    show_main_menu: bool = True
 
 class LocationUpdate(BaseModel):
     slug: Optional[str] = None
