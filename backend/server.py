@@ -161,7 +161,8 @@ async def get_app_settings():
         # Return default settings
         settings = {
             "token_program_enabled": True,
-            "loyalty_program_enabled": True
+            "loyalty_program_enabled": True,
+            "buy_drink_enabled": True
         }
     return settings
 
@@ -174,7 +175,8 @@ async def get_admin_settings(admin: str = Depends(get_current_admin)):
         settings = {
             "_id": "global",
             "token_program_enabled": True,
-            "loyalty_program_enabled": True
+            "loyalty_program_enabled": True,
+            "buy_drink_enabled": True
         }
         await db.app_settings.insert_one(settings)
     return {k: v for k, v in settings.items() if k != "_id"}
@@ -183,7 +185,7 @@ async def get_admin_settings(admin: str = Depends(get_current_admin)):
 @api_router.put("/admin/settings")
 async def update_admin_settings(settings: dict, admin: str = Depends(get_current_admin)):
     """Update app settings"""
-    allowed_keys = ["token_program_enabled", "loyalty_program_enabled"]
+    allowed_keys = ["token_program_enabled", "loyalty_program_enabled", "buy_drink_enabled"]
     update_data = {k: v for k, v in settings.items() if k in allowed_keys}
     
     await db.app_settings.update_one(
