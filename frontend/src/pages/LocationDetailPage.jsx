@@ -1632,15 +1632,18 @@ const LocationDetailPage = () => {
               </span>
             )}
           </Button>
-          <Button
-            onClick={() => setActiveTab('drinks')}
-            variant={activeTab === 'drinks' ? 'default' : 'outline'}
-            className={activeTab === 'drinks' ? 'bg-pink-600' : 'border-slate-600 text-slate-300'}
-            data-testid="tab-drinks"
-          >
-            <Wine className="w-4 h-4 mr-2" />
-            Drinks
-          </Button>
+          {/* Drinks Tab - Only shown if buy_drink_enabled */}
+          {appSettings.buy_drink_enabled && (
+            <Button
+              onClick={() => setActiveTab('drinks')}
+              variant={activeTab === 'drinks' ? 'default' : 'outline'}
+              className={activeTab === 'drinks' ? 'bg-pink-600' : 'border-slate-600 text-slate-300'}
+              data-testid="tab-drinks"
+            >
+              <Wine className="w-4 h-4 mr-2" />
+              Drinks
+            </Button>
+          )}
           {/* DJ Tips Tab - Only shown if enabled for this location */}
           {location?.dj_tips_enabled && (
             <Button
