@@ -5270,6 +5270,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Middleware to add cache-control headers for API responses
+@app.middleware("http")
+async def add_cache_control_headers(request: Request, call_next):
+    response = await call_next(request)
+    # Add no-cache headers for API requests to prevent stale data
+    if request.url.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+    return response
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
