@@ -1220,13 +1220,13 @@ const MenuPage = () => {
             )}
 
             {/* FOOD SECTIONS */}
-            {renderSection('Starters', itemsByCategory['starters'])}
+            {renderSection('Starters', itemsByCategory['starters'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
             {renderSection('Sides', itemsByCategory['sides'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true)}
             {renderSection('Entrees', itemsByCategory['entrees'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
             {renderSection('Seafood & Grits', itemsByCategory['seafood-grits'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
-            {renderSection('Sandwiches', itemsByCategory['sandwiches'])}
-            {renderSection('Salads', itemsByCategory['salads'])}
-            {renderSection('Brunch', itemsByCategory['brunch'])}
+            {renderSection('Sandwiches', itemsByCategory['sandwiches'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
+            {renderSection('Salads', itemsByCategory['salads'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
+            {renderSection('Brunch', itemsByCategory['brunch'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
             {renderSection('Brunch Sides', itemsByCategory['brunch-sides'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true)}
 
             {/* DRINKS AT THE BOTTOM */}
