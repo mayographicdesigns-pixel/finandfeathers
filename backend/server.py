@@ -2929,7 +2929,7 @@ async def update_user_profile(user_id: str, update: UserProfileUpdate):
 
 @api_router.post("/user/profile/{user_id}/photo")
 async def upload_profile_photo(user_id: str, file: UploadFile = File(...)):
-    """Upload a profile photo/selfie"""
+    """Upload a profile photo/selfie - stores in MongoDB for production"""
     profile = await db.user_profiles.find_one({"id": user_id})
     if not profile:
         raise HTTPException(status_code=404, detail="User profile not found")
@@ -2944,20 +2944,41 @@ async def upload_profile_photo(user_id: str, file: UploadFile = File(...)):
     if len(contents) > 5 * 1024 * 1024:
         raise HTTPException(status_code=400, detail="File too large. Max 5MB")
     
-    # Generate unique filename
+    # Generate unique file ID
+    file_id = f"profile_{user_id}_{uuid.uuid4().hex[:8]}"
     ext = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
-    filename = f"profile_{user_id}_{uuid.uuid4().hex[:8]}.{ext}"
+    filename = f"{file_id}.{ext}"
     
-    # Save to uploads directory
-    upload_dir = Path("uploads")
-    upload_dir.mkdir(exist_ok=True)
-    file_path = upload_dir / filename
+    # Store in MongoDB for production persistence
+    base64_data = base64.b64encode(contents).decode('utf-8')
     
-    with open(file_path, "wb") as f:
-        f.write(contents)
+    await db.media_files.update_one(
+        {"file_id": file_id},
+        {"$set": {
+            "file_id": file_id,
+            "filename": filename,
+            "data": base64_data,
+            "content_type": file.content_type,
+            "size": len(contents),
+            "type": "profile_photo",
+            "user_id": user_id,
+            "uploaded_at": datetime.now(timezone.utc)
+        }},
+        upsert=True
+    )
     
-    # Update user profile with photo URL
-    photo_url = f"/api/uploads/{filename}"
+    # Also save locally for preview
+    try:
+        upload_dir = Path("uploads")
+        upload_dir.mkdir(exist_ok=True)
+        file_path = upload_dir / filename
+        with open(file_path, "wb") as f:
+            f.write(contents)
+    except Exception:
+        pass
+    
+    # Use the MongoDB media URL
+    photo_url = f"/api/media/{file_id}"
     await db.user_profiles.update_one(
         {"id": user_id},
         {"$set": {"profile_photo_url": photo_url, "updated_at": datetime.now(timezone.utc)}}
