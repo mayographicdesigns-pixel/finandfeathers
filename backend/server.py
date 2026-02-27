@@ -2016,30 +2016,61 @@ async def admin_upload_video(
 
 @api_router.get("/admin/uploads")
 async def admin_list_uploads(username: str = Depends(get_current_admin)):
-    """List all uploaded files"""
+    """List all uploaded files from both local and MongoDB"""
     files = []
-    for f in UPLOAD_DIR.iterdir():
-        if f.is_file() and f.suffix.lower() in ALLOWED_EXTENSIONS:
-            files.append({
-                "filename": f.name,
-                "url": f"/api/uploads/{f.name}",
-                "size": f.stat().st_size
-            })
+    
+    # Get files from MongoDB (production-ready)
+    db_files = await db.media_files.find({}, {"_id": 0, "data": 0}).to_list(500)
+    for f in db_files:
+        files.append({
+            "filename": f.get("filename", ""),
+            "url": f"/api/media/{f.get('file_id', '')}",
+            "size": f.get("size", 0),
+            "source": "mongodb"
+        })
+    
+    # Also check local uploads directory (for preview environment)
+    try:
+        for f in UPLOAD_DIR.iterdir():
+            if f.is_file() and f.suffix.lower() in ALLOWED_EXTENSIONS:
+                # Check if already in list from MongoDB
+                if not any(file.get("filename") == f.name for file in files):
+                    files.append({
+                        "filename": f.name,
+                        "url": f"/api/uploads/{f.name}",
+                        "size": f.stat().st_size,
+                        "source": "local"
+                    })
+    except Exception:
+        pass  # Directory may not exist in production
+    
     return files
 
 
 @api_router.delete("/admin/uploads/{filename}")
 async def admin_delete_upload(filename: str, username: str = Depends(get_current_admin)):
-    """Delete an uploaded file"""
-    file_path = UPLOAD_DIR / filename
-    if not file_path.exists():
+    """Delete an uploaded file from both local and MongoDB"""
+    deleted = False
+    
+    # Try to delete from MongoDB
+    file_id = filename.rsplit('.', 1)[0] if '.' in filename else filename
+    result = await db.media_files.delete_one({"$or": [{"file_id": file_id}, {"filename": filename}]})
+    if result.deleted_count > 0:
+        deleted = True
+    
+    # Also try to delete from local
+    try:
+        file_path = UPLOAD_DIR / filename
+        if file_path.exists():
+            file_path.unlink()
+            deleted = True
+    except Exception:
+        pass
+    
+    if not deleted:
         raise HTTPException(status_code=404, detail="File not found")
     
-    try:
-        file_path.unlink()
-        return {"message": "File deleted successfully"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to delete file: {str(e)}")
+    return {"message": "File deleted successfully"}
 
 
 # =====================================================
