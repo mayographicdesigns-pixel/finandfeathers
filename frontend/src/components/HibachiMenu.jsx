@@ -62,7 +62,7 @@ const HibachiMenu = ({ onlineOrderLink }) => {
   ];
 
   return (
-    <div className="space-y-8" data-testid="hibachi-menu">
+    <div className="space-y-6" data-testid="hibachi-menu">
       {/* Header */}
       <div className="text-center">
         <div className="flex items-center justify-center gap-3 mb-2">
@@ -87,44 +87,82 @@ const HibachiMenu = ({ onlineOrderLink }) => {
         </div>
       )}
 
-      {/* Combo Packages */}
-      <div className="bg-gradient-to-r from-orange-900/30 to-red-900/30 border border-orange-500/30 rounded-xl p-6" data-testid="hibachi-combos">
+      {/* Hibachi Singles */}
+      <div className="bg-gradient-to-r from-orange-900/30 to-red-900/30 border border-orange-500/30 rounded-xl p-6" data-testid="hibachi-singles">
         <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <Utensils className="w-6 h-6 text-orange-400" />
-          Hibachi Combos
+          <span className="text-2xl">🍱</span>
+          Hibachi Single
         </h3>
-        <p className="text-slate-400 text-sm mb-4">All combos include fried rice and fresh vegetables</p>
+        <p className="text-slate-400 text-sm mb-4">Includes fried rice and fresh vegetables • Large +$3.25</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {combos.map((combo) => (
-            <Card 
-              key={combo.name} 
-              className={`bg-slate-800/60 border-slate-700/50 ${combo.popular ? 'ring-2 ring-orange-500/50' : ''}`}
+          {singles.map((item) => (
+            <div 
+              key={item.name} 
+              className={`bg-slate-800/60 border rounded-lg p-4 flex items-center justify-between ${item.premium ? 'border-amber-500/50' : 'border-slate-700/50'}`}
             >
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-2xl">{combo.icon}</span>
-                  {combo.popular && (
-                    <span className="bg-orange-600 text-white text-xs px-2 py-1 rounded-full">Popular</span>
-                  )}
-                </div>
-                <h4 className="text-xl font-bold text-white mb-1">{combo.name}</h4>
-                <p className="text-slate-400 text-sm mb-3">{combo.description}</p>
-                <div className="text-xs text-slate-500">
-                  {combo.proteins.join(' • ')}
-                </div>
-              </CardContent>
-            </Card>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">{item.icon}</span>
+                <span className="text-white font-semibold">{item.name}</span>
+              </div>
+              <span className={`font-bold text-lg ${item.premium ? 'text-amber-400' : 'text-orange-400'}`}>
+                ${item.price}
+              </span>
+            </div>
           ))}
         </div>
-        <p className="text-orange-400 text-sm mt-4">
-          <strong>Upgrades:</strong> Fried Rice (+$2) • Chicken Fried Rice (+$3)
-        </p>
+      </div>
+
+      {/* Hibachi Duets */}
+      <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-6" data-testid="hibachi-duets">
+        <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span className="text-2xl">🍱🍱</span>
+          Hibachi Duet
+        </h3>
+        <p className="text-slate-400 text-sm mb-4">Choose 2 proteins with fried rice and vegetables</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {duets.map((item) => (
+            <div 
+              key={item.name} 
+              className="bg-slate-900/60 border border-slate-700/40 rounded-lg p-4 flex items-center justify-between"
+            >
+              <span className="text-slate-300">{item.name}</span>
+              <span className="text-orange-400 font-bold">${item.price}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Hibachi Trios */}
+      <div className="bg-gradient-to-r from-red-900/20 to-orange-900/20 border border-red-500/30 rounded-xl p-6" data-testid="hibachi-trios">
+        <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          <span className="text-2xl">🍱🍱🍱</span>
+          Hibachi Trio
+          <span className="bg-red-600 text-white text-xs px-2 py-1 rounded-full ml-2">Best Value</span>
+        </h3>
+        <p className="text-slate-400 text-sm mb-4">Choose 3 proteins with fried rice and vegetables</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {trios.map((item) => (
+            <div 
+              key={item.name} 
+              className={`bg-slate-900/60 border rounded-lg p-4 flex items-center justify-between ${item.popular ? 'border-orange-500/50 ring-1 ring-orange-500/30' : 'border-slate-700/40'}`}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-slate-300">{item.name}</span>
+                {item.popular && (
+                  <span className="bg-orange-600 text-white text-xs px-2 py-0.5 rounded-full">Popular</span>
+                )}
+              </div>
+              <span className="text-orange-400 font-bold text-lg">${item.price}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* À La Carte Proteins */}
       <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-6" data-testid="hibachi-proteins">
-        <h3 className="text-xl font-bold text-white mb-4">🔥 À La Carte Proteins</h3>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <h3 className="text-xl font-bold text-white mb-4">🔥 À La Carte</h3>
+        <p className="text-slate-400 text-sm mb-4">Add extra protein to any order</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {proteins.map((item) => (
             <div 
               key={item.name} 
@@ -158,9 +196,9 @@ const HibachiMenu = ({ onlineOrderLink }) => {
           </div>
         </div>
 
-        {/* Sauces & Extras */}
+        {/* Sauces */}
         <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-6" data-testid="hibachi-sauces">
-          <h3 className="text-xl font-bold text-white mb-4">🥢 Sauces & Extras</h3>
+          <h3 className="text-xl font-bold text-white mb-4">🥢 Sauces</h3>
           <div className="space-y-2">
             {sauces.map((item) => (
               <div key={item.name} className="flex justify-between items-center py-2 border-b border-slate-700/30 last:border-0">
@@ -174,7 +212,7 @@ const HibachiMenu = ({ onlineOrderLink }) => {
 
       {/* Beverages */}
       <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-6" data-testid="hibachi-beverages">
-        <h3 className="text-xl font-bold text-white mb-4">🥤 Beverages</h3>
+        <h3 className="text-xl font-bold text-white mb-4">🥤 Beverages - Canned Sodas</h3>
         <div className="flex flex-wrap gap-3">
           {beverages.map((item) => (
             <div key={item.name} className="bg-slate-900/60 border border-slate-700/40 rounded-lg px-4 py-2">
