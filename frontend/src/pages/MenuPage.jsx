@@ -1299,10 +1299,9 @@ const MenuPage = () => {
               <>
                 {activeSubCategory === 'sides' || activeSubCategory === 'brunch-sides' ? (
                   renderSection(categoryNames[activeSubCategory], filteredItems, 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true)
-                ) : activeSubCategory === 'entrees' || activeSubCategory === 'seafood-grits' ? (
-                  renderSection(categoryNames[activeSubCategory], filteredItems, 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')
                 ) : (
-                  renderSection(categoryNames[activeSubCategory], filteredItems)
+                  // All other food categories show as cards with images
+                  renderSection(categoryNames[activeSubCategory], filteredItems, 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')
                 )}
               </>
             ) : (
