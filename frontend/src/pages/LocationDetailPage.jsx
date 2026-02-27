@@ -2299,16 +2299,27 @@ const LocationDetailPage = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="grid grid-cols-2 gap-3">
-              <Button onClick={() => navigate('/menu')} className="bg-red-600 hover:bg-red-700 h-12">
-                <ExternalLink className="w-4 h-4 mr-2" />
-                View Menu
-              </Button>
-              <Button onClick={() => window.open(location.online_ordering, '_blank')} variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700 h-12">
-                <ShoppingBag className="w-4 h-4 mr-2" />
-                Order Online
-              </Button>
+            <div className={`grid ${location.show_main_menu !== false ? 'grid-cols-2' : 'grid-cols-1'} gap-3`}>
+              {location.show_main_menu !== false && (
+                <Button onClick={() => navigate('/menu')} className="bg-red-600 hover:bg-red-700 h-12">
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  View Menu
+                </Button>
+              )}
+              {location.online_ordering && (
+                <Button onClick={() => window.open(location.online_ordering, '_blank')} variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700 h-12">
+                  <ShoppingBag className="w-4 h-4 mr-2" />
+                  Order Online
+                </Button>
+              )}
             </div>
+
+            {/* Hibachi Menu for Food Truck */}
+            {location.location_type === 'food-truck' && (
+              <div className="mt-6">
+                <HibachiMenu onlineOrderLink={location.online_ordering} />
+              </div>
+            )}
 
             {/* Today's Special */}
             {todaysSpecial && (
