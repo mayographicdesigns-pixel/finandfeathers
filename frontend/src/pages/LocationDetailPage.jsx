@@ -320,10 +320,29 @@ const LocationDetailPage = () => {
   const [location, setLocation] = useState(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
   
+  // App settings state
+  const [appSettings, setAppSettings] = useState({
+    buy_drink_enabled: true,
+    token_program_enabled: true
+  });
+  
   // Admin state
   const [isAdmin, setIsAdmin] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [editingLocation, setEditingLocation] = useState(null);
+
+  // Load app settings
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const settings = await getAppSettings();
+        setAppSettings(settings);
+      } catch (error) {
+        console.error('Error loading app settings:', error);
+      }
+    };
+    loadSettings();
+  }, []);
 
   // Check if admin is logged in
   useEffect(() => {
