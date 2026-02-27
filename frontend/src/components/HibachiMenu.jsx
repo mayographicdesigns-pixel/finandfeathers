@@ -10,8 +10,11 @@ import { Card, CardContent } from './ui/card';
 const HibachiMenu = ({ onlineOrderLink }) => {
   // Hibachi Singles
   const singles = [
+    { name: 'Veggie Delight', price: 10, icon: '🥬' },
+    { name: 'Chicken', price: 13, icon: '🍗' },
     { name: 'Steak', price: 17, icon: '🥩' },
     { name: 'Salmon', price: 18, icon: '🐟' },
+    { name: 'Shrimp', price: 20, icon: '🍤' },
     { name: 'Lobster', price: 25, icon: '🦞', premium: true }
   ];
 
