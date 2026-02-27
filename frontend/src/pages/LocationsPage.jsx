@@ -913,23 +913,27 @@ const LocationsPage = () => {
                   </a>
                 </div>
                 
-                {/* Reservation Phone */}
-                <div className="flex items-center gap-2 mb-3">
-                  <Calendar className="w-4 h-4 text-red-500 flex-shrink-0" />
-                  <div className="text-slate-400 text-xs">
-                    Reservations (Text): {location.reservation_phone}
+                {/* Reservation Phone - hide for food trucks */}
+                {location.location_type !== 'food-truck' && location.reservation_phone && (
+                  <div className="flex items-center gap-2 mb-3">
+                    <Calendar className="w-4 h-4 text-red-500 flex-shrink-0" />
+                    <div className="text-slate-400 text-xs">
+                      Reservations (Text): {location.reservation_phone}
+                    </div>
                   </div>
-                </div>
+                )}
 
-                {/* Hours */}
-                <div className="mb-4 pb-4 border-b border-slate-700">
-                  <p className="text-slate-400 text-xs">
-                    {typeof location.hours === 'object' 
-                      ? `Mon-Thu: ${location.hours.monday || 'Closed'} | Fri-Sat: ${location.hours.friday || 'Closed'} | Sun: ${location.hours.sunday || 'Closed'}`
-                      : location.hours
-                    }
-                  </p>
-                </div>
+                {/* Hours - hide for food trucks */}
+                {location.location_type !== 'food-truck' && (
+                  <div className="mb-4 pb-4 border-b border-slate-700">
+                    <p className="text-slate-400 text-xs">
+                      {typeof location.hours === 'object' 
+                        ? `Mon-Thu: ${location.hours.monday || 'Closed'} | Fri-Sat: ${location.hours.friday || 'Closed'} | Sun: ${location.hours.sunday || 'Closed'}`
+                        : location.hours
+                      }
+                    </p>
+                  </div>
+                )}
 
                 {/* Action Buttons */}
                 <div className="space-y-2">
