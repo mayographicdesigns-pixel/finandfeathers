@@ -121,10 +121,10 @@ const MenuCard = ({ item, variant = 'default', editMode = false, onEdit, onImage
       <div 
         className={`relative ${isCompact ? 'h-44' : 'h-56'} overflow-hidden ${!editMode ? 'cursor-pointer' : ''}`}
       >
-        <img
+        <LazyImage
           src={imageUrl}
           alt={item.name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="w-full h-full transition-transform duration-500 group-hover:scale-110"
         />
         <div className={`absolute top-3 right-3 bg-red-500 text-white ${isCompact ? 'px-2.5 py-1' : 'px-3 py-1.5'} rounded-full font-bold ${isCompact ? 'text-xs' : 'text-sm'} shadow-lg`}>
           {item.priceLabel ? item.priceLabel : item.price !== null ? `$${item.price}` : 'MKT'}
