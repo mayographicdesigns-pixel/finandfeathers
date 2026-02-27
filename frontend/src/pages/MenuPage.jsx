@@ -331,9 +331,12 @@ const MenuPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4" data-testid="hookah-classic-grid">
             {classicFlavors.map((flavor) => (
               <div key={flavor.name} className="bg-slate-900/60 border border-slate-700/40 rounded-xl overflow-hidden hover:border-amber-500/50 transition-all" data-testid={`hookah-card-${flavor.name.toLowerCase().replace(/\s+/g, '-')}`}>
-                <div className="h-40 overflow-hidden">
-                  <img src={flavor.image} alt={flavor.name} className="w-full h-full object-cover" />
-                </div>
+                <OptimizedImage 
+                  src={flavor.image} 
+                  alt={flavor.name} 
+                  className="h-40"
+                  quality={75}
+                />
                 <div className="p-3">
                   <div className="flex justify-between items-start mb-1">
                     <h5 className="text-white font-semibold">{flavor.name}</h5>
