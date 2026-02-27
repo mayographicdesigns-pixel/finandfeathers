@@ -2280,22 +2280,25 @@ const LocationDetailPage = () => {
                 </CardContent>
               </Card>
 
-              <Card className="bg-slate-900/80 border-slate-700">
-                <CardContent className="p-4">
-                  <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-red-500" />
-                    Hours
-                  </h2>
-                  <div className="space-y-1 text-sm">
-                    {Object.entries(location.hours).map(([day, hours]) => (
-                      <div key={day} className={`flex justify-between ${day === currentDay ? 'text-red-500 font-semibold' : 'text-slate-300'}`}>
-                        <span className="capitalize">{day}</span>
-                        <span>{hours}</span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              {/* Hours - hide for food trucks */}
+              {location.location_type !== 'food-truck' && (
+                <Card className="bg-slate-900/80 border-slate-700">
+                  <CardContent className="p-4">
+                    <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-red-500" />
+                      Hours
+                    </h2>
+                    <div className="space-y-1 text-sm">
+                      {Object.entries(location.hours).map(([day, hours]) => (
+                        <div key={day} className={`flex justify-between ${day === currentDay ? 'text-red-500 font-semibold' : 'text-slate-300'}`}>
+                          <span className="capitalize">{day}</span>
+                          <span>{hours}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
 
             {/* Action Buttons */}
