@@ -59,6 +59,12 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - [x] Square crop and auto-upload to server
   - [x] Selfie displayed in "Who's Here" list and social features
   - [x] Fallback to emoji avatar if no selfie taken
+- [x] **Hibachi Food Truck Support** (NEW Feb 27, 2026)
+  - [x] Custom HibachiMenu component for food truck locations
+  - [x] location_type field to distinguish restaurants from food-trucks
+  - [x] show_main_menu toggle to hide main menu button for custom menus
+  - [x] Orange "Food Truck" badge on locations page
+  - [x] Dedicated hibachi menu with combos, proteins, sides, sauces, beverages
 
 #### New Reusable Components (Feb 2026)
 - [x] **ImageUploader** - Drag-drop image upload with square cropping, canvas-based processing
