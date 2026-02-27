@@ -1,9 +1,19 @@
 // Version Changelog Data
 // Update this with each release
 
-export const APP_VERSION = '2.1.0';
+export const APP_VERSION = '2.2.0';
 
 export const CHANGELOG = {
+  '2.2.0': {
+    date: '2026-02-27',
+    title: 'Auto-Update & Cache Fix',
+    isCritical: true,
+    changes: [
+      { type: 'improvement', text: 'Auto-update enabled - new versions apply automatically' },
+      { type: 'bugfix', text: 'Fixed cache not clearing after deployment' },
+      { type: 'improvement', text: 'Better image lazy loading' }
+    ]
+  },
   '2.1.0': {
     date: '2026-02-24',
     title: 'Enhanced PWA Features',
