@@ -1963,7 +1963,7 @@ async def admin_upload_video(
     file: UploadFile = File(...),
     username: str = Depends(get_current_admin)
 ):
-    """Upload a video file for promo carousel"""
+    """Upload a video file for promo carousel - stores in MongoDB for production"""
     file_ext = Path(file.filename).suffix.lower()
     if file_ext not in ALLOWED_VIDEO_EXTENSIONS:
         raise HTTPException(
@@ -1971,20 +1971,41 @@ async def admin_upload_video(
             detail=f"Video type not allowed. Allowed types: {', '.join(ALLOWED_VIDEO_EXTENSIONS)}"
         )
     
-    unique_filename = f"{uuid.uuid4()}{file_ext}"
-    file_path = UPLOAD_DIR / unique_filename
+    file_id = str(uuid.uuid4())
+    unique_filename = f"{file_id}{file_ext}"
     
     try:
         contents = await file.read()
         if len(contents) > MAX_VIDEO_SIZE:
             raise HTTPException(status_code=400, detail="Video too large. Maximum size is 50MB")
         
-        with open(file_path, "wb") as f:
-            f.write(contents)
+        # Store in MongoDB as Base64
+        base64_data = base64.b64encode(contents).decode('utf-8')
+        content_type = file.content_type or f"video/{file_ext[1:]}"
+        
+        await db.media_files.insert_one({
+            "file_id": file_id,
+            "filename": unique_filename,
+            "data": base64_data,
+            "content_type": content_type,
+            "size": len(contents),
+            "type": "video",
+            "uploaded_at": datetime.now(timezone.utc),
+            "uploaded_by": username
+        })
+        
+        # Also save locally for preview
+        try:
+            file_path = UPLOAD_DIR / unique_filename
+            with open(file_path, "wb") as f:
+                f.write(contents)
+        except Exception:
+            pass
         
         return {
             "filename": unique_filename,
-            "url": f"/api/uploads/{unique_filename}",
+            "url": f"/api/media/{file_id}",
+            "legacy_url": f"/api/uploads/{unique_filename}",
             "size": len(contents)
         }
     except HTTPException:
