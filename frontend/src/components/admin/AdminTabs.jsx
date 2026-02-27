@@ -3172,6 +3172,8 @@ const VideosTab = () => {
 
   const resetForm = () => {
     setFormData({ title: '', url: '', day_of_week: -1, is_common: false, display_order: 0 });
+    setSelectedFile(null);
+    setUploadMode('url');
   };
 
   if (loading) {
@@ -3199,7 +3201,7 @@ const VideosTab = () => {
               <h3 className="text-lg font-semibold text-white">
                 {editingVideo ? 'Edit Video' : 'Add New Video'}
               </h3>
-              <Button variant="ghost" size="sm" onClick={() => { setShowForm(false); setEditingVideo(null); }}>
+              <Button variant="ghost" size="sm" onClick={() => { setShowForm(false); setEditingVideo(null); setSelectedFile(null); }}>
                 <X className="w-4 h-4" />
               </Button>
             </div>
@@ -3214,16 +3216,78 @@ const VideosTab = () => {
                   className="bg-slate-900 border-slate-700 text-white"
                 />
               </div>
+              
+              {/* Upload Mode Toggle */}
               <div>
-                <label className="text-sm text-slate-300 block mb-1">Video URL *</label>
-                <Input
-                  value={formData.url}
-                  onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                  placeholder="https://..."
-                  required
-                  className="bg-slate-900 border-slate-700 text-white"
-                />
+                <label className="text-sm text-slate-300 block mb-2">Video Source</label>
+                <div className="flex gap-2 mb-3">
+                  <Button
+                    type="button"
+                    variant={uploadMode === 'url' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setUploadMode('url')}
+                    className={uploadMode === 'url' ? 'bg-red-600' : ''}
+                  >
+                    URL Link
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={uploadMode === 'file' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setUploadMode('file')}
+                    className={uploadMode === 'file' ? 'bg-red-600' : ''}
+                  >
+                    <Upload className="w-4 h-4 mr-1" /> Upload File
+                  </Button>
+                </div>
+                
+                {uploadMode === 'url' ? (
+                  <Input
+                    value={formData.url}
+                    onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                    placeholder="https://..."
+                    required={uploadMode === 'url'}
+                    className="bg-slate-900 border-slate-700 text-white"
+                  />
+                ) : (
+                  <div className="space-y-2">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="video/mp4,video/webm,video/mov,video/quicktime"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                    />
+                    <div 
+                      onClick={() => fileInputRef.current?.click()}
+                      className="border-2 border-dashed border-slate-600 rounded-lg p-6 text-center cursor-pointer hover:border-red-500 transition-colors"
+                    >
+                      {selectedFile ? (
+                        <div className="text-white">
+                          <Video className="w-8 h-8 mx-auto mb-2 text-green-500" />
+                          <p className="font-medium">{selectedFile.name}</p>
+                          <p className="text-sm text-slate-400">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                        </div>
+                      ) : (
+                        <div className="text-slate-400">
+                          <Upload className="w-8 h-8 mx-auto mb-2" />
+                          <p>Click to select video</p>
+                          <p className="text-xs mt-1">MP4, WebM, MOV (max 50MB)</p>
+                        </div>
+                      )}
+                    </div>
+                    {uploading && (
+                      <div className="w-full bg-slate-700 rounded-full h-2">
+                        <div 
+                          className="bg-red-600 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm text-slate-300 block mb-1">Day of Week</label>
@@ -3261,10 +3325,10 @@ const VideosTab = () => {
                 </label>
               </div>
               <div className="flex gap-2 pt-4">
-                <Button type="submit" className="bg-red-600 hover:bg-red-700">
-                  {editingVideo ? 'Update Video' : 'Create Video'}
+                <Button type="submit" className="bg-red-600 hover:bg-red-700" disabled={uploading}>
+                  {uploading ? 'Uploading...' : (editingVideo ? 'Update Video' : 'Create Video')}
                 </Button>
-                <Button type="button" variant="outline" onClick={() => { setShowForm(false); setEditingVideo(null); }}>
+                <Button type="button" variant="outline" onClick={() => { setShowForm(false); setEditingVideo(null); setSelectedFile(null); }}>
                   Cancel
                 </Button>
               </div>
