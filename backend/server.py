@@ -1,9 +1,11 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Depends, Header, UploadFile, File, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import Response
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from pathlib import Path
+import base64
 
 # Load environment variables FIRST before any other imports that might need them
 ROOT_DIR = Path(__file__).parent
