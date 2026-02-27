@@ -275,7 +275,6 @@ const LocationDetailPage = () => {
   const canvasRef = useRef(null);
   
   // Social Wall state
-  const [searchParams] = useSearchParams();
   const initialTab = searchParams.get('tab') || 'wall';
   const [activeTab, setActiveTab] = useState(initialTab); // 'wall', 'dm', 'dj', 'drinks', 'info'
   const [socialPosts, setSocialPosts] = useState([]);
