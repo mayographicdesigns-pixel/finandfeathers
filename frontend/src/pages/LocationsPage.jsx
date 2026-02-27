@@ -942,7 +942,7 @@ const LocationsPage = () => {
                       e.stopPropagation(); 
                       // Food trucks go to their own menu on the info page
                       if (location.location_type === 'food-truck') {
-                        navigate(`/locations/${location.slug}`);
+                        navigate(`/locations/${location.slug}?tab=info`);
                       } else {
                         navigate('/menu');
                       }
