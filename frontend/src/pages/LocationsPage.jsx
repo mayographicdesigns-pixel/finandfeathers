@@ -955,15 +955,18 @@ const LocationsPage = () => {
                     Order Online
                   </Button>
                   
-                  <Button
-                    onClick={(e) => { e.stopPropagation(); setReservationLocation(location); }}
-                    variant="outline"
-                    className="w-full border-red-600 text-red-500 hover:bg-slate-700"
-                    data-testid={`reservation-btn-${location.id}`}
-                  >
-                    <Calendar className="w-4 h-4 mr-2" />
-                    Make Reservation
-                  </Button>
+                  {/* Make Reservation - hide for food trucks */}
+                  {location.location_type !== 'food-truck' && (
+                    <Button
+                      onClick={(e) => { e.stopPropagation(); setReservationLocation(location); }}
+                      variant="outline"
+                      className="w-full border-red-600 text-red-500 hover:bg-slate-700"
+                      data-testid={`reservation-btn-${location.id}`}
+                    >
+                      <Calendar className="w-4 h-4 mr-2" />
+                      Make Reservation
+                    </Button>
+                  )}
                   
                   {location.review_link && (
                     <Button
