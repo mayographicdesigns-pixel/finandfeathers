@@ -97,11 +97,30 @@ async def ensure_default_admin_user():
 # Create the main app without a prefix
 app = FastAPI()
 
-# Mount static files for uploads (accessible at /api/uploads/)
-app.mount("/api/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
+# Mount static files for uploads (accessible at /api/uploads/) - kept for backward compatibility
+# In production, images are served from MongoDB via /api/media endpoint
+try:
+    app.mount("/api/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
+except Exception:
+    pass  # Directory may not exist in production
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
+
+
+# Endpoint to serve images stored in MongoDB (for production)
+@api_router.get("/media/{file_id}")
+async def get_media_file(file_id: str):
+    """Serve media files stored in MongoDB as Base64"""
+    media = await db.media_files.find_one({"file_id": file_id}, {"_id": 0})
+    if not media:
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    # Decode Base64 data
+    file_data = base64.b64decode(media["data"])
+    content_type = media.get("content_type", "image/jpeg")
+    
+    return Response(content=file_data, media_type=content_type)
 
 
 # Auth dependency
