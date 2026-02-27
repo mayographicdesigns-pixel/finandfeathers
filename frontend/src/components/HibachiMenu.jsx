@@ -8,64 +8,57 @@ import { Card, CardContent } from './ui/card';
  * Displays the hibachi-specific menu with combos, à la carte, sides, and sauces
  */
 const HibachiMenu = ({ onlineOrderLink }) => {
-  // Combo packages
-  const combos = [
-    {
-      name: 'Single',
-      description: 'Choose 1 protein with fried rice and vegetables',
-      icon: '🍱',
-      proteins: ['Chicken', 'Steak', 'Shrimp', 'Salmon', 'Lobster']
-    },
-    {
-      name: 'Duet',
-      description: 'Choose 2 proteins with fried rice and vegetables',
-      icon: '🍱🍱',
-      proteins: ['Any 2 proteins of your choice']
-    },
-    {
-      name: 'Trio',
-      description: 'Choose 3 proteins with fried rice and vegetables',
-      icon: '🍱🍱🍱',
-      proteins: ['Any 3 proteins of your choice'],
-      popular: true
-    }
+  // Hibachi Singles
+  const singles = [
+    { name: 'Steak', price: 17, icon: '🥩' },
+    { name: 'Salmon', price: 18, icon: '🐟' },
+    { name: 'Lobster', price: 25, icon: '🦞', premium: true }
+  ];
+
+  // Hibachi Duets
+  const duets = [
+    { name: 'Chicken & Shrimp', price: 21 },
+    { name: 'Steak & Chicken', price: 22 },
+    { name: 'Steak & Shrimp', price: 24 },
+    { name: 'Lobster & Chicken', price: 30 },
+    { name: 'Lobster & Shrimp', price: 32 }
+  ];
+
+  // Hibachi Trios
+  const trios = [
+    { name: 'Salmon, Chicken & Shrimp', price: 34 },
+    { name: 'Lobster, Chicken & Shrimp', price: 36 },
+    { name: 'Lobster, Steak & Shrimp', price: 38 },
+    { name: 'Salmon, Lobster & Shrimp', price: 39 },
+    { name: 'Salmon, Lobster & Steak', price: 40, popular: true }
   ];
 
   // À la carte proteins
   const proteins = [
-    { name: 'Chicken', price: 7, icon: '🍗' },
     { name: 'Steak', price: 10, icon: '🥩' },
-    { name: 'Shrimp', price: 10, icon: '🍤' },
     { name: 'Salmon', price: 12, icon: '🐟' },
     { name: 'Lobster', price: 14, icon: '🦞', premium: true }
   ];
 
   // Sides
   const sides = [
-    { name: 'Fried Rice', price: 5 },
-    { name: 'Chicken Fried Rice', price: 7 },
+    { name: 'Steamed Rice', price: 3 },
     { name: 'Side Vegetables', price: 4 },
-    { name: 'Steamed White Rice', price: 3 }
+    { name: 'Chicken Fried Rice', price: 7 }
   ];
 
-  // Sauces & Extras
+  // Sauces
   const sauces = [
-    { name: 'Yum Yum Sauce', price: 0.50 },
-    { name: 'Soy Sauce', price: 0.50 },
-    { name: 'Garlic Butter', price: 0.50 },
-    { name: 'Teriyaki Sauce', price: 0.75 },
-    { name: 'Lemon Wedge', price: 0.25 }
+    { name: 'Yum Yum Sauce', price: 0.50 }
   ];
 
-  // Beverages
+  // Beverages - Canned Sodas
   const beverages = [
-    { name: 'Water', price: 2 },
+    { name: 'Coke', price: 2 },
     { name: 'Sprite', price: 2 },
-    { name: 'Coca-Cola', price: 2 },
-    { name: 'Diet Coke', price: 2 },
     { name: 'Grape Soda', price: 2 },
     { name: 'Orange Soda', price: 2 },
-    { name: 'Strawberry Soda', price: 2 }
+    { name: 'Lemonade', price: 6 }
   ];
 
   return (
