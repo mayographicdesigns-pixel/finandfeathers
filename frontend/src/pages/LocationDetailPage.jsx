@@ -1950,8 +1950,8 @@ const LocationDetailPage = () => {
           </div>
         )}
 
-        {/* Drinks Tab */}
-        {activeTab === 'drinks' && (
+        {/* Drinks Tab - Only shown if buy_drink_enabled */}
+        {activeTab === 'drinks' && appSettings.buy_drink_enabled && (
           <div className="space-y-4">
             <Card className="bg-gradient-to-br from-pink-900/50 to-slate-800/50 border-pink-600/30">
               <CardContent className="p-6 text-center">
