@@ -1712,7 +1712,7 @@ const LocationDetailPage = () => {
                           <span className="text-white text-sm">{user.display_name}</span>
                           {user.mood && <span className="text-red-400 text-xs">• {user.mood}</span>}
                         </button>
-                        {myCheckIn && user.id !== myCheckIn.id && (
+                        {myCheckIn && user.id !== myCheckIn.id && appSettings.buy_drink_enabled && (
                           <button
                             onClick={() => openDrinkModalForUser(user)}
                             className="p-1.5 bg-pink-600/30 hover:bg-pink-600/50 rounded-full transition-colors"
