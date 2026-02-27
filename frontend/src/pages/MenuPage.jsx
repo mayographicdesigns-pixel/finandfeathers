@@ -190,112 +190,182 @@ const MenuPage = () => {
   const heroHtml = pageContent.hero || 'ELEVATED DINING MEETS SOUTHERN SOUL. EVERY DISH CRAFTED WITH FRESH INGREDIENTS AND GENUINE HOSPITALITY.';
 
   const renderHookahSection = () => {
-    const signatureMixes = [
+    // Premium hookah flavors with new images
+    const premiumFlavors = [
       {
         name: 'Sunset Blvd',
-        description: 'A bright mix of Lemon, Pineapple, and Skittles.',
-        image: 'https://images.pexels.com/photos/17647634/pexels-photo-17647634.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
+        description: 'Skittles candy, lemon & pineapple party mix',
+        image: 'https://customer-assets.emergentagent.com/job_572e1efb-eb0d-4035-8b28-47988e001b8e/artifacts/51anrg2g_Gemini_Generated_Image_srh128srh128srh1.png',
+        price: 35
       },
       {
         name: 'Cali Dreamin',
-        description: 'A tropical blend of Pineapple, Blueberry, and Kiwi.',
-        image: 'https://images.unsplash.com/photo-1691657915691-7cf4cd48e376?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzl8MHwxfHNlYXJjaHwzfHx0cm9waWNhbCUyMGZydWl0JTIwY2xvc2UlMjB1cCUyMHBpbmVhcHBsZXxlbnwwfHx8fDE3NzIwODAyMzB8MA&ixlib=rb-4.1.0&q=85'
+        description: 'Kiwi, blueberry & pineapple tropical dream',
+        image: 'https://customer-assets.emergentagent.com/job_572e1efb-eb0d-4035-8b28-47988e001b8e/artifacts/828uk6yt_Gemini_Generated_Image_sz4e4asz4e4asz4e.png',
+        price: 35
       },
       {
         name: 'Beverly Hills',
-        description: 'A sweet combination of Strawberry, Guava, and Pineapple.',
-        image: 'https://images.unsplash.com/photo-1754823443257-06f34b947302?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDB8MHwxfHNlYXJjaHwzfHxiZXJyeSUyMGNsb3NlJTIwdXAlMjBmcnVpdHxlbnwwfHx8fDE3NzIwODAyMjh8MA&ixlib=rb-4.1.0&q=85'
+        description: 'Strawberry, guava, lime & pineapple luxury',
+        image: 'https://customer-assets.emergentagent.com/job_572e1efb-eb0d-4035-8b28-47988e001b8e/artifacts/dksx1m1e_Gemini_Generated_Image_w8vprgw8vprgw8vp.png',
+        price: 35
       },
       {
         name: 'Melrose',
-        description: 'A refreshing mix of White Peach, Pineapple, and Watermelon.',
-        image: 'https://images.unsplash.com/photo-1705936917815-85854129f98c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDB8MHwxfHNlYXJjaHw0fHxiZXJyeSUyMGNsb3NlJTIwdXAlMjBmcnVpdHxlbnwwfHx8fDE3NzIwODAyMjh8MA&ixlib=rb-4.1.0&q=85'
+        description: 'Watermelon, peach & pineapple summer vibes',
+        image: 'https://customer-assets.emergentagent.com/job_572e1efb-eb0d-4035-8b28-47988e001b8e/artifacts/idquq3ku_Gemini_Generated_Image_onkt1yonkt1yonkt.png',
+        price: 35
       },
       {
         name: 'Pacific Coast Highway',
-        description: 'A citrus-forward blend of Lemon, Pineapple, and Orange.',
-        image: 'https://images.pexels.com/photos/787601/pexels-photo-787601.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
-      },
-      {
-        name: 'East L.A.',
-        description: 'A tart and berry mix of Blueberry, Guava, and Lemon.',
-        image: 'https://images.pexels.com/photos/34970964/pexels-photo-34970964.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
+        description: 'Pineapple, orange & lemon citrus cruise',
+        image: 'https://customer-assets.emergentagent.com/job_572e1efb-eb0d-4035-8b28-47988e001b8e/artifacts/h43wzlz6_Gemini_Generated_Image_ofrxceofrxceofrx.png',
+        price: 35
       },
       {
         name: '405',
-        description: 'A smooth blend of Mango, Peach, and Lemon.',
-        image: 'https://images.unsplash.com/photo-1581940429333-87b97068671c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzl8MHwxfHNlYXJjaHwyfHx0cm9waWNhbCUyMGZydWl0JTIwY2xvc2UlMjB1cCUyMHBpbmVhcHBsZXxlbnwwfHx8fDE3NzIwODAyMzB8MA&ixlib=rb-4.1.0&q=85'
+        description: 'Mango, peach & lemon tropical blend',
+        image: 'https://customer-assets.emergentagent.com/job_572e1efb-eb0d-4035-8b28-47988e001b8e/artifacts/zy0j7rvb_Gemini_Generated_Image_9hlklc9hlklc9hlk.png',
+        price: 35
       },
       {
         name: 'LAX',
-        description: 'A balanced mix of Orange, Watermelon, and Light Mint.',
-        image: 'https://images.pexels.com/photos/28834326/pexels-photo-28834326.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940'
+        description: 'Watermelon, orange, mango & mint refresh',
+        image: 'https://customer-assets.emergentagent.com/job_572e1efb-eb0d-4035-8b28-47988e001b8e/artifacts/6chmahcx_Gemini_Generated_Image_yp09bdyp09bdyp09.png',
+        price: 35
+      }
+    ];
+
+    // Classic hookah flavors with new images
+    const classicFlavors = [
+      {
+        name: 'Mighty Freeze',
+        description: 'Tropical blend of pineapple, guava, strawberry & lime with an icy finish',
+        image: 'https://customer-assets.emergentagent.com/job_572e1efb-eb0d-4035-8b28-47988e001b8e/artifacts/6izjnsdm_Gemini_Generated_Image_1pfziw1pfziw1pfz.png',
+        price: 30
       },
       {
-        name: 'Mulholland Dr',
-        description: 'A crisp blend of Orange, Grapefruit, and Mint.',
-        image: 'https://images.unsplash.com/photo-1574770911112-323884dc2dea?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1OTV8MHwxfHNlYXJjaHwxfHxjaXRydXMlMjBmcnVpdCUyMGNsb3NlJTIwdXAlMjBzbW9rZXxlbnwwfHx8fDE3NzIwODAyMTJ8MA&ixlib=rb-4.1.0&q=85'
+        name: 'Muholland Dr',
+        description: 'Citrus paradise with orange, mango, grapefruit & fresh mint',
+        image: 'https://customer-assets.emergentagent.com/job_572e1efb-eb0d-4035-8b28-47988e001b8e/artifacts/km0oj38j_Gemini_Generated_Image_wdubqrwdubqrwdub%20%281%29.png',
+        price: 30
+      },
+      {
+        name: 'Big Boy',
+        description: 'Fruity explosion with mango, peach, grapes, cherry & tropical fruits',
+        image: 'https://customer-assets.emergentagent.com/job_572e1efb-eb0d-4035-8b28-47988e001b8e/artifacts/14nokmuv_Gemini_Generated_Image_qwfwlhqwfwlhqwfw.png',
+        price: 30
+      },
+      {
+        name: 'Crenshaw',
+        description: 'Sweet mix of mango, grapes, orange, cherry & mixed berries',
+        image: 'https://customer-assets.emergentagent.com/job_572e1efb-eb0d-4035-8b28-47988e001b8e/artifacts/j2fy1cjc_Gemini_Generated_Image_y9kh6by9kh6by9kh.png',
+        price: 30
+      },
+      {
+        name: 'East L.A.',
+        description: 'Blueberry guava lemon with pineapple undertones',
+        image: 'https://customer-assets.emergentagent.com/job_572e1efb-eb0d-4035-8b28-47988e001b8e/artifacts/7bvsbgix_Gemini_Generated_Image_kzztmzkzztmzkzzt%20%282%29.png',
+        price: 30
       }
     ];
 
     return (
       <div className="space-y-6" data-testid="hookah-section">
-        <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
-          <h3 className="text-2xl font-bold text-white mb-2" data-testid="hookah-title">Hookah</h3>
-          <p className="text-slate-300 text-sm" data-testid="hookah-happy-hour">Special happy hour pricing M-F 12pm-8pm</p>
+        {/* Header with pricing */}
+        <div className="bg-gradient-to-r from-purple-900/50 to-slate-800/50 border border-purple-500/30 rounded-xl p-6">
+          <h3 className="text-3xl font-bold text-white mb-2" data-testid="hookah-title">💨 HOOKAH</h3>
+          <div className="flex flex-wrap gap-4 text-sm">
+            <div className="bg-slate-800/60 rounded-lg px-4 py-2">
+              <span className="text-slate-400">Classic:</span>
+              <span className="text-white font-bold ml-2">$30</span>
+            </div>
+            <div className="bg-purple-800/60 rounded-lg px-4 py-2">
+              <span className="text-purple-300">Premium:</span>
+              <span className="text-white font-bold ml-2">$35</span>
+              <span className="text-purple-400 ml-1">(+$5)</span>
+            </div>
+            <div className="bg-amber-800/60 rounded-lg px-4 py-2">
+              <span className="text-amber-300">🕐 Happy Hour:</span>
+              <span className="text-white font-bold ml-2">$20 / $25</span>
+              <span className="text-amber-400 ml-1">Mon-Fri 12pm-8pm</span>
+            </div>
+          </div>
         </div>
 
-        <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-6" data-testid="hookah-signature-mixes">
-          <h4 className="text-lg font-semibold text-white mb-3">F&F Signature Mixes</h4>
-          <p className="text-slate-400 text-sm mb-4">Crafted blends inspired by iconic destinations.</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" data-testid="hookah-signature-grid">
-            {signatureMixes.map((mix) => (
-              <div key={mix.name} className="bg-slate-900/60 border border-slate-700/40 rounded-xl overflow-hidden" data-testid={`hookah-signature-card-${mix.name.toLowerCase().replace(/\s+/g, '-')}`}>
-                <div className="h-40 overflow-hidden">
-                  <img src={mix.image} alt={mix.name} className="w-full h-full object-cover" data-testid={`hookah-signature-image-${mix.name.toLowerCase().replace(/\s+/g, '-')}`} />
+        {/* Premium Flavors */}
+        <div className="bg-slate-800/40 border border-purple-500/30 rounded-xl p-6" data-testid="hookah-premium-section">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-2xl">⭐</span>
+            <h4 className="text-xl font-bold text-white">PREMIUM FLAVORS</h4>
+            <span className="bg-purple-600 text-white text-xs px-2 py-1 rounded-full">+$5</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" data-testid="hookah-premium-grid">
+            {premiumFlavors.map((flavor) => (
+              <div key={flavor.name} className="bg-slate-900/60 border border-slate-700/40 rounded-xl overflow-hidden hover:border-purple-500/50 transition-all" data-testid={`hookah-card-${flavor.name.toLowerCase().replace(/\s+/g, '-')}`}>
+                <div className="h-48 overflow-hidden">
+                  <img src={flavor.image} alt={flavor.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="p-4">
-                  <h5 className="text-white font-semibold mb-2" data-testid={`hookah-signature-title-${mix.name.toLowerCase().replace(/\s+/g, '-')}`}>{mix.name}</h5>
-                  <p className="text-slate-300 text-sm" data-testid={`hookah-signature-description-${mix.name.toLowerCase().replace(/\s+/g, '-')}`}>{mix.description}</p>
+                  <div className="flex justify-between items-start mb-2">
+                    <h5 className="text-white font-bold text-lg">{flavor.name}</h5>
+                    <span className="text-purple-400 font-bold">${flavor.price}</span>
+                  </div>
+                  <p className="text-slate-400 text-sm">{flavor.description}</p>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-6" data-testid="hookah-special-flavors">
-          <h4 className="text-lg font-semibold text-white mb-3">F&F Special Flavors</h4>
-          <p className="text-slate-400 text-sm mb-4">Unique profiles for a premium experience.</p>
-          <ul className="space-y-2 text-slate-300 text-sm">
-            <li><span className="font-semibold text-white">Big Boy:</span> A vibrant fruit cocktail blend.</li>
-            <li><span className="font-semibold text-white">Crenshaw:</span> A bold mix of Blueberry, Blue Mist, and Lemon.</li>
-            <li><span className="font-semibold text-white">Mighty Freeze:</span> A cooling trio of Strawberry, Guava, and Pineapple.</li>
-            <li><span className="font-semibold text-white">Blue Mist:</span> A classic, cool berry favorite.</li>
-          </ul>
+        {/* Classic Flavors */}
+        <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-6" data-testid="hookah-classic-section">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-2xl">💨</span>
+            <h4 className="text-xl font-bold text-white">CLASSIC FLAVORS</h4>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4" data-testid="hookah-classic-grid">
+            {classicFlavors.map((flavor) => (
+              <div key={flavor.name} className="bg-slate-900/60 border border-slate-700/40 rounded-xl overflow-hidden hover:border-amber-500/50 transition-all" data-testid={`hookah-card-${flavor.name.toLowerCase().replace(/\s+/g, '-')}`}>
+                <div className="h-40 overflow-hidden">
+                  <img src={flavor.image} alt={flavor.name} className="w-full h-full object-cover" />
+                </div>
+                <div className="p-3">
+                  <div className="flex justify-between items-start mb-1">
+                    <h5 className="text-white font-semibold">{flavor.name}</h5>
+                    <span className="text-amber-400 font-bold text-sm">${flavor.price}</span>
+                  </div>
+                  <p className="text-slate-400 text-xs line-clamp-2">{flavor.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-6" data-testid="hookah-classic-flavors">
-          <h4 className="text-lg font-semibold text-white mb-3">Classic Flavors & Blends</h4>
-          <p className="text-slate-400 text-sm mb-4">Available for a customized experience.</p>
+        {/* Build Your Own & Classic Flavors List */}
+        <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-6" data-testid="hookah-build-your-own">
+          <h4 className="text-lg font-semibold text-white mb-3">🎨 Build Your Own Blend</h4>
+          <p className="text-slate-400 text-sm mb-4">Mix and match from our selection of classic flavors:</p>
           <div className="space-y-3 text-slate-300 text-sm">
             <div>
               <p className="font-semibold text-white mb-1">Fruit & Berry</p>
               <p>Strawberry, Blueberry, Pineapple, Mango, Peach, White Peach, Kiwi, Grapefruit, Orange, Watermelon, and Guava.</p>
             </div>
             <div>
-              <p className="font-semibold text-white mb-1">Mints & Blends</p>
+              <p className="font-semibold text-white mb-1">Mints & Specialty</p>
               <p>Mint, Lemon Mint, Orange Mint, Gum Mint, Duo Maloney, Moonshine, Skittles Crush, and Yummy Gummy.</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-6" data-testid="hookah-policies">
-          <h4 className="text-lg font-semibold text-white mb-3">Safety & Policies</h4>
+        {/* Safety & Policies */}
+        <div className="bg-slate-800/40 border border-red-900/30 rounded-xl p-6" data-testid="hookah-policies">
+          <h4 className="text-lg font-semibold text-white mb-3">⚠️ Safety & Policies</h4>
           <ul className="space-y-2 text-slate-300 text-sm">
             <li><span className="font-semibold text-white">Refills:</span> Refill flavors are available a la carte upon request.</li>
             <li><span className="font-semibold text-white">Handling:</span> For the safety of our servers and customers, please do not attempt to light, refill, or reposition the hookah.</li>
             <li><span className="font-semibold text-white">Liability:</span> Fin & Feathers is not responsible for any loss or damage caused by the use of hookah.</li>
-            <li><span className="font-semibold text-white">Health Warning:</span> Shisha is a tobacco product containing nicotine and is addictive. Exposure to secondhand smoke puts one at risk for cancer, heart, and lung diseases.</li>
+            <li><span className="font-semibold text-red-400">Health Warning:</span> Shisha is a tobacco product containing nicotine and is addictive. Exposure to secondhand smoke puts one at risk for cancer, heart, and lung diseases.</li>
           </ul>
         </div>
       </div>
