@@ -883,6 +883,12 @@ const LocationsPage = () => {
                     Nearest Location
                   </div>
                 )}
+                {!editMode && location.location_type === 'food-truck' && (
+                  <div className="absolute top-3 left-3 bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                    <Truck className="w-3 h-3" />
+                    Food Truck
+                  </div>
+                )}
                 {location.distance && (
                   <div className="absolute bottom-3 left-3 bg-slate-900/90 text-white px-3 py-1 rounded-full text-xs font-medium">
                     {location.distance.toFixed(1)} miles away
