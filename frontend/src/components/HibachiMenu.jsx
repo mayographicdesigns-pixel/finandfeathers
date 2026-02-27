@@ -114,6 +114,24 @@ const HibachiMenu = ({ onlineOrderLink }) => {
         </div>
       )}
 
+      {/* Food Gallery */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3" data-testid="hibachi-gallery">
+        {galleryImages.map((image, index) => (
+          <div 
+            key={index} 
+            className={`relative overflow-hidden rounded-xl ${index === 0 ? 'col-span-2 row-span-2 md:col-span-2 md:row-span-2' : ''}`}
+          >
+            <img 
+              src={image.url} 
+              alt={image.alt}
+              className="w-full h-full object-cover aspect-square hover:scale-110 transition-transform duration-500"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
+          </div>
+        ))}
+      </div>
+
       {/* Hibachi Singles */}
       <div className="bg-gradient-to-r from-orange-900/30 to-red-900/30 border border-orange-500/30 rounded-xl p-6" data-testid="hibachi-singles">
         <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
