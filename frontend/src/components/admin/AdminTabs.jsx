@@ -2980,8 +2980,12 @@ const LocationsTab = () => {
 const VideosTab = () => {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [showForm, setShowForm] = useState(false);
   const [editingVideo, setEditingVideo] = useState(null);
+  const [uploadMode, setUploadMode] = useState('url'); // 'url' or 'file'
+  const [selectedFile, setSelectedFile] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     url: '',
@@ -2991,6 +2995,7 @@ const VideosTab = () => {
   });
 
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const fileInputRef = React.useRef(null);
 
   useEffect(() => {
     fetchVideos();
@@ -3014,8 +3019,78 @@ const VideosTab = () => {
     }
   };
 
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      const allowedTypes = ['video/mp4', 'video/webm', 'video/mov', 'video/quicktime'];
+      if (!allowedTypes.includes(file.type)) {
+        toast({ title: 'Error', description: 'Invalid file type. Allowed: MP4, WebM, MOV', variant: 'destructive' });
+        return;
+      }
+      // Validate file size (50MB max)
+      if (file.size > 50 * 1024 * 1024) {
+        toast({ title: 'Error', description: 'File too large. Maximum 50MB', variant: 'destructive' });
+        return;
+      }
+      setSelectedFile(file);
+    }
+  };
+
+  const uploadVideo = async () => {
+    if (!selectedFile) return null;
+    
+    setUploading(true);
+    setUploadProgress(10);
+    
+    try {
+      const token = localStorage.getItem('adminToken');
+      const formDataUpload = new FormData();
+      formDataUpload.append('file', selectedFile);
+      
+      setUploadProgress(30);
+      
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/upload/video`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formDataUpload
+      });
+      
+      setUploadProgress(80);
+      
+      if (!response.ok) {
+        throw new Error('Failed to upload video');
+      }
+      
+      const result = await response.json();
+      setUploadProgress(100);
+      return result.url; // Returns /api/media/{file_id}
+    } catch (error) {
+      toast({ title: 'Upload Error', description: error.message, variant: 'destructive' });
+      return null;
+    } finally {
+      setUploading(false);
+      setUploadProgress(0);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    let videoUrl = formData.url;
+    
+    // If file upload mode and file selected, upload first
+    if (uploadMode === 'file' && selectedFile) {
+      const uploadedUrl = await uploadVideo();
+      if (!uploadedUrl) return; // Upload failed
+      videoUrl = uploadedUrl;
+    }
+    
+    if (!videoUrl) {
+      toast({ title: 'Error', description: 'Please provide a video URL or upload a file', variant: 'destructive' });
+      return;
+    }
+    
     try {
       const token = localStorage.getItem('adminToken');
       const url = editingVideo 
@@ -3028,13 +3103,14 @@ const VideosTab = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ ...formData, url: videoUrl })
       });
       
       if (response.ok) {
         toast({ title: 'Success', description: editingVideo ? 'Video updated' : 'Video created' });
         setShowForm(false);
         setEditingVideo(null);
+        setSelectedFile(null);
         resetForm();
         fetchVideos();
       } else {
