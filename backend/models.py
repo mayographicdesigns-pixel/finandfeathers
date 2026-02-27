@@ -862,11 +862,15 @@ class Location(BaseModel):
     weekly_specials: List[WeeklySpecial] = []
     is_active: bool = True
     display_order: int = 0
+    # Location type: "restaurant" or "food-truck"
+    location_type: str = "restaurant"
     # Feature toggles per location
     tip_staff_enabled: bool = False
     dj_tips_enabled: bool = False
     social_wall_enabled: bool = True
     check_in_enabled: bool = True
+    # Show main menu link (some locations have custom menu instead)
+    show_main_menu: bool = True
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
