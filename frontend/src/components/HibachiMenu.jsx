@@ -8,6 +8,30 @@ import { Card, CardContent } from './ui/card';
  * Displays the hibachi-specific menu with combos, à la carte, sides, and sauces
  */
 const HibachiMenu = ({ onlineOrderLink }) => {
+  // Food gallery images
+  const galleryImages = [
+    { 
+      url: 'https://customer-assets.emergentagent.com/job_11cd3604-2f5a-48c3-ba14-b46e5b99da28/artifacts/oj7rjhpp_image.png',
+      alt: 'Hibachi grill with flames'
+    },
+    { 
+      url: 'https://customer-assets.emergentagent.com/job_11cd3604-2f5a-48c3-ba14-b46e5b99da28/artifacts/j7nr3qtj_image.png',
+      alt: 'Hibachi chicken and vegetables'
+    },
+    { 
+      url: 'https://customer-assets.emergentagent.com/job_11cd3604-2f5a-48c3-ba14-b46e5b99da28/artifacts/1q21lyw4_image.png',
+      alt: 'Lobster hibachi takeout'
+    },
+    { 
+      url: 'https://customer-assets.emergentagent.com/job_11cd3604-2f5a-48c3-ba14-b46e5b99da28/artifacts/zcclajof_image.png',
+      alt: 'Grilled shrimp'
+    },
+    { 
+      url: 'https://customer-assets.emergentagent.com/job_11cd3604-2f5a-48c3-ba14-b46e5b99da28/artifacts/eq2k4x2y_image.png',
+      alt: 'Hibachi steak with fried rice'
+    }
+  ];
+
   // Hibachi Singles
   const singles = [
     { name: 'Veggie Delight', price: 10, icon: '🥬' },
