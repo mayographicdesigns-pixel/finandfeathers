@@ -53,7 +53,7 @@ function App() {
       </BrowserRouter>
       <Toaster />
       <PWAInstallPrompt />
-      <UpdatePrompt autoUpdate={false} />
+      <UpdatePrompt autoUpdate={true} />
     </div>
   );
 }
