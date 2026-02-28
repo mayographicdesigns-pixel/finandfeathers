@@ -449,8 +449,16 @@ const LocationsPage = () => {
 
   const fetchLocations = async () => {
     setIsLoading(true);
-    const fetchedLocations = await getLocations();
-    setLocations(fetchedLocations || []);
+    try {
+      // Admin mode shows all locations including hidden ones
+      const fetchedLocations = isAdmin ? await adminGetLocations() : await getLocations();
+      setLocations(fetchedLocations || []);
+    } catch (error) {
+      console.error('Failed to fetch locations:', error);
+      // Fallback to public API
+      const fetchedLocations = await getLocations();
+      setLocations(fetchedLocations || []);
+    }
     setIsLoading(false);
   };
 
