@@ -1,0 +1,77 @@
+{
+  "summary": "Location Visibility Toggle feature tested - ALL TESTS PASSED. Admin can toggle location visibility (is_active) to show/hide locations. Hidden locations correctly don't appear on public page.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_location_visibility.py",
+    "/app/test_reports/pytest/location_visibility_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Location visibility toggle implemented correctly in edit modal with Eye/EyeOff icons",
+    "Backend correctly filters by is_active:true for public /api/locations endpoint",
+    "Admin /api/admin/locations endpoint returns all locations including hidden ones",
+    "Hidden locations show 'Hidden' badge in admin edit mode with red background and EyeOff icon",
+    "Toggle button correctly changes between green 'Visible' and red outlined 'Hidden' states"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_location_visibility.py"
+  ],
+  "success_rate": {
+    "backend": "100% (9/9 tests passed)",
+    "frontend": "100% - All UI features verified working via Playwright"
+  },
+  "test_credentials": {
+    "admin_username": "admin",
+    "admin_password": "$outhcentral"
+  },
+  "seed_data_creation": "Hibachi Food Truck was used for testing visibility toggle (toggled hidden then back to visible)",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Location visibility toggle feature fully functional. Backend API at /api/admin/locations/{id} accepts is_active boolean field. Frontend toggle at data-testid='location-visibility-toggle' in edit location modal. Public /api/locations only returns is_active:true locations.",
+  "features_tested": {
+    "Admin login and access locations page": {
+      "status": "PASS",
+      "details": "Admin can login at /admin and navigate to /locations with admin bar visible"
+    },
+    "Edit Locations button and edit mode": {
+      "status": "PASS",
+      "details": "data-testid='edit-locations-btn' found and clickable, enters edit mode with 'Click to Edit' badges"
+    },
+    "Click location to open edit modal": {
+      "status": "PASS",
+      "details": "Location cards clickable in edit mode, opens EDIT LOCATION modal"
+    },
+    "Location Visibility toggle in modal": {
+      "status": "PASS",
+      "details": "data-testid='location-visibility-toggle' shows Eye/EyeOff icons with Visible/Hidden text"
+    },
+    "Toggle changes visibility state": {
+      "status": "PASS",
+      "details": "Clicking toggle changes from 'VISIBLE' to 'HIDDEN' with visual feedback"
+    },
+    "Save location with visibility change": {
+      "status": "PASS",
+      "details": "Save Changes button works, changes persisted to database"
+    },
+    "Hidden locations show badge in admin edit mode": {
+      "status": "PASS",
+      "details": "Hidden locations show red 'Hidden' badge with EyeOff icon on card"
+    },
+    "Public locations page hides hidden locations": {
+      "status": "PASS",
+      "details": "Hidden Hibachi Food Truck NOT shown on public /locations page (8 locations visible instead of 9)"
+    },
+    "Backend API authentication": {
+      "status": "PASS",
+      "details": "/api/admin/locations requires auth (returns 403 without token)"
+    }
+  }
+}
