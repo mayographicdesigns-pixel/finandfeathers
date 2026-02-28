@@ -699,6 +699,40 @@ const LocationsPage = () => {
                     data-testid="location-directions-link-input"
                   />
                 </div>
+                
+                {/* Visibility Toggle */}
+                <div className="flex items-center justify-between p-3 bg-slate-800 rounded-lg border border-slate-700">
+                  <div className="flex items-center gap-2">
+                    {editingLocation.is_active !== false ? (
+                      <Eye className="w-5 h-5 text-green-500" />
+                    ) : (
+                      <EyeOff className="w-5 h-5 text-red-500" />
+                    )}
+                    <div>
+                      <span className="text-white font-medium">Location Visibility</span>
+                      <p className="text-xs text-slate-400">
+                        {editingLocation.is_active !== false ? 'Visible to customers' : 'Hidden from customers'}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    variant={editingLocation.is_active !== false ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setEditingLocation({ 
+                      ...editingLocation, 
+                      is_active: editingLocation.is_active === false ? true : false 
+                    })}
+                    className={editingLocation.is_active !== false 
+                      ? "bg-green-600 hover:bg-green-700" 
+                      : "border-red-600 text-red-500 hover:bg-red-600 hover:text-white"
+                    }
+                    data-testid="location-visibility-toggle"
+                  >
+                    {editingLocation.is_active !== false ? 'Visible' : 'Hidden'}
+                  </Button>
+                </div>
+
                 <div className="flex gap-2 pt-2">
                   <Button onClick={handleSaveLocation} className="flex-1 bg-green-600 hover:bg-green-700">
                     <Save className="w-4 h-4 mr-2" />
