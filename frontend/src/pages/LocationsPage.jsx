@@ -912,6 +912,13 @@ const LocationsPage = () => {
                     <span className="text-white text-sm font-semibold">View Location</span>
                   </div>
                 )}
+                {/* Hidden indicator - only show in edit mode */}
+                {editMode && location.is_active === false && (
+                  <div className="absolute top-3 right-3 bg-red-600 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
+                    <EyeOff className="w-3 h-3" />
+                    Hidden
+                  </div>
+                )}
                 {!editMode && location.distance && location.id === closestLocationId && (
                   <div className="absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
                     Nearest Location
