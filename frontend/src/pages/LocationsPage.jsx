@@ -383,6 +383,13 @@ const LocationsPage = () => {
     fetchPageContent();
   }, []);
 
+  // Refetch locations when admin status changes
+  useEffect(() => {
+    if (isAdmin !== null) {
+      fetchLocations();
+    }
+  }, [isAdmin]);
+
   // Request user's location for sorting
   const requestUserLocation = () => {
     if (navigator.geolocation) {
