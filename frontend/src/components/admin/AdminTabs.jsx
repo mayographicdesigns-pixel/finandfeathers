@@ -703,7 +703,7 @@ const MenuItemsTab = () => {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {filteredItems.map((item) => {
             // Handle different image formats
             const getImageSrc = (img) => {
@@ -715,55 +715,62 @@ const MenuItemsTab = () => {
             };
             
             return (
-              <Card key={item.id} className="bg-slate-800/50 border-slate-700">
-                <CardContent className="p-4 flex items-center gap-4">
-                  {item.image ? (
-                    <img 
-                      src={getImageSrc(item.image)} 
-                      alt={item.name} 
-                      className="w-16 h-16 object-cover rounded bg-slate-700"
-                      onError={(e) => { e.target.style.display = 'none'; }}
-                    />
-                  ) : (
-                    <div className="w-16 h-16 bg-slate-700 rounded flex items-center justify-center text-slate-500 text-xs">
-                      No Image
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="text-white font-medium">{item.name}</p>
-                      <span className="text-red-400 font-semibold">${item.price}</span>
-                    </div>
-                    <p className="text-slate-400 text-sm">{item.category}</p>
-                    <p className="text-slate-500 text-xs truncate">{item.description}</p>
+              <Card key={item.id} className="bg-slate-800/50 border-slate-700 overflow-hidden">
+                <CardContent className="p-0">
+                  {/* Image */}
+                  <div className="relative aspect-[4/3] bg-slate-700">
+                    {item.image ? (
+                      <img 
+                        src={getImageSrc(item.image)} 
+                        alt={item.name} 
+                        className="w-full h-full object-cover"
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-500 text-xs">
+                        No Image
+                      </div>
+                    )}
+                    {/* Price badge */}
+                    <span className="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
+                      ${item.price}
+                    </span>
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setImageEditorItem(item)}
-                      className="text-green-400 hover:bg-green-900/30"
-                      title="Edit Image"
-                      data-testid={`edit-image-${item.id}`}
-                    >
-                      <Image className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleEdit(item)}
-                      className="text-blue-400 hover:bg-blue-900/30"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDelete(item.id)}
-                      className="text-red-400 hover:bg-red-900/30"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                  {/* Content */}
+                  <div className="p-3">
+                    <p className="text-white font-medium text-sm truncate" title={item.name}>{item.name}</p>
+                    <p className="text-slate-400 text-xs">{item.category}</p>
+                    {/* Action buttons */}
+                    <div className="flex gap-1 mt-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setImageEditorItem(item)}
+                        className="text-green-400 hover:bg-green-900/30 h-7 w-7 p-0"
+                        title="Edit Image"
+                        data-testid={`edit-image-${item.id}`}
+                      >
+                        <Image className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEdit(item)}
+                        className="text-blue-400 hover:bg-blue-900/30 h-7 w-7 p-0"
+                        title="Edit Item"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(item.id)}
+                        className="text-red-400 hover:bg-red-900/30 h-7 w-7 p-0"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -1382,37 +1389,94 @@ const SpecialsTab = () => {
   }, []);
 
   const defaultDailySpecials = [
-    { day_index: 0, name: "The Sunday Slide", description: "Close out the weekend with $5 Daily Specials", hours: "6pm – Close", emoji: "🌅" },
-    { day_index: 1, name: "Margarita Monday", description: "Sip on $5 Margaritas all day long", hours: "12pm – 8pm", emoji: "🍹" },
-    { day_index: 2, name: "Tito's, Tacos & Tequila", description: "$5 Tito's, $5 Margaritas, and $5 Tacos. The perfect Tuesday trio", hours: "12pm – 8pm", emoji: "🌮" },
-    { day_index: 3, name: "Wine Down (or Whiskey Up)", description: "$5 Select wine glasses, $10 Bottles, or $5 Select Whiskey shots", hours: "12pm – 8pm", emoji: "🍷" },
-    { day_index: 4, name: "Martini Madness", description: "Elevate your Thursday with $5 Martinis. Strawberry, Peach, Mango, Watermelon, Lemon Drop, Melon, Blue (+$1)", hours: "12pm – 8pm", emoji: "🍸" },
-    { day_index: 5, name: "Friday Re-Up", description: "$5 cocktails and $5 shots all day long", hours: "12pm – 8pm", emoji: "🍾" },
-    { day_index: 6, name: "Saturday Prime", description: "Special $5 menu available", hours: "5pm – 8pm", emoji: "🌟" }
+    { day_index: 0, specials: [{ id: '0-0', name: "The Sunday Slide", description: "Close out the weekend with $5 Daily Specials", hours: "6pm – Close", emoji: "🌅" }] },
+    { day_index: 1, specials: [{ id: '1-0', name: "Margarita Monday", description: "Sip on $5 Margaritas all day long", hours: "12pm – 8pm", emoji: "🍹" }] },
+    { day_index: 2, specials: [{ id: '2-0', name: "Tito's, Tacos & Tequila", description: "$5 Tito's, $5 Margaritas, and $5 Tacos. The perfect Tuesday trio", hours: "12pm – 8pm", emoji: "🌮" }] },
+    { day_index: 3, specials: [{ id: '3-0', name: "Wine Down (or Whiskey Up)", description: "$5 Select wine glasses, $10 Bottles, or $5 Select Whiskey shots", hours: "12pm – 8pm", emoji: "🍷" }] },
+    { day_index: 4, specials: [{ id: '4-0', name: "Martini Madness", description: "Elevate your Thursday with $5 Martinis. Strawberry, Peach, Mango, Watermelon, Lemon Drop, Melon, Blue (+$1)", hours: "12pm – 8pm", emoji: "🍸" }] },
+    { day_index: 5, specials: [{ id: '5-0', name: "Friday Re-Up", description: "$5 cocktails and $5 shots all day long", hours: "12pm – 8pm", emoji: "🍾" }] },
+    { day_index: 6, specials: [{ id: '6-0', name: "Saturday Prime", description: "Special $5 menu available", hours: "5pm – 8pm", emoji: "🌟" }] }
   ];
 
   const fetchDailySpecials = async () => {
     try {
       const data = await adminGetDailySpecials();
-      const map = new Map((data || []).map((item) => [item.day_index, item]));
-      const merged = defaultDailySpecials.map((def) => ({
-        ...def,
-        ...(map.get(def.day_index) || {})
-      }));
-      setDailySpecials(merged);
+      // Convert old format (single special per day) to new format (array of specials per day)
+      const converted = defaultDailySpecials.map((def) => {
+        const existingDay = (data || []).find(item => item.day_index === def.day_index);
+        if (existingDay) {
+          // Check if it's already in new format (has specials array)
+          if (existingDay.specials && Array.isArray(existingDay.specials)) {
+            return existingDay;
+          }
+          // Convert old format to new format
+          return {
+            day_index: def.day_index,
+            specials: [{
+              id: `${def.day_index}-0`,
+              name: existingDay.name || def.specials[0].name,
+              description: existingDay.description || def.specials[0].description,
+              hours: existingDay.hours || def.specials[0].hours,
+              emoji: existingDay.emoji || def.specials[0].emoji
+            }]
+          };
+        }
+        return def;
+      });
+      setDailySpecials(converted);
     } catch (err) {
       setDailySpecials(defaultDailySpecials);
     }
   };
 
-  const updateDailySpecial = (index, field, value) => {
-    setDailySpecials(prev => prev.map((special, idx) => idx === index ? { ...special, [field]: value } : special));
+  const updateDailySpecial = (dayIndex, specialIndex, field, value) => {
+    setDailySpecials(prev => prev.map((day) => {
+      if (day.day_index === dayIndex) {
+        const updatedSpecials = [...day.specials];
+        updatedSpecials[specialIndex] = { ...updatedSpecials[specialIndex], [field]: value };
+        return { ...day, specials: updatedSpecials };
+      }
+      return day;
+    }));
+  };
+
+  const addSpecialToDay = (dayIndex) => {
+    setDailySpecials(prev => prev.map((day) => {
+      if (day.day_index === dayIndex) {
+        const newId = `${dayIndex}-${day.specials.length}`;
+        return {
+          ...day,
+          specials: [...day.specials, { id: newId, name: "", description: "", hours: "", emoji: "⭐" }]
+        };
+      }
+      return day;
+    }));
+  };
+
+  const removeSpecialFromDay = (dayIndex, specialIndex) => {
+    setDailySpecials(prev => prev.map((day) => {
+      if (day.day_index === dayIndex && day.specials.length > 1) {
+        const updatedSpecials = day.specials.filter((_, idx) => idx !== specialIndex);
+        return { ...day, specials: updatedSpecials };
+      }
+      return day;
+    }));
   };
 
   const saveDailySpecials = async () => {
     setDailySaving(true);
     try {
-      await adminUpdateDailySpecials(dailySpecials);
+      // Flatten for backward compatibility with the API
+      const flattenedSpecials = dailySpecials.map(day => ({
+        day_index: day.day_index,
+        specials: day.specials,
+        // Also include first special's data at top level for backward compatibility
+        name: day.specials[0]?.name || '',
+        description: day.specials[0]?.description || '',
+        hours: day.specials[0]?.hours || '',
+        emoji: day.specials[0]?.emoji || '⭐'
+      }));
+      await adminUpdateDailySpecials(flattenedSpecials);
       toast({ title: 'Success', description: "Today's specials updated" });
     } catch (err) {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
@@ -1764,51 +1828,87 @@ const SpecialsTab = () => {
             Today's Special (Rotates by Day)
           </CardTitle>
           <p className="text-slate-400 text-sm">
-            Update the daily special fields used on the menu page. This rotates automatically by day.
+            Update the daily special fields used on the menu page. This rotates automatically by day. Click + to add additional specials for the same day.
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
-          {dailySpecials.map((special, index) => (
-            <div key={special.day_index} className="grid grid-cols-1 md:grid-cols-12 gap-3 p-3 rounded-lg border border-slate-700/50 bg-slate-900/40">
-              <div className="md:col-span-2 text-slate-300 font-semibold flex items-center">
-                {dayLabels[special.day_index] || `Day ${special.day_index}`}
+          {dailySpecials.map((day) => (
+            <div key={day.day_index} className="rounded-lg border border-slate-700/50 bg-slate-900/40 overflow-hidden">
+              {/* Day Header with Add Button */}
+              <div className="flex items-center justify-between px-4 py-2 bg-slate-800/50 border-b border-slate-700/50">
+                <span className="text-slate-300 font-semibold text-sm uppercase tracking-wider">
+                  {dayLabels[day.day_index] || `Day ${day.day_index}`}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => addSpecialToDay(day.day_index)}
+                  className="text-green-400 hover:bg-green-900/30 h-7 px-2"
+                  title="Add another special for this day"
+                  data-testid={`add-special-day-${day.day_index}`}
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add
+                </Button>
               </div>
-              <div className="md:col-span-3">
-                <Input
-                  value={special.name}
-                  onChange={(e) => updateDailySpecial(index, 'name', e.target.value)}
-                  className="bg-slate-800 border-slate-700 text-white"
-                  placeholder="Special title"
-                  data-testid={`daily-special-name-${special.day_index}`}
-                />
-              </div>
-              <div className="md:col-span-4">
-                <Textarea
-                  value={special.description}
-                  onChange={(e) => updateDailySpecial(index, 'description', e.target.value)}
-                  className="bg-slate-800 border-slate-700 text-white"
-                  placeholder="Special description"
-                  rows={2}
-                  data-testid={`daily-special-description-${special.day_index}`}
-                />
-              </div>
-              <div className="md:col-span-2">
-                <Input
-                  value={special.hours}
-                  onChange={(e) => updateDailySpecial(index, 'hours', e.target.value)}
-                  className="bg-slate-800 border-slate-700 text-white"
-                  placeholder="Hours"
-                  data-testid={`daily-special-hours-${special.day_index}`}
-                />
-              </div>
-              <div className="md:col-span-1">
-                <Input
-                  value={special.emoji}
-                  onChange={(e) => updateDailySpecial(index, 'emoji', e.target.value)}
-                  className="bg-slate-800 border-slate-700 text-white"
-                  placeholder="⭐"
-                  data-testid={`daily-special-emoji-${special.day_index}`}
-                />
+              
+              {/* Specials List */}
+              <div className="p-3 space-y-3">
+                {day.specials.map((special, specialIndex) => (
+                  <div key={special.id || specialIndex} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-start">
+                    <div className="md:col-span-3">
+                      <Input
+                        value={special.name}
+                        onChange={(e) => updateDailySpecial(day.day_index, specialIndex, 'name', e.target.value)}
+                        className="bg-slate-800 border-slate-700 text-white text-sm"
+                        placeholder="Special title"
+                        data-testid={`daily-special-name-${day.day_index}-${specialIndex}`}
+                      />
+                    </div>
+                    <div className="md:col-span-5">
+                      <Textarea
+                        value={special.description}
+                        onChange={(e) => updateDailySpecial(day.day_index, specialIndex, 'description', e.target.value)}
+                        className="bg-slate-800 border-slate-700 text-white text-sm"
+                        placeholder="Special description"
+                        rows={1}
+                        data-testid={`daily-special-description-${day.day_index}-${specialIndex}`}
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <Input
+                        value={special.hours}
+                        onChange={(e) => updateDailySpecial(day.day_index, specialIndex, 'hours', e.target.value)}
+                        className="bg-slate-800 border-slate-700 text-white text-sm"
+                        placeholder="Hours"
+                        data-testid={`daily-special-hours-${day.day_index}-${specialIndex}`}
+                      />
+                    </div>
+                    <div className="md:col-span-1">
+                      <Input
+                        value={special.emoji}
+                        onChange={(e) => updateDailySpecial(day.day_index, specialIndex, 'emoji', e.target.value)}
+                        className="bg-slate-800 border-slate-700 text-white text-sm text-center"
+                        placeholder="⭐"
+                        data-testid={`daily-special-emoji-${day.day_index}-${specialIndex}`}
+                      />
+                    </div>
+                    <div className="md:col-span-1 flex justify-center">
+                      {day.specials.length > 1 && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeSpecialFromDay(day.day_index, specialIndex)}
+                          className="text-red-400 hover:bg-red-900/30 h-8 w-8 p-0"
+                          title="Remove this special"
+                          data-testid={`remove-special-${day.day_index}-${specialIndex}`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           ))}
