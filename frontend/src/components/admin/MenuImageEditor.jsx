@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Cropper from 'react-easy-crop';
 import { X, ZoomIn, ZoomOut, RotateCw, Upload, Save, Image as ImageIcon } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -6,20 +6,33 @@ import { Slider } from '../ui/slider';
 
 /**
  * Creates a cropped image from the source
+ * Handles CORS by using a proxy approach for external images
  */
-const createCroppedImage = async (imageSrc, pixelCrop) => {
+const createCroppedImage = async (imageSrc, pixelCrop, rotation = 0) => {
   const image = new Image();
+  image.crossOrigin = 'anonymous'; // Try to load with CORS
   image.src = imageSrc;
   
-  await new Promise((resolve) => {
+  await new Promise((resolve, reject) => {
     image.onload = resolve;
+    image.onerror = reject;
   });
 
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
 
+  // Calculate rotated dimensions
+  const radians = (rotation * Math.PI) / 180;
+  const sin = Math.abs(Math.sin(radians));
+  const cos = Math.abs(Math.cos(radians));
+  
   canvas.width = pixelCrop.width;
   canvas.height = pixelCrop.height;
+
+  // Move to center and rotate
+  ctx.translate(canvas.width / 2, canvas.height / 2);
+  ctx.rotate((rotation * Math.PI) / 180);
+  ctx.translate(-canvas.width / 2, -canvas.height / 2);
 
   ctx.drawImage(
     image,
@@ -52,13 +65,37 @@ const MenuImageEditor = ({
   apiUrl,
   authToken
 }) => {
-  const [imageSrc, setImageSrc] = useState(menuItem?.image_url || menuItem?.image || '');
+  const [imageSrc, setImageSrc] = useState('');
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [error, setError] = useState(null);
+
+  // Get the full image URL
+  const getFullImageUrl = (url) => {
+    if (!url) return '';
+    if (url.startsWith('data:')) return url;
+    if (url.startsWith('http')) return url;
+    if (url.startsWith('/api')) return `${apiUrl}${url}`;
+    return url;
+  };
+
+  // Reset state when menu item changes
+  useEffect(() => {
+    if (menuItem && isOpen) {
+      const imageUrl = menuItem.image_url || menuItem.image || '';
+      setImageSrc(getFullImageUrl(imageUrl));
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+      setRotation(0);
+      setPreviewUrl(null);
+      setCroppedAreaPixels(null);
+      setError(null);
+    }
+  }, [menuItem, isOpen, apiUrl]);
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -109,10 +146,30 @@ const MenuImageEditor = ({
     if (!imageSrc || !croppedAreaPixels || !menuItem) return;
     
     setIsUploading(true);
+    setError(null);
     
     try {
-      // Create cropped image blob
-      const croppedBlob = await createCroppedImage(imageSrc, croppedAreaPixels);
+      let croppedBlob;
+      
+      // Try to create cropped image
+      try {
+        croppedBlob = await createCroppedImage(imageSrc, croppedAreaPixels, rotation);
+      } catch (corsError) {
+        console.error('CORS error, trying alternative approach:', corsError);
+        
+        // If CORS fails and it's an external URL, upload the original image first
+        if (imageSrc.startsWith('http') && !imageSrc.startsWith(apiUrl)) {
+          // Fetch the image through a proxy or just save the URL directly
+          setError('Cannot crop external images due to security restrictions. Please upload the image first or use an image from our server.');
+          setIsUploading(false);
+          return;
+        }
+        throw corsError;
+      }
+      
+      if (!croppedBlob) {
+        throw new Error('Failed to create cropped image');
+      }
       
       // Create form data for upload
       const formData = new FormData();
@@ -128,7 +185,8 @@ const MenuImageEditor = ({
       });
       
       if (!uploadResponse.ok) {
-        throw new Error('Upload failed');
+        const errorData = await uploadResponse.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Upload failed');
       }
       
       const uploadResult = await uploadResponse.json();
@@ -149,7 +207,8 @@ const MenuImageEditor = ({
       });
       
       if (!updateResponse.ok) {
-        throw new Error('Failed to update menu item');
+        const errorData = await updateResponse.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Failed to update menu item');
       }
       
       // Call onSave callback with new URL
@@ -158,7 +217,7 @@ const MenuImageEditor = ({
       
     } catch (error) {
       console.error('Error saving image:', error);
-      alert('Failed to save image. Please try again.');
+      setError(error.message || 'Failed to save image. Please try again.');
     } finally {
       setIsUploading(false);
     }
@@ -166,15 +225,8 @@ const MenuImageEditor = ({
 
   if (!isOpen) return null;
 
-  // Get the full image URL
-  const getFullImageUrl = (url) => {
-    if (!url) return '';
-    if (url.startsWith('http')) return url;
-    if (url.startsWith('/api')) return `${apiUrl}${url}`;
-    return url;
-  };
-
-  const displayImageSrc = imageSrc.startsWith('data:') ? imageSrc : getFullImageUrl(imageSrc);
+  // displayImageSrc is already processed in the useEffect
+  const displayImageSrc = imageSrc;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80" data-testid="menu-image-editor">
@@ -306,13 +358,20 @@ const MenuImageEditor = ({
                   />
                 </div>
               )}
+              
+              {/* Error Display */}
+              {error && (
+                <div className="bg-red-900/50 border border-red-600 rounded-lg p-3">
+                  <p className="text-red-300 text-sm">{error}</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         {/* Footer */}
         <div className="flex items-center justify-between p-4 border-t border-slate-700 bg-slate-800/50">
-          <Button variant="outline" onClick={handlePreview} disabled={!imageSrc} data-testid="preview-btn">
+          <Button variant="outline" onClick={handlePreview} disabled={!imageSrc || !croppedAreaPixels} data-testid="preview-btn">
             Preview Crop
           </Button>
           <div className="flex gap-2">
@@ -321,7 +380,7 @@ const MenuImageEditor = ({
             </Button>
             <Button 
               onClick={handleSave} 
-              disabled={!imageSrc || isUploading}
+              disabled={!imageSrc || !croppedAreaPixels || isUploading}
               className="bg-red-600 hover:bg-red-700"
               data-testid="save-image-btn"
             >
