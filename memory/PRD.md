@@ -466,6 +466,20 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - Downloaded external menu images to /api/uploads and stored URLs in DB
 - **FIXED**: Admin login response parsing error (Feb 25, 2026)
   - Removed double-read of response body to prevent "body stream already read" errors
+- **COMPLETED**: Admin Menu Image Editor (Mar 2, 2026)
+  - New MenuImageEditor.jsx component in /app/frontend/src/components/admin/
+  - 4:3 aspect ratio cropping using react-easy-crop library
+  - Zoom slider (100% - 300%)
+  - Rotation slider (0° - 360°)
+  - Upload from file or enter URL
+  - Preview Crop button to see cropped result
+  - Save Image button uploads to server and updates menu item
+  - Green image icon button added to each menu item in admin Menu Items tab
+- **COMPLETED**: Daily Specials Per Location (Mar 2, 2026)
+  - Daily Specials already implemented globally (same for all locations as requested)
+  - All 7 days (Sunday-Saturday) editable in Admin > Post Special tab
+  - Each day has: name, description, hours, emoji fields
+  - API endpoints: GET /api/daily-specials, GET/PUT /api/admin/daily-specials
 
 ## Prioritized Backlog
 
@@ -489,10 +503,11 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Social Login (Google OAuth) via Emergent Auth (Feb 24, 2026)
 - [x] Password-Based Login system (Feb 24, 2026)
 - [ ] Gmail receipt emails for free event reservations (requires Google API credentials)
-- [ ] Location-specific weekly specials management (per-location from admin)
+- [x] Daily Specials management - All days editable globally (same for all locations) (Mar 2, 2026)
 - [x] PWA icon optimization
 - [x] Refactor AdminPage.jsx into smaller components (now under /components/admin)
 - [x] Refactor MyAccountPage.jsx into smaller components (auth forms split out)
+- [x] Admin Menu Image Editor with 4:3 crop, zoom, rotation (Mar 2, 2026)
 - [ ] Apple Sign-In integration (optional)
 
 ### P3 (Low Priority)
