@@ -273,6 +273,17 @@ const MenuPage = () => {
 
     return (
       <div className="space-y-6" data-testid="hookah-section">
+        {/* Safety & Policies - At the top */}
+        <div className="bg-slate-800/40 border border-red-900/30 rounded-xl p-6" data-testid="hookah-policies">
+          <h4 className="text-lg font-semibold text-white mb-3">⚠️ Safety & Policies</h4>
+          <ul className="space-y-2 text-slate-300 text-sm">
+            <li><span className="font-semibold text-white">Refills:</span> Refill flavors are available a la carte upon request.</li>
+            <li><span className="font-semibold text-white">Handling:</span> For the safety of our servers and customers, please do not attempt to light, refill, or reposition the hookah.</li>
+            <li><span className="font-semibold text-white">Liability:</span> Fin & Feathers is not responsible for any loss or damage caused by the use of hookah.</li>
+            <li><span className="font-semibold text-red-400">Health Warning:</span> Shisha is a tobacco product containing nicotine and is addictive. Exposure to secondhand smoke puts one at risk for cancer, heart, and lung diseases.</li>
+          </ul>
+        </div>
+
         {/* Header with pricing */}
         <div className="bg-gradient-to-r from-purple-900/50 to-slate-800/50 border border-purple-500/30 rounded-xl p-6">
           <h3 className="text-3xl font-bold text-white mb-2" data-testid="hookah-title">💨 HOOKAH</h3>
@@ -363,17 +374,6 @@ const MenuPage = () => {
               <p>Mint, Lemon Mint, Orange Mint, Gum Mint, Duo Maloney, Moonshine, Skittles Crush, and Yummy Gummy.</p>
             </div>
           </div>
-        </div>
-
-        {/* Safety & Policies */}
-        <div className="bg-slate-800/40 border border-red-900/30 rounded-xl p-6" data-testid="hookah-policies">
-          <h4 className="text-lg font-semibold text-white mb-3">⚠️ Safety & Policies</h4>
-          <ul className="space-y-2 text-slate-300 text-sm">
-            <li><span className="font-semibold text-white">Refills:</span> Refill flavors are available a la carte upon request.</li>
-            <li><span className="font-semibold text-white">Handling:</span> For the safety of our servers and customers, please do not attempt to light, refill, or reposition the hookah.</li>
-            <li><span className="font-semibold text-white">Liability:</span> Fin & Feathers is not responsible for any loss or damage caused by the use of hookah.</li>
-            <li><span className="font-semibold text-red-400">Health Warning:</span> Shisha is a tobacco product containing nicotine and is addictive. Exposure to secondhand smoke puts one at risk for cancer, heart, and lung diseases.</li>
-          </ul>
         </div>
       </div>
     );
@@ -1167,6 +1167,13 @@ const MenuPage = () => {
       {/* Menu Grid */}
       <div className="container mx-auto px-4 pb-16">
         
+        {/* Service Charge Notice - At the top */}
+        <div className="mb-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl">
+          <p className="text-red-400 text-sm text-center font-medium">
+            <strong>Service Charge:</strong> A 20% automatic gratuity will be added to all checks.
+          </p>
+        </div>
+
         {/* ALL VIEW - Show everything organized with drinks at the bottom */}
         {activeCategory === 'all' && (
           <div className="space-y-10">
@@ -1426,12 +1433,6 @@ const MenuPage = () => {
           </div>
         )}
 
-        {/* Service Charge Notice - Appears on all pages */}
-        <div className="mt-12 p-4 bg-red-900/20 border border-red-600/50 rounded-xl">
-          <p className="text-red-400 text-sm text-center font-medium">
-            <strong>Service Charge:</strong> A 20% automatic gratuity will be added to all checks.
-          </p>
-        </div>
       </div>
     </div>
   );
