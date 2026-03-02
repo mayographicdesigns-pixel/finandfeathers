@@ -50,6 +50,7 @@ import {
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import MenuImageEditor from './MenuImageEditor';
 
 // Login Component
 const LoginForm = ({ onLogin }) => {
@@ -372,6 +373,7 @@ const MenuItemsTab = () => {
   const [uploading, setUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
+  const [imageEditorItem, setImageEditorItem] = useState(null);
   const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     name: '', description: '', price: '', category: '', image: '', badges: ''
@@ -739,6 +741,16 @@ const MenuItemsTab = () => {
                     <Button
                       variant="ghost"
                       size="sm"
+                      onClick={() => setImageEditorItem(item)}
+                      className="text-green-400 hover:bg-green-900/30"
+                      title="Edit Image"
+                      data-testid={`edit-image-${item.id}`}
+                    >
+                      <Image className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => handleEdit(item)}
                       className="text-blue-400 hover:bg-blue-900/30"
                     >
@@ -759,6 +771,19 @@ const MenuItemsTab = () => {
           })}
         </div>
       )}
+
+      {/* Menu Image Editor Modal */}
+      <MenuImageEditor
+        isOpen={!!imageEditorItem}
+        onClose={() => setImageEditorItem(null)}
+        menuItem={imageEditorItem}
+        onSave={(itemId, newImageUrl) => {
+          setItems(items.map(i => i.id === itemId ? { ...i, image: newImageUrl } : i));
+          toast({ title: 'Success', description: 'Menu item image updated' });
+        }}
+        apiUrl={process.env.REACT_APP_BACKEND_URL}
+        authToken={localStorage.getItem('adminToken')}
+      />
     </div>
   );
 };
