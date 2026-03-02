@@ -10,8 +10,10 @@ import MenuLineItem from '../components/MenuLineItem';
 import ImageUploader from '../components/ImageUploader';
 import ImageLightbox from '../components/ImageLightbox';
 import OptimizedImage from '../components/OptimizedImage';
+import { MenuStyleRenderer } from '../components/menu/MenuStyleRenderer';
+import { MENU_STYLES, DEFAULT_CATEGORY_STYLES } from '../components/menu/index';
 import { menuItems as mockMenuItems } from '../mockData';
-import { getPublicMenuItems, verifyAdminToken, updateMenuItem, createMenuItem, deleteMenuItem, getPageContent, getDailySpecials } from '../services/api';
+import { getPublicMenuItems, verifyAdminToken, updateMenuItem, createMenuItem, deleteMenuItem, getPageContent, getDailySpecials, getMenuCategoryStyles } from '../services/api';
 import { toast } from '../hooks/use-toast';
 
 const MenuPage = () => {
@@ -24,6 +26,7 @@ const MenuPage = () => {
   const [pageContent, setPageContent] = useState({});
   const [expandedItemId, setExpandedItemId] = useState(null);
   const [dailySpecialsMap, setDailySpecialsMap] = useState({});
+  const [categoryStyles, setCategoryStyles] = useState({});
   
   // Admin editing state
   const [isAdmin, setIsAdmin] = useState(false);
@@ -433,7 +436,18 @@ const MenuPage = () => {
     fetchMenuItems();
     fetchPageContent();
     fetchDailySpecials();
+    fetchCategoryStyles();
   }, []);
+
+  const fetchCategoryStyles = async () => {
+    try {
+      const styles = await getMenuCategoryStyles();
+      setCategoryStyles(styles || {});
+    } catch (error) {
+      console.error('Failed to fetch category styles', error);
+      setCategoryStyles({});
+    }
+  };
 
   const fetchMenuItems = async () => {
     setLoading(true);
@@ -642,33 +656,50 @@ const MenuPage = () => {
     return menuItems.filter(item => item.category === activeCategory);
   }, [activeCategory, activeSubCategory, menuItems]);
 
-  // Render a section of items
-  const renderSection = (title, items, variant = 'compact', gridCols = 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', isLineItem = false) => {
+  // Render a section of items with dynamic style support
+  const renderSection = (title, items, variant = 'compact', gridCols = 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', isLineItem = false, categoryId = null) => {
     if (!items || items.length === 0) return null;
+    
+    // Determine style from category settings
+    const style = categoryId ? (categoryStyles[categoryId] || DEFAULT_CATEGORY_STYLES[categoryId] || 'default') : null;
+    const useNewStyle = style && style !== 'default' && !isLineItem;
     
     return (
       <div className="mb-10">
         <h3 className="text-2xl font-bold text-white mb-5 border-b border-slate-700 pb-3">
           {title}
         </h3>
-        <div className={`grid ${gridCols} ${isLineItem ? 'gap-3' : 'gap-5'}`}>
-          {items.map((item) => (
-            isLineItem ? (
-              <MenuLineItem key={item.id} item={item} isExpanded={expandedItemId === item.id} onToggleExpand={handleToggleExpand} />
-            ) : (
-              <MenuCard 
-                key={item.id} 
-                item={item} 
-                variant={variant} 
-                editMode={editMode} 
-                onEdit={handleEditItem} 
-                onImageClick={handleImageClick} 
-                isExpanded={expandedItemId === item.id}
-                onToggleExpand={handleToggleExpand}
-              />
-            )
-          ))}
-        </div>
+        {useNewStyle ? (
+          <MenuStyleRenderer
+            items={items}
+            category={categoryId}
+            categoryStyles={categoryStyles}
+            expandedItemId={expandedItemId}
+            onToggleExpand={handleToggleExpand}
+            onImageClick={handleImageClick}
+            editMode={editMode}
+            onEdit={handleEditItem}
+          />
+        ) : (
+          <div className={`grid ${gridCols} ${isLineItem ? 'gap-3' : 'gap-5'}`}>
+            {items.map((item) => (
+              isLineItem ? (
+                <MenuLineItem key={item.id} item={item} isExpanded={expandedItemId === item.id} onToggleExpand={handleToggleExpand} />
+              ) : (
+                <MenuCard 
+                  key={item.id} 
+                  item={item} 
+                  variant={variant} 
+                  editMode={editMode} 
+                  onEdit={handleEditItem} 
+                  onImageClick={handleImageClick} 
+                  isExpanded={expandedItemId === item.id}
+                  onToggleExpand={handleToggleExpand}
+                />
+              )
+            ))}
+          </div>
+        )}
       </div>
     );
   };
@@ -1227,14 +1258,14 @@ const MenuPage = () => {
             )}
 
             {/* FOOD SECTIONS */}
-            {renderSection('Starters', itemsByCategory['starters'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
-            {renderSection('Sides', itemsByCategory['sides'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true)}
-            {renderSection('Entrees', itemsByCategory['entrees'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
-            {renderSection('Seafood & Grits', itemsByCategory['seafood-grits'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
-            {renderSection('Sandwiches', itemsByCategory['sandwiches'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
-            {renderSection('Salads', itemsByCategory['salads'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
-            {renderSection('Brunch', itemsByCategory['brunch'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
-            {renderSection('Brunch Sides', itemsByCategory['brunch-sides'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true)}
+            {renderSection('Starters', itemsByCategory['starters'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'starters')}
+            {renderSection('Sides', itemsByCategory['sides'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true, 'sides')}
+            {renderSection('Entrees', itemsByCategory['entrees'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'entrees')}
+            {renderSection('Seafood & Grits', itemsByCategory['seafood-grits'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'seafood-grits')}
+            {renderSection('Sandwiches', itemsByCategory['sandwiches'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'sandwiches')}
+            {renderSection('Salads', itemsByCategory['salads'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'salads')}
+            {renderSection('Brunch', itemsByCategory['brunch'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'brunch')}
+            {renderSection('Brunch Sides', itemsByCategory['brunch-sides'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true, 'brunch-sides')}
 
             {/* DRINKS AT THE BOTTOM */}
             <div className="pt-8 border-t border-slate-700">
@@ -1243,11 +1274,11 @@ const MenuPage = () => {
                 <h2 className="text-3xl font-bold text-white">Cocktails & Drinks</h2>
               </div>
               
-              {renderSection('Signature Cocktails', [...(itemsByCategory['cocktails'] || []), ...(itemsByCategory['signature-cocktails'] || [])], 'compact', 'grid-cols-1', true)}
-              {renderSection('Brunch Drinks', itemsByCategory['brunch-drinks'], 'compact', 'grid-cols-1', true)}
-              {renderSection('Handcrafted Mocktails ($7)', itemsByCategory['mocktails'], 'compact', 'grid-cols-1', true)}
+              {renderSection('Signature Cocktails', [...(itemsByCategory['cocktails'] || []), ...(itemsByCategory['signature-cocktails'] || [])], 'compact', 'grid-cols-1', false, 'signature-cocktails')}
+              {renderSection('Brunch Drinks', itemsByCategory['brunch-drinks'], 'compact', 'grid-cols-1', false, 'brunch-drinks')}
+              {renderSection('Handcrafted Mocktails ($7)', itemsByCategory['mocktails'], 'compact', 'grid-cols-1', false, 'mocktails')}
               {renderClassicRefreshments()}
-              {renderSection('Custom Fruit Lemonades ($3.50)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true)}
+              {renderSection('Custom Fruit Lemonades ($3.50)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true, 'custom-lemonades')}
             </div>
           </div>
         )}
@@ -1305,23 +1336,23 @@ const MenuPage = () => {
               // Show only selected sub-category
               <>
                 {activeSubCategory === 'sides' || activeSubCategory === 'brunch-sides' ? (
-                  renderSection(categoryNames[activeSubCategory], filteredItems, 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true)
+                  renderSection(categoryNames[activeSubCategory], filteredItems, 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true, activeSubCategory)
                 ) : (
                   // All other food categories show as cards with images
-                  renderSection(categoryNames[activeSubCategory], filteredItems, 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')
+                  renderSection(categoryNames[activeSubCategory], filteredItems, 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, activeSubCategory)
                 )}
               </>
             ) : (
               // Show all food categories
               <>
-                {renderSection('Starters', itemsByCategory['starters'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
-                {renderSection('Sides', itemsByCategory['sides'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true)}
-                {renderSection('Entrees', itemsByCategory['entrees'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
-                {renderSection('Seafood & Grits', itemsByCategory['seafood-grits'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
-                {renderSection('Sandwiches', itemsByCategory['sandwiches'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
-                {renderSection('Salads', itemsByCategory['salads'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
-                {renderSection('Brunch', itemsByCategory['brunch'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3')}
-                {renderSection('Brunch Sides', itemsByCategory['brunch-sides'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true)}
+                {renderSection('Starters', itemsByCategory['starters'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'starters')}
+                {renderSection('Sides', itemsByCategory['sides'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true, 'sides')}
+                {renderSection('Entrees', itemsByCategory['entrees'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'entrees')}
+                {renderSection('Seafood & Grits', itemsByCategory['seafood-grits'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'seafood-grits')}
+                {renderSection('Sandwiches', itemsByCategory['sandwiches'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'sandwiches')}
+                {renderSection('Salads', itemsByCategory['salads'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'salads')}
+                {renderSection('Brunch', itemsByCategory['brunch'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'brunch')}
+                {renderSection('Brunch Sides', itemsByCategory['brunch-sides'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true, 'brunch-sides')}
               </>
             )}
             

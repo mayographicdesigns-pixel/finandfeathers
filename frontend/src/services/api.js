@@ -854,6 +854,49 @@ export async function adminUpdateDailySpecials(payload) {
   return await response.json();
 }
 
+// ==================== MENU CATEGORY STYLES API ====================
+
+// Get menu category display styles (public)
+export async function getMenuCategoryStyles() {
+  try {
+    const response = await fetch(`${API_URL}/menu-category-styles`);
+    if (!response.ok) throw new Error('Failed to fetch category styles');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching category styles:', error);
+    return {};
+  }
+}
+
+// Get menu category display styles (admin)
+export async function adminGetMenuCategoryStyles() {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/menu-category-styles`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) throw new Error('Failed to fetch category styles');
+  return await response.json();
+}
+
+// Update menu category display styles (admin)
+export async function adminUpdateMenuCategoryStyles(styles) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/menu-category-styles`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(styles)
+  });
+
+  if (!response.ok) throw new Error('Failed to update category styles');
+  return await response.json();
+}
+
 // Get menu items (admin)
 export async function getAdminMenuItems() {
   const token = localStorage.getItem('adminToken');

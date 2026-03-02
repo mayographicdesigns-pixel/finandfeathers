@@ -32,7 +32,8 @@ import {
   getAdminUsers, createAdminUser, updateAdminUser, deleteAdminUser, changeAdminPassword,
   getAdminSettings, updateAdminSettings,
   getAdminDJProfiles, createAdminDJProfile, updateAdminDJProfile, deleteAdminDJProfile,
-  getAdminDJSchedules, createAdminDJSchedule, updateAdminDJSchedule, deleteAdminDJSchedule
+  getAdminDJSchedules, createAdminDJSchedule, updateAdminDJSchedule, deleteAdminDJSchedule,
+  adminGetMenuCategoryStyles, adminUpdateMenuCategoryStyles
 } from '../../services/api';
 import {
   DndContext,
@@ -374,10 +375,71 @@ const MenuItemsTab = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [imageEditorItem, setImageEditorItem] = useState(null);
+  const [categoryStyles, setCategoryStyles] = useState({});
+  const [showStyleEditor, setShowStyleEditor] = useState(false);
   const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     name: '', description: '', price: '', category: '', image: '', badges: ''
   });
+
+  // Menu display styles
+  const MENU_STYLES = {
+    default: { name: 'Default Cards', icon: '▣', description: 'Standard grid cards' },
+    style_one: { name: 'Horizontal', icon: '▭', description: 'Image left, info right' },
+    style_two: { name: 'Circular', icon: '○', description: 'Circular image, centered' },
+    style_three: { name: 'Compact', icon: '☰', description: 'Small image, row layout' },
+    style_four: { name: 'Pastel', icon: '⬜', description: 'Colorful backgrounds' }
+  };
+
+  // All menu categories
+  const allCategories = [
+    { id: 'daily-specials', name: '$5 Daily Specials' },
+    { id: 'starters', name: 'Starters' },
+    { id: 'sides', name: 'Sides' },
+    { id: 'entrees', name: 'Entrees' },
+    { id: 'seafood-grits', name: 'Seafood & Grits' },
+    { id: 'sandwiches', name: 'Sandwiches' },
+    { id: 'salads', name: 'Salads' },
+    { id: 'beer-wine', name: 'Beer & Wine' },
+    { id: 'cocktails', name: 'Cocktails' },
+    { id: 'signature-cocktails', name: 'Signature Cocktails' },
+    { id: 'mocktails', name: 'Mocktails' },
+    { id: 'sodas-spritzers', name: 'Sodas & Spritzers' },
+    { id: 'teas-lemonades', name: 'Teas & Lemonades' },
+    { id: 'chilled-juices', name: 'Chilled Juices' },
+    { id: 'custom-lemonades', name: 'Custom Lemonades' },
+    { id: 'hookah', name: 'Hookah' },
+    { id: 'brunch', name: 'Brunch' },
+    { id: 'brunch-drinks', name: 'Brunch Drinks' },
+    { id: 'brunch-sides', name: 'Brunch Sides' }
+  ];
+
+  useEffect(() => {
+    fetchItems();
+    fetchCategoryStyles();
+  }, []);
+
+  const fetchCategoryStyles = async () => {
+    try {
+      const styles = await adminGetMenuCategoryStyles();
+      setCategoryStyles(styles);
+    } catch (err) {
+      console.error('Error fetching category styles:', err);
+    }
+  };
+
+  const saveCategoryStyles = async () => {
+    try {
+      await adminUpdateMenuCategoryStyles(categoryStyles);
+      toast({ title: 'Success', description: 'Category display styles saved' });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+  };
+
+  const updateCategoryStyle = (categoryId, styleId) => {
+    setCategoryStyles(prev => ({ ...prev, [categoryId]: styleId }));
+  };
 
   useEffect(() => {
     fetchItems();
@@ -501,10 +563,69 @@ const MenuItemsTab = () => {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold text-white">Menu Items ({items.length})</h3>
-        <Button onClick={() => setShowForm(true)} className="bg-red-600 hover:bg-red-700">
-          <Plus className="w-4 h-4 mr-2" /> Add Item
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            onClick={() => setShowStyleEditor(!showStyleEditor)} 
+            variant="outline"
+            className="border-amber-600 text-amber-400 hover:bg-amber-900/30"
+            data-testid="display-styles-btn"
+          >
+            <Grid3X3 className="w-4 h-4 mr-2" /> Display Styles
+          </Button>
+          <Button onClick={() => setShowForm(true)} className="bg-red-600 hover:bg-red-700">
+            <Plus className="w-4 h-4 mr-2" /> Add Item
+          </Button>
+        </div>
       </div>
+
+      {/* Display Styles Editor */}
+      {showStyleEditor && (
+        <Card className="bg-slate-800/80 border-amber-600/50">
+          <CardHeader className="py-3 px-4">
+            <CardTitle className="text-amber-400 text-sm flex items-center gap-2">
+              <Grid3X3 className="w-4 h-4" /> Category Display Styles
+              <span className="text-slate-400 text-xs font-normal ml-2">Choose how each menu category appears on the menu page</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            {/* Style Legend */}
+            <div className="flex flex-wrap gap-2 mb-4 pb-3 border-b border-slate-700">
+              {Object.entries(MENU_STYLES).map(([styleId, style]) => (
+                <div key={styleId} className="flex items-center gap-1 text-xs text-slate-400 bg-slate-900/50 px-2 py-1 rounded">
+                  <span className="text-lg">{style.icon}</span>
+                  <span>{style.name}</span>
+                </div>
+              ))}
+            </div>
+            
+            {/* Category Style Selectors */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+              {allCategories.map(cat => (
+                <div key={cat.id} className="flex items-center justify-between bg-slate-900/50 rounded-lg p-2">
+                  <span className="text-slate-300 text-sm truncate mr-2">{cat.name}</span>
+                  <select
+                    value={categoryStyles[cat.id] || 'default'}
+                    onChange={(e) => updateCategoryStyle(cat.id, e.target.value)}
+                    className="bg-slate-800 border border-slate-700 text-white text-xs rounded px-2 py-1 min-w-[100px]"
+                    data-testid={`style-select-${cat.id}`}
+                  >
+                    {Object.entries(MENU_STYLES).map(([styleId, style]) => (
+                      <option key={styleId} value={styleId}>{style.icon} {style.name}</option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+            </div>
+            
+            {/* Save Button */}
+            <div className="flex justify-end mt-4">
+              <Button onClick={saveCategoryStyles} className="bg-amber-600 hover:bg-amber-700">
+                Save Display Styles
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Search and Filter */}
       <div className="flex gap-3">

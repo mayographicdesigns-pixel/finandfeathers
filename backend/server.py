@@ -1407,6 +1407,7 @@ async def admin_update_daily_specials(request: Request, username: str = Depends(
             "description": update.description,
             "hours": update.hours,
             "emoji": update.emoji,
+            "specials": item.get("specials", []),  # Support multiple specials per day
             "updated_at": datetime.now(timezone.utc)
         }
         await db.daily_specials.update_one(
@@ -1417,6 +1418,47 @@ async def admin_update_daily_specials(request: Request, username: str = Depends(
         updated += 1
 
     return {"updated": updated}
+
+
+# Menu Category Display Settings
+@api_router.get("/menu-category-styles")
+async def get_menu_category_styles():
+    """Get display style settings for each menu category"""
+    settings = await db.menu_settings.find_one({"type": "category_styles"}, {"_id": 0})
+    if settings:
+        return settings.get("styles", {})
+    return {}
+
+
+@api_router.get("/admin/menu-category-styles")
+async def admin_get_menu_category_styles(username: str = Depends(get_current_admin)):
+    """Admin: Get display style settings for each menu category"""
+    settings = await db.menu_settings.find_one({"type": "category_styles"}, {"_id": 0})
+    if settings:
+        return settings.get("styles", {})
+    return {}
+
+
+@api_router.put("/admin/menu-category-styles")
+async def admin_update_menu_category_styles(request: Request, username: str = Depends(get_current_admin)):
+    """Admin: Update display style for menu categories"""
+    body = await request.json()
+    if not isinstance(body, dict):
+        raise HTTPException(status_code=400, detail="Expected a dictionary of category styles")
+    
+    await db.menu_settings.update_one(
+        {"type": "category_styles"},
+        {
+            "$set": {
+                "type": "category_styles",
+                "styles": body,
+                "updated_at": datetime.now(timezone.utc)
+            },
+            "$setOnInsert": {"created_at": datetime.now(timezone.utc)}
+        },
+        upsert=True
+    )
+    return {"success": True, "styles": body}
 
 
 # Menu Items (Admin)
