@@ -5,13 +5,13 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 // Fallback videos in case API fails
 const fallbackVideos = {
-  0: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/gguqbaki_m-f%205%20specials.mp4'],
-  1: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/72qd1ab8_Monday.mp4'],
-  2: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/wvi3jxji_Tuesday.mp4'],
-  3: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/d6juf8fz_Wednesday.mp4'],
-  4: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/w9nk5dsp_Thursday.mp4'],
-  5: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/s5myd3mu_Friday.mp4'],
-  6: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/lrdt4s1h_Saturday.mp4']
+  0: ['https://customer-assets.emergentagent.com/job_11cd3604-2f5a-48c3-ba14-b46e5b99da28/artifacts/obciq8mu_Saturday%20Sunday.mp4'], // Sunday
+  1: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/72qd1ab8_Monday.mp4'], // Monday
+  2: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/wvi3jxji_Tuesday.mp4'], // Tuesday
+  3: ['https://customer-assets.emergentagent.com/job_11cd3604-2f5a-48c3-ba14-b46e5b99da28/artifacts/nhyfm8ut_Wednesday.mp4', 'https://customer-assets.emergentagent.com/job_11cd3604-2f5a-48c3-ba14-b46e5b99da28/artifacts/ywd5m1n1_wednesday2.mp4'], // Wednesday
+  4: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/w9nk5dsp_Thursday.mp4'], // Thursday
+  5: ['https://customer-assets.emergentagent.com/job_11cd3604-2f5a-48c3-ba14-b46e5b99da28/artifacts/jjv59jbr_Friday.mp4'], // Friday
+  6: ['https://customer-assets.emergentagent.com/job_11cd3604-2f5a-48c3-ba14-b46e5b99da28/artifacts/obciq8mu_Saturday%20Sunday.mp4'] // Saturday
 };
 
 const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
