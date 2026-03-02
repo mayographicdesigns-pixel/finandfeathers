@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { MapPin, Phone, Clock, Home, Calendar, ShoppingBag, Instagram, Facebook, Twitter, ExternalLink, Navigation, Users, LogIn, LogOut, Smile, X, MessageCircle, Send, Heart, DollarSign, Music, Image as ImageIcon, ChevronLeft, Trash2, Wine, CreditCard, Smartphone, Edit2, Settings, Save, Plus, Camera, RotateCcw, Star, Truck } from 'lucide-react';
+import { MapPin, Phone, Clock, Home, Calendar, ShoppingBag, Instagram, Facebook, Twitter, ExternalLink, Navigation, Users, LogIn, LogOut, Smile, X, MessageCircle, Send, Heart, DollarSign, Music, Image as ImageIcon, ChevronLeft, Trash2, Wine, CreditCard, Smartphone, Edit2, Settings, Save, Plus, Camera, RotateCcw, Star, Truck, Upload } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -264,6 +264,7 @@ const LocationDetailPage = () => {
   const [selectedMood, setSelectedMood] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [avatarType, setAvatarType] = useState('emoji'); // 'emoji', 'camera', 'upload'
   
   // Selfie camera state
   const [showCamera, setShowCamera] = useState(false);
@@ -273,6 +274,7 @@ const LocationDetailPage = () => {
   const [uploadingSelfie, setUploadingSelfie] = useState(false);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const avatarFileInputRef = useRef(null);
   
   // Social Wall state
   const initialTab = searchParams.get('tab') || 'wall';
@@ -608,6 +610,47 @@ const LocationDetailPage = () => {
   const retakeSelfie = () => {
     setSelfieImage(null);
     startCamera();
+  };
+
+  // Handle avatar photo upload from gallery
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({ title: 'Error', description: 'Please select an image file', variant: 'destructive' });
+      return;
+    }
+    
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: 'Error', description: 'Image must be less than 5MB', variant: 'destructive' });
+      return;
+    }
+    
+    setUploadingSelfie(true);
+    
+    try {
+      const result = await uploadImage(file);
+      if (result && result.url) {
+        const fullUrl = result.url.startsWith('http') 
+          ? result.url 
+          : `${process.env.REACT_APP_BACKEND_URL}${result.url}`;
+        setSelfieImage(fullUrl);
+        toast({ title: 'Photo uploaded!', description: 'Looking good!' });
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast({ title: 'Upload failed', description: 'Please try again', variant: 'destructive' });
+    } finally {
+      setUploadingSelfie(false);
+    }
+    
+    // Reset file input
+    if (avatarFileInputRef.current) {
+      avatarFileInputRef.current.value = '';
+    }
   };
 
   // Cleanup camera on modal close
@@ -1187,87 +1230,213 @@ const LocationDetailPage = () => {
                 Let others know you're here.
               </p>
 
-              {/* Selfie Section */}
+              {/* Avatar Selection - Tabs */}
               <div className="mb-5">
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  <Camera className="w-4 h-4 inline mr-1" /> Take a Selfie
+                <label className="block text-sm font-medium text-slate-300 mb-3">
+                  Choose Your Avatar
                 </label>
                 
-                {!showCamera && !selfieImage && (
+                {/* Avatar Type Tabs */}
+                <div className="flex gap-2 mb-4">
                   <button
-                    onClick={startCamera}
-                    className="w-full h-32 border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center gap-2 hover:border-red-500 hover:bg-slate-800/50 transition-all"
-                    data-testid="start-camera-btn"
+                    onClick={() => { setAvatarType('emoji'); stopCamera(); }}
+                    className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${
+                      avatarType === 'emoji' 
+                        ? 'bg-red-600 text-white' 
+                        : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                    }`}
+                    data-testid="avatar-tab-emoji"
                   >
-                    <Camera className="w-8 h-8 text-slate-400" />
-                    <span className="text-slate-400 text-sm">Tap to take a selfie</span>
+                    <Smile className="w-4 h-4" /> Emoji
                   </button>
+                  <button
+                    onClick={() => { setAvatarType('camera'); setSelfieImage(null); }}
+                    className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${
+                      avatarType === 'camera' 
+                        ? 'bg-red-600 text-white' 
+                        : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                    }`}
+                    data-testid="avatar-tab-camera"
+                  >
+                    <Camera className="w-4 h-4" /> Selfie
+                  </button>
+                  <button
+                    onClick={() => { setAvatarType('upload'); stopCamera(); setSelfieImage(null); }}
+                    className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${
+                      avatarType === 'upload' 
+                        ? 'bg-red-600 text-white' 
+                        : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                    }`}
+                    data-testid="avatar-tab-upload"
+                  >
+                    <Upload className="w-4 h-4" /> Upload
+                  </button>
+                </div>
+
+                {/* Emoji Selection */}
+                {avatarType === 'emoji' && (
+                  <div className="bg-slate-800/50 rounded-xl p-4">
+                    <p className="text-slate-400 text-sm mb-3">Pick your favorite emoji as your avatar</p>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {AVATAR_EMOJIS.map((emoji) => (
+                        <button
+                          key={emoji}
+                          onClick={() => setSelectedEmoji(emoji)}
+                          className={`w-12 h-12 text-2xl rounded-xl flex items-center justify-center transition-all ${
+                            selectedEmoji === emoji ? 'bg-red-600 scale-110 ring-2 ring-red-400' : 'bg-slate-700 hover:bg-slate-600'
+                          }`}
+                          data-testid={`emoji-${emoji}`}
+                        >
+                          {emoji}
+                        </button>
+                      ))}
+                    </div>
+                    {/* Preview */}
+                    <div className="mt-4 flex items-center justify-center">
+                      <div className="w-20 h-20 rounded-full bg-slate-700 flex items-center justify-center text-4xl border-2 border-red-500">
+                        {selectedEmoji}
+                      </div>
+                    </div>
+                  </div>
                 )}
 
-                {showCamera && (
-                  <div className="relative rounded-xl overflow-hidden bg-black">
-                    <video 
-                      ref={videoRef}
-                      autoPlay 
-                      playsInline 
-                      muted
-                      className="w-full aspect-square object-cover mirror"
-                      style={{ transform: 'scaleX(-1)' }}
+                {/* Camera/Selfie Section */}
+                {avatarType === 'camera' && (
+                  <div className="bg-slate-800/50 rounded-xl p-4">
+                    {!showCamera && !selfieImage && (
+                      <button
+                        onClick={startCamera}
+                        className="w-full h-40 border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center gap-3 hover:border-red-500 hover:bg-slate-800/50 transition-all"
+                        data-testid="start-camera-btn"
+                      >
+                        <Camera className="w-12 h-12 text-slate-400" />
+                        <span className="text-slate-400">Tap to take a selfie</span>
+                      </button>
+                    )}
+
+                    {showCamera && (
+                      <div className="relative rounded-xl overflow-hidden bg-black">
+                        <video 
+                          ref={videoRef}
+                          autoPlay 
+                          playsInline 
+                          muted
+                          className="w-full aspect-square object-cover"
+                          style={{ transform: 'scaleX(-1)' }}
+                        />
+                        <canvas ref={canvasRef} className="hidden" />
+                        <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-3">
+                          <Button
+                            onClick={stopCamera}
+                            variant="outline"
+                            size="sm"
+                            className="bg-slate-900/80 border-slate-600 text-white"
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            onClick={captureSelfie}
+                            className="bg-red-600 hover:bg-red-700 text-white px-6"
+                            data-testid="capture-selfie-btn"
+                          >
+                            <Camera className="w-4 h-4 mr-2" /> Capture
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {uploadingSelfie && (
+                      <div className="w-full h-40 rounded-xl bg-slate-800 flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="w-10 h-10 border-2 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                          <span className="text-slate-400">Uploading...</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {selfieImage && !uploadingSelfie && (
+                      <div className="relative">
+                        <img 
+                          src={selfieImage} 
+                          alt="Your selfie" 
+                          className="w-full aspect-square object-cover rounded-xl border-2 border-green-500"
+                        />
+                        <div className="absolute top-2 right-2">
+                          <Button
+                            onClick={retakeSelfie}
+                            size="sm"
+                            className="bg-slate-900/80 hover:bg-slate-800 text-white"
+                          >
+                            <RotateCcw className="w-4 h-4 mr-1" /> Retake
+                          </Button>
+                        </div>
+                        <div className="absolute bottom-2 left-2 bg-green-600 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                          <span>✓</span> Photo ready!
+                        </div>
+                      </div>
+                    )}
+
+                    {cameraError && (
+                      <p className="text-red-400 text-sm mt-2 text-center">{cameraError}</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Upload Photo Section */}
+                {avatarType === 'upload' && (
+                  <div className="bg-slate-800/50 rounded-xl p-4">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      ref={avatarFileInputRef}
+                      className="hidden"
+                      data-testid="avatar-file-input"
                     />
-                    <canvas ref={canvasRef} className="hidden" />
-                    <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-3">
-                      <Button
-                        onClick={stopCamera}
-                        variant="outline"
-                        size="sm"
-                        className="bg-slate-900/80 border-slate-600 text-white"
+                    
+                    {!selfieImage && !uploadingSelfie && (
+                      <button
+                        onClick={() => avatarFileInputRef.current?.click()}
+                        className="w-full h-40 border-2 border-dashed border-slate-600 rounded-xl flex flex-col items-center justify-center gap-3 hover:border-red-500 hover:bg-slate-800/50 transition-all"
+                        data-testid="upload-photo-btn"
                       >
-                        Cancel
-                      </Button>
-                      <Button
-                        onClick={captureSelfie}
-                        className="bg-red-600 hover:bg-red-700 text-white px-6"
-                        data-testid="capture-selfie-btn"
-                      >
-                        <Camera className="w-4 h-4 mr-2" /> Capture
-                      </Button>
-                    </div>
-                  </div>
-                )}
+                        <Upload className="w-12 h-12 text-slate-400" />
+                        <span className="text-slate-400">Tap to upload a photo</span>
+                        <span className="text-slate-500 text-xs">JPG, PNG up to 5MB</span>
+                      </button>
+                    )}
 
-                {uploadingSelfie && (
-                  <div className="w-full h-32 rounded-xl bg-slate-800 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                      <span className="text-slate-400 text-sm">Uploading...</span>
-                    </div>
-                  </div>
-                )}
+                    {uploadingSelfie && (
+                      <div className="w-full h-40 rounded-xl bg-slate-800 flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="w-10 h-10 border-2 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                          <span className="text-slate-400">Uploading...</span>
+                        </div>
+                      </div>
+                    )}
 
-                {selfieImage && !uploadingSelfie && (
-                  <div className="relative">
-                    <img 
-                      src={selfieImage} 
-                      alt="Your selfie" 
-                      className="w-full aspect-square object-cover rounded-xl border-2 border-green-500"
-                    />
-                    <div className="absolute top-2 right-2">
-                      <Button
-                        onClick={retakeSelfie}
-                        size="sm"
-                        className="bg-slate-900/80 hover:bg-slate-800 text-white"
-                      >
-                        <RotateCcw className="w-4 h-4 mr-1" /> Retake
-                      </Button>
-                    </div>
-                    <div className="absolute bottom-2 left-2 bg-green-600 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                      <span>✓</span> Selfie ready!
-                    </div>
+                    {selfieImage && !uploadingSelfie && (
+                      <div className="relative">
+                        <img 
+                          src={selfieImage} 
+                          alt="Uploaded photo" 
+                          className="w-full aspect-square object-cover rounded-xl border-2 border-green-500"
+                        />
+                        <div className="absolute top-2 right-2">
+                          <Button
+                            onClick={() => { setSelfieImage(null); }}
+                            size="sm"
+                            className="bg-slate-900/80 hover:bg-slate-800 text-white"
+                          >
+                            <RotateCcw className="w-4 h-4 mr-1" /> Change
+                          </Button>
+                        </div>
+                        <div className="absolute bottom-2 left-2 bg-green-600 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                          <span>✓</span> Photo uploaded!
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
-
-                {cameraError && (
-                  <p className="text-red-400 text-sm mt-2">{cameraError}</p>
                 )}
               </div>
 
@@ -1282,23 +1451,6 @@ const LocationDetailPage = () => {
                   maxLength={20}
                   data-testid="checkin-name-input"
                 />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-slate-300 mb-2">Pick Your Avatar (fallback)</label>
-                <div className="flex flex-wrap gap-2">
-                  {AVATAR_EMOJIS.map((emoji) => (
-                    <button
-                      key={emoji}
-                      onClick={() => setSelectedEmoji(emoji)}
-                      className={`w-10 h-10 text-2xl rounded-lg flex items-center justify-center transition-all ${
-                        selectedEmoji === emoji ? 'bg-red-600 scale-110' : 'bg-slate-800 hover:bg-slate-700'
-                      }`}
-                    >
-                      {emoji}
-                    </button>
-                  ))}
-                </div>
               </div>
 
               <div className="mb-4">
