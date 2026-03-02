@@ -1169,8 +1169,8 @@ const MenuPage = () => {
         
         {/* Service Charge Notice - At the top */}
         <div className="mb-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl">
-          <p className="text-red-400 text-sm text-center font-medium">
-            <strong>Service Charge:</strong> A 20% automatic gratuity will be added to all checks.
+          <p className="text-red-400 text-lg text-center font-semibold">
+            Service Charge: A 20% automatic gratuity will be added to all checks.
           </p>
         </div>
 

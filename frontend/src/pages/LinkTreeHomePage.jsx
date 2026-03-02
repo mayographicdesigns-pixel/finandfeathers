@@ -928,6 +928,13 @@ const LinkTreeHomePage = () => {
               dangerouslySetInnerHTML={{ __html: heroHtml }}
             />
           )}
+          
+          {/* Service Charge Notice */}
+          <div className="mt-4 p-3 bg-red-900/30 border border-red-600/50 rounded-lg">
+            <p className="text-red-400 text-base text-center font-semibold">
+              Service Charge: A 20% automatic gratuity will be added to all checks.
+            </p>
+          </div>
         </div>
 
         {/* Weekly Specials Section */}

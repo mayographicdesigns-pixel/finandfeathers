@@ -19,10 +19,6 @@ const HibachiMenu = ({ onlineOrderLink }) => {
       alt: 'Hibachi chicken and vegetables'
     },
     { 
-      url: 'https://customer-assets.emergentagent.com/job_11cd3604-2f5a-48c3-ba14-b46e5b99da28/artifacts/1q21lyw4_image.png',
-      alt: 'Lobster hibachi takeout'
-    },
-    { 
       url: 'https://customer-assets.emergentagent.com/job_11cd3604-2f5a-48c3-ba14-b46e5b99da28/artifacts/zcclajof_image.png',
       alt: 'Grilled shrimp'
     },
@@ -38,33 +34,27 @@ const HibachiMenu = ({ onlineOrderLink }) => {
     { name: 'Chicken', price: 13, icon: '🍗' },
     { name: 'Steak', price: 17, icon: '🥩' },
     { name: 'Salmon', price: 18, icon: '🐟' },
-    { name: 'Shrimp', price: 20, icon: '🍤' },
-    { name: 'Lobster', price: 25, icon: '🦞', premium: true }
+    { name: 'Shrimp', price: 20, icon: '🍤' }
   ];
 
   // Hibachi Duets
   const duets = [
     { name: 'Chicken & Shrimp', price: 21 },
     { name: 'Steak & Chicken', price: 22 },
-    { name: 'Steak & Shrimp', price: 24 },
-    { name: 'Lobster & Chicken', price: 30 },
-    { name: 'Lobster & Shrimp', price: 32 }
+    { name: 'Steak & Shrimp', price: 24 }
   ];
 
   // Hibachi Trios
   const trios = [
     { name: 'Salmon, Chicken & Shrimp', price: 34 },
-    { name: 'Lobster, Chicken & Shrimp', price: 36 },
-    { name: 'Lobster, Steak & Shrimp', price: 38 },
-    { name: 'Salmon, Lobster & Shrimp', price: 39 },
-    { name: 'Salmon, Lobster & Steak', price: 40, popular: true }
+    { name: 'Steak, Chicken & Shrimp', price: 32 },
+    { name: 'Salmon, Steak & Shrimp', price: 36, popular: true }
   ];
 
   // À la carte proteins
   const proteins = [
     { name: 'Steak', price: 10, icon: '🥩' },
-    { name: 'Salmon', price: 12, icon: '🐟' },
-    { name: 'Lobster', price: 14, icon: '🦞', premium: true }
+    { name: 'Salmon', price: 12, icon: '🐟' }
   ];
 
   // Sides

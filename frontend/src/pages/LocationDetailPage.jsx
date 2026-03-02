@@ -1684,54 +1684,56 @@ const LocationDetailPage = () => {
         {/* Social Wall Tab */}
         {activeTab === 'wall' && (
           <div className="space-y-4">
-            {/* Who's Here */}
-            <Card className="bg-slate-800/50 border-slate-700">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-white font-semibold flex items-center gap-2">
-                    <Users className="w-4 h-4 text-red-500" />
-                    Who's Here ({checkedInUsers.length})
-                  </h3>
-                </div>
-                {checkedInUsers.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {checkedInUsers.map((user) => (
-                      <div key={user.id} className="flex items-center gap-1">
-                        <button
-                          onClick={() => user.id !== myCheckIn?.id && openDMWithUser(user)}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-full transition-all ${
-                            myCheckIn?.id === user.id 
-                              ? 'bg-green-900/30 border border-green-600/30' 
-                              : 'bg-slate-700/50 hover:bg-slate-600/50 cursor-pointer'
-                          }`}
-                          data-testid={`user-${user.id}`}
-                        >
-                          {user.selfie_url ? (
-                            <img src={user.selfie_url} alt={user.display_name} className="w-7 h-7 rounded-full object-cover border border-slate-600" />
-                          ) : (
-                            <span className="text-xl">{user.avatar_emoji}</span>
-                          )}
-                          <span className="text-white text-sm">{user.display_name}</span>
-                          {user.mood && <span className="text-red-400 text-xs">• {user.mood}</span>}
-                        </button>
-                        {myCheckIn && user.id !== myCheckIn.id && appSettings.buy_drink_enabled && (
-                          <button
-                            onClick={() => openDrinkModalForUser(user)}
-                            className="p-1.5 bg-pink-600/30 hover:bg-pink-600/50 rounded-full transition-colors"
-                            title="Send a drink"
-                            data-testid={`send-drink-${user.id}`}
-                          >
-                            <Wine className="w-4 h-4 text-pink-400" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
+            {/* Who's Here - Only show if check-in is enabled */}
+            {location?.check_in_enabled !== false && (
+              <Card className="bg-slate-800/50 border-slate-700">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-white font-semibold flex items-center gap-2">
+                      <Users className="w-4 h-4 text-red-500" />
+                      Who's Here ({checkedInUsers.length})
+                    </h3>
                   </div>
-                ) : (
-                  <p className="text-slate-500 text-center py-4">Be the first to check in!</p>
-                )}
-              </CardContent>
-            </Card>
+                  {checkedInUsers.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {checkedInUsers.map((user) => (
+                        <div key={user.id} className="flex items-center gap-1">
+                          <button
+                            onClick={() => user.id !== myCheckIn?.id && openDMWithUser(user)}
+                            className={`flex items-center gap-2 px-3 py-2 rounded-full transition-all ${
+                              myCheckIn?.id === user.id 
+                                ? 'bg-green-900/30 border border-green-600/30' 
+                                : 'bg-slate-700/50 hover:bg-slate-600/50 cursor-pointer'
+                            }`}
+                            data-testid={`user-${user.id}`}
+                          >
+                            {user.selfie_url ? (
+                              <img src={user.selfie_url} alt={user.display_name} className="w-7 h-7 rounded-full object-cover border border-slate-600" />
+                            ) : (
+                              <span className="text-xl">{user.avatar_emoji}</span>
+                            )}
+                            <span className="text-white text-sm">{user.display_name}</span>
+                            {user.mood && <span className="text-red-400 text-xs">• {user.mood}</span>}
+                          </button>
+                          {myCheckIn && user.id !== myCheckIn.id && appSettings.buy_drink_enabled && (
+                            <button
+                              onClick={() => openDrinkModalForUser(user)}
+                              className="p-1.5 bg-pink-600/30 hover:bg-pink-600/50 rounded-full transition-colors"
+                              title="Send a drink"
+                              data-testid={`send-drink-${user.id}`}
+                            >
+                              <Wine className="w-4 h-4 text-pink-400" />
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-slate-500 text-center py-4">Be the first to check in!</p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
             {/* Post Input */}
             {myCheckIn && (
