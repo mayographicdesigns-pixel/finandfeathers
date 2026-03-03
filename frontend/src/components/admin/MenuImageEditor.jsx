@@ -184,12 +184,13 @@ const MenuImageEditor = ({
         body: formData
       });
       
-      if (!uploadResponse.ok) {
-        const errorData = await uploadResponse.json().catch(() => ({}));
-        throw new Error(errorData.detail || 'Upload failed');
+      // Read the response body once
+      const uploadResult = await uploadResponse.json().catch(() => null);
+      
+      if (!uploadResponse.ok || !uploadResult) {
+        throw new Error(uploadResult?.detail || 'Upload failed');
       }
       
-      const uploadResult = await uploadResponse.json();
       // Construct full URL for the uploaded image
       const newImageUrl = `${apiUrl}${uploadResult.url}`;
       
@@ -206,9 +207,11 @@ const MenuImageEditor = ({
         })
       });
       
+      // Read update response body once
+      const updateResult = await updateResponse.json().catch(() => null);
+      
       if (!updateResponse.ok) {
-        const errorData = await updateResponse.json().catch(() => ({}));
-        throw new Error(errorData.detail || 'Failed to update menu item');
+        throw new Error(updateResult?.detail || 'Failed to update menu item');
       }
       
       // Call onSave callback with new URL

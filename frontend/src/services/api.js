@@ -983,11 +983,12 @@ export async function uploadImage(file) {
     body: formData
   });
 
+  const data = await response.json().catch(() => ({}));
+  
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.detail || 'Failed to upload image');
+    throw new Error(data.detail || 'Failed to upload image');
   }
-  return await response.json();
+  return data;
 }
 
 // List uploaded images
