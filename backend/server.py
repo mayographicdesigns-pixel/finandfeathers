@@ -97,12 +97,8 @@ async def ensure_default_admin_user():
 # Create the main app without a prefix
 app = FastAPI()
 
-# Mount static files for uploads (accessible at /api/uploads/) - kept for backward compatibility
-# In production, images are served from MongoDB via /api/media endpoint
-try:
-    app.mount("/api/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
-except Exception:
-    pass  # Directory may not exist in production
+# Note: Static files mount removed - now using explicit /api/uploads/{filename} endpoint
+# This ensures files are served from MongoDB in production
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
@@ -121,6 +117,44 @@ async def get_media_file(file_id: str):
     content_type = media.get("content_type", "image/jpeg")
     
     return Response(content=file_data, media_type=content_type)
+
+
+# Fallback endpoint for old /api/uploads/{filename} format
+@api_router.get("/uploads/{filename}")
+async def get_upload_file(filename: str):
+    """Serve uploaded files - checks local disk first, then MongoDB by filename"""
+    # Try local disk first (preview environment)
+    try:
+        file_path = UPLOAD_DIR / filename
+        if file_path.exists():
+            content_type = "image/jpeg"
+            if filename.endswith(".png"):
+                content_type = "image/png"
+            elif filename.endswith(".gif"):
+                content_type = "image/gif"
+            elif filename.endswith(".webp"):
+                content_type = "image/webp"
+            with open(file_path, "rb") as f:
+                return Response(content=f.read(), media_type=content_type)
+    except Exception:
+        pass
+    
+    # Try MongoDB by filename
+    media = await db.media_files.find_one({"filename": filename}, {"_id": 0})
+    if media:
+        file_data = base64.b64decode(media["data"])
+        content_type = media.get("content_type", "image/jpeg")
+        return Response(content=file_data, media_type=content_type)
+    
+    # Try MongoDB by file_id (filename might be the UUID part)
+    file_id = filename.split('.')[0] if '.' in filename else filename
+    media = await db.media_files.find_one({"file_id": file_id}, {"_id": 0})
+    if media:
+        file_data = base64.b64decode(media["data"])
+        content_type = media.get("content_type", "image/jpeg")
+        return Response(content=file_data, media_type=content_type)
+    
+    raise HTTPException(status_code=404, detail="File not found")
 
 
 # Auth dependency
