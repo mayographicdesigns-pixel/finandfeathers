@@ -1262,7 +1262,23 @@ const MenuPage = () => {
             {renderSection('Sides', itemsByCategory['sides'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true, 'sides')}
             {renderSection('Entrees', itemsByCategory['entrees'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'entrees')}
             {renderSection('Seafood & Grits', itemsByCategory['seafood-grits'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'seafood-grits')}
-            {renderSection('Sandwiches', itemsByCategory['sandwiches'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'sandwiches')}
+            {renderSection('Sandwiches', (itemsByCategory['sandwiches'] || []).filter(item => !item.name.toLowerCase().startsWith('add ')), 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'sandwiches')}
+            {/* Add-ons Section */}
+            {(itemsByCategory['sandwiches'] || []).filter(item => item.name.toLowerCase().startsWith('add ')).length > 0 && (
+              <div className="mb-10">
+                <h3 className="text-xl font-bold text-white mb-4 border-b border-slate-700 pb-3">
+                  Sandwich Add-Ons
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {(itemsByCategory['sandwiches'] || []).filter(item => item.name.toLowerCase().startsWith('add ')).map((item) => (
+                    <div key={item.id} className="bg-slate-800/50 rounded-lg p-3 flex items-center gap-3 border border-slate-700/50">
+                      <span className="text-amber-400 font-bold">${item.price}</span>
+                      <span className="text-white text-sm">{item.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             {renderSection('Salads', itemsByCategory['salads'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'salads')}
             {renderSection('Brunch', itemsByCategory['brunch'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'brunch')}
             {renderSection('Brunch Sides', itemsByCategory['brunch-sides'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true, 'brunch-sides')}
@@ -1349,7 +1365,23 @@ const MenuPage = () => {
                 {renderSection('Sides', itemsByCategory['sides'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true, 'sides')}
                 {renderSection('Entrees', itemsByCategory['entrees'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'entrees')}
                 {renderSection('Seafood & Grits', itemsByCategory['seafood-grits'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'seafood-grits')}
-                {renderSection('Sandwiches', itemsByCategory['sandwiches'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'sandwiches')}
+                {renderSection('Sandwiches', (itemsByCategory['sandwiches'] || []).filter(item => !item.name.toLowerCase().startsWith('add ')), 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'sandwiches')}
+                {/* Add-ons Section */}
+                {(itemsByCategory['sandwiches'] || []).filter(item => item.name.toLowerCase().startsWith('add ')).length > 0 && (
+                  <div className="mb-10">
+                    <h3 className="text-xl font-bold text-white mb-4 border-b border-slate-700 pb-3">
+                      Sandwich Add-Ons
+                    </h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                      {(itemsByCategory['sandwiches'] || []).filter(item => item.name.toLowerCase().startsWith('add ')).map((item) => (
+                        <div key={item.id} className="bg-slate-800/50 rounded-lg p-3 flex items-center gap-3 border border-slate-700/50">
+                          <span className="text-amber-400 font-bold">${item.price}</span>
+                          <span className="text-white text-sm">{item.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 {renderSection('Salads', itemsByCategory['salads'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'salads')}
                 {renderSection('Brunch', itemsByCategory['brunch'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'brunch')}
                 {renderSection('Brunch Sides', itemsByCategory['brunch-sides'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true, 'brunch-sides')}
