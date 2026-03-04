@@ -770,8 +770,8 @@ const LinkTreeHomePage = () => {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast({ title: 'Error', description: 'Image must be less than 5MB', variant: 'destructive' });
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: 'Error', description: 'Image must be less than 10MB', variant: 'destructive' });
       return;
     }
 

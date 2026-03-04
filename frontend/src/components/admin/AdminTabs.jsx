@@ -467,9 +467,9 @@ const MenuItemsTab = () => {
       return;
     }
 
-    // Validate file size (5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast({ title: 'Error', description: 'Image must be less than 5MB', variant: 'destructive' });
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: 'Error', description: 'Image must be less than 10MB', variant: 'destructive' });
       return;
     }
 
@@ -1627,8 +1627,8 @@ const SpecialsTab = () => {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast({ title: 'Error', description: 'Image must be less than 5MB', variant: 'destructive' });
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: 'Error', description: 'Image must be less than 10MB', variant: 'destructive' });
       return;
     }
 
@@ -2330,8 +2330,8 @@ const GalleryTab = () => {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast({ title: 'Error', description: 'Image must be less than 5MB', variant: 'destructive' });
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: 'Error', description: 'Image must be less than 10MB', variant: 'destructive' });
       return;
     }
 
@@ -2711,8 +2711,8 @@ const LocationsTab = () => {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast({ title: 'Error', description: 'Image must be less than 5MB', variant: 'destructive' });
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: 'Error', description: 'Image must be less than 10MB', variant: 'destructive' });
       return;
     }
 
@@ -4006,8 +4006,8 @@ const EventsTab = () => {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast({ title: 'Error', description: 'Image must be less than 5MB', variant: 'destructive' });
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: 'Error', description: 'Image must be less than 10MB', variant: 'destructive' });
       return;
     }
 

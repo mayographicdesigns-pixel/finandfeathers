@@ -1939,7 +1939,7 @@ async def admin_delete_instagram_post(post_id: str, username: str = Depends(get_
 # File Upload (Admin)
 ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
 ALLOWED_VIDEO_EXTENSIONS = {'.mp4', '.mov', '.webm', '.avi'}
-MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 MAX_VIDEO_SIZE = 50 * 1024 * 1024  # 50MB
 
 async def download_image_to_uploads(image_url: str):
@@ -1999,7 +1999,7 @@ async def admin_upload_file(
         # Read file contents
         contents = await file.read()
         if len(contents) > MAX_FILE_SIZE:
-            raise HTTPException(status_code=400, detail="File too large. Maximum size is 5MB")
+            raise HTTPException(status_code=400, detail="File too large. Maximum size is 10MB")
         
         # Store in MongoDB as Base64 for production persistence
         base64_data = base64.b64encode(contents).decode('utf-8')
@@ -3017,10 +3017,10 @@ async def upload_profile_photo(user_id: str, file: UploadFile = File(...)):
     if file.content_type not in allowed_types:
         raise HTTPException(status_code=400, detail="Invalid file type. Allowed: JPG, PNG, GIF, WebP")
     
-    # Validate file size (max 5MB)
+    # Validate file size (max 10MB)
     contents = await file.read()
-    if len(contents) > 5 * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="File too large. Max 5MB")
+    if len(contents) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File too large. Max 10MB")
     
     # Generate unique file ID
     file_id = f"profile_{user_id}_{uuid.uuid4().hex[:8]}"

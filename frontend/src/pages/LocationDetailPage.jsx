@@ -623,9 +623,9 @@ const LocationDetailPage = () => {
       return;
     }
     
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast({ title: 'Error', description: 'Image must be less than 5MB', variant: 'destructive' });
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: 'Error', description: 'Image must be less than 10MB', variant: 'destructive' });
       return;
     }
     
@@ -1402,7 +1402,7 @@ const LocationDetailPage = () => {
                       >
                         <Upload className="w-12 h-12 text-slate-400" />
                         <span className="text-slate-400">Tap to upload a photo</span>
-                        <span className="text-slate-500 text-xs">JPG, PNG up to 5MB</span>
+                        <span className="text-slate-500 text-xs">JPG, PNG up to 10MB</span>
                       </button>
                     )}
 

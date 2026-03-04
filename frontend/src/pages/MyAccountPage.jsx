@@ -1648,7 +1648,7 @@ const MyAccountPage = () => {
                       <>
                         <Camera className="w-10 h-10 mx-auto text-slate-400 mb-2" />
                         <p className="text-slate-400">Click to upload a photo</p>
-                        <p className="text-xs text-slate-500 mt-1">JPG, PNG, GIF up to 5MB</p>
+                        <p className="text-xs text-slate-500 mt-1">JPG, PNG, GIF up to 10MB</p>
                       </>
                     )}
                   </div>
