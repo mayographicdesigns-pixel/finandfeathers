@@ -41,9 +41,19 @@ const LazyImage = ({ src, alt, className }) => {
 
 // Style One: Horizontal card with image on left, title + badge + price + dotted line on right
 export const MenuStyleOne = ({ item, isExpanded, onToggleExpand, onImageClick }) => {
-  const imageUrl = item.image_url || item.image;
-  const hasImage = imageUrl && imageUrl.trim() !== '';
+  const rawImageUrl = item.image_url || item.image;
+  const hasImage = rawImageUrl && rawImageUrl.trim() !== '';
   const hasBadge = item.badges && item.badges.length > 0;
+
+  // Construct full image URL
+  const getImageUrl = (url) => {
+    if (!url) return '';
+    if (url.startsWith('data:')) return url;
+    if (url.startsWith('http')) return url;
+    if (url.startsWith('/api')) return `${process.env.REACT_APP_BACKEND_URL}${url}`;
+    return url;
+  };
+  const imageUrl = getImageUrl(rawImageUrl);
 
   return (
     <div 

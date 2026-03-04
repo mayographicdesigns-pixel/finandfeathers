@@ -41,9 +41,19 @@ const LazyImage = ({ src, alt, className }) => {
 
 // Style Four: Horizontal row with rounded image, title + price, Buy Now button
 export const MenuStyleFour = ({ item, isExpanded, onToggleExpand, onImageClick }) => {
-  const imageUrl = item.image_url || item.image;
-  const hasImage = imageUrl && imageUrl.trim() !== '';
+  const rawImageUrl = item.image_url || item.image;
+  const hasImage = rawImageUrl && rawImageUrl.trim() !== '';
   const hasBadge = item.badges && item.badges.length > 0;
+
+  // Construct full image URL
+  const getImageUrl = (url) => {
+    if (!url) return '';
+    if (url.startsWith('data:')) return url;
+    if (url.startsWith('http')) return url;
+    if (url.startsWith('/api')) return `${process.env.REACT_APP_BACKEND_URL}${url}`;
+    return url;
+  };
+  const imageUrl = getImageUrl(rawImageUrl);
 
   // Generate pastel background color based on item name
   const colors = ['bg-rose-100', 'bg-amber-100', 'bg-emerald-100', 'bg-sky-100', 'bg-violet-100', 'bg-pink-100'];
