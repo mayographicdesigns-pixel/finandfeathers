@@ -635,5 +635,35 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 ## Credentials
 - **Admin Login**: username=`admin`, password=`$outhcentral`
 
+## Code Refactoring Progress (March 2026)
+
+### AdminTabs.jsx Refactoring (Started March 6, 2026)
+The original `AdminTabs.jsx` file (242KB, 5900+ lines) has been split into modular components for better maintainability:
+
+#### Extracted Components (Completed)
+- `LoginForm.jsx` - Admin login form component
+- `DashboardStats.jsx` - Dashboard statistics display
+- `LoyaltyMembersTab.jsx` - Loyalty program member management
+- `ContactsTab.jsx` - Contact form submissions management
+- `NotificationsTab.jsx` - Push notification management
+- `AdminAccountsTab.jsx` - Admin user account management (CRUD, password change)
+- `SettingsTab.jsx` - App settings toggles (Token Program, Loyalty, Buy a Drink)
+
+#### Remaining Components (Still in AdminTabs.jsx)
+- `MenuItemsTab` - Menu item CRUD with image editor
+- `SpecialsTab` - Daily specials management
+- `GalleryTab` - Gallery management
+- `LocationsTab` - Location CRUD
+- `VideosTab` - Video management
+- `SocialTab` - Social links management
+- `EventsTab` - Events management
+- `GallerySubmissionsTab` - User gallery submissions
+- `SocialPostsTab` - Social posts management
+- `UsersTab` - User profiles and token gifting
+- `DJScheduleTab` - DJ schedule management
+
+#### New Index File
+- `index.js` - Centralized exports for all admin components
+
 ## Preview URL
 https://fin-feathers-pwa-1.preview.emergentagent.com

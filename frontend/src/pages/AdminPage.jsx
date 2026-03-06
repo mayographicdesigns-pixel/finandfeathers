@@ -26,8 +26,8 @@ import {
   UsersTab,
   DJScheduleTab,
   SettingsTab
-} from '../components/admin/AdminTabs';
-import PageContentTab from '../components/admin/PageContentTab';
+} from '../components/admin';
+import { PageContentTab } from '../components/admin';
 import { Settings, Music } from 'lucide-react';
 // Main Admin Page Component
 const AdminPage = () => {
