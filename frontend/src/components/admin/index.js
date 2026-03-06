@@ -12,21 +12,16 @@ export { default as DJScheduleTab } from './DJScheduleTab';
 export { default as EventsTab } from './EventsTab';
 export { default as GallerySubmissionsTab } from './GallerySubmissionsTab';
 export { default as GalleryTab } from './GalleryTab';
+export { default as LocationsTab } from './LocationsTab';
 export { default as LoyaltyMembersTab } from './LoyaltyMembersTab';
 export { default as MenuItemsTab } from './MenuItemsTab';
 export { default as NotificationsTab } from './NotificationsTab';
 export { default as SettingsTab } from './SettingsTab';
 export { default as SocialPostsTab } from './SocialPostsTab';
+export { default as SocialTab } from './SocialTab';
 export { default as SpecialsTab } from './SpecialsTab';
 export { default as UsersTab } from './UsersTab';
-
-// Re-export components that are still in AdminTabs.jsx
-// These will be migrated to individual files over time
-export { 
-  LocationsTab, 
-  VideosTab, 
-  SocialTab
-} from './AdminTabs';
+export { default as VideosTab } from './VideosTab';
 
 // Other admin components
 export { default as MenuImageEditor } from './MenuImageEditor';
