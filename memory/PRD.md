@@ -640,7 +640,7 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 ### AdminTabs.jsx Refactoring (Started March 6, 2026)
 The original `AdminTabs.jsx` file (242KB, 5900+ lines) has been split into modular components for better maintainability:
 
-#### Extracted Components (Completed - 11 total)
+#### Extracted Components (Completed - 15 total)
 - `LoginForm.jsx` - Admin login form component
 - `DashboardStats.jsx` - Dashboard statistics display
 - `LoyaltyMembersTab.jsx` - Loyalty program member management
@@ -652,15 +652,15 @@ The original `AdminTabs.jsx` file (242KB, 5900+ lines) has been split into modul
 - `DJScheduleTab.jsx` - DJ profile and schedule management
 - `SpecialsTab.jsx` - Daily specials and promotional content management
 - `MenuItemsTab.jsx` - Menu item CRUD with image editor and category display styles
+- `GalleryTab.jsx` - Gallery management with drag & drop reordering
+- `GallerySubmissionsTab.jsx` - User gallery submissions moderation
+- `SocialPostsTab.jsx` - Social posts management with cleanup
+- `EventsTab.jsx` - Events and ticketing management
 
-#### Remaining Components (Still in AdminTabs.jsx - 7 total)
-- `GalleryTab` - Gallery management with drag & drop reordering
-- `LocationsTab` - Location CRUD with hours and social media
-- `VideosTab` - Promo video carousel management
+#### Remaining Components (Still in AdminTabs.jsx - 3 total)
+- `LocationsTab` - Location CRUD with hours, coordinates, and feature toggles
+- `VideosTab` - Promo video carousel management with file upload
 - `SocialTab` - Social links and Instagram feed management
-- `EventsTab` - Events management
-- `GallerySubmissionsTab` - User gallery submissions
-- `SocialPostsTab` - Social posts management
 
 #### New Index File
 - `index.js` - Centralized exports for all admin components
