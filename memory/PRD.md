@@ -640,7 +640,7 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 ### AdminTabs.jsx Refactoring (Started March 6, 2026)
 The original `AdminTabs.jsx` file (242KB, 5900+ lines) has been split into modular components for better maintainability:
 
-#### Extracted Components (Completed - 10 total)
+#### Extracted Components (Completed - 11 total)
 - `LoginForm.jsx` - Admin login form component
 - `DashboardStats.jsx` - Dashboard statistics display
 - `LoyaltyMembersTab.jsx` - Loyalty program member management
@@ -651,13 +651,13 @@ The original `AdminTabs.jsx` file (242KB, 5900+ lines) has been split into modul
 - `UsersTab.jsx` - User profile management, token gifting, role assignment, cashout processing
 - `DJScheduleTab.jsx` - DJ profile and schedule management
 - `SpecialsTab.jsx` - Daily specials and promotional content management
+- `MenuItemsTab.jsx` - Menu item CRUD with image editor and category display styles
 
-#### Remaining Components (Still in AdminTabs.jsx - 8 total)
-- `MenuItemsTab` - Menu item CRUD with image editor
-- `GalleryTab` - Gallery management
-- `LocationsTab` - Location CRUD
-- `VideosTab` - Video management
-- `SocialTab` - Social links management
+#### Remaining Components (Still in AdminTabs.jsx - 7 total)
+- `GalleryTab` - Gallery management with drag & drop reordering
+- `LocationsTab` - Location CRUD with hours and social media
+- `VideosTab` - Promo video carousel management
+- `SocialTab` - Social links and Instagram feed management
 - `EventsTab` - Events management
 - `GallerySubmissionsTab` - User gallery submissions
 - `SocialPostsTab` - Social posts management
