@@ -675,4 +675,4 @@ The MenuPage.jsx file (~1500 lines) has partial component extraction:
 - Extract DrinkSections component
 
 ## Preview URL
-https://fin-feathers-pwa-1.preview.emergentagent.com
+https://location-menu-app.preview.emergentagent.com
