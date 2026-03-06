@@ -15,238 +15,16 @@ import {
   sendDrink, getDrinksAtLocation, getDrinksForUser
 } from '../services/api';
 import { useToast } from '../hooks/use-toast';
-
-const AVATAR_EMOJIS = ['😊', '😎', '🤩', '🥳', '😋', '🍗', '🦐', '🍹', '🔥', '💯', '🎉', '✨'];
-const MOODS = ['Vibing', 'Hungry', 'Celebrating', 'Date Night', 'Girls Night', 'With Friends', 'Solo Dining', 'Business Dinner'];
-const TIP_AMOUNTS = [5, 10, 20, 50, 100];
-const STAFF_TIP_AMOUNTS = [10, 20, 50, 100];
-
-const DRINK_OPTIONS = [
-  { name: 'House Cocktail', emoji: '🍸', price: '$12' },
-  { name: 'Beer', emoji: '🍺', price: '$8' },
-  { name: 'Wine', emoji: '🍷', price: '$10' },
-  { name: 'Shot', emoji: '🥃', price: '$8' },
-  { name: 'Margarita', emoji: '🍹', price: '$14' },
-  { name: 'Champagne', emoji: '🥂', price: '$15' },
-];
-
-// Tip Staff Tab Component
-const TipStaffTab = ({ myCheckIn, locationSlug, toast }) => {
-  const [staffList, setStaffList] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedStaff, setSelectedStaff] = useState(null);
-  const [tipAmount, setTipAmount] = useState(20);
-  const [customTipAmount, setCustomTipAmount] = useState('');
-  const [tipMessage, setTipMessage] = useState('');
-  const [sending, setSending] = useState(false);
-  const [userBalance, setUserBalance] = useState(0);
-
-  useEffect(() => {
-    loadStaffAndBalance();
-  }, [myCheckIn]);
-
-  const loadStaffAndBalance = async () => {
-    setLoading(true);
-    try {
-      const staff = await getStaffList();
-      setStaffList(staff || []);
-      
-      // Get user's token balance if checked in
-      if (myCheckIn) {
-        const savedProfileId = localStorage.getItem('ff_user_profile_id');
-        if (savedProfileId) {
-          const balance = await getTokenBalance(savedProfileId);
-          setUserBalance(balance?.balance || 0);
-        }
-      }
-    } catch (error) {
-      console.error('Error loading staff:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleTipStaff = async () => {
-    if (!selectedStaff || !myCheckIn) return;
-    
-    const amount = customTipAmount ? parseInt(customTipAmount) : tipAmount;
-    if (!amount || amount < 1) {
-      toast({ title: 'Error', description: 'Please enter a valid tip amount', variant: 'destructive' });
-      return;
-    }
-    
-    if (amount > userBalance) {
-      toast({ title: 'Insufficient Tokens', description: 'Please purchase more tokens to tip staff', variant: 'destructive' });
-      return;
-    }
-
-    setSending(true);
-    try {
-      const savedProfileId = localStorage.getItem('ff_user_profile_id');
-      if (!savedProfileId) {
-        toast({ title: 'Error', description: 'Please log in to tip staff', variant: 'destructive' });
-        return;
-      }
-      
-      await transferTokens(savedProfileId, {
-        to_user_id: selectedStaff.id,
-        amount: amount,
-        message: tipMessage || `Tip at ${locationSlug}`
-      });
-      
-      toast({ title: 'Tip Sent!', description: `Sent ${amount} tokens to ${selectedStaff.name}` });
-      
-      // Reset form and reload balance
-      setSelectedStaff(null);
-      setTipAmount(20);
-      setCustomTipAmount('');
-      setTipMessage('');
-      loadStaffAndBalance();
-    } catch (error) {
-      toast({ title: 'Error', description: error.message || 'Failed to send tip', variant: 'destructive' });
-    } finally {
-      setSending(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="text-center py-8">
-        <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-        <p className="text-slate-400">Loading staff...</p>
-      </div>
-    );
-  }
-
-  if (!myCheckIn) {
-    return (
-      <Card className="bg-slate-800/50 border-slate-700">
-        <CardContent className="p-8 text-center text-slate-400">
-          <DollarSign className="w-12 h-12 mx-auto mb-3 opacity-50" />
-          <p>Check in to tip staff members!</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      {/* Header Card */}
-      <Card className="bg-gradient-to-br from-amber-900/50 to-slate-800/50 border-amber-600/30">
-        <CardContent className="p-6 text-center">
-          <DollarSign className="w-12 h-12 text-amber-400 mx-auto mb-2" />
-          <h3 className="text-2xl font-bold text-white mb-1">Tip Our Staff</h3>
-          <p className="text-slate-300">Show appreciation for great service!</p>
-          <p className="text-amber-400 text-sm mt-2">Your Balance: {userBalance} tokens</p>
-        </CardContent>
-      </Card>
-
-      {/* Staff List */}
-      {staffList.length > 0 ? (
-        <Card className="bg-slate-800/50 border-slate-700">
-          <CardContent className="p-4">
-            <h3 className="text-white font-semibold mb-4">Select Staff Member</h3>
-            <div className="grid grid-cols-2 gap-3">
-              {staffList.map((staff) => (
-                <button
-                  key={staff.id}
-                  onClick={() => setSelectedStaff(staff)}
-                  className={`p-3 rounded-lg border transition-all text-left ${
-                    selectedStaff?.id === staff.id
-                      ? 'border-amber-500 bg-amber-600/20'
-                      : 'border-slate-600 bg-slate-700/30 hover:border-slate-500'
-                  }`}
-                  data-testid={`staff-${staff.id}`}
-                >
-                  <div className="flex items-center gap-3">
-                    {staff.profile_photo_url ? (
-                      <img src={staff.profile_photo_url} alt={staff.name} className="w-10 h-10 rounded-full object-cover" />
-                    ) : (
-                      <span className="w-10 h-10 rounded-full bg-slate-600 flex items-center justify-center text-xl">
-                        {staff.avatar_emoji || '👤'}
-                      </span>
-                    )}
-                    <div>
-                      <p className="text-white font-medium text-sm">{staff.name}</p>
-                      <p className="text-slate-400 text-xs">{staff.staff_title || 'Staff'}</p>
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card className="bg-slate-800/50 border-slate-700">
-          <CardContent className="p-8 text-center text-slate-400">
-            <p>No staff members available at this time</p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Tip Form - Shows when staff is selected */}
-      {selectedStaff && (
-        <Card className="bg-slate-800/50 border-slate-700">
-          <CardContent className="p-4">
-            <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-              <DollarSign className="w-5 h-5 text-amber-500" />
-              Tip {selectedStaff.name}
-            </h3>
-
-            <div className="flex flex-wrap gap-2 mb-4">
-              {STAFF_TIP_AMOUNTS.map((amount) => (
-                <button
-                  key={amount}
-                  onClick={() => { setTipAmount(amount); setCustomTipAmount(''); }}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                    tipAmount === amount && !customTipAmount
-                      ? 'bg-amber-600 text-white' 
-                      : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                  }`}
-                  data-testid={`staff-tip-${amount}`}
-                >
-                  {amount} tokens
-                </button>
-              ))}
-              <Input
-                type="number"
-                placeholder="Custom"
-                value={customTipAmount}
-                onChange={(e) => setCustomTipAmount(e.target.value)}
-                className="bg-slate-900 border-slate-700 text-white w-24"
-                min="1"
-              />
-            </div>
-
-            <Input
-              placeholder="Add a message (optional)"
-              value={tipMessage}
-              onChange={(e) => setTipMessage(e.target.value)}
-              className="bg-slate-900 border-slate-700 text-white mb-4"
-              maxLength={100}
-              data-testid="staff-tip-message"
-            />
-
-            <Button 
-              onClick={handleTipStaff}
-              disabled={sending || (customTipAmount ? parseInt(customTipAmount) : tipAmount) > userBalance}
-              className="w-full bg-amber-600 hover:bg-amber-700 h-12 text-lg"
-              data-testid="send-staff-tip-btn"
-            >
-              {sending ? 'Sending...' : `Send ${customTipAmount || tipAmount} Tokens`}
-            </Button>
-
-            {(customTipAmount ? parseInt(customTipAmount) : tipAmount) > userBalance && (
-              <p className="text-red-400 text-xs text-center mt-2">
-                Insufficient tokens. Visit My Account to purchase more.
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      )}
-    </div>
-  );
-};
+// Extracted components
+import { 
+  TipStaffTab,
+  SendDrinkModal,
+  DMModal,
+  AVATAR_EMOJIS,
+  MOODS,
+  TIP_AMOUNTS,
+  DRINK_OPTIONS
+} from '../components/location-page';
 
 const LocationDetailPage = () => {
   const { slug } = useParams();
@@ -1496,134 +1274,30 @@ const LocationDetailPage = () => {
       )}
 
       {/* DM Modal */}
-      {showDmModal && dmRecipient && (
-        <div className="fixed inset-0 bg-black/90 z-50 flex flex-col">
-          <div className="bg-slate-900 border-b border-slate-700 p-4 flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => setShowDmModal(false)} className="text-white">
-              <ChevronLeft className="w-5 h-5" />
-            </Button>
-            <span className="text-2xl">{dmRecipient.avatar_emoji}</span>
-            <div>
-              <p className="text-white font-medium">{dmRecipient.display_name}</p>
-              <p className="text-slate-400 text-xs">{dmRecipient.mood || 'Hanging out'}</p>
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            {dmThread.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex ${msg.from_checkin_id === myCheckIn?.id ? 'justify-end' : 'justify-start'}`}
-              >
-                <div className={`max-w-[75%] rounded-2xl px-4 py-2 ${
-                  msg.from_checkin_id === myCheckIn?.id 
-                    ? 'bg-red-600 text-white' 
-                    : 'bg-slate-800 text-white'
-                }`}>
-                  <p>{msg.message}</p>
-                  <p className="text-xs opacity-70 mt-1">
-                    {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </p>
-                </div>
-              </div>
-            ))}
-            {dmThread.length === 0 && (
-              <p className="text-center text-slate-500 py-8">Start the conversation!</p>
-            )}
-          </div>
-
-          <div className="bg-slate-900 border-t border-slate-700 p-4">
-            <div className="flex gap-2">
-              <Input
-                placeholder="Type a message..."
-                value={newDmText}
-                onChange={(e) => setNewDmText(e.target.value)}
-                className="bg-slate-800 border-slate-700 text-white flex-1"
-                onKeyPress={(e) => e.key === 'Enter' && handleSendDM()}
-                data-testid="dm-input"
-              />
-              <Button 
-                onClick={handleSendDM} 
-                disabled={sendingDm || !newDmText.trim()}
-                className="bg-red-600 hover:bg-red-700"
-                data-testid="dm-send-btn"
-              >
-                <Send className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <DMModal
+        isOpen={showDmModal}
+        onClose={() => setShowDmModal(false)}
+        recipient={dmRecipient}
+        messages={dmThread}
+        myCheckInId={myCheckIn?.id}
+        newMessage={newDmText}
+        onMessageChange={setNewDmText}
+        onSend={handleSendDM}
+        isSending={sendingDm}
+      />
 
       {/* Send a Drink Modal */}
-      {showDrinkModal && drinkRecipient && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-          <Card className="bg-slate-900 border-pink-600/50 w-full max-w-md">
-            <CardContent className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                  <Wine className="w-5 h-5 text-pink-500" />
-                  Send a Drink
-                </h2>
-                <Button variant="ghost" size="sm" onClick={() => setShowDrinkModal(false)} className="text-slate-400 hover:text-white">
-                  <X className="w-5 h-5" />
-                </Button>
-              </div>
-
-              <p className="text-slate-300 mb-4">
-                Sending to <span className="text-2xl">{drinkRecipient.avatar_emoji}</span> <span className="text-pink-400 font-semibold">{drinkRecipient.display_name}</span>
-              </p>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-slate-300 mb-2">Choose a Drink</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {DRINK_OPTIONS.map((drink) => (
-                    <button
-                      key={drink.name}
-                      onClick={() => setSelectedDrink(drink)}
-                      className={`p-3 rounded-lg text-left transition-all ${
-                        selectedDrink?.name === drink.name 
-                          ? 'bg-pink-600 text-white' 
-                          : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                      }`}
-                      data-testid={`drink-option-${drink.name.toLowerCase().replace(' ', '-')}`}
-                    >
-                      <span className="text-2xl">{drink.emoji}</span>
-                      <p className="text-sm font-medium mt-1">{drink.name}</p>
-                      <p className="text-xs opacity-70">{drink.price}</p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-slate-300 mb-2">Add a Message (optional)</label>
-                <Input
-                  placeholder="Cheers! 🥂"
-                  value={drinkMessage}
-                  onChange={(e) => setDrinkMessage(e.target.value)}
-                  className="bg-slate-800 border-slate-700 text-white"
-                  maxLength={100}
-                  data-testid="drink-message-input"
-                />
-              </div>
-
-              <Button
-                onClick={handleSendDrink}
-                disabled={sendingDrink || !selectedDrink}
-                className="w-full bg-pink-600 hover:bg-pink-700 h-12"
-                data-testid="send-drink-btn"
-              >
-                {sendingDrink ? 'Sending...' : `Send ${selectedDrink?.emoji || '🍸'} to ${drinkRecipient.display_name}`}
-              </Button>
-              
-              <p className="text-slate-500 text-xs text-center mt-3">
-                💳 Pay at the bar when your drink order is ready
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+      <SendDrinkModal
+        isOpen={showDrinkModal}
+        onClose={() => setShowDrinkModal(false)}
+        recipient={drinkRecipient}
+        selectedDrink={selectedDrink}
+        onSelectDrink={setSelectedDrink}
+        drinkMessage={drinkMessage}
+        onMessageChange={setDrinkMessage}
+        onSend={handleSendDrink}
+        isSending={sendingDrink}
+      />
 
       {/* Image Lightbox */}
       {lightboxImage && (
