@@ -636,4 +636,4 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - **Admin Login**: username=`admin`, password=`$outhcentral`
 
 ## Preview URL
-https://fin-feathers-pwa.preview.emergentagent.com
+https://fin-feathers-pwa-1.preview.emergentagent.com
