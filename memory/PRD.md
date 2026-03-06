@@ -660,8 +660,19 @@ The original `AdminTabs.jsx` file (242KB, 5900+ lines) has been fully refactored
 - `VideosTab.jsx` - Promo video carousel management with file upload
 - `SocialTab.jsx` - Social links and Instagram feed management
 
-#### Centralized Exports
-- `index.js` - All admin components exported from a single file for clean imports
+### MenuPage.jsx Refactoring (Started March 6, 2026)
+The MenuPage.jsx file (~1500 lines) has partial component extraction:
+
+#### Extracted Components (in /app/frontend/src/components/menu-page/)
+- `MenuHeroSection.jsx` - Hero section with daily special banner
+- `MenuCategoryFilter.jsx` - Category buttons and sub-category filters
+- `HookahSection.jsx` - Complete hookah menu section with premium/classic flavors
+- `index.js` - Centralized exports
+
+#### Remaining Work
+- Full integration of extracted components into MenuPage.jsx
+- Extract BeerWineSection component
+- Extract DrinkSections component
 
 ## Preview URL
 https://fin-feathers-pwa-1.preview.emergentagent.com
