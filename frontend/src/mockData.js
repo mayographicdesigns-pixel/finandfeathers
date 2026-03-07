@@ -541,73 +541,79 @@ export const menuItems = [
   },
   
   // FIN & FEATHERS SIGNATURE COCKTAILS
+  
+  // Tropical & Island Inspired
   {
     id: 'c1',
-    name: 'The Hollywood',
-    description: 'A premium Lemon Drop featuring Grey Goose Le Citron Vodka and Triple Sec, balanced with fresh lemon juice and simple syrup. Finished with a heavy sugar rim and fresh lemon twist. Served in a Stemless Martini.',
-    price: 17,
+    name: 'California Dreaming',
+    description: 'A colorful punch that gives you island vibes. Made with Malibu Rum, Captain Morgan Spiced Rum, pineapple juice, melon liqueur, sour mix, and a splash of Blue Curacao.',
+    price: 15,
     category: 'cocktails',
-    badges: ['Premium'],
+    badges: ['Island Vibes'],
     layout: 'line'
   },
   {
     id: 'c2',
+    name: 'Marina Del Rey',
+    description: 'Our signature Rum Punch includes Malibu Rum, pineapple juice, cranberry juice, lime juice, and grenadine.',
+    price: 15,
+    category: 'cocktails',
+    badges: [],
+    layout: 'line'
+  },
+  {
+    id: 'c3',
+    name: 'Melrose Ave',
+    description: 'A refreshing summer cocktail crafted with Peach Cîroc, pineapple juice, and a hint of grenadine.',
+    price: 15,
+    category: 'cocktails',
+    badges: [],
+    layout: 'line'
+  },
+  {
+    id: 'c4',
+    name: 'Baldwin Hills',
+    description: 'A unique cocktail exclusive to our establishment! Crafted with Island Jon Apple Guava Vodka, strawberry puree, and pineapple juice.',
+    price: 15,
+    category: 'cocktails',
+    badges: ['Exclusive'],
+    layout: 'line'
+  },
+  
+  // Bold & Boozy Classics
+  {
+    id: 'c5',
+    name: 'Sunset Blvd',
+    description: "F&F's best-selling beverage! A potent blend of Hennessey and agave, balanced with freshly muddled lime and simple syrup.",
+    price: 15,
+    category: 'cocktails',
+    badges: ['Best Seller'],
+    layout: 'line'
+  },
+  {
+    id: 'c6',
+    name: 'The 405',
+    description: 'A popular boozy delight! Uncle Nearest 100-proof Whiskey mixed with a hint of lemon juice and agave.',
+    price: 15,
+    category: 'cocktails',
+    badges: [],
+    layout: 'line'
+  },
+  {
+    id: 'c7',
     name: 'Pacific Coast Hwy',
-    description: 'A vibrant, multi-layered exotic signature. IslandJon Apple Guava Vodka blended with pineapple juice and Midori melon liqueur creates a striking green-to-yellow gradient. Garnished with fresh orange and cherry. Served in a Tall Glass.',
+    description: 'A sophisticated margarita crafted with Rémy Martin 1738 Cognac—a favorite among the socialites at Fin & Feathers.',
     price: 17,
     category: 'cocktails',
     badges: ['Premium'],
     layout: 'line'
   },
-  {
-    id: 'c3',
-    name: 'Fin-A-Rita',
-    description: 'The premier top-shelf Margarita. Crafted with Casamigos Reposado Tequila, Grand Marnier, fresh lime juice, and organic agave nectar. Served with fresh lime garnish in a Tall Glass.',
-    price: 17,
-    category: 'cocktails',
-    badges: ['Premium', "Chef's Special"],
-    layout: 'line'
-  },
-  {
-    id: 'c4',
-    name: 'The 405',
-    description: 'A bold and refreshing vodka signature named after the iconic highway. Cîroc Pineapple Vodka, fresh lemon, and simple syrup with a splash of pineapple juice. Finished with orange and cherry. Served in a Rocks Glass.',
-    price: 15,
-    category: 'cocktails',
-    badges: [],
-    layout: 'line'
-  },
-  {
-    id: 'c5',
-    name: 'LAX Sidecar',
-    description: 'A sophisticated, slightly sweet twist on a classic. Rémy Martin VSOP Cognac and Triple Sec muddled with fresh citrus and simple syrup. Garnished with orange and cherry. Served in a Stemless Martini.',
-    price: 15,
-    category: 'cocktails',
-    badges: [],
-    layout: 'line'
-  },
-  {
-    id: 'c6',
-    name: 'Sunset Blvd',
-    description: "A velvety-smooth cognac-based signature. D'ussé VSOP Cognac muddled with fresh lemon and blended with organic agave and simple syrup for a rich, aromatic finish. Garnished with orange and cherry. Served in a Tall Glass.",
-    price: 15,
-    category: 'cocktails',
-    badges: ["Chef's Special"],
-    layout: 'line'
-  },
-  {
-    id: 'c7',
-    name: 'Melrose Ave',
-    description: 'A fruity and summer-inspired favorite. Peach Cîroc Vodka with pineapple juice and a sweet splash of grenadine for a bright, approachable profile. Served with orange and cherry in a Tall Glass.',
-    price: 15,
-    category: 'cocktails',
-    badges: [],
-    layout: 'line'
-  },
+  
+  // Sophisticated & Tart
   {
     id: 'c8',
-    name: 'California Dreaming',
-    description: 'A tropical visual masterpiece. This triple-layered cocktail uses Blue Curacao, pineapple juice, and melon liqueur to create a refreshing island-style escape. Garnished with orange and cherry. Served in a Tall Glass.',
+    name: 'LAX Sidecar',
+    description: 'A delightfully sweet variation of the traditional Sidecar Martini. Crafted with Rémy Martin VSOP, freshly muddled citrus, and a hint of simple syrup.',
     price: 15,
     category: 'cocktails',
     badges: [],
@@ -615,20 +621,31 @@ export const menuItems = [
   },
   {
     id: 'c9',
-    name: 'Baldwin Hills',
-    description: "A sophisticated peach-forward cognac signature featuring D'Ussé VSOP, Peach Schnapps, and pineapple juice. Finished with the signature orange slice and cherry garnish. Served in a Tall Glass.",
+    name: 'East LA',
+    description: 'A bit sweet, a bit tart, and absolutely delightful. Crafted with Gran Coramino Reposado Tequila, fresh lime, and simple syrup, finished with a red wine float.',
     price: 15,
     category: 'cocktails',
     badges: [],
     layout: 'line'
   },
+  
+  // House Favorites
   {
     id: 'c10',
-    name: 'Bellini',
-    description: 'The quintessential brunch classic. A soft, opaque blend of sweet peach purée and chilled sparkling Prosecco. Garnished with fresh orange and cherry. Served in a Stemless Glass.',
-    price: 10,
+    name: 'The Hollywood',
+    description: 'A signature Lemon Drop featuring Grey Goose Le Citron.',
+    price: 17,
     category: 'cocktails',
-    badges: ['Brunch Favorite'],
+    badges: ['Premium'],
+    layout: 'line'
+  },
+  {
+    id: 'c11',
+    name: 'Fin-A-Rita',
+    description: 'Our premium margarita crafted with Patrón Cristalino Añejo.',
+    price: 17,
+    category: 'cocktails',
+    badges: ['Premium'],
     layout: 'line'
   },
   
