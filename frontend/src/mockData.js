@@ -766,7 +766,7 @@ export const menuItems = [
   {
     id: 'bd1',
     name: 'Mimosa',
-    description: 'Champagne & orange juice. Available in peach, strawberry, pineapple, cranberry or mango',
+    description: 'A bright and refreshing brunch staple. Chilled champagne topped with choice of premium fruit juice. Available in Mango, Peach, Pineapple, Strawberry, Cranberry, or traditional Orange. Garnished with a fresh fruit slice. Served in a Stemless Glass.',
     price: 10,
     category: 'brunch',
     badges: [],
@@ -775,7 +775,7 @@ export const menuItems = [
   {
     id: 'bd2',
     name: 'Bellini',
-    description: 'A cocktail made with Prosecco and peach purée',
+    description: 'The quintessential brunch classic. A soft, opaque blend of sweet peach purée and chilled sparkling Prosecco, garnished with a fresh orange slice and a cherry. Served in a Stemless Glass.',
     price: 10,
     category: 'brunch',
     badges: [],
@@ -783,8 +783,8 @@ export const menuItems = [
   },
   {
     id: 'bd3',
-    name: 'Tequila Sunrise',
-    description: 'Coramino Blanco Tequila, orange juice, & a dash of grenadine. Available with tajin or salted rim',
+    name: 'French 75',
+    description: 'An elegant and effervescent classic. Premium Gin and fresh-squeezed lemon juice shaken with simple syrup, topped with chilled champagne for a crisp finish. Served in a Stemless Glass.',
     price: 15,
     category: 'brunch',
     badges: [],
@@ -792,8 +792,8 @@ export const menuItems = [
   },
   {
     id: 'bd4',
-    name: 'Vodka Sunrise',
-    description: 'Ciroc Vodka, orange juice, & a dash of grenadine. Available with tajin or salted rim',
+    name: 'Sunrise',
+    description: 'A stunning visual gradient of red to orange. Casamigos Blanco Tequila, Triple Sec, and premium orange juice, finished with a slow pour of grenadine. Garnished with an orange slice and a cherry. Served in a Tall Glass.',
     price: 15,
     category: 'brunch',
     badges: [],
@@ -801,11 +801,11 @@ export const menuItems = [
   },
   {
     id: 'bd5',
-    name: 'French 75',
-    description: 'Tanqueray Gin, champagne, muddled lemon & simple syrup',
-    price: 15,
+    name: 'Sunset',
+    description: 'A sophisticated twist on the sunrise. Casamigos Blanco Tequila, Triple Sec, and orange juice topped with Grand Marnier for a deeper, more atmospheric hue. Garnished with an orange slice and a cherry. Served in a Tall Glass.',
+    price: 17,
     category: 'brunch',
-    badges: [],
+    badges: ['Premium'],
     layout: 'line'
   },
   
