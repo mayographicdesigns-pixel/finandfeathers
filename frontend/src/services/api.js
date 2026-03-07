@@ -1538,6 +1538,29 @@ export async function getDJTipsTotal(locationSlug) {
 }
 
 
+// ==================== SONG REQUEST & KARAOKE API ====================
+
+// Submit a song request or karaoke sign up
+export async function submitSongRequest(request) {
+  const response = await fetch(`${API_URL}/social/song-request`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request)
+  });
+  if (!response.ok) throw new Error('Failed to submit song request');
+  return await response.json();
+}
+
+// Get song requests for a location
+export async function getSongRequests(locationSlug, requestType = null) {
+  let url = `${API_URL}/social/song-requests/${locationSlug}`;
+  if (requestType) url += `?request_type=${requestType}`;
+  const response = await fetch(url);
+  if (!response.ok) throw new Error('Failed to fetch song requests');
+  return await response.json();
+}
+
+
 // ==================== DJ PROFILE API ====================
 
 // Register a new DJ

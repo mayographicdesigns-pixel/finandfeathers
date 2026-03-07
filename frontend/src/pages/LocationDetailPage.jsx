@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { MapPin, Phone, Clock, Home, Calendar, ShoppingBag, Instagram, Facebook, Twitter, ExternalLink, Navigation, Users, LogIn, LogOut, Smile, X, MessageCircle, Send, Heart, DollarSign, Music, Image as ImageIcon, ChevronLeft, Trash2, Wine, CreditCard, Smartphone, Edit2, Settings, Save, Plus, Camera, RotateCcw, Star, Truck, Upload } from 'lucide-react';
+import { MapPin, Phone, Clock, Home, Calendar, ShoppingBag, Instagram, Facebook, Twitter, ExternalLink, Navigation, Users, LogIn, LogOut, Smile, X, MessageCircle, Send, Heart, DollarSign, Music, Image as ImageIcon, ChevronLeft, Trash2, Wine, CreditCard, Smartphone, Edit2, Settings, Save, Plus, Camera, RotateCcw, Star, Truck, Upload, Mic2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import HibachiMenu from '../components/HibachiMenu';
-import { getLocationBySlug, verifyAdminToken, adminUpdateLocation, uploadImage, getStaffList, transferTokens, getTokenBalance, getDJSchedulesForLocation, getAppSettings } from '../services/api';
+import { getLocationBySlug, verifyAdminToken, adminUpdateLocation, uploadImage, getStaffList, transferTokens, getTokenBalance, getDJSchedulesForLocation, getAppSettings, submitSongRequest } from '../services/api';
 import { 
   checkInAtLocation, getCheckedInUsers, checkOut,
   createSocialPost, getSocialPosts, likePost, deleteSocialPost,
@@ -20,6 +20,7 @@ import {
   TipStaffTab,
   SendDrinkModal,
   DMModal,
+  SongRequestModal,
   AVATAR_EMOJIS,
   MOODS,
   TIP_AMOUNTS,
@@ -91,6 +92,11 @@ const LocationDetailPage = () => {
   const [songRequest, setSongRequest] = useState('');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('cash_app');
   const [sendingTip, setSendingTip] = useState(false);
+  
+  // Song Request / Karaoke state
+  const [showSongRequestModal, setShowSongRequestModal] = useState(false);
+  const [songRequestType, setSongRequestType] = useState('song_request'); // 'song_request' or 'karaoke'
+  const [submittingSongRequest, setSubmittingSongRequest] = useState(false);
   
   // Send a Drink state
   const [drinks, setDrinks] = useState([]);
@@ -746,6 +752,38 @@ const LocationDetailPage = () => {
     }
   };
 
+  // Handle Song Request / Karaoke submission
+  const handleOpenSongRequest = (type) => {
+    setSongRequestType(type);
+    setShowSongRequestModal(true);
+  };
+
+  const handleSubmitSongRequest = async (formData) => {
+    setSubmittingSongRequest(true);
+    try {
+      await submitSongRequest({
+        location_slug: slug,
+        request_type: formData.type,
+        name: formData.name,
+        song: formData.song,
+        artist: formData.artist || null,
+        checkin_id: myCheckIn?.id || null
+      });
+      setShowSongRequestModal(false);
+      const message = formData.type === 'karaoke' 
+        ? `You're signed up to sing "${formData.song}"!`
+        : `Song request for "${formData.song}" submitted!`;
+      toast({ 
+        title: formData.type === 'karaoke' ? "Karaoke Sign Up! 🎤" : "Song Requested! 🎵", 
+        description: message 
+      });
+    } catch (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setSubmittingSongRequest(false);
+    }
+  };
+
   if (isLoadingLocation) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -1297,6 +1335,17 @@ const LocationDetailPage = () => {
         onMessageChange={setDrinkMessage}
         onSend={handleSendDrink}
         isSending={sendingDrink}
+      />
+
+      {/* Song Request / Karaoke Modal */}
+      <SongRequestModal
+        isOpen={showSongRequestModal}
+        onClose={() => setShowSongRequestModal(false)}
+        requestType={songRequestType}
+        djName={currentDJ?.stage_name || currentDJ?.name}
+        locationSlug={slug}
+        onSubmit={handleSubmitSongRequest}
+        isSubmitting={submittingSongRequest}
       />
 
       {/* Image Lightbox */}
@@ -1881,6 +1930,26 @@ const LocationDetailPage = () => {
                       <p className="text-purple-300 text-sm">🎧 Now Playing</p>
                       {currentDJ.bio && <p className="text-slate-400 text-xs mt-1">{currentDJ.bio}</p>}
                     </div>
+                  </div>
+                  
+                  {/* Karaoke & Song Request Buttons */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <Button
+                      onClick={() => handleOpenSongRequest('karaoke')}
+                      className="bg-pink-600 hover:bg-pink-700 flex-1"
+                      data-testid="karaoke-btn"
+                    >
+                      <Mic2 className="w-4 h-4 mr-2" />
+                      Karaoke Sign Up
+                    </Button>
+                    <Button
+                      onClick={() => handleOpenSongRequest('song_request')}
+                      className="bg-purple-600 hover:bg-purple-700 flex-1"
+                      data-testid="song-request-btn"
+                    >
+                      <Music className="w-4 h-4 mr-2" />
+                      Request a Song
+                    </Button>
                   </div>
                   
                   {/* Payment Links */}

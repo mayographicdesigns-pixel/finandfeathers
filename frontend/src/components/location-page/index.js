@@ -2,6 +2,7 @@
 export { default as TipStaffTab } from './TipStaffTab';
 export { default as SendDrinkModal, DRINK_OPTIONS } from './SendDrinkModal';
 export { default as DMModal } from './DMModal';
+export { default as SongRequestModal } from './SongRequestModal';
 
 // Constants used across location page components
 export const AVATAR_EMOJIS = ['😊', '😎', '🤩', '🥳', '😋', '🍗', '🦐', '🍹', '🔥', '💯', '🎉', '✨'];

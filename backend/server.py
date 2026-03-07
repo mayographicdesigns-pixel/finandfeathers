@@ -42,6 +42,7 @@ from models import (
     DJTip, DJTipCreate, DJTipResponse,
     DJProfile, DJProfileCreate, DJProfileUpdate, DJProfileResponse,
     DJSchedule, DJScheduleCreate, DJScheduleUpdate, DJScheduleResponse,
+    SongRequestCreate, SongRequestResponse,
     DrinkOrder, DrinkOrderCreate, DrinkOrderResponse,
     UserProfile, UserProfileCreate, UserProfileUpdate, UserProfileResponse,
     TokenPurchase, TokenPurchaseCreate, TokenGiftCreate, TokenPurchaseResponse,
@@ -2578,6 +2579,55 @@ async def get_dj_tips_total(location_slug: str):
     if result:
         return {"total": result[0]["total"], "count": result[0]["count"]}
     return {"total": 0, "count": 0}
+
+
+# =====================================================
+# SONG REQUEST & KARAOKE ENDPOINTS
+# =====================================================
+
+@api_router.post("/social/song-request", response_model=SongRequestResponse)
+async def submit_song_request(request: SongRequestCreate):
+    """Submit a song request or karaoke sign up to the DJ"""
+    request_dict = request.dict()
+    request_dict["id"] = str(uuid.uuid4())
+    request_dict["status"] = "pending"
+    request_dict["created_at"] = datetime.now(timezone.utc)
+    
+    await db.song_requests.insert_one(request_dict)
+    
+    return SongRequestResponse(**request_dict)
+
+
+@api_router.get("/social/song-requests/{location_slug}")
+async def get_song_requests(location_slug: str, request_type: Optional[str] = None):
+    """Get song requests for a location (for DJ view)"""
+    query = {"location_slug": location_slug, "status": "pending"}
+    if request_type:
+        query["request_type"] = request_type
+    
+    requests = await db.song_requests.find(
+        query,
+        {"_id": 0}
+    ).sort("created_at", 1).to_list(50)
+    
+    return [SongRequestResponse(**r) for r in requests]
+
+
+@api_router.put("/social/song-request/{request_id}/status")
+async def update_song_request_status(request_id: str, status: str):
+    """Update the status of a song request (played, skipped)"""
+    if status not in ["pending", "played", "skipped"]:
+        raise HTTPException(status_code=400, detail="Invalid status")
+    
+    result = await db.song_requests.update_one(
+        {"id": request_id},
+        {"$set": {"status": status}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Request not found")
+    
+    return {"message": f"Request status updated to {status}"}
 
 
 # =====================================================

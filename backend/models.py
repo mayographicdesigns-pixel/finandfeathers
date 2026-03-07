@@ -552,6 +552,26 @@ class DJScheduleResponse(BaseModel):
     created_at: datetime
 
 
+# Song Request / Karaoke Sign Up - Users can request songs or sign up for karaoke
+class SongRequestCreate(BaseModel):
+    location_slug: str
+    request_type: str  # 'song_request' or 'karaoke'
+    name: str
+    song: str
+    artist: Optional[str] = None
+    checkin_id: Optional[str] = None
+
+class SongRequestResponse(BaseModel):
+    id: str
+    location_slug: str
+    request_type: str
+    name: str
+    song: str
+    artist: Optional[str]
+    checkin_id: Optional[str]
+    status: str  # 'pending', 'played', 'skipped'
+    created_at: datetime
+
 
 # Send a Drink - Users can send drinks to each other
 class DrinkOrder(BaseModel):

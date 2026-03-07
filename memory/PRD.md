@@ -65,6 +65,13 @@ Build a pixel-perfect clone of a restaurant website with the following features:
   - [x] show_main_menu toggle to hide main menu button for custom menus
   - [x] Orange "Food Truck" badge on locations page
   - [x] Dedicated hibachi menu with combos, proteins, sides, sauces, beverages
+- [x] **Karaoke Sign Up & Song Request** (NEW March 2026)
+  - [x] Two buttons in DJ tab: "Karaoke Sign Up" (pink) and "Request a Song" (purple)
+  - [x] Modal forms with Name, Song Title, Artist (optional) fields
+  - [x] Requests sent to currently scheduled DJ at the location
+  - [x] Toast notifications on successful submission
+  - [x] Backend API: POST /api/social/song-request, GET /api/social/song-requests/{location_slug}
+  - [x] Data model: SongRequestCreate, SongRequestResponse with status tracking
 
 #### New Reusable Components (Feb 2026)
 - [x] **ImageUploader** - Drag-drop image upload with square cropping, canvas-based processing
