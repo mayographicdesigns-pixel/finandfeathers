@@ -1401,14 +1401,34 @@ const LocationDetailPage = () => {
                       <h3 className="text-xl font-bold text-white">{currentDJ.stage_name || currentDJ.name}</h3>
                     </div>
                   </div>
-                  <Button
-                    onClick={() => setActiveTab('dj')}
-                    className="bg-purple-600 hover:bg-purple-700"
-                    data-testid="tip-dj-btn"
-                  >
-                    <DollarSign className="w-4 h-4 mr-1" />
-                    Tip DJ
-                  </Button>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Button
+                      onClick={() => handleOpenSongRequest('karaoke')}
+                      className="bg-pink-600 hover:bg-pink-700"
+                      data-testid="karaoke-banner-btn"
+                    >
+                      <Mic2 className="w-4 h-4 mr-1" />
+                      Karaoke
+                    </Button>
+                    <Button
+                      onClick={() => handleOpenSongRequest('song_request')}
+                      className="bg-purple-600 hover:bg-purple-700"
+                      data-testid="song-request-banner-btn"
+                    >
+                      <Music className="w-4 h-4 mr-1" />
+                      Song Request
+                    </Button>
+                    {location?.dj_tips_enabled && (
+                      <Button
+                        onClick={() => setActiveTab('dj')}
+                        className="bg-green-600 hover:bg-green-700"
+                        data-testid="tip-dj-btn"
+                      >
+                        <DollarSign className="w-4 h-4 mr-1" />
+                        Tip DJ
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
