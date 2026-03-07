@@ -540,38 +540,38 @@ export const menuItems = [
     layout: 'line'
   },
   
-  // SIGNATURE COCKTAILS (Line items - no images)
+  // FIN & FEATHERS SIGNATURE COCKTAILS
   {
     id: 'c1',
-    name: 'California Dreaming',
-    description: 'A colorful punch with island vibes. Made with Malibu Rum, Captain Morgan Spiced Rum, pineapple juice, melon liqueur, sour mix & a splash of blue curaçao',
-    price: 15,
+    name: 'The Hollywood',
+    description: 'A premium Lemon Drop featuring Grey Goose Le Citron Vodka and Triple Sec, balanced with fresh lemon juice and simple syrup. Finished with a heavy sugar rim and fresh lemon twist. Served in a Stemless Martini.',
+    price: 17,
     category: 'cocktails',
-    badges: [],
+    badges: ['Premium'],
     layout: 'line'
   },
   {
     id: 'c2',
-    name: 'Sunset Blvd',
-    description: "F&F's most popular drink! Hennessey, agave, muddled lemon, & simple syrup",
-    price: 15,
+    name: 'Pacific Coast Hwy',
+    description: 'A vibrant, multi-layered exotic signature. IslandJon Apple Guava Vodka blended with pineapple juice and Midori melon liqueur creates a striking green-to-yellow gradient. Garnished with fresh orange and cherry. Served in a Tall Glass.',
+    price: 17,
     category: 'cocktails',
-    badges: ["Chef's Special"],
+    badges: ['Premium'],
     layout: 'line'
   },
   {
     id: 'c3',
-    name: 'LAX Sidecar',
-    description: 'A slightly sweet twist on the classic sidecar martini! Made with Remy Martin VSOP, muddled citrus & a dash of simple syrup',
-    price: 15,
+    name: 'Fin-A-Rita',
+    description: 'The premier top-shelf Margarita. Crafted with Casamigos Reposado Tequila, Grand Marnier, fresh lime juice, and organic agave nectar. Served with fresh lime garnish in a Tall Glass.',
+    price: 17,
     category: 'cocktails',
-    badges: [],
+    badges: ['Premium', "Chef's Special"],
     layout: 'line'
   },
   {
     id: 'c4',
-    name: 'Marina Del Rey',
-    description: 'Our version of rum punch made with Malibu Rum, pineapple juice, cranberry juice, lime juice, & grenadine',
+    name: 'The 405',
+    description: 'A bold and refreshing vodka signature named after the iconic highway. Cîroc Pineapple Vodka, fresh lemon, and simple syrup with a splash of pineapple juice. Finished with orange and cherry. Served in a Rocks Glass.',
     price: 15,
     category: 'cocktails',
     badges: [],
@@ -579,8 +579,8 @@ export const menuItems = [
   },
   {
     id: 'c5',
-    name: 'The 405',
-    description: 'A boozy drink everyone loves! Uncle Nearest 100-proof whiskey blended with a splash of lemon juice & agave',
+    name: 'LAX Sidecar',
+    description: 'A sophisticated, slightly sweet twist on a classic. Rémy Martin VSOP Cognac and Triple Sec muddled with fresh citrus and simple syrup. Garnished with orange and cherry. Served in a Stemless Martini.',
     price: 15,
     category: 'cocktails',
     badges: [],
@@ -588,17 +588,17 @@ export const menuItems = [
   },
   {
     id: 'c6',
-    name: 'Baldwin Hills',
-    description: 'An exotic cocktail only found here! Made with Island Jon Apple Guava Vodka, strawberry puree, & pineapple juice',
+    name: 'Sunset Blvd',
+    description: "A velvety-smooth cognac-based signature. D'ussé VSOP Cognac muddled with fresh lemon and blended with organic agave and simple syrup for a rich, aromatic finish. Garnished with orange and cherry. Served in a Tall Glass.",
     price: 15,
     category: 'cocktails',
-    badges: [],
+    badges: ["Chef's Special"],
     layout: 'line'
   },
   {
     id: 'c7',
-    name: 'East LA',
-    description: 'A little sweet, a little tart and totally delicious! Made with Coramino Blanco tequila, fresh lime & a red wine float',
+    name: 'Melrose Ave',
+    description: 'A fruity and summer-inspired favorite. Peach Cîroc Vodka with pineapple juice and a sweet splash of grenadine for a bright, approachable profile. Served with orange and cherry in a Tall Glass.',
     price: 15,
     category: 'cocktails',
     badges: [],
@@ -606,8 +606,8 @@ export const menuItems = [
   },
   {
     id: 'c8',
-    name: 'Melrose Ave',
-    description: 'A fruity summer cocktail made with Peach Cîroc, pineapple juice, & a splash of grenadine',
+    name: 'California Dreaming',
+    description: 'A tropical visual masterpiece. This triple-layered cocktail uses Blue Curacao, pineapple juice, and melon liqueur to create a refreshing island-style escape. Garnished with orange and cherry. Served in a Tall Glass.',
     price: 15,
     category: 'cocktails',
     badges: [],
@@ -615,11 +615,20 @@ export const menuItems = [
   },
   {
     id: 'c9',
-    name: 'Pacific Coast Hwy',
-    description: "A sophisticated Hennessy Margarita. A popular cocktail & a favorite of Fin & Feathers' socialites!",
-    price: 17,
+    name: 'Baldwin Hills',
+    description: "A sophisticated peach-forward cognac signature featuring D'Ussé VSOP, Peach Schnapps, and pineapple juice. Finished with the signature orange slice and cherry garnish. Served in a Tall Glass.",
+    price: 15,
     category: 'cocktails',
-    badges: ["Chef's Special"],
+    badges: [],
+    layout: 'line'
+  },
+  {
+    id: 'c10',
+    name: 'Bellini',
+    description: 'The quintessential brunch classic. A soft, opaque blend of sweet peach purée and chilled sparkling Prosecco. Garnished with fresh orange and cherry. Served in a Stemless Glass.',
+    price: 10,
+    category: 'cocktails',
+    badges: ['Brunch Favorite'],
     layout: 'line'
   },
   
