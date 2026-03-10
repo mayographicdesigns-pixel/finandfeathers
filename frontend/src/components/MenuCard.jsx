@@ -46,7 +46,11 @@ const MenuCard = ({ item, variant = 'default', editMode = false, onEdit, onImage
   const isCompact = variant === 'compact';
   const isExpandedState = isExpanded;
   // Support both image and image_url properties
-  const imageUrl = item.image_url || item.image;
+  const rawImageUrl = item.image_url || item.image;
+  // Convert relative paths to absolute URLs
+  const imageUrl = rawImageUrl && rawImageUrl.startsWith('/api/') 
+    ? `${process.env.REACT_APP_BACKEND_URL}${rawImageUrl}`
+    : rawImageUrl;
   const hasImage = imageUrl && imageUrl.trim() !== '';
   const isLineLayout = item.layout === 'line';
 
