@@ -147,3 +147,8 @@ frontend/node_modules/.cache/default-development/13.pack
 # Environment files
 *.env
 *.env.*
+-e 
+# Environment files
+*.env
+*.env.*
+source_app/.git/objects/pack/pack-8acd9e78ede86a98a8bbe237dbccee7338675ae7.pack
