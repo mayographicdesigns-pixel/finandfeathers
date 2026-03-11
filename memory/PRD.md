@@ -692,9 +692,16 @@ The MenuPage.jsx file reduced from 1505 to 1318 lines (~187 lines saved)
 ## Bug Fixes (March 11, 2026)
 - **FIXED**: Incorrect images for "Catfish Nuggets" and "Chicken Tenders & Fries" starters
   - Old images were pointing to a previous deployment URL (location-menu-app.preview.emergentagent.com)
-  - Downloaded correct images from user and saved to /api/uploads/
-  - Updated database entries with correct local image paths
-  - Verified both items display correctly on public menu
+  - Downloaded correct images from user and stored in MongoDB for production persistence
+  - Updated database entries with correct /api/media/ paths
+- **FIXED**: Admin menu edits not reflecting on public menu (image field mismatch)
+  - MenuPage.jsx edit modal was using `image_url` field but backend only accepts `image`
+  - Fixed edit modal, add modal, and all image uploaders to use `image` field consistently
+- **FIXED**: 14 menu items had broken image URLs pointing to old deployment domain
+  - Converted all absolute URLs with old domains to relative /api/media/ paths
+- **FIXED**: Image uploaders storing full absolute URLs (deployment-dependent)
+  - ImageUploader.jsx, MenuItemsTab.jsx, and MenuImageEditor.jsx now store relative paths (/api/media/{id})
+  - This prevents images from breaking when the deployment URL changes
 
 ## Preview URL
 https://restaurant-menu-app-5.preview.emergentagent.com
