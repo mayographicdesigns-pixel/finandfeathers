@@ -120,9 +120,8 @@ const MenuItemsTab = () => {
     setUploading(true);
     try {
       const result = await uploadImage(file);
-      const backendUrl = process.env.REACT_APP_BACKEND_URL;
-      const fullUrl = `${backendUrl}${result.url}`;
-      setFormData({ ...formData, image: fullUrl });
+      // Store relative path so images work across deployments
+      setFormData({ ...formData, image: result.url });
       toast({ title: 'Success', description: 'Image uploaded successfully' });
     } catch (err) {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });

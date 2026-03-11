@@ -127,9 +127,8 @@ const ImageUploader = ({ currentImage, onImageUpload, aspectRatio = 1 }) => {
         }
         
         const data = await response.json();
-        const fullUrl = `${API_URL}${data.url}`;
-        
-        onImageUpload(fullUrl);
+        // Store relative path so images work across deployments
+        onImageUpload(data.url);
         setShowCropper(false);
         setPreviewImage(null);
         setOriginalImage(null);

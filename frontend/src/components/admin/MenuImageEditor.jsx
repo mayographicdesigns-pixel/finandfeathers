@@ -191,10 +191,10 @@ const MenuImageEditor = ({
         throw new Error(uploadResult?.detail || 'Upload failed');
       }
       
-      // Construct full URL for the uploaded image
-      const newImageUrl = `${apiUrl}${uploadResult.url}`;
+      // Store relative path so images work across deployments
+      const newImageUrl = uploadResult.url;
       
-      // Update menu item with new image
+      // Update menu item with new image (relative path)
       const updateResponse = await fetch(`${apiUrl}/api/admin/menu-items/${menuItem.id}`, {
         method: 'PUT',
         headers: {

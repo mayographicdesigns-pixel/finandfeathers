@@ -40,7 +40,7 @@ const MenuPage = () => {
     description: '',
     price: '',
     category: 'starters',
-    image_url: '',
+    image: '',
     is_available: true
   });
   
@@ -355,7 +355,7 @@ const MenuPage = () => {
         description: '',
         price: '',
         category: 'starters',
-        image_url: '',
+        image: '',
         is_available: true
       });
       toast({ title: 'Success', description: 'Menu item added!' });
@@ -751,14 +751,14 @@ const MenuPage = () => {
                 <div>
                   <label className="text-sm text-slate-300 mb-1 block">Image</label>
                   <ImageUploader 
-                    currentImage={editingItem.image_url}
-                    onImageUpload={(url) => setEditingItem({ ...editingItem, image_url: url })}
+                    currentImage={editingItem.image || editingItem.image_url}
+                    onImageUpload={(url) => setEditingItem({ ...editingItem, image: url })}
                   />
                   <div className="mt-2">
                     <label className="text-xs text-slate-400">Or enter URL directly:</label>
                     <Input
-                      value={editingItem.image_url || ''}
-                      onChange={(e) => setEditingItem({ ...editingItem, image_url: e.target.value })}
+                      value={editingItem.image || editingItem.image_url || ''}
+                      onChange={(e) => setEditingItem({ ...editingItem, image: e.target.value })}
                       className="bg-slate-800 border-slate-700 text-white mt-1"
                       placeholder="https://..."
                     />
@@ -841,14 +841,14 @@ const MenuPage = () => {
                 <div>
                   <label className="text-sm text-slate-300 mb-1 block">Image</label>
                   <ImageUploader 
-                    currentImage={newItem.image_url}
-                    onImageUpload={(url) => setNewItem({ ...newItem, image_url: url })}
+                    currentImage={newItem.image}
+                    onImageUpload={(url) => setNewItem({ ...newItem, image: url })}
                   />
                   <div className="mt-2">
                     <label className="text-xs text-slate-400">Or enter URL directly:</label>
                     <Input
-                      value={newItem.image_url}
-                      onChange={(e) => setNewItem({ ...newItem, image_url: e.target.value })}
+                      value={newItem.image || ''}
+                      onChange={(e) => setNewItem({ ...newItem, image: e.target.value })}
                       className="bg-slate-800 border-slate-700 text-white mt-1"
                       placeholder="https://..."
                     />
