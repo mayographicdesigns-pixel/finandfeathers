@@ -689,5 +689,12 @@ The MenuPage.jsx file reduced from 1505 to 1318 lines (~187 lines saved)
 - Extract BeerWineSection component
 - Extract DrinkSections component (mocktails, sodas, teas, juices)
 
+## Bug Fixes (March 11, 2026)
+- **FIXED**: Incorrect images for "Catfish Nuggets" and "Chicken Tenders & Fries" starters
+  - Old images were pointing to a previous deployment URL (location-menu-app.preview.emergentagent.com)
+  - Downloaded correct images from user and saved to /api/uploads/
+  - Updated database entries with correct local image paths
+  - Verified both items display correctly on public menu
+
 ## Preview URL
 https://restaurant-menu-app-5.preview.emergentagent.com
