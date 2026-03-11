@@ -690,4 +690,4 @@ The MenuPage.jsx file reduced from 1505 to 1318 lines (~187 lines saved)
 - Extract DrinkSections component (mocktails, sodas, teas, juices)
 
 ## Preview URL
-https://location-menu-app.preview.emergentagent.com
+https://restaurant-menu-app-5.preview.emergentagent.com
