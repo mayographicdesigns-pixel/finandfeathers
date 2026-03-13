@@ -32,7 +32,7 @@ const AuthCallback = () => {
         }
 
         // Exchange session_id for session via backend
-        const API_URL = process.env.REACT_APP_BACKEND_URL;
+        const API_URL = window.location.origin;
         const response = await fetch(`${API_URL}/api/auth/google/session`, {
           method: 'POST',
           headers: {

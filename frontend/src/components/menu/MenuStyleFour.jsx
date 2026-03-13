@@ -50,7 +50,7 @@ export const MenuStyleFour = ({ item, isExpanded, onToggleExpand, onImageClick }
     if (!url) return '';
     if (url.startsWith('data:')) return url;
     if (url.startsWith('http')) return url;
-    if (url.startsWith('/api')) return `${process.env.REACT_APP_BACKEND_URL}${url}`;
+    if (url.startsWith('/api')) return `${window.location.origin}${url}`;
     return url;
   };
   const imageUrl = getImageUrl(rawImageUrl);

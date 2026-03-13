@@ -7,7 +7,7 @@ import { Input } from '../components/ui/input';
 import { toast } from '../hooks/use-toast';
 import { createCartCheckout, getCartOrderStatus, createStripeMerchCheckout, getStripeCheckoutStatus, pollStripePaymentStatus, getPageContent } from '../services/api';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = window.location.origin;
 
 const MerchandisePage = () => {
   const navigate = useNavigate();

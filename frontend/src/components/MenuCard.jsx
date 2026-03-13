@@ -49,7 +49,7 @@ const MenuCard = ({ item, variant = 'default', editMode = false, onEdit, onImage
   const rawImageUrl = item.image_url || item.image;
   // Convert relative paths to absolute URLs
   const imageUrl = rawImageUrl && rawImageUrl.startsWith('/api/') 
-    ? `${process.env.REACT_APP_BACKEND_URL}${rawImageUrl}`
+    ? `${window.location.origin}${rawImageUrl}`
     : rawImageUrl;
   const hasImage = imageUrl && imageUrl.trim() !== '';
   const isLineLayout = item.layout === 'line';

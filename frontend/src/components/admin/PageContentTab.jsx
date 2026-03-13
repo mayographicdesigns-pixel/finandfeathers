@@ -99,7 +99,7 @@ const PageContentTab = () => {
 
     try {
       const result = await uploadImage(file);
-      const backendUrl = process.env.REACT_APP_BACKEND_URL;
+      const backendUrl = window.location.origin;
       const fullUrl = `${backendUrl}${result.url}`;
       const currentHtml = contentMap?.[uploadTarget.pageKey]?.[uploadTarget.sectionKey] || '';
       const nextHtml = `${currentHtml}

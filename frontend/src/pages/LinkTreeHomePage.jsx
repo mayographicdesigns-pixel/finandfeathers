@@ -777,7 +777,7 @@ const LinkTreeHomePage = () => {
 
     try {
       const result = await uploadImage(file);
-      const backendUrl = process.env.REACT_APP_BACKEND_URL;
+      const backendUrl = window.location.origin;
       const fullUrl = `${backendUrl}${result.url}`;
       
       const newImages = [...editingContent.social_feed_images];

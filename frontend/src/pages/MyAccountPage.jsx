@@ -379,7 +379,7 @@ const MyAccountPage = () => {
     setUploadingProfilePhoto(true);
     try {
       const result = await uploadProfilePhoto(profile.id, file);
-      const photoUrl = `${process.env.REACT_APP_BACKEND_URL}${result.url}`;
+      const photoUrl = `${window.location.origin}${result.url}`;
       
       // Update local state
       setProfile(prev => ({ ...prev, profile_photo_url: photoUrl }));
@@ -422,7 +422,7 @@ const MyAccountPage = () => {
     try {
       // Upload the image first
       const uploadResult = await uploadImage(file);
-      const imageUrl = `${process.env.REACT_APP_BACKEND_URL}${uploadResult.url}`;
+      const imageUrl = `${window.location.origin}${uploadResult.url}`;
       
       // Submit to gallery
       await submitGalleryPhoto(profile.id, imageUrl, photoCaption || null);
@@ -1304,7 +1304,7 @@ const MyAccountPage = () => {
                       >
                         {staff.profile_photo_url ? (
                           <img 
-                            src={staff.profile_photo_url.startsWith('http') ? staff.profile_photo_url : `${process.env.REACT_APP_BACKEND_URL}${staff.profile_photo_url}`}
+                            src={staff.profile_photo_url.startsWith('http') ? staff.profile_photo_url : `${window.location.origin}${staff.profile_photo_url}`}
                             alt={staff.name}
                             className="w-12 h-12 rounded-full object-cover"
                           />

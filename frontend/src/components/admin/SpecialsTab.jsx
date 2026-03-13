@@ -166,7 +166,7 @@ const SpecialsTab = () => {
     setUploading(true);
     try {
       const result = await uploadImage(file);
-      const backendUrl = process.env.REACT_APP_BACKEND_URL;
+      const backendUrl = window.location.origin;
       const fullUrl = `${backendUrl}${result.url}`;
       setFormData({ ...formData, image: fullUrl });
       toast({ title: 'Success', description: 'Image uploaded' });

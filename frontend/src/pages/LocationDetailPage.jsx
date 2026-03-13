@@ -378,7 +378,7 @@ const LocationDetailPage = () => {
         // Create a file from blob
         const file = new File([blob], `selfie_${Date.now()}.jpg`, { type: 'image/jpeg' });
         const result = await uploadImage(file);
-        const backendUrl = process.env.REACT_APP_BACKEND_URL;
+        const backendUrl = window.location.origin;
         const fullUrl = `${backendUrl}${result.url}`;
         setSelfieImage(fullUrl);
         toast({ title: 'Selfie captured!', description: 'Looking good!' });
@@ -420,7 +420,7 @@ const LocationDetailPage = () => {
       if (result && result.url) {
         const fullUrl = result.url.startsWith('http') 
           ? result.url 
-          : `${process.env.REACT_APP_BACKEND_URL}${result.url}`;
+          : `${window.location.origin}${result.url}`;
         setSelfieImage(fullUrl);
         toast({ title: 'Photo uploaded!', description: 'Looking good!' });
       }
@@ -498,7 +498,7 @@ const LocationDetailPage = () => {
       try {
         const file = new File([blob], `post_${Date.now()}.jpg`, { type: 'image/jpeg' });
         const result = await uploadImage(file);
-        const backendUrl = process.env.REACT_APP_BACKEND_URL;
+        const backendUrl = window.location.origin;
         const fullUrl = `${backendUrl}${result.url}`;
         setNewPostImage(fullUrl);
         toast({ title: 'Photo added!', description: 'Ready to post' });

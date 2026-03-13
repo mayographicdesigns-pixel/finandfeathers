@@ -3,7 +3,7 @@ import { Upload, X, Crop, Check } from 'lucide-react';
 import { Button } from './ui/button';
 import { toast } from '../hooks/use-toast';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+const API_URL = window.location.origin || '';
 
 const ImageUploader = ({ currentImage, onImageUpload, aspectRatio = 1 }) => {
   const [isDragging, setIsDragging] = useState(false);

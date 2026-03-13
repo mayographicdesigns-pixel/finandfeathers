@@ -35,7 +35,7 @@ const VideosTab = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('adminToken');
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/promo-videos`, {
+      const response = await fetch(`${window.location.origin}/api/admin/promo-videos`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -78,7 +78,7 @@ const VideosTab = () => {
       
       setUploadProgress(30);
       
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/upload/video`, {
+      const response = await fetch(`${window.location.origin}/api/admin/upload/video`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formDataUpload
@@ -121,8 +121,8 @@ const VideosTab = () => {
     try {
       const token = localStorage.getItem('adminToken');
       const url = editingVideo 
-        ? `${process.env.REACT_APP_BACKEND_URL}/api/admin/promo-videos/${editingVideo.id}`
-        : `${process.env.REACT_APP_BACKEND_URL}/api/admin/promo-videos`;
+        ? `${window.location.origin}/api/admin/promo-videos/${editingVideo.id}`
+        : `${window.location.origin}/api/admin/promo-videos`;
       
       const response = await fetch(url, {
         method: editingVideo ? 'PUT' : 'POST',
@@ -164,7 +164,7 @@ const VideosTab = () => {
     if (!window.confirm('Delete this video?')) return;
     try {
       const token = localStorage.getItem('adminToken');
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/promo-videos/${videoId}`, {
+      const response = await fetch(`${window.location.origin}/api/admin/promo-videos/${videoId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -180,7 +180,7 @@ const VideosTab = () => {
   const handleToggleActive = async (video) => {
     try {
       const token = localStorage.getItem('adminToken');
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/promo-videos/${video.id}`, {
+      const response = await fetch(`${window.location.origin}/api/admin/promo-videos/${video.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

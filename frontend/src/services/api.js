@@ -1,4 +1,4 @@
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = window.location.origin;
 const API_URL = `${BACKEND_URL}/api`;
 
 // Base64 URL encode helper

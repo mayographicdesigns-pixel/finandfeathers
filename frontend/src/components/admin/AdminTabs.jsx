@@ -477,7 +477,7 @@ const MenuItemsTab = () => {
     try {
       const result = await uploadImage(file);
       // Construct full URL for the uploaded image
-      const backendUrl = process.env.REACT_APP_BACKEND_URL;
+      const backendUrl = window.location.origin;
       const fullUrl = `${backendUrl}${result.url}`;
       setFormData({ ...formData, image: fullUrl });
       toast({ title: 'Success', description: 'Image uploaded successfully' });
@@ -831,7 +831,7 @@ const MenuItemsTab = () => {
               if (!img) return '/placeholder-food.jpg';
               if (img.startsWith('data:')) return img; // Base64
               if (img.startsWith('http')) return img; // Full URL
-              if (img.startsWith('/api/')) return `${process.env.REACT_APP_BACKEND_URL}${img}`; // API path
+              if (img.startsWith('/api/')) return `${window.location.origin}${img}`; // API path
               return img;
             };
             
@@ -909,7 +909,7 @@ const MenuItemsTab = () => {
           setItems(items.map(i => i.id === itemId ? { ...i, image: newImageUrl } : i));
           toast({ title: 'Success', description: 'Menu item image updated' });
         }}
-        apiUrl={process.env.REACT_APP_BACKEND_URL}
+        apiUrl={window.location.origin}
         authToken={localStorage.getItem('adminToken')}
       />
     </div>
@@ -1635,7 +1635,7 @@ const SpecialsTab = () => {
     setUploading(true);
     try {
       const result = await uploadImage(file);
-      const backendUrl = process.env.REACT_APP_BACKEND_URL;
+      const backendUrl = window.location.origin;
       const fullUrl = `${backendUrl}${result.url}`;
       setFormData({ ...formData, image: fullUrl });
       toast({ title: 'Success', description: 'Image uploaded' });
@@ -2338,7 +2338,7 @@ const GalleryTab = () => {
     setUploading(true);
     try {
       const result = await uploadImage(file);
-      const backendUrl = process.env.REACT_APP_BACKEND_URL;
+      const backendUrl = window.location.origin;
       const fullUrl = `${backendUrl}${result.url}`;
       setFormData({ ...formData, image_url: fullUrl });
       toast({ title: 'Success', description: 'Image uploaded' });
@@ -2719,7 +2719,7 @@ const LocationsTab = () => {
     setUploading(true);
     try {
       const result = await uploadImage(file);
-      const backendUrl = process.env.REACT_APP_BACKEND_URL;
+      const backendUrl = window.location.origin;
       const fullUrl = `${backendUrl}${result.url}`;
       setFormData({ ...formData, image: fullUrl });
       toast({ title: 'Success', description: 'Image uploaded successfully' });
@@ -3251,7 +3251,7 @@ const VideosTab = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('adminToken');
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/promo-videos`, {
+      const response = await fetch(`${window.location.origin}/api/admin/promo-videos`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -3296,7 +3296,7 @@ const VideosTab = () => {
       
       setUploadProgress(30);
       
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/upload/video`, {
+      const response = await fetch(`${window.location.origin}/api/admin/upload/video`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formDataUpload
@@ -3340,8 +3340,8 @@ const VideosTab = () => {
     try {
       const token = localStorage.getItem('adminToken');
       const url = editingVideo 
-        ? `${process.env.REACT_APP_BACKEND_URL}/api/admin/promo-videos/${editingVideo.id}`
-        : `${process.env.REACT_APP_BACKEND_URL}/api/admin/promo-videos`;
+        ? `${window.location.origin}/api/admin/promo-videos/${editingVideo.id}`
+        : `${window.location.origin}/api/admin/promo-videos`;
       
       const response = await fetch(url, {
         method: editingVideo ? 'PUT' : 'POST',
@@ -3383,7 +3383,7 @@ const VideosTab = () => {
     if (!window.confirm('Delete this video?')) return;
     try {
       const token = localStorage.getItem('adminToken');
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/promo-videos/${videoId}`, {
+      const response = await fetch(`${window.location.origin}/api/admin/promo-videos/${videoId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -3399,7 +3399,7 @@ const VideosTab = () => {
   const handleToggleActive = async (video) => {
     try {
       const token = localStorage.getItem('adminToken');
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/promo-videos/${video.id}`, {
+      const response = await fetch(`${window.location.origin}/api/admin/promo-videos/${video.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -3700,7 +3700,7 @@ const SocialTab = () => {
     setUploading(true);
     try {
       const result = await uploadImage(file);
-      const backendUrl = process.env.REACT_APP_BACKEND_URL;
+      const backendUrl = window.location.origin;
       setPostForm({ ...postForm, image_url: `${backendUrl}${result.url}` });
       toast({ title: 'Success', description: 'Image uploaded' });
     } catch (err) {
@@ -4014,7 +4014,7 @@ const EventsTab = () => {
     setUploading(true);
     try {
       const result = await uploadImage(file);
-      const backendUrl = process.env.REACT_APP_BACKEND_URL;
+      const backendUrl = window.location.origin;
       const fullUrl = `${backendUrl}${result.url}`;
       setFormData({ ...formData, image: fullUrl });
       toast({ title: 'Success', description: 'Image uploaded' });
@@ -5143,7 +5143,7 @@ const UsersTab = () => {
                     {/* Profile Photo or Avatar */}
                     {user.profile_photo_url ? (
                       <img 
-                        src={user.profile_photo_url.startsWith('http') ? user.profile_photo_url : `${process.env.REACT_APP_BACKEND_URL}${user.profile_photo_url}`}
+                        src={user.profile_photo_url.startsWith('http') ? user.profile_photo_url : `${window.location.origin}${user.profile_photo_url}`}
                         alt={user.name}
                         className="w-12 h-12 rounded-full object-cover border-2 border-red-500"
                       />

@@ -183,7 +183,7 @@ class BackgroundSyncService {
 
   // Sync a single post to the server
   async syncSinglePost(post) {
-    const API_URL = process.env.REACT_APP_BACKEND_URL;
+    const API_URL = window.location.origin;
     
     let endpoint, method, body;
     

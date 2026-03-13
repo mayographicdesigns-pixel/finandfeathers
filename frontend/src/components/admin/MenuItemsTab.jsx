@@ -193,7 +193,7 @@ const MenuItemsTab = () => {
     if (!img) return '/placeholder-food.jpg';
     if (img.startsWith('data:')) return img;
     if (img.startsWith('http')) return img;
-    if (img.startsWith('/api/')) return `${process.env.REACT_APP_BACKEND_URL}${img}`;
+    if (img.startsWith('/api/')) return `${window.location.origin}${img}`;
     return img;
   };
 
@@ -544,7 +544,7 @@ const MenuItemsTab = () => {
           setItems(items.map(i => i.id === itemId ? { ...i, image: newImageUrl } : i));
           toast({ title: 'Success', description: 'Menu item image updated' });
         }}
-        apiUrl={process.env.REACT_APP_BACKEND_URL}
+        apiUrl={window.location.origin}
         authToken={localStorage.getItem('adminToken')}
       />
     </div>

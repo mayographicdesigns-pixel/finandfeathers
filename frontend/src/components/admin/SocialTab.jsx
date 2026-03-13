@@ -88,7 +88,7 @@ const SocialTab = () => {
     setUploading(true);
     try {
       const result = await uploadImage(file);
-      const backendUrl = process.env.REACT_APP_BACKEND_URL;
+      const backendUrl = window.location.origin;
       setPostForm({ ...postForm, image_url: `${backendUrl}${result.url}` });
       toast({ title: 'Success', description: 'Image uploaded' });
     } catch (err) {
