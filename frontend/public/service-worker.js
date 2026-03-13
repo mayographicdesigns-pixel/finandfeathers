@@ -5,7 +5,7 @@ const APP_VERSION = '2.2.0';
 const CACHE_NAME = `fin-feathers-v${APP_VERSION}`;
 
 // Critical update flag - set to true to force refresh
-const IS_CRITICAL_UPDATE = true;
+const IS_CRITICAL_UPDATE = false;
 
 const urlsToCache = [
   '/',
@@ -46,11 +46,15 @@ self.addEventListener('activate', (event) => {
     }).then(() => {
       return self.clients.matchAll({ type: 'window' }).then((clients) => {
         clients.forEach((client) => {
-          client.postMessage({
-            type: 'SW_UPDATED',
-            version: APP_VERSION,
-            isCritical: IS_CRITICAL_UPDATE
-          });
+          try {
+            client.postMessage({
+              type: 'SW_UPDATED',
+              version: APP_VERSION,
+              isCritical: IS_CRITICAL_UPDATE
+            });
+          } catch (e) {
+            console.log('[SW] postMessage failed:', e.message);
+          }
         });
       });
     })
@@ -67,18 +71,13 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // API requests - always network, queue if offline
+  // Skip API requests entirely - let browser handle them normally
   if (url.pathname.startsWith('/api/')) {
-    event.respondWith(
-      fetch(event.request.clone())
-        .catch(async (error) => {
-          // If it's a POST request that failed, we might want to queue it
-          if (event.request.method === 'POST') {
-            console.log('[SW] API POST failed, might be offline:', url.pathname);
-          }
-          throw error;
-        })
-    );
+    return;
+  }
+
+  // Skip non-GET requests (POST, PUT, DELETE)
+  if (event.request.method !== 'GET') {
     return;
   }
 
@@ -127,7 +126,11 @@ async function syncPendingPosts() {
   // Notify clients to run their sync
   const clients = await self.clients.matchAll({ type: 'window' });
   clients.forEach(client => {
-    client.postMessage({ type: 'SYNC_POSTS' });
+    try {
+      client.postMessage({ type: 'SYNC_POSTS' });
+    } catch (e) {
+      console.log('[SW] postMessage failed:', e.message);
+    }
   });
 }
 
@@ -139,10 +142,14 @@ self.addEventListener('message', (event) => {
   }
   
   if (event.data && event.data.type === 'GET_VERSION') {
-    event.ports[0].postMessage({ 
-      version: APP_VERSION,
-      isCritical: IS_CRITICAL_UPDATE 
-    });
+    try {
+      event.ports[0].postMessage({ 
+        version: APP_VERSION,
+        isCritical: IS_CRITICAL_UPDATE 
+      });
+    } catch (e) {
+      console.log('[SW] postMessage failed:', e.message);
+    }
   }
 
   if (event.data && event.data.type === 'TRIGGER_SYNC') {
@@ -150,7 +157,11 @@ self.addEventListener('message', (event) => {
     self.registration.sync.register('sync-posts')
       .catch(() => {
         // Background sync not supported, notify client to sync manually
-        event.source.postMessage({ type: 'SYNC_POSTS' });
+        try {
+          event.source.postMessage({ type: 'SYNC_POSTS' });
+        } catch (e) {
+          console.log('[SW] postMessage failed:', e.message);
+        }
       });
   }
 });
