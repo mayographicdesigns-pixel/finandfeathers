@@ -699,9 +699,12 @@ The MenuPage.jsx file reduced from 1505 to 1318 lines (~187 lines saved)
   - Fixed edit modal, add modal, and all image uploaders to use `image` field consistently
 - **FIXED**: 14 menu items had broken image URLs pointing to old deployment domain
   - Converted all absolute URLs with old domains to relative /api/media/ paths
-- **FIXED**: Image uploaders storing full absolute URLs (deployment-dependent)
-  - ImageUploader.jsx, MenuItemsTab.jsx, and MenuImageEditor.jsx now store relative paths (/api/media/{id})
-  - This prevents images from breaking when the deployment URL changes
+- **FIXED**: Service worker "Critical Update" causing infinite page refresh loop
+  - Version 2.2.0 was marked as `isCritical: true`, causing `UpdatePrompt` component to auto-refresh every page load
+  - This broke admin login (form reset on refresh) and prevented full page rendering (locations cut off)
+  - Set version 2.2.0 to `isCritical: false`
+  - Added early-return guard in `handleNewVersionDetected` to skip if version already saved in localStorage
+  - Saves version to localStorage immediately on detection to prevent re-triggering
 
 ## Preview URL
 https://restaurant-menu-app-5.preview.emergentagent.com

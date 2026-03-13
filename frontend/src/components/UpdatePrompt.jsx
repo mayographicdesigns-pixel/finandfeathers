@@ -78,8 +78,15 @@ const UpdatePrompt = ({ autoUpdate = false }) => {
 
   const handleNewVersionDetected = (version) => {
     const lastVersion = localStorage.getItem('ff_app_version') || '1.0.0';
+    
+    // If we already have the current version, skip
+    if (lastVersion === APP_VERSION) return;
+    
     const critical = hasCriticalUpdate(lastVersion);
     const changes = getChangelogsSince(lastVersion);
+    
+    // Save version immediately to prevent re-triggering on refresh
+    localStorage.setItem('ff_app_version', APP_VERSION);
     
     setNewVersion(version);
     setIsCritical(critical);
@@ -91,7 +98,7 @@ const UpdatePrompt = ({ autoUpdate = false }) => {
       setShowUpdatePrompt(true);
       setTimeout(() => {
         handleUpdate();
-      }, 3000); // Give user 3 seconds to see the message
+      }, 3000);
     } else if (autoUpdate) {
       handleUpdate();
     } else {

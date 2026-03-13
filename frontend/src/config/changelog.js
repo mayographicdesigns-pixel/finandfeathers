@@ -7,7 +7,7 @@ export const CHANGELOG = {
   '2.2.0': {
     date: '2026-02-27',
     title: 'Auto-Update & Cache Fix',
-    isCritical: true,
+    isCritical: false,
     changes: [
       { type: 'improvement', text: 'Auto-update enabled - new versions apply automatically' },
       { type: 'bugfix', text: 'Fixed cache not clearing after deployment' },
