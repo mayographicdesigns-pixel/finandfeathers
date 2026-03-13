@@ -884,7 +884,7 @@ const LinkTreeHomePage = () => {
             <Button 
               size="sm" 
               variant="ghost" 
-              onClick={() => navigate('/admin')}
+              onClick={() => navigate('/dashboard')}
               className="text-white hover:bg-white/20 h-8"
             >
               Dashboard

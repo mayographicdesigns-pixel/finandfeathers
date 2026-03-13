@@ -103,7 +103,7 @@ const SignupForm = ({ onProfileCreated, authError }) => {
           localStorage.removeItem('ff_user_info');
           localStorage.removeItem('ff_auth_provider');
           toast({ title: 'Admin Access Granted', description: 'Redirecting to admin dashboard...' });
-          navigate('/admin');
+          navigate('/dashboard');
           return;
         }
       } catch (adminError) {

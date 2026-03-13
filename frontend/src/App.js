@@ -35,7 +35,7 @@ function AppRouter() {
       <Route path="/menu" element={<MenuPage />} />
       <Route path="/merch" element={<MerchandisePage />} />
       <Route path="/events" element={<EventsPage />} />
-      <Route path="/admin" element={<AdminPage />} />
+      <Route path="/dashboard" element={<AdminPage />} />
       <Route path="/checkin" element={<CheckInPage />} />
       <Route path="/gallery" element={<GalleryPage />} />
       <Route path="/account" element={<MyAccountPage />} />

@@ -699,12 +699,11 @@ The MenuPage.jsx file reduced from 1505 to 1318 lines (~187 lines saved)
   - Fixed edit modal, add modal, and all image uploaders to use `image` field consistently
 - **FIXED**: 14 menu items had broken image URLs pointing to old deployment domain
   - Converted all absolute URLs with old domains to relative /api/media/ paths
-- **FIXED**: Service worker "Critical Update" causing infinite page refresh loop
-  - Version 2.2.0 was marked as `isCritical: true`, causing `UpdatePrompt` component to auto-refresh every page load
-  - This broke admin login (form reset on refresh) and prevented full page rendering (locations cut off)
-  - Set version 2.2.0 to `isCritical: false`
-  - Added early-return guard in `handleNewVersionDetected` to skip if version already saved in localStorage
-  - Saves version to localStorage immediately on detection to prevent re-triggering
+- **CHANGED**: Admin dashboard moved from /admin to /dashboard, login requirement removed
+  - Route changed from /admin to /dashboard across all pages
+  - Backend admin auth bypassed - all admin endpoints accessible without token
+  - Removed login form gate and logout button from AdminPage component
+  - Updated all navigation references (LinkTreeHomePage, LocationsPage, GalleryPage, etc.)
 
 ## Preview URL
 https://restaurant-menu-app-5.preview.emergentagent.com

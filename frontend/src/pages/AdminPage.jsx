@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Home, LogOut, BarChart3, Megaphone, Ticket, Grid3X3, ImageUp, MessageSquare,
+  Home, BarChart3, Megaphone, Ticket, Grid3X3, ImageUp, MessageSquare,
   MapPin, Video, Share2, UtensilsCrossed, Coins, Users, Mail, Bell, Shield, FileText
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
-import { adminLogout, checkAdminAuth, getAdminStats } from '../services/api';
+import { getAdminStats } from '../services/api';
 import {
-  LoginForm,
   DashboardStats,
   LoyaltyMembersTab,
   ContactsTab,
@@ -32,23 +31,12 @@ import { Settings, Music } from 'lucide-react';
 // Main Admin Page Component
 const AdminPage = () => {
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    checkAuth();
+    fetchStats();
   }, []);
-
-  const checkAuth = async () => {
-    const user = await checkAdminAuth();
-    setIsAuthenticated(!!user);
-    setLoading(false);
-    if (user) {
-      fetchStats();
-    }
-  };
 
   const fetchStats = async () => {
     try {
@@ -58,23 +46,6 @@ const AdminPage = () => {
       console.error('Failed to fetch stats');
     }
   };
-
-  const handleLogout = () => {
-    adminLogout();
-    setIsAuthenticated(false);
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white">Loading...</div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return <LoginForm onLogin={checkAuth} />;
-  }
 
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
@@ -119,15 +90,6 @@ const AdminPage = () => {
               className="text-slate-300 hover:text-white"
             >
               <Home className="w-4 h-4 mr-2" /> Home
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleLogout}
-              className="text-red-400 hover:text-red-300"
-              data-testid="admin-logout-button"
-            >
-              <LogOut className="w-4 h-4 mr-2" /> Logout
             </Button>
           </div>
         </div>

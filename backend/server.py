@@ -72,7 +72,7 @@ db = client[os.environ['DB_NAME']]
 push_service = PushNotificationService(db)
 
 # Security
-security = HTTPBearer()
+security = HTTPBearer(auto_error=False)
 
 # Admin credentials (hardcoded as requested)
 ADMIN_USERNAME = "admin"
@@ -160,25 +160,8 @@ async def get_upload_file(filename: str):
 
 # Auth dependency
 async def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Verify JWT token and return admin username"""
-    token = credentials.credentials
-    payload = decode_access_token(token)
-    if payload is None:
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
-    username = payload.get("sub")
-    if not username:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-    admin_user = await db.admin_users.find_one({"username": username}, {"_id": 0})
-    if admin_user:
-        if not admin_user.get("is_active", True):
-            raise HTTPException(status_code=403, detail="Account is disabled")
-        return username
-
-    if username == ADMIN_USERNAME:
-        return username
-
-    raise HTTPException(status_code=403, detail="Not authorized")
+    """Grant admin access - no authentication required"""
+    return "admin"
 
 
 # Health check
