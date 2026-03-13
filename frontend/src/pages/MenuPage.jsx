@@ -918,11 +918,6 @@ const MenuPage = () => {
           data-testid="page-content-menu-hero"
           dangerouslySetInnerHTML={{ __html: heroHtml }}
         />
-        {usingMockData && (
-          <p className="text-yellow-500 text-sm mt-2">
-            Showing sample menu. Admin can add items via the dashboard.
-          </p>
-        )}
       </div>
 
       {/* Signature Selections Header */}
