@@ -1,0 +1,100 @@
+{
+  "short_name": "F&F",
+  "name": "Fin & Feathers Restaurants",
+  "description": "Elevated dining meets Southern soul. View our menu, find locations, check in, and connect with other guests.",
+  "icons": [
+    {
+      "src": "/favicon-32x32.png",
+      "type": "image/png",
+      "sizes": "32x32"
+    },
+    {
+      "src": "/icon-48.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    },
+    {
+      "src": "/icon-72.png",
+      "type": "image/png",
+      "sizes": "72x72"
+    },
+    {
+      "src": "/icon-96.png",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "/icon-128.png",
+      "type": "image/png",
+      "sizes": "128x128"
+    },
+    {
+      "src": "/icon-144.png",
+      "type": "image/png",
+      "sizes": "144x144"
+    },
+    {
+      "src": "/icon-152.png",
+      "type": "image/png",
+      "sizes": "152x152"
+    },
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-256.png",
+      "type": "image/png",
+      "sizes": "256x256"
+    },
+    {
+      "src": "/icon-384.png",
+      "type": "image/png",
+      "sizes": "384x384"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192-maskable.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512-maskable.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "start_url": "/?source=pwa",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "theme_color": "#dc2626",
+  "background_color": "#000000",
+  "orientation": "portrait",
+  "scope": "/",
+  "categories": ["food", "restaurant", "lifestyle", "social"],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "shortcuts": [
+    {
+      "name": "Menu",
+      "short_name": "Menu",
+      "url": "/menu",
+      "icons": [{"src": "/icon-192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Locations",
+      "short_name": "Locations",
+      "url": "/locations",
+      "icons": [{"src": "/icon-192.png", "sizes": "192x192"}]
+    }
+  ]
+}

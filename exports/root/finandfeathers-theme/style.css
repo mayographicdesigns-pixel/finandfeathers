@@ -1,0 +1,15 @@
+/*
+Theme Name: Fin and Feathers Migration
+Theme URI: https://restaurant-menu-app-5.preview.emergentagent.com/
+Author: Antigravity Assistant
+Description: A custom WordPress theme matching the original React Fin & Feathers app.
+Version: 1.0.0
+Text Domain: fin-and-feathers
+*/
+body {
+    background-color: #111827;
+    color: #f3f4f6;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+}

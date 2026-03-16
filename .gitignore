@@ -213,3 +213,14 @@ source_app/.git/objects/pack/pack-8acd9e78ede86a98a8bbe237dbccee7338675ae7.pack
 *.env
 *.env.*
 frontend/node_modules/.cache/default-development/12.pack
+-e 
+# Environment files
+*.env
+*.env.*
+archive.zip
+exports/root/source_app/.git/objects/pack/pack-8acd9e78ede86a98a8bbe237dbccee7338675ae7.pack
+exports/root/frontend/node_modules/.cache/default-development/30.pack
+exports/root/frontend/node_modules/.cache/default-development/16.pack
+exports/root/frontend/node_modules/.cache/default-development/24.pack
+exports/root/frontend/node_modules/.cache/default-development/10.pack
+frontend/node_modules/.cache/default-development/10.pack

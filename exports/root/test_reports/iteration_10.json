@@ -1,0 +1,124 @@
+{
+  "summary": "Completed testing of My Account feature including user profile management, F&F token purchase/gifting, and admin Users tab. All 15 backend API tests passed (100%). Frontend UI tested successfully - My Account page with Profile/Tokens/Photos/History tabs, token purchase flow ($1=10 tokens), profile editing with birthdate/anniversary/special dates, social media handles, and Admin token gifting.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_user_profile_tokens.py",
+    "/app/test_reports/pytest/user_profile_tokens_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "User Profile API - Create, Get by ID, Get by Email, Update all working correctly",
+    "Token Purchase API - $1=10 tokens conversion, minimum $1 enforced, history tracking works",
+    "Admin Token Gifting - Protected endpoint requires auth, gift records with 'gifted_by' field",
+    "Gallery Submission API - Auto-approved submissions working, increments user's total_photos",
+    "My Account Page - All 4 tabs functional (Profile, Tokens, Photos, History)",
+    "Profile Edit Mode - Avatar emoji picker, date inputs for birthdate/anniversary, Add Date for special dates",
+    "Token Purchase UI - Quick select buttons ($1/$5/$10/$20), custom input, shows token conversion",
+    "Admin Users Tab - Shows all user profiles with token balance and Gift button",
+    "Admin Gift Modal - Token amount selection (10/25/50/100), optional message, shows USD value"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_user_profile_tokens.py"
+  ],
+  "success_rate": {
+    "backend": "100% (15/15 tests passed)",
+    "frontend": "100% (all My Account and Admin Users features working)"
+  },
+  "test_credentials": {
+    "admin_username": "admin",
+    "admin_password": "admin"
+  },
+  "seed_data_creation": "17 user profiles exist in database from testing (TEST_* prefixed users)",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "My Account feature fully tested. Users can view/edit profile, purchase tokens ($1=10), view token history, submit photos to gallery. Admin can view all users and gift tokens. Toast error 'Failed to load profile' may appear on first load when profile doesn't exist yet - this is expected behavior.",
+  "mocked_apis": {
+    "has_mocked_apis": true,
+    "mocked_apis_list": [
+      "Token purchase does NOT process actual payments - it simulates card payment and adds tokens",
+      "Photo upload to gallery auto-approves without moderation"
+    ]
+  },
+  "features_tested": {
+    "user_profile_create": {
+      "status": "PASS",
+      "details": "POST /api/user/profile creates profile with name, email, phone, initializes token_balance=0"
+    },
+    "user_profile_get_by_id": {
+      "status": "PASS",
+      "details": "GET /api/user/profile/{id} returns full profile with all fields"
+    },
+    "user_profile_get_by_email": {
+      "status": "PASS",
+      "details": "GET /api/user/profile/by-email/{email} works for existing profiles"
+    },
+    "user_profile_update": {
+      "status": "PASS",
+      "details": "PUT /api/user/profile/{id} updates birthdate, anniversary, social handles"
+    },
+    "token_purchase": {
+      "status": "PASS",
+      "details": "POST /api/user/tokens/purchase/{id} with amount_usd, returns tokens_purchased ($1=10)"
+    },
+    "token_purchase_minimum": {
+      "status": "PASS",
+      "details": "Correctly rejects purchases below $1 minimum"
+    },
+    "token_history": {
+      "status": "PASS",
+      "details": "GET /api/user/tokens/history/{id} returns purchases sorted by date"
+    },
+    "admin_gift_tokens": {
+      "status": "PASS",
+      "details": "POST /api/admin/tokens/gift adds tokens with payment_method='gift', gifted_by='admin'"
+    },
+    "admin_gift_auth": {
+      "status": "PASS",
+      "details": "Token gifting requires admin auth (returns 401/403 without token)"
+    },
+    "admin_get_users": {
+      "status": "PASS",
+      "details": "GET /api/admin/users returns all user profiles"
+    },
+    "gallery_submission": {
+      "status": "PASS",
+      "details": "POST /api/user/gallery/submit/{id} creates submission and adds to gallery"
+    },
+    "get_user_submissions": {
+      "status": "PASS",
+      "details": "GET /api/user/gallery/submissions/{id} returns user's submissions"
+    },
+    "homepage_my_account_btn": {
+      "status": "PASS",
+      "details": "My Account button visible on homepage, navigates to /account"
+    },
+    "my_account_tabs": {
+      "status": "PASS",
+      "details": "Profile, Tokens, Photos, History tabs all visible and functional"
+    },
+    "profile_edit_mode": {
+      "status": "PASS",
+      "details": "Edit button shows form with avatar picker, name, phone, email, dates, social handles"
+    },
+    "tokens_tab_purchase": {
+      "status": "PASS",
+      "details": "Token balance display, quick amount buttons ($1/$5/$10/$20), custom input"
+    },
+    "admin_users_tab": {
+      "status": "PASS",
+      "details": "Shows 17 user profiles with avatar, stats, token balance, Gift button"
+    },
+    "admin_gift_modal": {
+      "status": "PASS",
+      "details": "Gift modal shows current balance, amount selection, optional message, confirm/cancel"
+    }
+  }
+}
