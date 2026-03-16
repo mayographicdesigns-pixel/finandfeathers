@@ -326,24 +326,21 @@ export async function subscribeToPush(memberId) {
 
 // Loyalty signup
 export async function signupLoyalty(data) {
-  try {
-    const response = await fetch(`${API_URL}/loyalty/signup`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data)
-    });
+  const response = await fetch(`${API_URL}/loyalty/signup`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+  });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Signup failed');
-    }
-
-    return await response.json();
-  } catch (error) {
-    throw error;
+  const result = await response.json();
+  
+  if (!response.ok) {
+    throw new Error(result.detail || 'Signup failed');
   }
+
+  return result;
 }
 
 // Contact form submission

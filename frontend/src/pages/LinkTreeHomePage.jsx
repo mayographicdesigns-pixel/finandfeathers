@@ -711,9 +711,9 @@ const LinkTreeHomePage = () => {
 
     try {
       await signupLoyalty({
-        full_name: name,
+        name: name,
         email: email,
-        phone_number: phone || null,
+        phone: phone || null,
         marketing_consent: agreeToMarketing
       });
 
