@@ -224,3 +224,7 @@ exports/root/frontend/node_modules/.cache/default-development/16.pack
 exports/root/frontend/node_modules/.cache/default-development/24.pack
 exports/root/frontend/node_modules/.cache/default-development/10.pack
 frontend/node_modules/.cache/default-development/10.pack
+-e 
+# Environment files
+*.env
+*.env.*
