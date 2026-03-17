@@ -33,7 +33,8 @@ import {
   updateHomepageContent,
   verifyAdminToken,
   uploadImage,
-  getPageContent
+  getPageContent,
+  getPublicEvents
 } from '../services/api';
 
 // Welcome Popup Component
@@ -526,6 +527,7 @@ const LinkTreeHomePage = () => {
   const [content, setContent] = useState(defaultContent);
   const [editingContent, setEditingContent] = useState(defaultContent);
   const [pageContent, setPageContent] = useState({});
+  const [events, setEvents] = useState([]);
   const [saving, setSaving] = useState(false);
   const [editingImageIndex, setEditingImageIndex] = useState(null);
   const fileInputRef = useRef(null);
@@ -663,16 +665,18 @@ const LinkTreeHomePage = () => {
     // Fetch all data
     const fetchData = async () => {
       try {
-        const [links, feed, activeSpecials, homepageContent, homePageContent] = await Promise.all([
+        const [links, feed, activeSpecials, homepageContent, homePageContent, eventsData] = await Promise.all([
           getPublicSocialLinks(),
           getPublicInstagramFeed(),
           getPublicSpecials(),
           getHomepageContent(),
-          getPageContent('home')
+          getPageContent('home'),
+          getPublicEvents()
         ]);
         setSocialLinks(links);
         setInstagramFeed(feed);
         setSpecials(activeSpecials);
+        setEvents(eventsData.filter(e => e.image));
 
         const pageContentMap = {};
         (homePageContent || []).forEach((entry) => {
@@ -1121,6 +1125,36 @@ const LinkTreeHomePage = () => {
             Leave a Review
           </Button>
         </div>
+
+        {/* Events Images Grid */}
+        {events.length > 0 && (
+          <div className="mb-6" data-testid="events-images-section">
+            <h2 className="text-xl font-bold text-white mb-4 text-center tracking-wide">UPCOMING EVENTS</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {events.slice(0, 8).map((event, index) => (
+                <div
+                  key={event.id || index}
+                  className="relative aspect-square rounded-lg overflow-hidden cursor-pointer group"
+                  data-testid={`event-image-${index}`}
+                  onClick={() => navigate('/events')}
+                >
+                  <img
+                    src={event.image}
+                    alt={event.name || event.title || 'Event'}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-2">
+                    <div>
+                      <p className="text-white text-xs font-semibold leading-tight">{event.name || event.title}</p>
+                      <p className="text-red-400 text-[10px]">{event.date}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Loyalty Signup Form */}
         <Card className="mb-6 bg-gradient-to-br from-slate-800/80 to-slate-900/80 border-red-600/30">
