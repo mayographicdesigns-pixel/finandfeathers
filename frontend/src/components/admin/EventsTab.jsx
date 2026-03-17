@@ -81,9 +81,7 @@ const EventsTab = () => {
     setUploading(true);
     try {
       const result = await uploadImage(file);
-      const backendUrl = window.location.origin;
-      const fullUrl = `${backendUrl}${result.url}`;
-      setFormData({ ...formData, image: fullUrl });
+      setFormData({ ...formData, image: result.url });
       toast({ title: 'Success', description: 'Image uploaded' });
     } catch (err) {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
@@ -328,7 +326,7 @@ const EventsTab = () => {
                   </Button>
                 </div>
                 {formData.image && (
-                  <img src={formData.image} alt="Preview" className="h-32 w-48 object-cover rounded-lg border border-slate-700 mt-3" />
+                  <img src={formData.image.startsWith('/api/') ? `${window.location.origin}${formData.image}` : formData.image} alt="Preview" className="h-32 w-48 object-cover rounded-lg border border-slate-700 mt-3" />
                 )}
               </div>
 
@@ -421,7 +419,7 @@ const EventsTab = () => {
               <div className="md:flex">
                 {event.image && (
                   <div className="md:w-48 h-32 md:h-auto flex-shrink-0">
-                    <img src={event.image} alt={event.name} className="w-full h-full object-cover" />
+                    <img src={event.image.startsWith('/api/') ? `${window.location.origin}${event.image}` : event.image} alt={event.name} className="w-full h-full object-cover" />
                   </div>
                 )}
                 <CardContent className="p-4 flex-1">

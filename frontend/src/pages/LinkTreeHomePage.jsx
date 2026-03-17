@@ -1130,7 +1130,7 @@ const LinkTreeHomePage = () => {
         {events.length > 0 && (
           <div className="mb-6" data-testid="events-images-section">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {events.slice(0, 8).map((event, index) => (
+              {events.slice(0, 4).map((event, index) => (
                 <div
                   key={event.id || index}
                   className="relative aspect-square rounded-lg overflow-hidden cursor-pointer group"
@@ -1138,7 +1138,7 @@ const LinkTreeHomePage = () => {
                   onClick={() => navigate('/events')}
                 >
                   <img
-                    src={event.image}
+                    src={event.image.startsWith('/api/') ? `${window.location.origin}${event.image}` : event.image}
                     alt={event.name || event.title || 'Event'}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                     loading="lazy"
