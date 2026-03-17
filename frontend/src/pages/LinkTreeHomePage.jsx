@@ -1129,7 +1129,6 @@ const LinkTreeHomePage = () => {
         {/* Events Images Grid */}
         {events.length > 0 && (
           <div className="mb-6" data-testid="events-images-section">
-            <h2 className="text-xl font-bold text-white mb-4 text-center tracking-wide">UPCOMING EVENTS</h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {events.slice(0, 8).map((event, index) => (
                 <div
