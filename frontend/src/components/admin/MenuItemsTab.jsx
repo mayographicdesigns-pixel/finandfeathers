@@ -481,7 +481,7 @@ const MenuItemsTab = () => {
                       src={getImageSrc(item.image)} 
                       alt={item.name} 
                       className="w-full h-full object-cover"
-                      onError={(e) => { e.target.style.display = 'none'; }}
+                      loading="lazy"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-slate-500 text-xs">
