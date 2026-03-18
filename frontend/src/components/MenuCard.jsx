@@ -45,8 +45,8 @@ const LazyImage = ({ src, alt, className }) => {
 const MenuCard = ({ item, variant = 'default', editMode = false, onEdit, onImageClick, isExpanded = false, onToggleExpand }) => {
   const isCompact = variant === 'compact';
   const isExpandedState = isExpanded;
-  // Support both image and image_url properties
-  const rawImageUrl = item.image_url || item.image;
+  // Use image field (synced with dashboard)
+  const rawImageUrl = item.image || item.image_url;
   // Convert relative paths to absolute URLs
   const imageUrl = rawImageUrl && rawImageUrl.startsWith('/api/') 
     ? `${window.location.origin}${rawImageUrl}`
