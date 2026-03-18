@@ -86,7 +86,7 @@ const MenuImageEditor = ({
   // Reset state when menu item changes
   useEffect(() => {
     if (menuItem && isOpen) {
-      const imageUrl = menuItem.image_url || menuItem.image || '';
+      const imageUrl = menuItem.image || '';
       setImageSrc(getFullImageUrl(imageUrl));
       setCrop({ x: 0, y: 0 });
       setZoom(1);

@@ -41,7 +41,7 @@ const LazyImage = ({ src, alt, className }) => {
 
 // Style Four: Horizontal row with rounded image, title + price, Buy Now button
 export const MenuStyleFour = ({ item, isExpanded, onToggleExpand, onImageClick }) => {
-  const rawImageUrl = item.image_url || item.image;
+  const rawImageUrl = item.image;
   const hasImage = rawImageUrl && rawImageUrl.trim() !== '';
   const hasBadge = item.badges && item.badges.length > 0;
 

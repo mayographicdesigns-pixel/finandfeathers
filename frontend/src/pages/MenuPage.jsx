@@ -751,13 +751,13 @@ const MenuPage = () => {
                 <div>
                   <label className="text-sm text-slate-300 mb-1 block">Image</label>
                   <ImageUploader 
-                    currentImage={editingItem.image || editingItem.image_url}
+                    currentImage={editingItem.image}
                     onImageUpload={(url) => setEditingItem({ ...editingItem, image: url })}
                   />
                   <div className="mt-2">
                     <label className="text-xs text-slate-400">Or enter URL directly:</label>
                     <Input
-                      value={editingItem.image || editingItem.image_url || ''}
+                      value={editingItem.image || ''}
                       onChange={(e) => setEditingItem({ ...editingItem, image: e.target.value })}
                       className="bg-slate-800 border-slate-700 text-white mt-1"
                       placeholder="https://..."

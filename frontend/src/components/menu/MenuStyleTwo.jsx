@@ -41,7 +41,7 @@ const LazyImage = ({ src, alt, className }) => {
 
 // Style Two: Vertical card with centered image, price badge overlay, title below, description, button
 export const MenuStyleTwo = ({ item, isExpanded, onToggleExpand, onImageClick }) => {
-  const rawImageUrl = item.image_url || item.image;
+  const rawImageUrl = item.image;
   const hasImage = rawImageUrl && rawImageUrl.trim() !== '';
   const hasBadge = item.badges && item.badges.length > 0;
 

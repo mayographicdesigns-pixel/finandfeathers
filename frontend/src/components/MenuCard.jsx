@@ -46,7 +46,7 @@ const MenuCard = ({ item, variant = 'default', editMode = false, onEdit, onImage
   const isCompact = variant === 'compact';
   const isExpandedState = isExpanded;
   // Use image field (synced with dashboard)
-  const rawImageUrl = item.image || item.image_url;
+  const rawImageUrl = item.image;
   // Convert relative paths to absolute URLs
   const imageUrl = rawImageUrl && rawImageUrl.startsWith('/api/') 
     ? `${window.location.origin}${rawImageUrl}`

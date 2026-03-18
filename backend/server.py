@@ -1505,10 +1505,6 @@ async def admin_update_menu_item(item_id: str, update: MenuItemUpdate, username:
     if not update_dict:
         raise HTTPException(status_code=400, detail="No fields to update")
     
-    # Keep image and image_url in sync
-    if "image" in update_dict:
-        update_dict["image_url"] = update_dict["image"]
-    
     result = await db.menu_items.update_one(
         {"id": item_id},
         {"$set": update_dict}
