@@ -1,0 +1,229 @@
+<analysis>**original_problem_statement:**
+The user wants to add a Careers section to the website. This involves:
+1.  Adding a Careers button on the homepage under the Join Now (loyalty signup) section.
+2.  Creating a new multi-step job application page at the  route.
+
+**PRODUCT REQUIREMENTS (Job Application Form):**
+-   **Step 1: Candidate Information:**
+    -   Fields: Name, Email, Phone Number.
+    -   Social Media Links: Optional fields for Instagram, Facebook, and TikTok.
+-   **Step 2: Role Selection & Logistics:**
+    -   **Location:** A dropdown menu of all restaurant locations.
+    -   **Position:** A categorized dropdown:
+        -   Front of House (FOH): Floor Manager, Bartender, Server, Hookah, Service Assistant/Dish Washer.
+        -   Back of House (BOH): Line Cook, Utility/Dishwasher, Kitchen Manager.
+    -   **Availability:** A multi-select grid for Monday–Sunday with Morning/Evening/Late Night shift options.
+-   **Step 3: Uploads & Documentation:**
+    -   **Resume:** Required file upload for all positions.
+    -   **Headshot/Photo:** Required file upload *only* for Floor Manager, Bartender, Server, or Hookah roles. This field should be hidden for all other roles.
+-   **Step 4: Submission:**
+    -   A Submit Application button.
+    -   On successful submission, display a Thank You message.
+    -   Send an email notification with the application details to , , and the email address of the selected location.
+
+**User's preferred language**: English
+
+**what currently exists?**
+The project is a mature full-stack PWA with a React frontend and FastAPI backend. The previous session involved extensive bug fixing, content updates, and feature enhancements. All known bugs from the previous session have been resolved, including critical issues related to image path consistency, deployment CORS errors, and service worker refresh loops. The agent has just begun work on the new Careers feature by creating an empty file for the page.
+
+**Last working item**:
+-   **Last item agent was working:** Starting the implementation of the new multi-step job application form. The agent has created the file  but has not written any code yet. The agent correctly identified that an email integration is needed but not yet configured.
+-   **Status:** IN PROGRESS
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** Frontend testing agent (to test the multi-step form) and backend testing via  (to test the API endpoint).
+-   **User Testing Done:** N
+
+**All Pending/In progress Issue list**:
+-   None.
+
+**In progress Task List**:
+-   **Task 1: Build Multi-Step Job Application Form (P0)**
+    -   **Where to resume:** Begin by building the React component in , creating the necessary backend models in , and the submission endpoint in .
+    -   **What will be achieved with this?** A complete job application system that saves submissions to the database. The email notification part will be prepared but will require user-provided credentials to be fully functional.
+    -   **Status:** IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?** Both.
+    -   **Blocked on something:**
+        1.  **Email Service Credentials:** The email notification feature cannot be completed without user-provided SMTP or third-party email service (e.g., SendGrid, Resend) credentials. The agent must ask the user for these.
+        2.  **Location Email Addresses:** The  in the database do not have an associated email address. The agent must add an  field to the location model and ask the user to provide the email for each restaurant location.
+
+-   **Task 2: Add Careers button to Homepage (P0)**
+    -   **Where to resume:** Edit  to add a new button under the Join Our Loyalty Program section that links to .
+    -   **What will be achieved with this?** Provides user access to the new job application page from the main homepage.
+    -   **Status:** NOT STARTED
+    -   **Should Test frontend/backend/both after fix?** Frontend.
+    -   **Blocked on something:** None.
+
+**Upcoming and Future Tasks**
+-   **Upcoming Tasks:**
+    -   (P1) Add Per-Location Weekly Specials management.
+    -   (P1) Implement Email/SMS for Free Tickets (will also require 3rd-party credentials).
+-   **Future Tasks:**
+    -   (P2) WordPress Integration.
+    -   (P2) Apple Sign-In Integration.
+    -   (P2) Merchandise Store Enhancements.
+
+**Completed work in this session**
+-   **Bug Fix (Deployment):** Fixed a critical CORS error on the deployed site by replacing all hardcoded  instances with a dynamic  lookup.
+-   **Bug Fix (Service Worker):** Resolved an infinite refresh loop that broke login and page rendering by disabling the  flag in the service worker and preventing it from intercepting API requests.
+-   **Bug Fix (Data Model):** Completely removed the redundant  field from menu items across the entire stack (frontend components, backend API, database), consolidating all image references to a single  field to resolve inconsistencies between the dashboard and public menu.
+-   **Bug Fix (Menu):** Fixed an issue where food items in the  section were rendering as text-only by correcting their  property in the database.
+-   **Bug Fix (Loyalty):** Fixed the loyalty signup form, which was failing due to a field name mismatch and a body stream already read error.
+-   **Feature (Admin):** Removed the login requirement for the admin panel and moved it from  to .
+-   **Feature (Homepage):** Added a 4-column event image grid to the homepage and made it editable from the dashboard.
+-   **Dependency Management:** Switched the frontend package manager from yarn install v1.22.22
+[1/4] Resolving packages...
+[2/4] Fetching packages...
+[3/4] Linking dependencies...
+[4/4] Building fresh packages...
+success Saved lockfile.
+Done in 0.07s. to npm <command>
+
+Usage:
+
+npm install        install all the dependencies in your project
+npm install <foo>  add the <foo> dependency to your project
+npm test           run this project's tests
+npm run <foo>      run the script named <foo>
+npm <command> -h   quick help on <command>
+npm -l             display usage info for all commands
+npm help <term>    search for help on <term>
+npm help npm       more involved overview
+
+All commands:
+
+    access, adduser, audit, bugs, cache, ci, completion,
+    config, dedupe, deprecate, diff, dist-tag, docs, doctor,
+    edit, exec, explain, explore, find-dupes, fund, get, help,
+    help-search, hook, init, install, install-ci-test,
+    install-test, link, ll, login, logout, ls, org, outdated,
+    owner, pack, ping, pkg, prefix, profile, prune, publish,
+    query, rebuild, repo, restart, root, run-script, sbom,
+    search, set, shrinkwrap, star, stars, start, stop, team,
+    test, token, uninstall, unpublish, unstar, update, version,
+    view, whoami
+
+Specify configs in the ini-formatted file:
+    /root/.npmrc
+or on the command line via: npm <command> --key=value
+
+More configuration info: npm help config
+Configuration fields: npm help 7 config
+
+npm@10.8.2 /usr/lib/node_modules/npm and resolved  dependency conflicts.
+-   **Content Updates:** Updated location hours via web research, changed homepage/locations background images, and added/updated dozens of menu items and images as per user requests.
+-   **Verification:** Confirmed that the dashboard's image update/restore functionality works end-to-end and that the DM/Chat backend endpoints are functional.
+
+**Earlier issues found/mentioned but not fixed**
+-   None.
+
+**Known issue recurrence from previous fork**
+-   None.
+
+**Code Architecture**
+
+
+**Key Technical Concepts**
+-   Multi-step forms in React using conditional rendering.
+-   File uploads with FastAPI and React.
+-   Dynamic form fields (e.g., showing/hiding headshot upload based on position).
+-   Database schema extension and data migration.
+
+**key DB schema**
+-   **locations**:  - Requires a new  field to be added for notifications.
+-   **job_applications** (new collection to be created): 
+
+**changes in tech stack**
+-   Frontend package manager was switched from yarn install v1.22.22
+[1/4] Resolving packages...
+success Already up-to-date.
+Done in 0.02s. to npm <command>
+
+Usage:
+
+npm install        install all the dependencies in your project
+npm install <foo>  add the <foo> dependency to your project
+npm test           run this project's tests
+npm run <foo>      run the script named <foo>
+npm <command> -h   quick help on <command>
+npm -l             display usage info for all commands
+npm help <term>    search for help on <term>
+npm help npm       more involved overview
+
+All commands:
+
+    access, adduser, audit, bugs, cache, ci, completion,
+    config, dedupe, deprecate, diff, dist-tag, docs, doctor,
+    edit, exec, explain, explore, find-dupes, fund, get, help,
+    help-search, hook, init, install, install-ci-test,
+    install-test, link, ll, login, logout, ls, org, outdated,
+    owner, pack, ping, pkg, prefix, profile, prune, publish,
+    query, rebuild, repo, restart, root, run-script, sbom,
+    search, set, shrinkwrap, star, stars, start, stop, team,
+    test, token, uninstall, unpublish, unstar, update, version,
+    view, whoami
+
+Specify configs in the ini-formatted file:
+    /root/.npmrc
+or on the command line via: npm <command> --key=value
+
+More configuration info: npm help config
+Configuration fields: npm help 7 config
+
+npm@10.8.2 /usr/lib/node_modules/npm.
+
+**All files of reference**
+-   **/app/frontend/src/pages/CareersPage.jsx**: New file for the application form.
+-   **/app/frontend/src/pages/LinkTreeHomePage.jsx**: To be edited to add the careers button.
+-   **/app/backend/server.py**: To be edited for the new API endpoint.
+-   **/app/backend/models.py**: To be edited for the new data model.
+
+**Areas that need refactoring**:
+-   None.
+
+**key api endpoints**
+-    (New endpoint to be created).
+
+**Critical Info for New Agent**
+-   Your primary task is to build the multi-step job application form. Start with the frontend UI in , then build the backend.
+-   The email notification feature is **BLOCKED**. First, build the system to save applications to the database.
+-   You **MUST** ask the user for two things to complete the task:
+    1.  **Email Service Credentials**: To send the notification emails (e.g., a SendGrid API key).
+    2.  **Email for each Location**: To add to the database for the notification To field.
+-   Do not forget to add the Careers button to the homepage to link to the new page.
+
+**documents and test reports created in this job**
+-   
+
+**Last 10 User Messages and any pending HUMAN messages**
+-   : Create a multi-step job application form with detailed requirements. **Status: IN PROGRESS**.
+-   :  **Status: Completed**.
+-   :  **Status: Completed**.
+-   :  **Status: Completed**.
+-   :  (5 images) **Status: Completed**.
+-   :  **Status: Completed**.
+-   :  **Status: Completed**.
+-   :  **Status: Completed**.
+-   :  **Status: Completed**.
+-   :  **Status: Completed**.
+
+**Project Health Check:**
+-   **Broken**: None.
+-   **Mocked**: None.
+
+**3rd Party Integrations**
+-   Stripe
+-   WooCommerce
+-   
+-   **[Required for new task]** An email sending service like **Resend** or **SendGrid**. The agent will need to use  once the user provides credentials.
+
+**Testing status**
+-   Testing agent used after significant changes: YES
+-   Troubleshoot agent used after agent stuck in loop: NO
+-   Test files created: []
+-   Known regressions: None.
+
+**Credentials to test flow:**
+-   **Dashboard:**  (No login required).
+
+**What agent forgot to execute**
+-   None. The agent was just beginning the new task and correctly identified the blockers.</analysis>

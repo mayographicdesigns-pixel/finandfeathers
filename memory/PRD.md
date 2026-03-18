@@ -706,4 +706,4 @@ The MenuPage.jsx file reduced from 1505 to 1318 lines (~187 lines saved)
   - Updated all navigation references (LinkTreeHomePage, LocationsPage, GalleryPage, etc.)
 
 ## Preview URL
-https://restaurant-menu-app-5.preview.emergentagent.com
+https://careers-form.preview.emergentagent.com

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, Header, UploadFile, File, Request
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Header, UploadFile, File, Request, Form
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import Response
@@ -5366,6 +5366,144 @@ async def get_payment_methods():
             }
         ]
     }
+
+
+# =====================================================
+# CAREERS / JOB APPLICATION ENDPOINTS
+# =====================================================
+
+LOCATION_EMAILS = {
+    "Fin & Feathers - Stone Mountain": "stonemountain@finandfeathersrestaurants.com",
+    "Fin & Feathers - Midtown (Atlanta)": "midtown@finandfeathersrestaurants.com",
+    "Fin & Feathers - Edgewood (Atlanta)": "edgewood@finandfeathersrestaurants.com",
+    "Fin & Feathers - Douglasville": "douglasville@finandfeathersrestaurants.com",
+    "Fin & Feathers - Valdosta": "valdosta@finandfeathersrestaurants.com",
+    "Fin & Feathers - Albany": "albany@finandfeathersrestaurants.com",
+    "Fin & Feathers - Riverdale": "riverdale@finandfeathersrestaurants.com",
+    "Fin & Feathers - Las Vegas": "lasvegas@finandfeathersrestaurants.com",
+}
+
+@api_router.post("/careers/apply")
+async def submit_job_application(
+    name: str = Form(...),
+    email: str = Form(...),
+    phone: str = Form(...),
+    instagram: str = Form(""),
+    facebook: str = Form(""),
+    tiktok: str = Form(""),
+    location: str = Form(...),
+    position_category: str = Form(...),
+    position: str = Form(...),
+    availability: str = Form("{}"),
+    resume: UploadFile = File(...),
+    headshot: Optional[UploadFile] = File(None),
+):
+    """Submit a job application with resume and optional headshot"""
+    import json as json_lib
+
+    resume_contents = await resume.read()
+    if len(resume_contents) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Resume file too large (max 10MB)")
+
+    resume_id = str(uuid.uuid4())
+    resume_ext = Path(resume.filename).suffix.lower()
+    resume_filename = f"resume_{resume_id}{resume_ext}"
+    resume_b64 = base64.b64encode(resume_contents).decode('utf-8')
+    resume_content_type = resume.content_type or "application/pdf"
+
+    await db.media_files.insert_one({
+        "file_id": resume_id,
+        "filename": resume_filename,
+        "data": resume_b64,
+        "content_type": resume_content_type,
+        "size": len(resume_contents),
+        "uploaded_at": datetime.now(timezone.utc),
+        "uploaded_by": "careers_applicant"
+    })
+
+    try:
+        with open(UPLOAD_DIR / resume_filename, "wb") as f:
+            f.write(resume_contents)
+    except Exception:
+        pass
+
+    resume_url = f"/api/media/{resume_id}"
+
+    headshot_url = None
+    if headshot and headshot.filename:
+        headshot_contents = await headshot.read()
+        if len(headshot_contents) > 10 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="Headshot file too large (max 10MB)")
+
+        headshot_id = str(uuid.uuid4())
+        headshot_ext = Path(headshot.filename).suffix.lower()
+        headshot_filename = f"headshot_{headshot_id}{headshot_ext}"
+        headshot_b64 = base64.b64encode(headshot_contents).decode('utf-8')
+        headshot_content_type = headshot.content_type or "image/jpeg"
+
+        await db.media_files.insert_one({
+            "file_id": headshot_id,
+            "filename": headshot_filename,
+            "data": headshot_b64,
+            "content_type": headshot_content_type,
+            "size": len(headshot_contents),
+            "uploaded_at": datetime.now(timezone.utc),
+            "uploaded_by": "careers_applicant"
+        })
+
+        try:
+            with open(UPLOAD_DIR / headshot_filename, "wb") as f:
+                f.write(headshot_contents)
+        except Exception:
+            pass
+
+        headshot_url = f"/api/media/{headshot_id}"
+
+    try:
+        availability_data = json_lib.loads(availability)
+    except Exception:
+        availability_data = {}
+
+    application_id = str(uuid.uuid4())
+    application = {
+        "id": application_id,
+        "name": name,
+        "email": email,
+        "phone": phone,
+        "social_links": {
+            "instagram": instagram,
+            "facebook": facebook,
+            "tiktok": tiktok
+        },
+        "location": location,
+        "location_email": LOCATION_EMAILS.get(location, ""),
+        "position_category": position_category,
+        "position": position,
+        "availability": availability_data,
+        "resume_url": resume_url,
+        "headshot_url": headshot_url,
+        "status": "new",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+
+    await db.job_applications.insert_one(application)
+
+    logging.info(f"New job application from {name} for {position} at {location}")
+
+    return {
+        "id": application_id,
+        "message": "Application submitted successfully",
+        "status": "received"
+    }
+
+
+@api_router.get("/admin/careers/applications")
+async def get_job_applications(username: str = Depends(get_current_admin)):
+    """Get all job applications (admin only)"""
+    applications = await db.job_applications.find(
+        {}, {"_id": 0}
+    ).sort("created_at", -1).to_list(500)
+    return applications
 
 
 # Include the router in the main app

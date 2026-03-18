@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ExternalLink, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Clock, X, Image as ImageIcon, Edit2, Save, LogOut, Settings, GripVertical, Navigation, User, ShoppingBag, Calendar, Download, RefreshCw, Share, MoreVertical, Plus } from 'lucide-react';
+import { ExternalLink, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Clock, X, Image as ImageIcon, Edit2, Save, LogOut, Settings, GripVertical, Navigation, User, ShoppingBag, Calendar, Download, RefreshCw, Share, MoreVertical, Plus, Briefcase } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -1205,6 +1205,18 @@ const LinkTreeHomePage = () => {
                 Join Now
               </Button>
             </form>
+
+            {/* Careers Button */}
+            <div className="mt-4 pt-4 border-t border-slate-700">
+              <Button
+                onClick={() => navigate('/careers')}
+                className="w-full bg-slate-700 hover:bg-slate-600 text-white h-12 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+                data-testid="careers-btn"
+              >
+                <Briefcase className="w-5 h-5 mr-2" />
+                We're Hiring - Apply Now
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
