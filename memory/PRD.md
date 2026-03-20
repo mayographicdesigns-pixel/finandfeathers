@@ -33,7 +33,7 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] /careers route in App.js
 - [x] Thank you page after successful submission
 - [x] Location emails stored for future email notifications
-- [ ] Email notifications to info@, careers@, and location emails (BLOCKED - needs email service credentials)
+- [x] Email notifications to info@, careers@, and location emails via Hostinger SMTP
 
 #### Homepage (LinkTreeHomePage.jsx)
 - [x] Official Fin & Feathers logo

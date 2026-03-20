@@ -59,6 +59,9 @@ from push_service import PushNotificationService
 from auth import verify_password, get_password_hash, create_access_token, decode_access_token
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 import uuid
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 UPLOAD_DIR = ROOT_DIR / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
 load_dotenv(ROOT_DIR / '.env')
@@ -73,6 +76,109 @@ push_service = PushNotificationService(db)
 
 # Security
 security = HTTPBearer(auto_error=False)
+
+# SMTP Email Configuration
+SMTP_HOST = os.environ.get('SMTP_HOST', '')
+SMTP_PORT = int(os.environ.get('SMTP_PORT', '465'))
+SMTP_USERNAME = os.environ.get('SMTP_USERNAME', '')
+SMTP_PASSWORD = os.environ.get('SMTP_PASSWORD', '')
+
+
+def send_application_email(application_data: dict, recipient_emails: list):
+    """Send job application notification email via SMTP (runs in background thread)"""
+    import threading
+
+    def _send():
+        try:
+            msg = MIMEMultipart('alternative')
+            msg['From'] = SMTP_USERNAME
+            msg['To'] = ', '.join(recipient_emails)
+            msg['Subject'] = f"New Job Application: {application_data['position']} - {application_data['name']}"
+
+            # Build HTML email body
+            avail_html = ""
+            if application_data.get('availability'):
+                slots = [k for k, v in application_data['availability'].items() if v]
+                if slots:
+                    avail_html = '<br>'.join(slots)
+                else:
+                    avail_html = "Not specified"
+            else:
+                avail_html = "Not specified"
+
+            social_html = ""
+            sl = application_data.get('social_links', {})
+            if sl.get('instagram'):
+                social_html += f"<br>Instagram: {sl['instagram']}"
+            if sl.get('facebook'):
+                social_html += f"<br>Facebook: {sl['facebook']}"
+            if sl.get('tiktok'):
+                social_html += f"<br>TikTok: {sl['tiktok']}"
+
+            html = f"""
+            <html>
+            <body style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+                <div style="background-color: #1a1a2e; padding: 20px; text-align: center;">
+                    <h1 style="color: #e74c3c; margin: 0;">New Job Application</h1>
+                </div>
+                <div style="padding: 20px; background-color: #f8f9fa;">
+                    <h2 style="color: #1a1a2e; border-bottom: 2px solid #e74c3c; padding-bottom: 8px;">
+                        {application_data['position']} ({application_data.get('position_category', 'N/A')})
+                    </h2>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="padding: 8px 0; font-weight: bold; width: 140px;">Name:</td>
+                            <td style="padding: 8px 0;">{application_data['name']}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; font-weight: bold;">Email:</td>
+                            <td style="padding: 8px 0;"><a href="mailto:{application_data['email']}">{application_data['email']}</a></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; font-weight: bold;">Phone:</td>
+                            <td style="padding: 8px 0;"><a href="tel:{application_data['phone']}">{application_data['phone']}</a></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; font-weight: bold;">Location:</td>
+                            <td style="padding: 8px 0;">{application_data['location']}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Availability:</td>
+                            <td style="padding: 8px 0;">{avail_html}</td>
+                        </tr>
+                        {f'<tr><td style="padding: 8px 0; font-weight: bold; vertical-align: top;">Social:</td><td style="padding: 8px 0;">{social_html}</td></tr>' if social_html else ''}
+                    </table>
+                    <p style="margin-top: 16px; color: #666; font-size: 13px;">
+                        Resume and headshot (if applicable) can be viewed in the admin dashboard.
+                    </p>
+                </div>
+                <div style="background-color: #1a1a2e; padding: 12px; text-align: center;">
+                    <p style="color: #888; font-size: 12px; margin: 0;">Fin &amp; Feathers Restaurants - Careers Portal</p>
+                </div>
+            </body>
+            </html>
+            """
+
+            text = f"""New Job Application
+Position: {application_data['position']} ({application_data.get('position_category', 'N/A')})
+Name: {application_data['name']}
+Email: {application_data['email']}
+Phone: {application_data['phone']}
+Location: {application_data['location']}
+"""
+
+            msg.attach(MIMEText(text, 'plain'))
+            msg.attach(MIMEText(html, 'html'))
+
+            with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT) as server:
+                server.login(SMTP_USERNAME, SMTP_PASSWORD)
+                server.sendmail(SMTP_USERNAME, recipient_emails, msg.as_string())
+
+            logging.info(f"Application email sent to {recipient_emails}")
+        except Exception as e:
+            logging.error(f"Failed to send application email: {e}")
+
+    threading.Thread(target=_send, daemon=True).start()
 
 # Admin credentials (hardcoded as requested)
 ADMIN_USERNAME = "admin"
@@ -5489,6 +5595,17 @@ async def submit_job_application(
     await db.job_applications.insert_one(application)
 
     logging.info(f"New job application from {name} for {position} at {location}")
+
+    # Send email notification
+    if SMTP_HOST and SMTP_USERNAME:
+        recipient_emails = [
+            "info@finandfeathersrestaurants.com",
+            "careers@finandfeathersrestaurants.com",
+        ]
+        location_email = LOCATION_EMAILS.get(location, "")
+        if location_email:
+            recipient_emails.append(location_email)
+        send_application_email(application, recipient_emails)
 
     return {
         "id": application_id,
