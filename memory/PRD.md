@@ -18,6 +18,15 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 
 ### Completed Features
 
+#### DJ Schedule System - NEW (March 2026)
+- [x] 22 schedule entries across 4 locations (Stone Mountain, Douglasville, Valdosta, Midtown)
+- [x] 13 DJs profiled: DJ Ron, DJ Tay, DJ Relevant, DJ PJO, DJ Flexxrated, DJ Yobz, DJ Venom, DJ Evrsince, DJ Aha, DJ Lavish, DJ 2Times, DJ DB, DJ RELLEDOTCOM
+- [x] DJ login shows all scheduled DJ names as selectable buttons
+- [x] After login, DJ sees personal weekly schedule summary
+- [x] "Your Locations" section highlights scheduled locations with day/time
+- [x] After check-in, full location schedule shown with DJ's own slot highlighted in red
+- [x] Backend APIs: /api/dj/weekly-schedule, /api/dj/weekly-schedule/{slug}, /api/dj/weekly-schedule/names/all
+
 #### Karaoke System - NEW (March 2026)
 - [x] DJ Panel page at /dj with login, location select, karaoke toggle, and queue management
 - [x] DJ can toggle Karaoke Mode on/off per location

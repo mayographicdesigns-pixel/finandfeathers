@@ -2973,6 +2973,34 @@ async def get_dj_at_location(location_slug: str):
 # DJ SCHEDULE ENDPOINTS
 # =====================================================
 
+@api_router.get("/dj/weekly-schedule")
+async def get_weekly_dj_schedule():
+    """Get the current weekly DJ schedule for all locations"""
+    entries = await db.dj_schedule.find(
+        {"is_active": True}, {"_id": 0}
+    ).to_list(200)
+    return entries
+
+
+@api_router.get("/dj/weekly-schedule/{location_slug}")
+async def get_weekly_dj_schedule_by_location(location_slug: str):
+    """Get weekly DJ schedule for a specific location"""
+    entries = await db.dj_schedule.find(
+        {"location_slug": location_slug, "is_active": True}, {"_id": 0}
+    ).to_list(50)
+    return entries
+
+
+@api_router.get("/dj/weekly-schedule/names/all")
+async def get_all_scheduled_dj_names():
+    """Get unique DJ names from the weekly schedule"""
+    entries = await db.dj_schedule.find(
+        {"is_active": True}, {"_id": 0, "dj_name": 1}
+    ).to_list(200)
+    names = sorted(set(e["dj_name"] for e in entries))
+    return names
+
+
 @api_router.get("/dj/schedules")
 async def get_all_dj_schedules():
     """Get all upcoming DJ schedules (public)"""
