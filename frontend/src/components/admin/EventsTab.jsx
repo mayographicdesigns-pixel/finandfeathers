@@ -38,6 +38,7 @@ const EventsTab = () => {
     location_slug: '',
     image: '',
     featured: false,
+    free_entry: false,
     packages: ['general'],
     package_prices: { general: 25, vip: 75, table: 200 }
   });
@@ -179,6 +180,7 @@ const EventsTab = () => {
       location_slug: event.location_slug || '',
       image: event.image || '',
       featured: event.featured || false,
+      free_entry: event.free_entry || false,
       packages: event.packages || ['general'],
       package_prices: event.package_prices || { general: 25, vip: 75, table: 200 }
     });
@@ -221,7 +223,7 @@ const EventsTab = () => {
     setEditingEvent(null);
     setFormData({
       name: '', description: '', date: '', time: '', location: '', location_slug: '',
-      image: '', featured: false, packages: ['general'],
+      image: '', featured: false, free_entry: false, packages: ['general'],
       package_prices: { general: 25, vip: 75, table: 200 }
     });
   };
@@ -456,18 +458,33 @@ const EventsTab = () => {
                 </div>
               </div>
 
-              {/* Featured Toggle */}
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="featured-checkbox"
-                  checked={formData.featured}
-                  onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
-                  className="rounded"
-                />
-                <label htmlFor="featured-checkbox" className="text-slate-300 text-sm flex items-center gap-1">
-                  <Star className="w-4 h-4 text-yellow-500" /> Mark as Featured Event
-                </label>
+              {/* Featured & Free Entry Toggles */}
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="featured-checkbox"
+                    checked={formData.featured}
+                    onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+                    className="rounded"
+                  />
+                  <label htmlFor="featured-checkbox" className="text-slate-300 text-sm flex items-center gap-1">
+                    <Star className="w-4 h-4 text-yellow-500" /> Featured Event
+                  </label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="free-entry-checkbox"
+                    checked={formData.free_entry || false}
+                    onChange={(e) => setFormData({ ...formData, free_entry: e.target.checked })}
+                    className="rounded"
+                    data-testid="free-entry-toggle"
+                  />
+                  <label htmlFor="free-entry-checkbox" className="text-slate-300 text-sm flex items-center gap-1">
+                    <Ticket className="w-4 h-4 text-green-500" /> Free Entry (shows "Reserve" instead of "Get Tickets")
+                  </label>
+                </div>
               </div>
 
               <div className="flex gap-2">
@@ -521,6 +538,9 @@ const EventsTab = () => {
                         </span>
                         {event.location_slug === 'all-locations' && (
                           <span className="px-2 py-0.5 rounded text-xs bg-blue-600 text-white">All Locations</span>
+                        )}
+                        {event.free_entry && (
+                          <span className="px-2 py-0.5 rounded text-xs bg-green-600 text-white">Free Entry</span>
                         )}
                       </div>
                       <p className="text-slate-400 text-sm line-clamp-2 mb-2">{event.description}</p>

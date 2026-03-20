@@ -65,9 +65,14 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Events images grid (4 images)
 - [x] Careers button under loyalty section
 
-### Pending/Future Tasks
-- (P1) Events & Free Tickets (toggle + reservation text number)
-- (P1) Tipping option for "Request a Song" flow
+#### Events & Tickets System
+- [x] Free Entry toggle in admin dashboard for events
+- [x] Free events show "Reserve" button instead of "Get Tickets"
+- [x] Free events show "FREE ENTRY" label on event cards
+- [x] Reservation modal shows location's phone number + "Text to Reserve" SMS link
+- [x] Pre-filled SMS message with event name, date, and time
+- [x] "All Locations" events show all location phone numbers to choose from
+- [x] Paid events still show normal ticket purchase flow via Stripe
 - (P2) WordPress Integration
 - (P2) Apple Sign-In Integration
 - (P2) Merchandise Store Enhancements

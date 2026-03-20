@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Home, Calendar, MapPin, Clock, Users, Ticket, CreditCard, Loader2, CheckCircle, Star, Music, Wine } from 'lucide-react';
+import { Home, Calendar, MapPin, Clock, Users, Ticket, CreditCard, Loader2, CheckCircle, Star, Music, Wine, Phone, MessageSquare } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -14,6 +14,8 @@ import {
   getPublicEvents,
   getPageContent
 } from '../services/api';
+
+const API_URL = window.location.origin;
 
 // Fallback events if API returns empty
 const FALLBACK_EVENTS = [
@@ -64,6 +66,7 @@ const EventsPage = () => {
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [locations, setLocations] = useState([]);
   const [pageContent, setPageContent] = useState({});
   const heroHtml = pageContent.hero || 'From live music to exclusive tastings, discover unforgettable experiences at Fin & Feathers.';
 
@@ -74,13 +77,15 @@ const EventsPage = () => {
 
   const fetchData = async () => {
     try {
-      const [packagesData, eventsData, contentData] = await Promise.all([
+      const [packagesData, eventsData, contentData, locsData] = await Promise.all([
         getEventPackages(),
         getPublicEvents(),
-        getPageContent('events')
+        getPageContent('events'),
+        fetch(`${API_URL}/api/locations`).then(r => r.json()).catch(() => [])
       ]);
       setPackages(packagesData);
       setEvents(eventsData.length > 0 ? eventsData : FALLBACK_EVENTS);
+      setLocations(locsData);
       const map = {};
       (contentData || []).forEach((entry) => {
         map[entry.section_key] = entry.html || '';
@@ -179,6 +184,29 @@ const EventsPage = () => {
 
   const totalPrice = getTotalPrice();
 
+  const getReservationPhone = (event) => {
+    if (!event) return null;
+    const slug = event.location_slug;
+    if (!slug || slug === 'all-locations') return null;
+    const loc = locations.find(l => l.slug === slug);
+    return loc?.reservation_phone || loc?.phone || null;
+  };
+
+  const getReservationSmsLink = (event) => {
+    const phone = getReservationPhone(event);
+    if (!phone) return null;
+    const cleanPhone = phone.replace(/[^0-9]/g, '');
+    const msg = encodeURIComponent(`Hi, I'd like to reserve for ${event.name} (${event.date}, ${event.time}).`);
+    return `sms:${cleanPhone}?body=${msg}`;
+  };
+
+  const isFreeEntry = (event) => {
+    if (!event) return false;
+    if (event.free_entry) return true;
+    const startingPrice = getEventStartingPrice(event);
+    return startingPrice <= 0;
+  };
+
   return (
     <div className="min-h-screen bg-black">
       {/* Header */}
@@ -275,8 +303,17 @@ const EventsPage = () => {
                   className="bg-red-600 hover:bg-red-700 text-white w-full md:w-auto"
                   data-testid={`get-tickets-${event.id}`}
                 >
-                  <Ticket className="w-4 h-4 mr-2" />
-                  Get Tickets - From {formatPrice(getEventStartingPrice(event))}
+                  {isFreeEntry(event) ? (
+                    <>
+                      <MapPin className="w-4 h-4 mr-2" />
+                      Reserve — Free Entry
+                    </>
+                  ) : (
+                    <>
+                      <Ticket className="w-4 h-4 mr-2" />
+                      Get Tickets - From {formatPrice(getEventStartingPrice(event))}
+                    </>
+                  )}
                 </Button>
               </CardContent>
             </div>
@@ -326,10 +363,21 @@ const EventsPage = () => {
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-red-500 font-semibold">From {formatPrice(getEventStartingPrice(event))}</span>
+                  <span className="text-red-500 font-semibold">
+                    {isFreeEntry(event) ? 'Free Entry' : `From ${formatPrice(getEventStartingPrice(event))}`}
+                  </span>
                   <Button size="sm" className="bg-red-600 hover:bg-red-700" data-testid={`event-tickets-btn-${event.id}`}>
-                    <Ticket className="w-3 h-3 mr-1" />
-                    Tickets
+                    {isFreeEntry(event) ? (
+                      <>
+                        <MapPin className="w-3 h-3 mr-1" />
+                        Reserve
+                      </>
+                    ) : (
+                      <>
+                        <Ticket className="w-3 h-3 mr-1" />
+                        Tickets
+                      </>
+                    )}
                   </Button>
                 </div>
               </CardContent>
@@ -338,7 +386,7 @@ const EventsPage = () => {
         </div>
       </div>
 
-      {/* Ticket Purchase Modal */}
+      {/* Ticket / Reservation Modal */}
       {selectedEvent && (
         <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
           <Card className="bg-slate-900 border-slate-700 w-full max-w-lg">
@@ -347,6 +395,11 @@ const EventsPage = () => {
                 <div>
                   <h2 className="text-2xl font-bold text-white">{selectedEvent.name}</h2>
                   <p className="text-slate-400 text-sm">{selectedEvent.date} • {selectedEvent.time}</p>
+                  {selectedEvent.location && (
+                    <p className="text-slate-500 text-xs flex items-center gap-1 mt-1">
+                      <MapPin className="w-3 h-3" /> {selectedEvent.location}
+                    </p>
+                  )}
                 </div>
                 <Button 
                   variant="ghost" 
@@ -359,109 +412,168 @@ const EventsPage = () => {
                 </Button>
               </div>
 
-              {/* Package Selection */}
-              <div className="mb-6">
-                <label className="text-sm text-slate-300 mb-2 block">Select Package</label>
-                <div className="space-y-2">
-                  {selectedEvent.packages.map(pkgId => (
-                    <button
-                      key={pkgId}
-                      onClick={() => setSelectedPackage(pkgId)}
-                      className={`w-full p-4 rounded-lg border transition-all ${
-                        selectedPackage === pkgId
-                          ? 'border-red-500 bg-red-500/10'
-                          : 'border-slate-700 bg-slate-800 hover:border-slate-600'
-                      }`}
-                      data-testid={`ticket-package-${pkgId}-btn`}
-                    >
-                      <div className="flex justify-between items-center">
-                        <div className="text-left">
-                          <p className="text-white font-semibold">{packages[pkgId]?.name || pkgId}</p>
-                          <p className="text-slate-400 text-sm">{packages[pkgId]?.description}</p>
-                        </div>
-                        <span className="text-red-500 font-bold text-lg">{formatPrice(getPackagePrice(selectedEvent, pkgId))}</span>
+              {isFreeEntry(selectedEvent) ? (
+                /* FREE ENTRY - Reserve via Text */
+                <div>
+                  <div className="bg-green-600/10 border border-green-600/30 rounded-xl p-5 text-center mb-4">
+                    <p className="text-green-400 text-2xl font-bold mb-1">Free Entry</p>
+                    <p className="text-slate-400 text-sm">No tickets required — just reserve your spot!</p>
+                  </div>
+
+                  {getReservationPhone(selectedEvent) ? (
+                    <div className="space-y-3">
+                      <p className="text-slate-300 text-sm text-center">Text to reserve your spot:</p>
+                      <div className="bg-slate-800 rounded-xl p-4 flex items-center justify-center gap-3">
+                        <Phone className="w-5 h-5 text-red-400" />
+                        <span className="text-white text-xl font-bold tracking-wide" data-testid="reservation-phone">
+                          {getReservationPhone(selectedEvent)}
+                        </span>
                       </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Quantity */}
-              <div className="mb-6">
-                <label className="text-sm text-slate-300 mb-2 block">Number of Tickets</label>
-                <div className="flex items-center gap-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="border-slate-600"
-                    data-testid="ticket-qty-minus"
-                  >
-                    -
-                  </Button>
-                  <span className="text-white text-xl font-bold w-8 text-center" data-testid="ticket-qty-value">{quantity}</span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setQuantity(Math.min(10, quantity + 1))}
-                    className="border-slate-600"
-                    data-testid="ticket-qty-plus"
-                  >
-                    +
-                  </Button>
-                </div>
-              </div>
-
-              {/* Email (optional) */}
-              <div className="mb-6">
-                <label className="text-sm text-slate-300 mb-2 block">Email (for ticket confirmation)</label>
-                <Input
-                  type="email"
-                  value={customerEmail}
-                  onChange={(e) => setCustomerEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  className="bg-slate-800 border-slate-700 text-white"
-                  data-testid="ticket-email-input"
-                />
-              </div>
-
-              {/* Total & Purchase */}
-              <div className="border-t border-slate-700 pt-4">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-slate-300">Total</span>
-                  <span className="text-2xl font-bold text-white" data-testid="ticket-total-amount">{formatPrice(totalPrice)}</span>
-                </div>
-                
-                <Button
-                  onClick={handlePurchaseTickets}
-                  disabled={isPurchasing}
-                  className="w-full bg-red-600 hover:bg-red-700 py-6 text-lg"
-                  data-testid="purchase-tickets-btn"
-                >
-                  {isPurchasing ? (
-                    <>
-                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                      Processing...
-                    </>
-                  ) : totalPrice <= 0 ? (
-                    <>
-                      <Ticket className="w-5 h-5 mr-2" />
-                      Reserve Tickets
-                    </>
+                      <a
+                        href={getReservationSmsLink(selectedEvent)}
+                        className="block"
+                        data-testid="reservation-sms-link"
+                      >
+                        <Button className="w-full bg-red-600 hover:bg-red-700 py-6 text-lg">
+                          <MessageSquare className="w-5 h-5 mr-2" />
+                          Text to Reserve
+                        </Button>
+                      </a>
+                      <p className="text-xs text-slate-500 text-center">
+                        Opens your messaging app with a pre-filled reservation request
+                      </p>
+                    </div>
+                  ) : selectedEvent.location_slug === 'all-locations' ? (
+                    <div className="space-y-3">
+                      <p className="text-slate-300 text-sm text-center mb-3">Text any location to reserve:</p>
+                      <div className="space-y-2 max-h-64 overflow-y-auto">
+                        {locations.filter(l => l.reservation_phone).map(loc => {
+                          const cleanPhone = loc.reservation_phone.replace(/[^0-9]/g, '');
+                          const msg = encodeURIComponent(`Hi, I'd like to reserve for ${selectedEvent.name} (${selectedEvent.date}, ${selectedEvent.time}).`);
+                          return (
+                            <a
+                              key={loc.id}
+                              href={`sms:${cleanPhone}?body=${msg}`}
+                              className="flex items-center justify-between bg-slate-800 rounded-lg p-3 hover:bg-slate-700 transition-colors"
+                              data-testid={`reserve-${loc.slug}`}
+                            >
+                              <div>
+                                <p className="text-white text-sm font-medium">{loc.name?.replace('Fin & Feathers - ', '')}</p>
+                                <p className="text-slate-400 text-xs">{loc.reservation_phone}</p>
+                              </div>
+                              <MessageSquare className="w-4 h-4 text-red-400" />
+                            </a>
+                          );
+                        })}
+                      </div>
+                    </div>
                   ) : (
-                    <>
-                      <CreditCard className="w-5 h-5 mr-2" />
-                      Purchase Tickets
-                    </>
+                    <p className="text-slate-400 text-sm text-center">
+                      Walk-ins welcome! No reservation needed.
+                    </p>
                   )}
-                </Button>
-                
-                <p className="text-xs text-slate-500 text-center mt-3" data-testid="ticket-checkout-note">
-                  {totalPrice <= 0
-                    ? "Free reservation will open the location's SMS line. Email receipts require Gmail setup."
-                    : 'Secure checkout powered by Stripe'}
-                </p>
-              </div>
+                </div>
+              ) : (
+                /* PAID EVENT - Ticket Purchase */
+                <>
+                  {/* Package Selection */}
+                  <div className="mb-6">
+                    <label className="text-sm text-slate-300 mb-2 block">Select Package</label>
+                    <div className="space-y-2">
+                      {selectedEvent.packages.map(pkgId => (
+                        <button
+                          key={pkgId}
+                          onClick={() => setSelectedPackage(pkgId)}
+                          className={`w-full p-4 rounded-lg border transition-all ${
+                            selectedPackage === pkgId
+                              ? 'border-red-500 bg-red-500/10'
+                              : 'border-slate-700 bg-slate-800 hover:border-slate-600'
+                          }`}
+                          data-testid={`ticket-package-${pkgId}-btn`}
+                        >
+                          <div className="flex justify-between items-center">
+                            <div className="text-left">
+                              <p className="text-white font-semibold">{packages[pkgId]?.name || pkgId}</p>
+                              <p className="text-slate-400 text-sm">{packages[pkgId]?.description}</p>
+                            </div>
+                            <span className="text-red-500 font-bold text-lg">{formatPrice(getPackagePrice(selectedEvent, pkgId))}</span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Quantity */}
+                  <div className="mb-6">
+                    <label className="text-sm text-slate-300 mb-2 block">Number of Tickets</label>
+                    <div className="flex items-center gap-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        className="border-slate-600"
+                        data-testid="ticket-qty-minus"
+                      >
+                        -
+                      </Button>
+                      <span className="text-white text-xl font-bold w-8 text-center" data-testid="ticket-qty-value">{quantity}</span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                        className="border-slate-600"
+                        data-testid="ticket-qty-plus"
+                      >
+                        +
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Email (optional) */}
+                  <div className="mb-6">
+                    <label className="text-sm text-slate-300 mb-2 block">Email (for ticket confirmation)</label>
+                    <Input
+                      type="email"
+                      value={customerEmail}
+                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      placeholder="your@email.com"
+                      className="bg-slate-800 border-slate-700 text-white"
+                      data-testid="ticket-email-input"
+                    />
+                  </div>
+
+                  {/* Total & Purchase */}
+                  <div className="border-t border-slate-700 pt-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-slate-300">Total</span>
+                      <span className="text-2xl font-bold text-white" data-testid="ticket-total-amount">{formatPrice(totalPrice)}</span>
+                    </div>
+                    
+                    <Button
+                      onClick={handlePurchaseTickets}
+                      disabled={isPurchasing}
+                      className="w-full bg-red-600 hover:bg-red-700 py-6 text-lg"
+                      data-testid="purchase-tickets-btn"
+                    >
+                      {isPurchasing ? (
+                        <>
+                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          <CreditCard className="w-5 h-5 mr-2" />
+                          Purchase Tickets
+                        </>
+                      )}
+                    </Button>
+                    
+                    <p className="text-xs text-slate-500 text-center mt-3">
+                      Secure checkout powered by Stripe
+                    </p>
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
         </div>
