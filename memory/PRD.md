@@ -18,6 +18,17 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 
 ### Completed Features
 
+#### Karaoke System - NEW (March 2026)
+- [x] DJ Panel page at /dj with login, location select, karaoke toggle, and queue management
+- [x] DJ can toggle Karaoke Mode on/off per location
+- [x] Guests submit name + song to join the karaoke queue
+- [x] DJ sees live queue with position numbers, can mark songs as played/skipped
+- [x] Recently sung songs shown below the queue
+- [x] Homepage shows "Karaoke Live at [Location]!" button when karaoke is active
+- [x] Check-in page shows "Request a Song" form when karaoke is active at nearest location
+- [x] Public karaoke queue endpoint for location chat boards
+- [x] Backend APIs: /api/dj/login, /api/karaoke/toggle, /api/karaoke/status, /api/karaoke/queue
+
 #### Careers Page (CareersPage.jsx) - NEW (March 2026)
 - [x] Multi-step job application form (3 steps)
 - [x] Step 1: Candidate Information (Name, Email, Phone, Social Media)
