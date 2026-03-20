@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ExternalLink, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Clock, X, Image as ImageIcon, Edit2, Save, LogOut, Settings, GripVertical, Navigation, User, ShoppingBag, Calendar, Download, RefreshCw, Share, MoreVertical, Plus, Briefcase } from 'lucide-react';
+import { ExternalLink, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Clock, X, Image as ImageIcon, Edit2, Save, LogOut, Settings, GripVertical, Navigation, User, ShoppingBag, Calendar, Download, RefreshCw, Share, MoreVertical, Plus, Briefcase, Mic } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -36,6 +36,8 @@ import {
   getPageContent,
   getPublicEvents
 } from '../services/api';
+
+const API_URL = window.location.origin;
 
 // Welcome Popup Component
 const WelcomePopup = ({ onClose, onSubmit }) => {
@@ -545,6 +547,27 @@ const LinkTreeHomePage = () => {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
+  // Karaoke state - check if any location has active karaoke
+  const [karaokeLocation, setKaraokeLocation] = useState(null);
+
+  useEffect(() => {
+    const checkKaraoke = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/locations`);
+        const locs = await res.json();
+        for (const loc of locs) {
+          const kRes = await fetch(`${API_URL}/api/karaoke/status/${loc.slug}`);
+          const kData = await kRes.json();
+          if (kData.active) {
+            setKaraokeLocation(loc);
+            break;
+          }
+        }
+      } catch (e) { console.error(e); }
+    };
+    checkKaraoke();
+  }, []);
+
   // Handle drag end for image reordering
   const handleDragEnd = (event) => {
     const { active, over } = event;
@@ -992,6 +1015,17 @@ const LinkTreeHomePage = () => {
             <ImageIcon className="w-5 h-5 mr-2" />
             Gallery
           </Button>
+
+          {karaokeLocation && (
+            <Button
+              onClick={() => navigate(`/locations/${karaokeLocation.slug}?checkin=true`)}
+              className="w-full bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02] animate-pulse"
+              data-testid="karaoke-live-btn"
+            >
+              <Mic className="w-5 h-5 mr-2" />
+              Karaoke Live at {karaokeLocation.name?.replace('Fin & Feathers - ', '')}!
+            </Button>
+          )}
         </div>
 
         {/* Gallery Preview - Links to Gallery Page */}

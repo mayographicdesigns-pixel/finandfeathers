@@ -2719,6 +2719,98 @@ async def update_song_request_status(request_id: str, status: str):
     return {"message": f"Request status updated to {status}"}
 
 
+@api_router.post("/karaoke/toggle/{location_slug}")
+async def toggle_karaoke(location_slug: str, body: dict):
+    """DJ toggles karaoke on/off at a location"""
+    active = body.get("active", False)
+    dj_id = body.get("dj_id", "")
+
+    if active:
+        await db.karaoke_sessions.update_one(
+            {"location_slug": location_slug},
+            {"$set": {
+                "location_slug": location_slug,
+                "active": True,
+                "dj_id": dj_id,
+                "started_at": datetime.now(timezone.utc).isoformat()
+            }},
+            upsert=True
+        )
+    else:
+        await db.karaoke_sessions.update_one(
+            {"location_slug": location_slug},
+            {"$set": {"active": False, "ended_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        # Mark all pending requests as skipped
+        await db.song_requests.update_many(
+            {"location_slug": location_slug, "status": "pending", "request_type": "karaoke"},
+            {"$set": {"status": "skipped"}}
+        )
+
+    return {"active": active, "location_slug": location_slug}
+
+
+@api_router.get("/karaoke/status/{location_slug}")
+async def get_karaoke_status(location_slug: str):
+    """Check if karaoke is active at a location"""
+    session = await db.karaoke_sessions.find_one(
+        {"location_slug": location_slug},
+        {"_id": 0}
+    )
+    if session and session.get("active"):
+        return {"active": True, "dj_id": session.get("dj_id", ""), "started_at": session.get("started_at")}
+    return {"active": False}
+
+
+@api_router.get("/karaoke/queue/{location_slug}")
+async def get_karaoke_queue(location_slug: str):
+    """Get the public karaoke queue for a location"""
+    pending = await db.song_requests.find(
+        {"location_slug": location_slug, "request_type": "karaoke", "status": "pending"},
+        {"_id": 0}
+    ).sort("created_at", 1).to_list(100)
+
+    played = await db.song_requests.find(
+        {"location_slug": location_slug, "request_type": "karaoke", "status": "played"},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(20)
+
+    return {"pending": pending, "played": played}
+
+
+@api_router.post("/dj/login")
+async def dj_login(body: dict):
+    """Simple DJ login by name"""
+    name = body.get("name", "").strip()
+    pin = body.get("pin", "").strip()
+
+    if not name:
+        raise HTTPException(status_code=400, detail="Name is required")
+
+    # Find DJ by name (case-insensitive)
+    profile = await db.dj_profiles.find_one(
+        {"name": {"$regex": f"^{name}$", "$options": "i"}, "is_active": True},
+        {"_id": 0}
+    )
+
+    if not profile:
+        # Auto-create DJ profile for simplicity
+        profile = {
+            "id": str(uuid.uuid4()),
+            "name": name,
+            "stage_name": name,
+            "avatar_emoji": "🎧",
+            "is_active": True,
+            "current_location": None,
+            "checked_in_at": None,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.dj_profiles.insert_one(profile)
+        del profile["_id"]
+
+    return {"id": profile["id"], "name": profile["name"], "stage_name": profile.get("stage_name"), "current_location": profile.get("current_location")}
+
+
 # =====================================================
 # DJ PROFILE ENDPOINTS
 # =====================================================
@@ -2812,8 +2904,15 @@ async def get_dj_at_location(location_slug: str):
         {"_id": 0}
     )
     if not profile:
-        return None
-    return DJProfileResponse(**profile)
+        return {"checked_in": False, "dj_id": None, "dj_name": None}
+    return {
+        "checked_in": True,
+        "dj_id": profile.get("id"),
+        "dj_name": profile.get("name"),
+        "stage_name": profile.get("stage_name"),
+        "avatar_emoji": profile.get("avatar_emoji", "🎧"),
+        "photo_url": profile.get("photo_url")
+    }
 
 
 # =====================================================

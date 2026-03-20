@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Loader2, Navigation, AlertCircle } from 'lucide-react';
+import { MapPin, Loader2, Navigation, AlertCircle, Mic } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
+import { Input } from '../components/ui/input';
 import { locations } from '../mockData';
 import { getPageContent } from '../services/api';
+
+const API_URL = window.location.origin;
 
 // Calculate distance between two coordinates using Haversine formula
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -26,6 +29,12 @@ const CheckInPage = () => {
   const [distance, setDistance] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [pageContent, setPageContent] = useState({});
+  const [karaokeActive, setKaraokeActive] = useState(false);
+  const [showSongForm, setShowSongForm] = useState(false);
+  const [songName, setSongName] = useState('');
+  const [singerName, setSingerName] = useState('');
+  const [songSubmitted, setSongSubmitted] = useState(false);
+  const [submittingSong, setSubmittingSong] = useState(false);
   const heroHtml = pageContent.hero || 'Find the closest Fin & Feathers location to check in.';
 
   useEffect(() => {
@@ -43,6 +52,34 @@ const CheckInPage = () => {
     } catch (error) {
       console.error('Failed to fetch page content', error);
     }
+  };
+
+  const checkKaraokeStatus = async (locationSlug) => {
+    try {
+      const res = await fetch(`${API_URL}/api/karaoke/status/${locationSlug}`);
+      const data = await res.json();
+      setKaraokeActive(data.active);
+    } catch (e) { console.error(e); }
+  };
+
+  const handleSongSubmit = async (e) => {
+    e.preventDefault();
+    if (!songName.trim() || !singerName.trim() || !nearestLocation) return;
+    setSubmittingSong(true);
+    try {
+      await fetch(`${API_URL}/api/social/song-request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          location_slug: nearestLocation.slug,
+          request_type: 'karaoke',
+          name: singerName.trim(),
+          song: songName.trim()
+        })
+      });
+      setSongSubmitted(true);
+    } catch (e) { console.error(e); }
+    finally { setSubmittingSong(false); }
   };
 
   const requestLocationAndFindNearest = () => {
@@ -80,6 +117,7 @@ const CheckInPage = () => {
         if (nearest) {
           setNearestLocation(nearest);
           setDistance(minDistance);
+          checkKaraokeStatus(nearest.slug);
 
           // If within 0.5 miles (reasonable restaurant range), auto-redirect
           if (minDistance <= 0.5) {
@@ -226,9 +264,51 @@ const CheckInPage = () => {
               </p>
               
               <div className="space-y-3">
+                {karaokeActive && !showSongForm && !songSubmitted && (
+                  <Button
+                    onClick={() => setShowSongForm(true)}
+                    className="w-full bg-red-600 hover:bg-red-700 h-12 animate-pulse"
+                    data-testid="karaoke-request-btn"
+                  >
+                    <Mic className="w-5 h-5 mr-2" />
+                    Request a Song - Karaoke Live!
+                  </Button>
+                )}
+                {karaokeActive && showSongForm && !songSubmitted && (
+                  <form onSubmit={handleSongSubmit} className="space-y-3 bg-slate-800/50 rounded-lg p-4">
+                    <Input
+                      value={singerName}
+                      onChange={e => setSingerName(e.target.value)}
+                      placeholder="Your name"
+                      className="bg-slate-800 border-slate-700 text-white"
+                      data-testid="karaoke-singer-name"
+                    />
+                    <Input
+                      value={songName}
+                      onChange={e => setSongName(e.target.value)}
+                      placeholder="Song you want to sing"
+                      className="bg-slate-800 border-slate-700 text-white"
+                      data-testid="karaoke-song-name"
+                    />
+                    <Button
+                      type="submit"
+                      disabled={!songName.trim() || !singerName.trim() || submittingSong}
+                      className="w-full bg-red-600 hover:bg-red-700"
+                      data-testid="karaoke-submit-btn"
+                    >
+                      {submittingSong ? 'Submitting...' : 'Add to Queue'}
+                    </Button>
+                  </form>
+                )}
+                {karaokeActive && songSubmitted && (
+                  <div className="bg-green-600/10 border border-green-600/30 rounded-lg p-4 text-center">
+                    <p className="text-green-400 font-medium">You're in the queue!</p>
+                    <p className="text-slate-400 text-xs mt-1">Watch the board for your turn</p>
+                  </div>
+                )}
                 <Button
                   onClick={() => navigate(`/locations/${nearestLocation.slug}?checkin=true`)}
-                  className="w-full bg-red-600 hover:bg-red-700 h-12"
+                  className={`w-full ${karaokeActive ? 'bg-slate-700 hover:bg-slate-600' : 'bg-red-600 hover:bg-red-700'} h-12`}
                 >
                   Check In Anyway
                 </Button>
