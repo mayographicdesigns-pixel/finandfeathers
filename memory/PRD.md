@@ -24,10 +24,17 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Guests submit name + song to join the karaoke queue
 - [x] DJ sees live queue with position numbers, can mark songs as played/skipped
 - [x] Recently sung songs shown below the queue
-- [x] Homepage shows "Karaoke Live at [Location]!" button when karaoke is active
-- [x] Check-in page shows "Request a Song" form when karaoke is active at nearest location
+- [x] Homepage shows "Karaoke Sign Up" button when karaoke is active
+- [x] Homepage shows "Request a Song" button when DJ is present (no karaoke)
+- [x] Check-in page shows "Karaoke Sign Up" / "Request a Song" contextually
 - [x] Public karaoke queue endpoint for location chat boards
 - [x] Backend APIs: /api/dj/login, /api/karaoke/toggle, /api/karaoke/status, /api/karaoke/queue
+
+#### User Role System - NEW (March 2026)
+- [x] Welcome popup includes "I am a..." role selector: Customer, Server, Bartender, Manager, DJ
+- [x] Roles saved to user_profiles via POST /api/user/register
+- [x] DJ role redirects to /dj panel after signup
+- [x] Admin can see user roles for access control
 
 #### Careers Page (CareersPage.jsx) - NEW (March 2026)
 - [x] Multi-step job application form (3 steps)
