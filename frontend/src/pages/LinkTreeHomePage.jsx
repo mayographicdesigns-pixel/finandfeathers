@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ExternalLink, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Clock, X, Image as ImageIcon, Edit2, Save, LogOut, Settings, GripVertical, Navigation, User, ShoppingBag, Calendar, Download, RefreshCw, Share, MoreVertical, Plus, Briefcase, Mic } from 'lucide-react';
+import { ExternalLink, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Clock, X, Image as ImageIcon, Edit2, Save, LogOut, Settings, GripVertical, Navigation, User, ShoppingBag, Calendar, Download, RefreshCw, Share, MoreVertical, Plus, Briefcase, Mic, Music } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -45,9 +45,18 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [role, setRole] = useState('customer');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [findingLocation, setFindingLocation] = useState(false);
   const [closestLocation, setClosestLocation] = useState(null);
+
+  const ROLES = [
+    { id: 'customer', label: 'Customer' },
+    { id: 'server', label: 'Server' },
+    { id: 'bartender', label: 'Bartender' },
+    { id: 'manager', label: 'Manager' },
+    { id: 'dj', label: 'DJ' },
+  ];
 
   // Find closest location on mount
   useEffect(() => {
@@ -126,6 +135,7 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
         name: name.trim(),
         phone: phone.trim(),
         email: email.trim(),
+        role: role,
         savedAt: new Date().toISOString()
       };
       localStorage.setItem('ff_user_info', JSON.stringify(userInfo));
@@ -139,8 +149,10 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
         await onSubmit(userInfo);
       }
       
-      // Navigate to closest location's social page
-      if (closestLocation) {
+      // Navigate based on role
+      if (role === 'dj') {
+        navigate('/dj');
+      } else if (closestLocation) {
         navigate(`/locations/${closestLocation.slug}?checkin=true`);
       } else {
         onClose();
@@ -244,6 +256,27 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
                 className="bg-slate-800 border-slate-700 text-white"
                 data-testid="welcome-email-input"
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">I am a...</label>
+              <div className="flex flex-wrap gap-2">
+                {ROLES.map(r => (
+                  <button
+                    key={r.id}
+                    type="button"
+                    onClick={() => setRole(r.id)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                      role === r.id 
+                        ? 'bg-red-600 text-white' 
+                        : 'bg-slate-800 text-slate-400 hover:bg-slate-700 border border-slate-700'
+                    }`}
+                    data-testid={`role-${r.id}`}
+                  >
+                    {r.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <Button
@@ -547,25 +580,33 @@ const LinkTreeHomePage = () => {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
-  // Karaoke state - check if any location has active karaoke
+  // Karaoke & DJ state - check if any location has active karaoke or a DJ present
   const [karaokeLocation, setKaraokeLocation] = useState(null);
+  const [djLocation, setDjLocation] = useState(null);
 
   useEffect(() => {
-    const checkKaraoke = async () => {
+    const checkLiveStatus = async () => {
       try {
         const res = await fetch(`${API_URL}/api/locations`);
         const locs = await res.json();
         for (const loc of locs) {
+          // Check karaoke first
           const kRes = await fetch(`${API_URL}/api/karaoke/status/${loc.slug}`);
           const kData = await kRes.json();
           if (kData.active) {
             setKaraokeLocation(loc);
-            break;
+            return;
+          }
+          // Check if DJ is present
+          const dRes = await fetch(`${API_URL}/api/dj/at-location/${loc.slug}`);
+          const dData = await dRes.json();
+          if (dData && dData.checked_in) {
+            setDjLocation(loc);
           }
         }
       } catch (e) { console.error(e); }
     };
-    checkKaraoke();
+    checkLiveStatus();
   }, []);
 
   // Handle drag end for image reordering
@@ -858,9 +899,14 @@ const LinkTreeHomePage = () => {
       {showWelcomePopup && (
         <WelcomePopup 
           onClose={() => setShowWelcomePopup(false)}
-          onSubmit={(userInfo) => {
-            // Optionally save user info to backend/loyalty
-            console.log('User info submitted:', userInfo);
+          onSubmit={async (userInfo) => {
+            try {
+              await fetch(`${API_URL}/api/user/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userInfo)
+              });
+            } catch (e) { console.error('Failed to save user profile:', e); }
           }}
         />
       )}
@@ -1023,7 +1069,18 @@ const LinkTreeHomePage = () => {
               data-testid="karaoke-live-btn"
             >
               <Mic className="w-5 h-5 mr-2" />
-              Karaoke Live at {karaokeLocation.name?.replace('Fin & Feathers - ', '')}!
+              Karaoke Sign Up - Live at {karaokeLocation.name?.replace('Fin & Feathers - ', '')}!
+            </Button>
+          )}
+
+          {!karaokeLocation && djLocation && (
+            <Button
+              onClick={() => navigate(`/locations/${djLocation.slug}?checkin=true`)}
+              className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+              data-testid="request-song-btn"
+            >
+              <Music className="w-5 h-5 mr-2" />
+              Request a Song at {djLocation.name?.replace('Fin & Feathers - ', '')}
             </Button>
           )}
         </div>

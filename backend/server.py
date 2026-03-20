@@ -1027,6 +1027,60 @@ async def logout_user(request: Request):
 
 # ==================== PASSWORD-BASED LOGIN ====================
 
+@api_router.post("/user/register")
+async def register_user_quick(request: Request):
+    """Quick user registration from welcome popup with role"""
+    try:
+        body = await request.json()
+        name = body.get("name", "").strip()
+        phone = body.get("phone", "").strip()
+        email = body.get("email", "").strip().lower()
+        role = body.get("role", "customer")
+
+        if not name:
+            raise HTTPException(status_code=400, detail="Name is required")
+
+        valid_roles = ["customer", "server", "bartender", "manager", "dj"]
+        if role not in valid_roles:
+            role = "customer"
+
+        # Check if user already exists by phone or email
+        existing = None
+        if email:
+            existing = await db.user_profiles.find_one({"email": email}, {"_id": 0})
+        if not existing and phone:
+            existing = await db.user_profiles.find_one({"phone": phone}, {"_id": 0})
+
+        if existing:
+            # Update role if they're re-registering
+            await db.user_profiles.update_one(
+                {"id": existing["id"]},
+                {"$set": {"role": role, "name": name}}
+            )
+            return {"id": existing["id"], "message": "Profile updated", "role": role}
+
+        user_id = f"user_{uuid.uuid4().hex[:12]}"
+        new_profile = {
+            "id": user_id,
+            "name": name,
+            "phone": phone or None,
+            "email": email or None,
+            "role": role,
+            "avatar_emoji": "😊",
+            "token_balance": 0,
+            "total_visits": 0,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.user_profiles.insert_one(new_profile)
+
+        return {"id": user_id, "message": "Profile created", "role": role}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Quick register error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.post("/auth/user/register")
 async def register_user_with_password(request: Request):
     """

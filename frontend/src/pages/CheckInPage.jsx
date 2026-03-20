@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Loader2, Navigation, AlertCircle, Mic } from 'lucide-react';
+import { MapPin, Loader2, Navigation, AlertCircle, Mic, Music } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -30,6 +30,7 @@ const CheckInPage = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [pageContent, setPageContent] = useState({});
   const [karaokeActive, setKaraokeActive] = useState(false);
+  const [djPresent, setDjPresent] = useState(false);
   const [showSongForm, setShowSongForm] = useState(false);
   const [songName, setSongName] = useState('');
   const [singerName, setSingerName] = useState('');
@@ -59,6 +60,12 @@ const CheckInPage = () => {
       const res = await fetch(`${API_URL}/api/karaoke/status/${locationSlug}`);
       const data = await res.json();
       setKaraokeActive(data.active);
+      if (!data.active) {
+        // Check if DJ is present without karaoke
+        const dRes = await fetch(`${API_URL}/api/dj/at-location/${locationSlug}`);
+        const dData = await dRes.json();
+        setDjPresent(dData && dData.checked_in);
+      }
     } catch (e) { console.error(e); }
   };
 
@@ -72,7 +79,7 @@ const CheckInPage = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           location_slug: nearestLocation.slug,
-          request_type: 'karaoke',
+          request_type: karaokeActive ? 'karaoke' : 'song_request',
           name: singerName.trim(),
           song: songName.trim()
         })
@@ -271,10 +278,20 @@ const CheckInPage = () => {
                     data-testid="karaoke-request-btn"
                   >
                     <Mic className="w-5 h-5 mr-2" />
-                    Request a Song - Karaoke Live!
+                    Karaoke Sign Up
                   </Button>
                 )}
-                {karaokeActive && showSongForm && !songSubmitted && (
+                {!karaokeActive && djPresent && !showSongForm && !songSubmitted && (
+                  <Button
+                    onClick={() => setShowSongForm(true)}
+                    className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 h-12"
+                    data-testid="request-song-btn"
+                  >
+                    <Music className="w-5 h-5 mr-2" />
+                    Request a Song
+                  </Button>
+                )}
+                {(karaokeActive || djPresent) && showSongForm && !songSubmitted && (
                   <form onSubmit={handleSongSubmit} className="space-y-3 bg-slate-800/50 rounded-lg p-4">
                     <Input
                       value={singerName}
@@ -300,10 +317,10 @@ const CheckInPage = () => {
                     </Button>
                   </form>
                 )}
-                {karaokeActive && songSubmitted && (
+                {(karaokeActive || djPresent) && songSubmitted && (
                   <div className="bg-green-600/10 border border-green-600/30 rounded-lg p-4 text-center">
-                    <p className="text-green-400 font-medium">You're in the queue!</p>
-                    <p className="text-slate-400 text-xs mt-1">Watch the board for your turn</p>
+                    <p className="text-green-400 font-medium">{karaokeActive ? "You're in the queue!" : "Song request sent!"}</p>
+                    <p className="text-slate-400 text-xs mt-1">{karaokeActive ? 'Watch the board for your turn' : 'The DJ will get to your request'}</p>
                   </div>
                 )}
                 <Button
