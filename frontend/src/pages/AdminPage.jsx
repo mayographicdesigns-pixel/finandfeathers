@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Home, BarChart3, Megaphone, Ticket, Grid3X3, ImageUp, MessageSquare,
-  MapPin, Video, Share2, UtensilsCrossed, Coins, Users, Mail, Bell, Shield, FileText
+  MapPin, Video, Share2, UtensilsCrossed, Coins, Users, Mail, Bell, Shield, FileText, Briefcase
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
@@ -24,7 +24,8 @@ import {
   SocialPostsTab,
   UsersTab,
   DJScheduleTab,
-  SettingsTab
+  SettingsTab,
+  CareersTab
 } from '../components/admin';
 import { PageContentTab } from '../components/admin';
 import { Settings, Music } from 'lucide-react';
@@ -51,6 +52,7 @@ const AdminPage = () => {
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { id: 'specials', label: 'Post Special', icon: Megaphone },
     { id: 'events', label: 'Events', icon: Ticket },
+    { id: 'careers', label: 'Careers', icon: Briefcase },
     { id: 'dj-schedule', label: 'DJ Schedule', icon: Music },
     { id: 'gallery', label: 'Gallery', icon: Grid3X3 },
     { id: 'submissions', label: 'Submissions', icon: ImageUp },
@@ -142,6 +144,7 @@ const AdminPage = () => {
 
         {activeTab === 'specials' && <SpecialsTab />}
         {activeTab === 'events' && <EventsTab />}
+        {activeTab === 'careers' && <CareersTab />}
         {activeTab === 'gallery' && <GalleryTab />}
         {activeTab === 'submissions' && <GallerySubmissionsTab />}
         {activeTab === 'posts' && <SocialPostsTab />}

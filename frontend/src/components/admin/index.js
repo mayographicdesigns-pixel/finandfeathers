@@ -7,6 +7,7 @@ export { default as DashboardStats } from './DashboardStats';
 
 // Tab components (sorted alphabetically)
 export { default as AdminAccountsTab } from './AdminAccountsTab';
+export { default as CareersTab } from './CareersTab';
 export { default as ContactsTab } from './ContactsTab';
 export { default as DJScheduleTab } from './DJScheduleTab';
 export { default as EventsTab } from './EventsTab';

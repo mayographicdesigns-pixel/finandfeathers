@@ -5506,6 +5506,30 @@ async def get_job_applications(username: str = Depends(get_current_admin)):
     return applications
 
 
+@api_router.patch("/admin/careers/applications/{application_id}")
+async def update_application_status(application_id: str, body: dict, username: str = Depends(get_current_admin)):
+    """Update a job application status"""
+    status = body.get("status")
+    if status not in ["new", "reviewed", "interviewed", "hired", "rejected"]:
+        raise HTTPException(status_code=400, detail="Invalid status")
+    result = await db.job_applications.update_one(
+        {"id": application_id},
+        {"$set": {"status": status, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Application not found")
+    return {"message": "Status updated", "status": status}
+
+
+@api_router.delete("/admin/careers/applications/{application_id}")
+async def delete_application(application_id: str, username: str = Depends(get_current_admin)):
+    """Delete a job application"""
+    result = await db.job_applications.delete_one({"id": application_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Application not found")
+    return {"message": "Application deleted"}
+
+
 # Include the router in the main app
 app.include_router(api_router)
 

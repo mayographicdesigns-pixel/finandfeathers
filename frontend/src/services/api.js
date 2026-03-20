@@ -2358,3 +2358,39 @@ export async function adminDeleteUser(userId) {
   return await response.json();
 }
 
+
+
+// ===================== CAREERS / JOB APPLICATIONS =====================
+
+export async function getJobApplications() {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/careers/applications`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error('Failed to fetch applications');
+  return await response.json();
+}
+
+export async function updateApplicationStatus(id, status) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/careers/applications/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ status })
+  });
+  if (!response.ok) throw new Error('Failed to update application');
+  return await response.json();
+}
+
+export async function deleteApplication(id) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/careers/applications/${id}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error('Failed to delete application');
+  return await response.json();
+}

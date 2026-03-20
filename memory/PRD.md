@@ -25,6 +25,10 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Step 3: Document Uploads (Resume required, Headshot conditional on position)
 - [x] Backend API: POST /api/careers/apply with file upload to MongoDB
 - [x] Backend API: GET /api/admin/careers/applications (admin only)
+- [x] Backend API: PATCH /api/admin/careers/applications/{id} (status update)
+- [x] Backend API: DELETE /api/admin/careers/applications/{id} (delete)
+- [x] Admin Dashboard "Careers" tab with application list, status filters, expandable details
+- [x] Status workflow: new → reviewed → interviewed → hired/rejected
 - [x] "We're Hiring - Apply Now" button on homepage under loyalty section
 - [x] /careers route in App.js
 - [x] Thank you page after successful submission
