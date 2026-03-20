@@ -68,14 +68,16 @@ const CareersPage = () => {
       if (!form.name.trim()) errs.name = 'Name is required';
       if (!form.email.trim()) errs.email = 'Email is required';
       if (!form.phone.trim()) errs.phone = 'Phone is required';
+      if (!form.instagram.trim() && !form.facebook.trim() && !form.tiktok.trim()) {
+        errs.social = 'At least one social media handle is required';
+      }
     }
     if (s === 2) {
       if (!form.location) errs.location = 'Select a location';
       if (!form.position) errs.position = 'Select a position';
     }
     if (s === 3) {
-      if (!form.resume) errs.resume = 'Resume is required';
-      if (needsPhoto && !form.headshot) errs.headshot = 'Headshot is required for this position';
+      // Resume and headshot are optional
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -111,7 +113,7 @@ const CareersPage = () => {
       formData.append('position_category', form.position_category);
       formData.append('position', form.position);
       formData.append('availability', JSON.stringify(form.availability));
-      formData.append('resume', form.resume);
+      if (form.resume) formData.append('resume', form.resume);
       if (form.headshot) formData.append('headshot', form.headshot);
 
       const response = await fetch(`${API_URL}/api/careers/apply`, {
@@ -228,7 +230,7 @@ const CareersPage = () => {
               </div>
 
               <div className="pt-2">
-                <h3 className="text-sm font-medium text-slate-400 mb-3">Social Media (Optional)</h3>
+                <h3 className="text-sm font-medium text-slate-400 mb-3">Social Media (at least 1 required) *</h3>
                 <div className="space-y-3">
                   <Input
                     value={form.instagram}
@@ -252,6 +254,7 @@ const CareersPage = () => {
                     data-testid="careers-tiktok"
                   />
                 </div>
+                {errors.social && <p className="text-red-400 text-xs mt-1">{errors.social}</p>}
               </div>
             </div>
           )}
@@ -300,7 +303,29 @@ const CareersPage = () => {
               </div>
 
               <div>
-                <label className="text-sm text-slate-300 mb-3 block">Availability</label>
+                <div className="flex items-center justify-between mb-3">
+                  <label className="text-sm text-slate-300">Availability</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const allKeys = {};
+                      DAYS.forEach(d => SHIFTS.forEach(s => { allKeys[`${d}-${s}`] = true; }));
+                      const allSelected = DAYS.every(d => SHIFTS.every(s => form.availability[`${d}-${s}`]));
+                      setForm(prev => ({
+                        ...prev,
+                        availability: allSelected ? {} : allKeys
+                      }));
+                    }}
+                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                      DAYS.every(d => SHIFTS.every(s => form.availability[`${d}-${s}`]))
+                        ? 'bg-red-500/80 text-white'
+                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                    }`}
+                    data-testid="avail-select-all"
+                  >
+                    {DAYS.every(d => SHIFTS.every(s => form.availability[`${d}-${s}`])) ? 'Clear All' : 'Open Availability (Select All)'}
+                  </button>
+                </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs">
                     <thead>
@@ -351,7 +376,7 @@ const CareersPage = () => {
 
               {/* Resume */}
               <div>
-                <label className="text-sm text-slate-300 mb-2 block">Resume / CV *</label>
+                <label className="text-sm text-slate-300 mb-2 block">Resume / CV (Optional)</label>
                 <div className="relative">
                   {form.resume ? (
                     <div className="flex items-center gap-3 bg-slate-800 border border-slate-700 rounded-lg p-3">
@@ -387,8 +412,8 @@ const CareersPage = () => {
               {/* Headshot - conditional */}
               {needsPhoto && (
                 <div>
-                  <label className="text-sm text-slate-300 mb-2 block">Headshot / Photo *</label>
-                  <p className="text-slate-500 text-xs mb-2">Required for {form.position} position</p>
+                  <label className="text-sm text-slate-300 mb-2 block">Headshot / Photo (Optional)</label>
+                  <p className="text-slate-500 text-xs mb-2">Recommended for {form.position} position</p>
                   <div className="relative">
                     {form.headshot ? (
                       <div className="flex items-center gap-3 bg-slate-800 border border-slate-700 rounded-lg p-3">

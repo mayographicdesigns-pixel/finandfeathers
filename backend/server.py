@@ -5501,39 +5501,41 @@ async def submit_job_application(
     position_category: str = Form(...),
     position: str = Form(...),
     availability: str = Form("{}"),
-    resume: UploadFile = File(...),
+    resume: Optional[UploadFile] = File(None),
     headshot: Optional[UploadFile] = File(None),
 ):
-    """Submit a job application with resume and optional headshot"""
+    """Submit a job application with optional resume and headshot"""
     import json as json_lib
 
-    resume_contents = await resume.read()
-    if len(resume_contents) > 10 * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="Resume file too large (max 10MB)")
+    resume_url = None
+    if resume and resume.filename:
+        resume_contents = await resume.read()
+        if len(resume_contents) > 10 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="Resume file too large (max 10MB)")
 
-    resume_id = str(uuid.uuid4())
-    resume_ext = Path(resume.filename).suffix.lower()
-    resume_filename = f"resume_{resume_id}{resume_ext}"
-    resume_b64 = base64.b64encode(resume_contents).decode('utf-8')
-    resume_content_type = resume.content_type or "application/pdf"
+        resume_id = str(uuid.uuid4())
+        resume_ext = Path(resume.filename).suffix.lower()
+        resume_filename = f"resume_{resume_id}{resume_ext}"
+        resume_b64 = base64.b64encode(resume_contents).decode('utf-8')
+        resume_content_type = resume.content_type or "application/pdf"
 
-    await db.media_files.insert_one({
-        "file_id": resume_id,
-        "filename": resume_filename,
-        "data": resume_b64,
-        "content_type": resume_content_type,
-        "size": len(resume_contents),
-        "uploaded_at": datetime.now(timezone.utc),
-        "uploaded_by": "careers_applicant"
-    })
+        await db.media_files.insert_one({
+            "file_id": resume_id,
+            "filename": resume_filename,
+            "data": resume_b64,
+            "content_type": resume_content_type,
+            "size": len(resume_contents),
+            "uploaded_at": datetime.now(timezone.utc),
+            "uploaded_by": "careers_applicant"
+        })
 
-    try:
-        with open(UPLOAD_DIR / resume_filename, "wb") as f:
-            f.write(resume_contents)
-    except Exception:
-        pass
+        try:
+            with open(UPLOAD_DIR / resume_filename, "wb") as f:
+                f.write(resume_contents)
+        except Exception:
+            pass
 
-    resume_url = f"/api/media/{resume_id}"
+        resume_url = f"/api/media/{resume_id}"
 
     headshot_url = None
     if headshot and headshot.filename:
