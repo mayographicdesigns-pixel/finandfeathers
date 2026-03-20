@@ -706,4 +706,4 @@ The MenuPage.jsx file reduced from 1505 to 1318 lines (~187 lines saved)
   - Updated all navigation references (LinkTreeHomePage, LocationsPage, GalleryPage, etc.)
 
 ## Preview URL
-https://careers-form.preview.emergentagent.com
+https://karaoke-dj-mgmt.preview.emergentagent.com

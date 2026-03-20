@@ -1,117 +1,64 @@
 <analysis>**original_problem_statement:**
-The user wants to add a Careers section to the website. This involves:
-1.  Adding a Careers button on the homepage under the Join Now (loyalty signup) section.
-2.  Creating a new multi-step job application page at the  route.
+The user's initial request was to build a Careers section with a multi-step job application form. This was expanded over the session to include:
+- An admin dashboard to manage job applications.
+- Email notifications for new applications.
+- A full Karaoke and DJ management system, including a DJ-specific panel () for managing song queues and activating karaoke mode.
+- Dynamic UI changes on the homepage and check-in page based on whether karaoke is active or a DJ is present.
+- A user role selection feature during the initial signup process.
+- Enhancements to the admin events dashboard, including an All Locations option, a refresh button, and an AI-powered tool to extract event details from uploaded flyers.
+- Population of the system with extensive DJ schedule data and weekly recurring events for multiple locations based on user-provided text and images.
+- A feature to distinguish between free and paid events, linking free events to a location's reservation text number.
 
-**PRODUCT REQUIREMENTS (Job Application Form):**
--   **Step 1: Candidate Information:**
-    -   Fields: Name, Email, Phone Number.
-    -   Social Media Links: Optional fields for Instagram, Facebook, and TikTok.
--   **Step 2: Role Selection & Logistics:**
-    -   **Location:** A dropdown menu of all restaurant locations.
-    -   **Position:** A categorized dropdown:
-        -   Front of House (FOH): Floor Manager, Bartender, Server, Hookah, Service Assistant/Dish Washer.
-        -   Back of House (BOH): Line Cook, Utility/Dishwasher, Kitchen Manager.
-    -   **Availability:** A multi-select grid for Monday–Sunday with Morning/Evening/Late Night shift options.
--   **Step 3: Uploads & Documentation:**
-    -   **Resume:** Required file upload for all positions.
-    -   **Headshot/Photo:** Required file upload *only* for Floor Manager, Bartender, Server, or Hookah roles. This field should be hidden for all other roles.
--   **Step 4: Submission:**
-    -   A Submit Application button.
-    -   On successful submission, display a Thank You message.
-    -   Send an email notification with the application details to , , and the email address of the selected location.
+**PRODUCT REQUIREMENTS (Most Recent):**
+- **Karaoke/DJ System:** A DJ panel for check-in, karaoke activation, and song queue management. The public-facing UI should show Karaoke Sign Up when karaoke is active and Request a Song when only a DJ is present.
+- **User Roles:** A checkbox in the signup form for users to identify as Customer, Server, Bartender, Manager, or DJ.
+- **Event Management:** An AI tool to read event flyers, an All Locations option for events, and a Free Entry toggle that links to a location's reservation text number instead of a payment flow.
+- **Content Population:** Add numerous DJs, weekly schedules, and recurring location-specific events based on user-provided data.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The project is a mature full-stack PWA with a React frontend and FastAPI backend. The previous session involved extensive bug fixing, content updates, and feature enhancements. All known bugs from the previous session have been resolved, including critical issues related to image path consistency, deployment CORS errors, and service worker refresh loops. The agent has just begun work on the new Careers feature by creating an empty file for the page.
+The application is a comprehensive restaurant PWA with a React frontend and FastAPI backend. All major features requested in this session have been implemented. The Careers feature is complete, including an admin dashboard and email notifications. The Karaoke/DJ system is fully functional with a dedicated DJ panel at  and dynamic UI on the public-facing pages. The admin dashboard's Events tab has been enhanced with AI flyer reading, an All Locations option, and a free-entry toggle. The database has been populated with extensive DJ schedules and weekly events for multiple locations.
 
 **Last working item**:
--   **Last item agent was working:** Starting the implementation of the new multi-step job application form. The agent has created the file  but has not written any code yet. The agent correctly identified that an email integration is needed but not yet configured.
--   **Status:** IN PROGRESS
--   **Agent Testing Done:** N
--   **Which testing method agent to use?** Frontend testing agent (to test the multi-step form) and backend testing via  (to test the API endpoint).
+-   **Last item agent was working:** The agent populated the database with 40 new weekly recurring events for four locations (Midtown, Valdosta, Riverdale, Douglasville) based on flyer images provided by the user. All events were correctly marked as free entry.
+-   **Status:** USER VERIFICATION PENDING
+-   **Agent Testing Done:** Y
+-   **Which testing method agent to use?** Frontend testing agent to verify the  page, ensuring all 40 new events are displayed with the Reserve button and link to the correct reservation SMS number.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
 -   None.
 
 **In progress Task List**:
--   **Task 1: Build Multi-Step Job Application Form (P0)**
-    -   **Where to resume:** Begin by building the React component in , creating the necessary backend models in , and the submission endpoint in .
-    -   **What will be achieved with this?** A complete job application system that saves submissions to the database. The email notification part will be prepared but will require user-provided credentials to be fully functional.
-    -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** Both.
-    -   **Blocked on something:**
-        1.  **Email Service Credentials:** The email notification feature cannot be completed without user-provided SMTP or third-party email service (e.g., SendGrid, Resend) credentials. The agent must ask the user for these.
-        2.  **Location Email Addresses:** The  in the database do not have an associated email address. The agent must add an  field to the location model and ask the user to provide the email for each restaurant location.
-
--   **Task 2: Add Careers button to Homepage (P0)**
-    -   **Where to resume:** Edit  to add a new button under the Join Our Loyalty Program section that links to .
-    -   **What will be achieved with this?** Provides user access to the new job application page from the main homepage.
-    -   **Status:** NOT STARTED
-    -   **Should Test frontend/backend/both after fix?** Frontend.
-    -   **Blocked on something:** None.
+-   None.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
-    -   (P1) Add Per-Location Weekly Specials management.
-    -   (P1) Implement Email/SMS for Free Tickets (will also require 3rd-party credentials).
+    -   (P0) Add a tipping option to the Request a Song flow. This was requested by the user but has not yet been implemented.
+    -   (P1) Per-Location Weekly Specials management.
 -   **Future Tasks:**
     -   (P2) WordPress Integration.
     -   (P2) Apple Sign-In Integration.
     -   (P2) Merchandise Store Enhancements.
 
 **Completed work in this session**
--   **Bug Fix (Deployment):** Fixed a critical CORS error on the deployed site by replacing all hardcoded  instances with a dynamic  lookup.
--   **Bug Fix (Service Worker):** Resolved an infinite refresh loop that broke login and page rendering by disabling the  flag in the service worker and preventing it from intercepting API requests.
--   **Bug Fix (Data Model):** Completely removed the redundant  field from menu items across the entire stack (frontend components, backend API, database), consolidating all image references to a single  field to resolve inconsistencies between the dashboard and public menu.
--   **Bug Fix (Menu):** Fixed an issue where food items in the  section were rendering as text-only by correcting their  property in the database.
--   **Bug Fix (Loyalty):** Fixed the loyalty signup form, which was failing due to a field name mismatch and a body stream already read error.
--   **Feature (Admin):** Removed the login requirement for the admin panel and moved it from  to .
--   **Feature (Homepage):** Added a 4-column event image grid to the homepage and made it editable from the dashboard.
--   **Dependency Management:** Switched the frontend package manager from yarn install v1.22.22
-[1/4] Resolving packages...
-[2/4] Fetching packages...
-[3/4] Linking dependencies...
-[4/4] Building fresh packages...
-success Saved lockfile.
-Done in 0.07s. to npm <command>
-
-Usage:
-
-npm install        install all the dependencies in your project
-npm install <foo>  add the <foo> dependency to your project
-npm test           run this project's tests
-npm run <foo>      run the script named <foo>
-npm <command> -h   quick help on <command>
-npm -l             display usage info for all commands
-npm help <term>    search for help on <term>
-npm help npm       more involved overview
-
-All commands:
-
-    access, adduser, audit, bugs, cache, ci, completion,
-    config, dedupe, deprecate, diff, dist-tag, docs, doctor,
-    edit, exec, explain, explore, find-dupes, fund, get, help,
-    help-search, hook, init, install, install-ci-test,
-    install-test, link, ll, login, logout, ls, org, outdated,
-    owner, pack, ping, pkg, prefix, profile, prune, publish,
-    query, rebuild, repo, restart, root, run-script, sbom,
-    search, set, shrinkwrap, star, stars, start, stop, team,
-    test, token, uninstall, unpublish, unstar, update, version,
-    view, whoami
-
-Specify configs in the ini-formatted file:
-    /root/.npmrc
-or on the command line via: npm <command> --key=value
-
-More configuration info: npm help config
-Configuration fields: npm help 7 config
-
-npm@10.8.2 /usr/lib/node_modules/npm and resolved  dependency conflicts.
--   **Content Updates:** Updated location hours via web research, changed homepage/locations background images, and added/updated dozens of menu items and images as per user requests.
--   **Verification:** Confirmed that the dashboard's image update/restore functionality works end-to-end and that the DM/Chat backend endpoints are functional.
+-   **Full Careers System:** Built the multi-step job application form (), backend endpoint, admin management dashboard (), and integrated Hostinger SMTP for email notifications.
+-   **Karaoke & DJ Management System:**
+    -   Created a DJ Panel at  with a multi-screen flow for login (by name), location check-in, and a dashboard.
+    -   The DJ dashboard features a Karaoke Mode toggle and a live song queue with controls to mark songs as played or skip.
+    -   The public homepage and check-in page now dynamically show a Karaoke Sign Up button (when karaoke is active) or a Request a Song button (when a DJ is present without karaoke).
+-   **User Role Signup:** Added a role selection checkbox (Customer, Server, etc.) to the welcome popup, which saves the role to the user's profile in the database.
+-   **Admin Dashboard Enhancements (Events):**
+    -   Integrated an AI flyer reader (using GPT-4 Vision) to auto-populate event details from an image.
+    -   Added a Refresh button and an All Locations selection option.
+-   **Free Events & Reservation Linking:**
+    -   Added a Free Entry toggle to the admin events form.
+    -   Public pages now display a Reserve button for free events, which opens a modal with the location's reservation phone number and a Text to Reserve  link.
+-   **Extensive Content Population:**
+    -   Parsed a text-based DJ schedule to create profiles for 13 DJs and populate the database with 22 weekly schedule entries.
+    -   The DJ Panel is now fully driven by this schedule data.
+    -   Added over 40 weekly recurring events for multiple locations based on user-provided flyers.
 
 **Earlier issues found/mentioned but not fixed**
 -   None.
@@ -123,107 +70,92 @@ npm@10.8.2 /usr/lib/node_modules/npm and resolved  dependency conflicts.
 
 
 **Key Technical Concepts**
--   Multi-step forms in React using conditional rendering.
--   File uploads with FastAPI and React.
--   Dynamic form fields (e.g., showing/hiding headshot upload based on position).
--   Database schema extension and data migration.
+-   React multi-step forms and conditional UI rendering.
+-   FastAPI backend with Pydantic models for robust data validation.
+-   Async database operations with MongoDB ().
+-   Real-time UI updates based on backend state (e.g., karaoke status).
+-   Third-party integration for AI vision capabilities ().
+-   SMTP integration for sending transactional emails.
 
 **key DB schema**
--   **locations**:  - Requires a new  field to be added for notifications.
--   **job_applications** (new collection to be created): 
+-   **user_profiles**: Added  (e.g., customer, dj).
+-   **job_applications**: 
+-   **dj_profiles**: 
+-   **dj_schedule**: 
+-   **karaoke_sessions**: 
+-   **events**: Added 
+-   **song_requests**: Used for both karaoke and regular song requests, linked to .
 
 **changes in tech stack**
--   Frontend package manager was switched from yarn install v1.22.22
-[1/4] Resolving packages...
-success Already up-to-date.
-Done in 0.02s. to npm <command>
-
-Usage:
-
-npm install        install all the dependencies in your project
-npm install <foo>  add the <foo> dependency to your project
-npm test           run this project's tests
-npm run <foo>      run the script named <foo>
-npm <command> -h   quick help on <command>
-npm -l             display usage info for all commands
-npm help <term>    search for help on <term>
-npm help npm       more involved overview
-
-All commands:
-
-    access, adduser, audit, bugs, cache, ci, completion,
-    config, dedupe, deprecate, diff, dist-tag, docs, doctor,
-    edit, exec, explain, explore, find-dupes, fund, get, help,
-    help-search, hook, init, install, install-ci-test,
-    install-test, link, ll, login, logout, ls, org, outdated,
-    owner, pack, ping, pkg, prefix, profile, prune, publish,
-    query, rebuild, repo, restart, root, run-script, sbom,
-    search, set, shrinkwrap, star, stars, start, stop, team,
-    test, token, uninstall, unpublish, unstar, update, version,
-    view, whoami
-
-Specify configs in the ini-formatted file:
-    /root/.npmrc
-or on the command line via: npm <command> --key=value
-
-More configuration info: npm help config
-Configuration fields: npm help 7 config
-
-npm@10.8.2 /usr/lib/node_modules/npm.
+-   Added  library for AI vision features.
 
 **All files of reference**
--   **/app/frontend/src/pages/CareersPage.jsx**: New file for the application form.
--   **/app/frontend/src/pages/LinkTreeHomePage.jsx**: To be edited to add the careers button.
--   **/app/backend/server.py**: To be edited for the new API endpoint.
--   **/app/backend/models.py**: To be edited for the new data model.
+-   **/app/backend/server.py**: Contains all backend logic. Needs refactoring.
+-   **/app/frontend/src/pages/DJPanelPage.jsx**: Contains the UI and logic for the DJ-facing portal.
+-   **/app/frontend/src/pages/LinkTreeHomePage.jsx**: Main homepage, modified to show dynamic Karaoke/DJ buttons.
+-   **/app/frontend/src/pages/CheckInPage.jsx**: Check-in flow, also modified for dynamic Karaoke/DJ buttons.
+-   **/app/frontend/src/pages/EventsPage.jsx**: Public events display, modified for free event reservations.
+-   **/app/frontend/src/components/admin/EventsTab.jsx**: Admin UI for managing events, now with AI features.
+-   **/app/memory/PRD.md**: Contains the evolving product requirements.
 
 **Areas that need refactoring**:
--   None.
+-   The main backend file, , has grown to over 5,900 lines. It should be broken down into smaller, feature-specific routers (e.g., , ) to improve maintainability and organization.
 
 **key api endpoints**
--    (New endpoint to be created).
+-   : Submits a job application.
+-   : Manages job applications.
+-   : Logs in a DJ by name.
+-   : Checks a DJ into a location.
+-   : Activates/deactivates karaoke mode for a location.
+-   : Checks if karaoke is active.
+-   : Checks if any DJ is checked in.
+-   : Gets a list of all DJ names.
+-   : Gets a specific DJ's schedule.
+-   : Uses AI to parse an event flyer image.
 
 **Critical Info for New Agent**
--   Your primary task is to build the multi-step job application form. Start with the frontend UI in , then build the backend.
--   The email notification feature is **BLOCKED**. First, build the system to save applications to the database.
--   You **MUST** ask the user for two things to complete the task:
-    1.  **Email Service Credentials**: To send the notification emails (e.g., a SendGrid API key).
-    2.  **Email for each Location**: To add to the database for the notification To field.
--   Do not forget to add the Careers button to the homepage to link to the new page.
+-   The immediate next task is to **implement a tipping option for the Request a Song flow**. This was explicitly requested by the user but has not been started.
+-   The backend file  is extremely large and difficult to manage. Propose refactoring it into separate FastAPI routers as a high-priority technical task.
+-   The application now uses  for its AI flyer reading feature, which requires the  to be set in the  file.
 
 **documents and test reports created in this job**
 -   
+-   
+-   
+-   
 
 **Last 10 User Messages and any pending HUMAN messages**
--   : Create a multi-step job application form with detailed requirements. **Status: IN PROGRESS**.
--   :  **Status: Completed**.
--   :  **Status: Completed**.
--   :  **Status: Completed**.
--   :  (5 images) **Status: Completed**.
--   :  **Status: Completed**.
--   :  **Status: Completed**.
--   :  **Status: Completed**.
--   :  **Status: Completed**.
--   :  **Status: Completed**.
+-   :  (with 5 flyers). **Status: Completed**.
+-   : . **Status: Completed**.
+-   :  (with text schedule). **Status: Completed**.
+-   :  (with 3 flyers). **Status: Completed**.
+-   : . **Status: Completed**.
+-   : . **Status: Partially Completed (Tipping option is pending)**.
+-   : . **Status: Completed**.
+-   : . **Status: Completed**.
+-   : . **Status: Completed**.
+-   : . **Status: Completed**.
 
 **Project Health Check:**
 -   **Broken**: None.
 -   **Mocked**: None.
 
 **3rd Party Integrations**
--   Stripe
--   WooCommerce
--   
--   **[Required for new task]** An email sending service like **Resend** or **SendGrid**. The agent will need to use  once the user provides credentials.
+-   **Stripe** (Payments) — requires User API Key.
+-   **WooCommerce** — requires User API Key.
+-   **Hostinger SMTP** (Email) — uses User-provided credentials stored in .
+-   **OpenAI GPT-4 Vision** (AI Flyer Reader) — via , uses Emergent LLM Key.
+-   **** (Backend scheduled tasks).
 
 **Testing status**
--   Testing agent used after significant changes: YES
--   Troubleshoot agent used after agent stuck in loop: NO
--   Test files created: []
--   Known regressions: None.
+-   **Testing agent used after significant changes:** YES
+-   **Troubleshoot agent used after agent stuck in loop:** NO
+-   **Test files created:** []
+-   **Known regressions:** None.
 
 **Credentials to test flow:**
--   **Dashboard:**  (No login required).
+-   **Admin Dashboard:**  (No login required).
+-   **DJ Panel:**  (Login by selecting a DJ's name from the button list).
 
 **What agent forgot to execute**
--   None. The agent was just beginning the new task and correctly identified the blockers.</analysis>
+-   The agent did not implement the **tipping option** for the Request a Song feature, which was part of a larger user request that was otherwise completed. This is the highest-priority pending task.</analysis>
