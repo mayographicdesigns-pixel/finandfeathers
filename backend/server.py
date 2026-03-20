@@ -5603,6 +5603,7 @@ async def submit_job_application(
         recipient_emails = [
             "info@finandfeathersrestaurants.com",
             "careers@finandfeathersrestaurants.com",
+            "careers@finandfeathers.live",
         ]
         location_email = LOCATION_EMAILS.get(location, "")
         if location_email:
