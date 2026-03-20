@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Plus, Edit2, Trash2, Upload, RefreshCw, Ticket, Star, Calendar, Clock, MapPin
+  Plus, Edit2, Trash2, Upload, RefreshCw, Ticket, Star, Calendar, Clock, MapPin, Wand2, Save
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
@@ -16,6 +16,8 @@ import {
   uploadImage
 } from '../../services/api';
 
+const API_URL = window.location.origin;
+
 const EventsTab = () => {
   const [events, setEvents] = useState([]);
   const [locations, setLocations] = useState([]);
@@ -24,7 +26,9 @@ const EventsTab = () => {
   const [editingEvent, setEditingEvent] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [extracting, setExtracting] = useState(false);
   const fileInputRef = useRef(null);
+  const flyerInputRef = useRef(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -44,9 +48,11 @@ const EventsTab = () => {
   }, []);
 
   const fetchEvents = async () => {
+    setLoading(true);
     try {
       const data = await adminGetEvents();
       setEvents(data);
+      toast({ title: 'Refreshed', description: 'Events loaded' });
     } catch (err) {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
     } finally {
@@ -91,6 +97,51 @@ const EventsTab = () => {
     }
   };
 
+  const handleFlyerExtract = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setExtracting(true);
+    toast({ title: 'AI Reading Flyer...', description: 'Extracting event details from your flyer' });
+
+    try {
+      // Upload the image first
+      const imgResult = await uploadImage(file);
+
+      // Extract event details via AI
+      const formDataUpload = new FormData();
+      formDataUpload.append('file', file);
+      const token = localStorage.getItem('adminToken');
+      const res = await fetch(`${API_URL}/api/admin/events/extract-flyer`, {
+        method: 'POST',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+        body: formDataUpload
+      });
+
+      if (!res.ok) throw new Error('Failed to extract event details');
+      const extracted = await res.json();
+
+      setFormData(prev => ({
+        ...prev,
+        name: extracted.name || prev.name,
+        description: extracted.description || prev.description,
+        date: extracted.date || prev.date,
+        time: extracted.time || prev.time,
+        location: extracted.location || prev.location,
+        image: imgResult.url,
+        featured: extracted.featured || false,
+      }));
+
+      setShowForm(true);
+      toast({ title: 'AI Extracted!', description: 'Event details filled in — review and save' });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setExtracting(false);
+      if (flyerInputRef.current) flyerInputRef.current.value = '';
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.description || !formData.date || !formData.time) {
@@ -103,11 +154,11 @@ const EventsTab = () => {
       if (editingEvent) {
         await adminUpdateEvent(editingEvent.id, formData);
         setEvents(events.map(ev => ev.id === editingEvent.id ? { ...ev, ...formData } : ev));
-        toast({ title: 'Success', description: 'Event updated' });
+        toast({ title: 'Saved', description: 'Event updated successfully' });
       } else {
         const newEvent = await adminCreateEvent(formData);
         setEvents([...events, newEvent]);
-        toast({ title: 'Success', description: 'Event created' });
+        toast({ title: 'Saved', description: 'Event created successfully' });
       }
       resetForm();
     } catch (err) {
@@ -138,7 +189,7 @@ const EventsTab = () => {
     try {
       await adminUpdateEvent(event.id, { is_active: !event.is_active });
       setEvents(events.map(ev => ev.id === event.id ? { ...ev, is_active: !ev.is_active } : ev));
-      toast({ title: 'Success', description: `Event ${event.is_active ? 'hidden' : 'shown'}` });
+      toast({ title: 'Saved', description: `Event ${event.is_active ? 'hidden' : 'shown'}` });
     } catch (err) {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
     }
@@ -148,7 +199,7 @@ const EventsTab = () => {
     try {
       await adminUpdateEvent(event.id, { featured: !event.featured });
       setEvents(events.map(ev => ev.id === event.id ? { ...ev, featured: !ev.featured } : ev));
-      toast({ title: 'Success', description: `Event ${event.featured ? 'unfeatured' : 'featured'}` });
+      toast({ title: 'Saved', description: `Event ${event.featured ? 'unfeatured' : 'featured'}` });
     } catch (err) {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
     }
@@ -159,7 +210,7 @@ const EventsTab = () => {
     try {
       await adminDeleteEvent(id);
       setEvents(events.filter(ev => ev.id !== id));
-      toast({ title: 'Success', description: 'Event deleted' });
+      toast({ title: 'Deleted', description: 'Event removed' });
     } catch (err) {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
     }
@@ -204,18 +255,48 @@ const EventsTab = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* Header with Save & Refresh */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h3 className="text-xl font-bold text-white flex items-center gap-2">
             <Ticket className="w-5 h-5 text-red-500" />
             Events Management
           </h3>
-          <p className="text-slate-400 text-sm mt-1">Manage events displayed on the Events & Tickets page</p>
+          <p className="text-slate-400 text-sm mt-1">{events.length} event{events.length !== 1 ? 's' : ''}</p>
         </div>
-        <Button onClick={() => setShowForm(true)} className="bg-red-600 hover:bg-red-700" data-testid="add-event-btn">
-          <Plus className="w-4 h-4 mr-2" /> Add Event
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={fetchEvents}
+            className="border-slate-600 text-slate-300 hover:bg-slate-700"
+            data-testid="events-refresh-btn"
+          >
+            <RefreshCw className="w-4 h-4 mr-1" /> Refresh
+          </Button>
+
+          {/* AI Flyer Extract */}
+          <input
+            type="file"
+            ref={flyerInputRef}
+            onChange={handleFlyerExtract}
+            accept="image/*"
+            className="hidden"
+          />
+          <Button
+            onClick={() => flyerInputRef.current?.click()}
+            disabled={extracting}
+            className="bg-purple-600 hover:bg-purple-700"
+            data-testid="ai-flyer-btn"
+          >
+            {extracting ? <RefreshCw className="w-4 h-4 mr-1 animate-spin" /> : <Wand2 className="w-4 h-4 mr-1" />}
+            {extracting ? 'Reading...' : 'AI Flyer Read'}
+          </Button>
+
+          <Button onClick={() => setShowForm(true)} className="bg-red-600 hover:bg-red-700" data-testid="add-event-btn">
+            <Plus className="w-4 h-4 mr-1" /> Add Event
+          </Button>
+        </div>
       </div>
 
       {/* Add/Edit Form */}
@@ -239,7 +320,7 @@ const EventsTab = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-slate-300 text-sm block mb-2">Location</label>
+                  <label className="text-slate-300 text-sm block mb-2">Location Text</label>
                   <Input
                     placeholder="e.g., Edgewood (Atlanta)"
                     value={formData.location}
@@ -256,8 +337,10 @@ const EventsTab = () => {
                   value={formData.location_slug}
                   onChange={(e) => setFormData({ ...formData, location_slug: e.target.value })}
                   className="w-full bg-slate-900 border border-slate-700 text-white rounded-md px-3 py-2"
+                  data-testid="event-location-slug"
                 >
                   <option value="">Use event location text</option>
+                  <option value="all-locations">All Locations</option>
                   {locations.map(loc => (
                     <option key={loc.id} value={loc.slug}>{loc.name}</option>
                   ))}
@@ -388,8 +471,9 @@ const EventsTab = () => {
               </div>
 
               <div className="flex gap-2">
-                <Button type="submit" className="bg-green-600 hover:bg-green-700" disabled={submitting}>
-                  {submitting ? 'Saving...' : editingEvent ? 'Update Event' : 'Create Event'}
+                <Button type="submit" className="bg-green-600 hover:bg-green-700" disabled={submitting} data-testid="save-event-btn">
+                  <Save className="w-4 h-4 mr-1" />
+                  {submitting ? 'Saving...' : editingEvent ? 'Save Changes' : 'Save Event'}
                 </Button>
                 <Button type="button" variant="outline" onClick={resetForm} className="border-slate-600 text-slate-300">
                   Cancel
@@ -406,7 +490,7 @@ const EventsTab = () => {
           <CardContent className="p-12 text-center">
             <Ticket className="w-16 h-16 text-slate-600 mx-auto mb-4" />
             <p className="text-slate-400 text-lg mb-2">No events yet</p>
-            <p className="text-slate-500 text-sm">Create events to display on the Events & Tickets page</p>
+            <p className="text-slate-500 text-sm">Create events or upload a flyer to get started</p>
           </CardContent>
         </Card>
       ) : (
@@ -435,6 +519,9 @@ const EventsTab = () => {
                         <span className={`px-2 py-0.5 rounded text-xs ${event.is_active !== false ? 'bg-green-600 text-white' : 'bg-slate-700 text-slate-300'}`}>
                           {event.is_active !== false ? 'Active' : 'Hidden'}
                         </span>
+                        {event.location_slug === 'all-locations' && (
+                          <span className="px-2 py-0.5 rounded text-xs bg-blue-600 text-white">All Locations</span>
+                        )}
                       </div>
                       <p className="text-slate-400 text-sm line-clamp-2 mb-2">{event.description}</p>
                       <div className="flex flex-wrap gap-3 text-xs text-slate-500">

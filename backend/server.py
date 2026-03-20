@@ -5036,6 +5036,62 @@ async def admin_delete_event(event_id: str, username: str = Depends(get_current_
     return {"success": True, "message": "Event deleted"}
 
 
+@api_router.post("/admin/events/extract-flyer")
+async def extract_event_from_flyer(file: UploadFile = File(...)):
+    """Use AI to read an event flyer image and extract event details"""
+    from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent
+
+    contents = await file.read()
+    if len(contents) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Image too large (max 10MB)")
+
+    image_b64 = base64.b64encode(contents).decode('utf-8')
+
+    api_key = os.environ.get('EMERGENT_LLM_KEY', '')
+    if not api_key:
+        raise HTTPException(status_code=500, detail="AI service not configured")
+
+    try:
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"flyer_{uuid.uuid4().hex[:8]}",
+            system_message="You are an event data extractor. Extract event information from flyer images and return ONLY a valid JSON object. No markdown, no explanation."
+        ).with_model("openai", "gpt-4o")
+
+        image_content = ImageContent(image_base64=image_b64)
+
+        response = await chat.send_message(UserMessage(
+            text="""Extract the following event details from this flyer image. Return ONLY a valid JSON object with these fields:
+{
+  "name": "Event name/title",
+  "description": "Brief description of the event",
+  "date": "Date(s) of the event (e.g., 'March 25, 2026' or 'Every Friday')",
+  "time": "Time of the event (e.g., '9PM - 2AM')",
+  "location": "Venue/location name if visible",
+  "featured": false
+}
+If a field is not visible in the flyer, use an empty string. Return ONLY the JSON, no other text.""",
+            file_contents=[image_content]
+        ))
+
+        import json as json_lib
+        cleaned = response.strip()
+        if cleaned.startswith("```"):
+            cleaned = cleaned.split("\n", 1)[1] if "\n" in cleaned else cleaned[3:]
+            if cleaned.endswith("```"):
+                cleaned = cleaned[:-3]
+            cleaned = cleaned.strip()
+        if cleaned.startswith("json"):
+            cleaned = cleaned[4:].strip()
+
+        extracted = json_lib.loads(cleaned)
+        return extracted
+
+    except Exception as e:
+        logging.error(f"AI flyer extraction error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to extract event details: {str(e)}")
+
+
 # ============================================================================
 # GALLERY SUBMISSIONS ADMIN ENDPOINTS
 # ============================================================================

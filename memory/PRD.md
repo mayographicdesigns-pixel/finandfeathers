@@ -66,9 +66,8 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - [x] Careers button under loyalty section
 
 ### Pending/Future Tasks
-- (P1) Per-Location Weekly Specials management
-- (P1) Email/SMS for Free Tickets (needs 3rd-party credentials)
-- (P1) Email notifications for job applications (needs email service: SendGrid/Resend)
+- (P1) Events & Free Tickets (toggle + reservation text number)
+- (P1) Tipping option for "Request a Song" flow
 - (P2) WordPress Integration
 - (P2) Apple Sign-In Integration
 - (P2) Merchandise Store Enhancements
