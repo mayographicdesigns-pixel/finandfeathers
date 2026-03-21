@@ -5,7 +5,7 @@ import { Input } from '../components/ui/input';
 import { Card, CardContent } from '../components/ui/card';
 import {
   MessageCircle, Heart, Send, Image, Music, Megaphone, ArrowLeft,
-  Settings, Users, Hash, Mail, MoreHorizontal, Trash2, X, Camera, Loader2, ChevronLeft
+  Settings, Users, Hash, Mail, MoreHorizontal, Trash2, X, Camera, Loader2, ChevronLeft, Bell
 } from 'lucide-react';
 import { locations } from '../mockData';
 
@@ -482,6 +482,9 @@ const SocialWallPage = () => {
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [unreadDMs, setUnreadDMs] = useState(0);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadNotifs, setUnreadNotifs] = useState(0);
+  const [showNotifs, setShowNotifs] = useState(false);
 
   const location = locations.find(l => l.slug === slug);
   const locationName = location?.name?.replace('Fin & Feathers - ', '') || slug;
@@ -516,6 +519,37 @@ const SocialWallPage = () => {
     return () => clearInterval(iv);
   }, [userProfile]);
 
+  // Fetch notifications
+  useEffect(() => {
+    if (!userProfile) return;
+    const fetchNotifs = async () => {
+      try {
+        const [nRes, cRes] = await Promise.all([
+          fetch(`${API_URL}/api/wall/notifications/${userProfile.id}`),
+          fetch(`${API_URL}/api/wall/notifications/unread/${userProfile.id}`)
+        ]);
+        const nData = await nRes.json();
+        const cData = await cRes.json();
+        setNotifications(nData || []);
+        setUnreadNotifs(cData.count || 0);
+      } catch {}
+    };
+    fetchNotifs();
+    const iv = setInterval(fetchNotifs, 10000);
+    return () => clearInterval(iv);
+  }, [userProfile]);
+
+  const markAllNotificationsRead = async () => {
+    try {
+      await fetch(`${API_URL}/api/wall/notifications/read-all`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userProfile.id })
+      });
+      setUnreadNotifs(0);
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    } catch {}
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -548,11 +582,50 @@ const SocialWallPage = () => {
               <p className="text-slate-500 text-xs">Social Wall</p>
             </div>
           </div>
-          <button onClick={() => navigate('/account')} className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center hover:border-red-600/50 transition-colors" data-testid="settings-btn">
-            <Settings className="w-4 h-4 text-slate-400" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => { setShowNotifs(!showNotifs); if (!showNotifs && unreadNotifs > 0) markAllNotificationsRead(); }}
+              className="relative w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center hover:border-red-600/50 transition-colors"
+              data-testid="notifications-btn">
+              <Bell className="w-4 h-4 text-slate-400" />
+              {unreadNotifs > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">{unreadNotifs}</span>
+              )}
+            </button>
+            <button onClick={() => navigate('/account')} className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center hover:border-red-600/50 transition-colors" data-testid="settings-btn">
+              <Settings className="w-4 h-4 text-slate-400" />
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Notifications Panel */}
+      {showNotifs && (
+        <div className="bg-slate-900 border-b border-slate-800 px-4 py-3 max-h-64 overflow-y-auto" data-testid="notifications-panel">
+          <div className="max-w-lg mx-auto">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-white text-sm font-medium">Notifications</span>
+              <button onClick={() => setShowNotifs(false)} className="text-slate-500 hover:text-white">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            {notifications.length === 0 ? (
+              <p className="text-slate-500 text-xs py-4 text-center">No notifications yet</p>
+            ) : (
+              <div className="space-y-1">
+                {notifications.map(n => (
+                  <div key={n.id} className={`flex items-start gap-2 p-2 rounded-lg text-xs ${n.read ? 'opacity-60' : 'bg-slate-800/50'}`}>
+                    <Bell className="w-3.5 h-3.5 text-red-400 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-white font-medium">{n.title}</p>
+                      {n.body && <p className="text-slate-400">{n.body}</p>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="bg-slate-950 border-b border-slate-800 px-4">
