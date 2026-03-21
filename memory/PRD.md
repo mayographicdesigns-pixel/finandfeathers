@@ -62,7 +62,18 @@ Build a comprehensive restaurant PWA with Linktree-style homepage, menu, locatio
 - [x] AI Flyer Reader for events
 - [x] Full homepage, menu, locations, admin dashboard
 
+### CheckIn Page Redesign (March 21, 2026)
+- [x] Client/Staff two-button selection flow on /checkin
+- [x] Staff role picker: DJ, Bartender, Server, Manager
+- [x] Staff role saved to user profile via PUT /api/user/profile/{user_id}
+- [x] DJ selection redirects to /dj panel
+- [x] Other staff roles proceed to location detection
+- [x] Client selection proceeds to location detection
+- [x] Back button returns to initial selection
+- [x] 100% test pass rate (backend 11/11, frontend 6/6)
+
 ## Upcoming Tasks
+- (P1) Continue Backend Refactoring (extract auth, events, payments from server.py)
 - (P1) Per-Location Weekly Specials management
 - (P2) WordPress Integration
 - (P2) Apple Sign-In Integration
