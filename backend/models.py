@@ -450,6 +450,7 @@ class DJProfile(BaseModel):
     avatar_emoji: str = "🎧"
     cash_app_username: Optional[str] = None  # e.g., "$DJMike"
     venmo_username: Optional[str] = None  # e.g., "@DJMike"
+    zelle_info: Optional[str] = None  # e.g., phone or email for Zelle
     apple_pay_phone: Optional[str] = None  # Phone number for Apple Pay
     bio: Optional[str] = None
     photo_url: Optional[str] = None
@@ -464,6 +465,7 @@ class DJProfileCreate(BaseModel):
     avatar_emoji: str = "🎧"
     cash_app_username: Optional[str] = None
     venmo_username: Optional[str] = None
+    zelle_info: Optional[str] = None
     apple_pay_phone: Optional[str] = None
     bio: Optional[str] = None
     photo_url: Optional[str] = None
@@ -474,6 +476,7 @@ class DJProfileUpdate(BaseModel):
     avatar_emoji: Optional[str] = None
     cash_app_username: Optional[str] = None
     venmo_username: Optional[str] = None
+    zelle_info: Optional[str] = None
     apple_pay_phone: Optional[str] = None
     bio: Optional[str] = None
     photo_url: Optional[str] = None
@@ -482,16 +485,17 @@ class DJProfileUpdate(BaseModel):
 class DJProfileResponse(BaseModel):
     id: str
     name: str
-    stage_name: Optional[str]
-    avatar_emoji: str
-    cash_app_username: Optional[str]
-    venmo_username: Optional[str]
-    apple_pay_phone: Optional[str]
-    bio: Optional[str]
-    photo_url: Optional[str]
-    is_active: bool
-    current_location: Optional[str]
-    checked_in_at: Optional[datetime]
+    stage_name: Optional[str] = None
+    avatar_emoji: str = "🎧"
+    cash_app_username: Optional[str] = None
+    venmo_username: Optional[str] = None
+    zelle_info: Optional[str] = None
+    apple_pay_phone: Optional[str] = None
+    bio: Optional[str] = None
+    photo_url: Optional[str] = None
+    is_active: bool = True
+    current_location: Optional[str] = None
+    checked_in_at: Optional[datetime] = None
 
 
 

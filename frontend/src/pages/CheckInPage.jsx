@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { MapPin, Loader2, Navigation, AlertCircle, Mic, Music } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { MapPin, Loader2, Navigation, AlertCircle, Mic, Music, DollarSign, CreditCard, ExternalLink, ChevronLeft } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -24,6 +24,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 
 const CheckInPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [status, setStatus] = useState('idle'); // idle, requesting, locating, found, error, too_far
   const [nearestLocation, setNearestLocation] = useState(null);
   const [distance, setDistance] = useState(null);
@@ -31,11 +32,17 @@ const CheckInPage = () => {
   const [pageContent, setPageContent] = useState({});
   const [karaokeActive, setKaraokeActive] = useState(false);
   const [djPresent, setDjPresent] = useState(false);
+  const [djInfo, setDjInfo] = useState(null);
   const [showSongForm, setShowSongForm] = useState(false);
   const [songName, setSongName] = useState('');
   const [singerName, setSingerName] = useState('');
   const [songSubmitted, setSongSubmitted] = useState(false);
   const [submittingSong, setSubmittingSong] = useState(false);
+  const [showTipping, setShowTipping] = useState(false);
+  const [selectedTipAmount, setSelectedTipAmount] = useState(null);
+  const [customTipAmount, setCustomTipAmount] = useState('');
+  const [tipProcessing, setTipProcessing] = useState(false);
+  const [tipSuccess, setTipSuccess] = useState(searchParams.get('tip') === 'success');
   const heroHtml = pageContent.hero || 'Find the closest Fin & Feathers location to check in.';
 
   useEffect(() => {
@@ -65,6 +72,16 @@ const CheckInPage = () => {
         const dRes = await fetch(`${API_URL}/api/dj/at-location/${locationSlug}`);
         const dData = await dRes.json();
         setDjPresent(dData && dData.checked_in);
+        if (dData && dData.checked_in) {
+          setDjInfo(dData);
+        }
+      } else {
+        // Also fetch DJ info for tipping during karaoke
+        const dRes = await fetch(`${API_URL}/api/dj/at-location/${locationSlug}`);
+        const dData = await dRes.json();
+        if (dData && dData.checked_in) {
+          setDjInfo(dData);
+        }
       }
     } catch (e) { console.error(e); }
   };
@@ -85,9 +102,54 @@ const CheckInPage = () => {
         })
       });
       setSongSubmitted(true);
+      // Show tipping after song request (not karaoke signups)
+      if (!karaokeActive && djInfo) {
+        setShowTipping(true);
+      }
     } catch (e) { console.error(e); }
     finally { setSubmittingSong(false); }
   };
+
+  const handleStripeTip = async (amount) => {
+    if (!nearestLocation || !amount || amount < 1) return;
+    setTipProcessing(true);
+    try {
+      const res = await fetch(`${API_URL}/api/dj/tip/stripe-checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          location_slug: nearestLocation.slug,
+          amount: parseFloat(amount),
+          tipper_name: singerName || 'Anonymous',
+          origin_url: window.location.origin
+        })
+      });
+      const data = await res.json();
+      if (data.checkout_url) {
+        window.location.href = data.checkout_url;
+      }
+    } catch (e) { console.error(e); }
+    finally { setTipProcessing(false); }
+  };
+
+  const handleExternalTip = async (method) => {
+    // Record that the user clicked an external payment link
+    try {
+      await fetch(`${API_URL}/api/dj/tip/record`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          location_slug: nearestLocation.slug,
+          tipper_name: singerName || 'Anonymous',
+          payment_method: method,
+          amount: 0
+        })
+      });
+    } catch (e) { console.error(e); }
+  };
+
+  const hasDjPaymentLinks = djInfo && (djInfo.cash_app_username || djInfo.venmo_username || djInfo.zelle_info);
+  const tipAmounts = [3, 5, 10, 20];
 
   const requestLocationAndFindNearest = () => {
     setStatus('requesting');
@@ -317,10 +379,138 @@ const CheckInPage = () => {
                     </Button>
                   </form>
                 )}
-                {(karaokeActive || djPresent) && songSubmitted && (
+                {(karaokeActive || djPresent) && songSubmitted && !showTipping && (
                   <div className="bg-green-600/10 border border-green-600/30 rounded-lg p-4 text-center">
                     <p className="text-green-400 font-medium">{karaokeActive ? "You're in the queue!" : "Song request sent!"}</p>
                     <p className="text-slate-400 text-xs mt-1">{karaokeActive ? 'Watch the board for your turn' : 'The DJ will get to your request'}</p>
+                  </div>
+                )}
+
+                {/* Tipping Flow - shown after song request */}
+                {showTipping && djInfo && (
+                  <div className="bg-slate-800/60 border border-slate-700 rounded-xl p-5 space-y-4" data-testid="tip-dj-section">
+                    <div className="text-center">
+                      <div className="inline-flex items-center justify-center w-12 h-12 bg-green-600/20 rounded-full mb-2">
+                        <DollarSign className="w-6 h-6 text-green-400" />
+                      </div>
+                      <p className="text-green-400 font-medium text-sm mb-1">Song request sent!</p>
+                      <h3 className="text-white font-bold text-lg">Tip {djInfo.stage_name || djInfo.dj_name}?</h3>
+                      <p className="text-slate-400 text-xs mt-1">Show your appreciation</p>
+                    </div>
+
+                    {/* Preset Stripe tip amounts */}
+                    <div className="space-y-2">
+                      <p className="text-slate-300 text-xs font-medium flex items-center gap-1.5">
+                        <CreditCard className="w-3.5 h-3.5" /> Pay with Card
+                      </p>
+                      <div className="grid grid-cols-4 gap-2">
+                        {tipAmounts.map(amt => (
+                          <Button
+                            key={amt}
+                            onClick={() => { setSelectedTipAmount(amt); setCustomTipAmount(''); }}
+                            variant={selectedTipAmount === amt ? 'default' : 'outline'}
+                            className={`h-11 text-base font-bold ${selectedTipAmount === amt ? 'bg-green-600 hover:bg-green-700 text-white border-green-600' : 'border-slate-600 text-slate-200 hover:bg-slate-700 hover:text-white'}`}
+                            data-testid={`tip-amount-${amt}`}
+                          >
+                            ${amt}
+                          </Button>
+                        ))}
+                      </div>
+                      <div className="flex gap-2">
+                        <Input
+                          type="number"
+                          min="1"
+                          placeholder="Custom $"
+                          value={customTipAmount}
+                          onChange={e => { setCustomTipAmount(e.target.value); setSelectedTipAmount(null); }}
+                          className="bg-slate-800 border-slate-600 text-white flex-1"
+                          data-testid="tip-custom-amount"
+                        />
+                        <Button
+                          onClick={() => handleStripeTip(selectedTipAmount || customTipAmount)}
+                          disabled={(!selectedTipAmount && !customTipAmount) || tipProcessing}
+                          className="bg-green-600 hover:bg-green-700 text-white px-6 font-bold"
+                          data-testid="tip-pay-card-btn"
+                        >
+                          {tipProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Tip'}
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* DJ's personal payment links */}
+                    {hasDjPaymentLinks && (
+                      <div className="space-y-2 pt-2 border-t border-slate-700">
+                        <p className="text-slate-300 text-xs font-medium flex items-center gap-1.5">
+                          <ExternalLink className="w-3.5 h-3.5" /> Or tip directly
+                        </p>
+                        <div className="flex flex-col gap-2">
+                          {djInfo.cash_app_username && (
+                            <a
+                              href={`https://cash.app/${djInfo.cash_app_username.replace('$', '')}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={() => handleExternalTip('cashapp')}
+                              className="flex items-center gap-3 bg-[#00D632]/10 border border-[#00D632]/30 rounded-lg px-4 py-3 hover:bg-[#00D632]/20 transition-colors"
+                              data-testid="tip-cashapp-link"
+                            >
+                              <span className="text-[#00D632] font-bold text-lg">$</span>
+                              <div className="flex-1">
+                                <p className="text-white text-sm font-medium">Cash App</p>
+                                <p className="text-slate-400 text-xs">{djInfo.cash_app_username}</p>
+                              </div>
+                              <ExternalLink className="w-4 h-4 text-slate-400" />
+                            </a>
+                          )}
+                          {djInfo.venmo_username && (
+                            <a
+                              href={`https://venmo.com/${djInfo.venmo_username.replace('@', '')}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={() => handleExternalTip('venmo')}
+                              className="flex items-center gap-3 bg-[#008CFF]/10 border border-[#008CFF]/30 rounded-lg px-4 py-3 hover:bg-[#008CFF]/20 transition-colors"
+                              data-testid="tip-venmo-link"
+                            >
+                              <span className="text-[#008CFF] font-bold text-lg">V</span>
+                              <div className="flex-1">
+                                <p className="text-white text-sm font-medium">Venmo</p>
+                                <p className="text-slate-400 text-xs">{djInfo.venmo_username}</p>
+                              </div>
+                              <ExternalLink className="w-4 h-4 text-slate-400" />
+                            </a>
+                          )}
+                          {djInfo.zelle_info && (
+                            <div
+                              className="flex items-center gap-3 bg-[#6D1ED4]/10 border border-[#6D1ED4]/30 rounded-lg px-4 py-3"
+                              data-testid="tip-zelle-info"
+                            >
+                              <span className="text-[#6D1ED4] font-bold text-lg">Z</span>
+                              <div className="flex-1">
+                                <p className="text-white text-sm font-medium">Zelle</p>
+                                <p className="text-slate-400 text-xs">{djInfo.zelle_info}</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Skip */}
+                    <Button
+                      onClick={() => setShowTipping(false)}
+                      variant="ghost"
+                      className="w-full text-slate-400 hover:text-white text-sm"
+                      data-testid="tip-skip-btn"
+                    >
+                      No thanks, maybe next time
+                    </Button>
+                  </div>
+                )}
+
+                {/* Tip success message */}
+                {tipSuccess && (
+                  <div className="bg-green-600/10 border border-green-600/30 rounded-lg p-4 text-center" data-testid="tip-success-msg">
+                    <p className="text-green-400 font-medium">Thank you for your tip!</p>
+                    <p className="text-slate-400 text-xs mt-1">The DJ appreciates your generosity</p>
                   </div>
                 )}
                 <Button

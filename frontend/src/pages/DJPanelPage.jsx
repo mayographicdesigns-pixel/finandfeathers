@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent } from '../components/ui/card';
-import { Check, X, Mic, Music, MapPin, LogOut, RefreshCw, ChevronRight, Calendar, Clock } from 'lucide-react';
+import { Check, X, Mic, Music, MapPin, LogOut, RefreshCw, ChevronRight, Calendar, Clock, DollarSign, Save } from 'lucide-react';
 
 const API_URL = window.location.origin;
 
@@ -23,6 +23,9 @@ const DJPanelPage = () => {
   const [scheduledNames, setScheduledNames] = useState([]);
   const [mySchedule, setMySchedule] = useState([]);
   const [locationSchedule, setLocationSchedule] = useState([]);
+  const [paymentLinks, setPaymentLinks] = useState({ cash_app_username: '', venmo_username: '', zelle_info: '' });
+  const [savingLinks, setSavingLinks] = useState(false);
+  const [linksSaved, setLinksSaved] = useState(false);
 
   // Load saved DJ session
   useEffect(() => {
@@ -52,6 +55,7 @@ const DJPanelPage = () => {
   useEffect(() => {
     if (!djProfile) return;
     fetchMySchedule();
+    fetchPaymentLinks();
   }, [djProfile]);
 
   const fetchLocations = async () => {
@@ -97,6 +101,34 @@ const DJPanelPage = () => {
       const data = await res.json();
       setKaraokeActive(data.active);
     } catch (e) { console.error(e); }
+  };
+
+  const fetchPaymentLinks = async () => {
+    if (!djProfile) return;
+    try {
+      const res = await fetch(`${API_URL}/api/dj/profile/${djProfile.id}`);
+      const data = await res.json();
+      setPaymentLinks({
+        cash_app_username: data.cash_app_username || '',
+        venmo_username: data.venmo_username || '',
+        zelle_info: data.zelle_info || ''
+      });
+    } catch (e) { console.error(e); }
+  };
+
+  const savePaymentLinks = async () => {
+    if (!djProfile) return;
+    setSavingLinks(true);
+    try {
+      await fetch(`${API_URL}/api/dj/profile/${djProfile.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(paymentLinks)
+      });
+      setLinksSaved(true);
+      setTimeout(() => setLinksSaved(false), 2000);
+    } catch (e) { console.error(e); }
+    finally { setSavingLinks(false); }
   };
 
   const fetchQueue = useCallback(async () => {
@@ -398,6 +430,59 @@ const DJPanelPage = () => {
             >
               {karaokeActive ? 'Stop' : 'Start'}
             </Button>
+          </CardContent>
+        </Card>
+
+        {/* Payment Links */}
+        <Card className="mb-4 bg-slate-900 border-slate-800">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <DollarSign className="w-4 h-4 text-green-400" />
+              <h3 className="text-white font-medium text-sm">Tip Payment Links</h3>
+              {linksSaved && <span className="text-green-400 text-xs ml-auto">Saved!</span>}
+            </div>
+            <p className="text-slate-500 text-xs mb-3">Guests can tip you via these links when requesting songs</p>
+            <div className="space-y-2">
+              <div>
+                <label className="text-slate-400 text-xs mb-1 block">Cash App (e.g. $YourTag)</label>
+                <Input
+                  value={paymentLinks.cash_app_username}
+                  onChange={e => setPaymentLinks(p => ({ ...p, cash_app_username: e.target.value }))}
+                  placeholder="$YourCashTag"
+                  className="bg-slate-800 border-slate-700 text-white text-sm h-9"
+                  data-testid="dj-cashapp-input"
+                />
+              </div>
+              <div>
+                <label className="text-slate-400 text-xs mb-1 block">Venmo (e.g. @YourUsername)</label>
+                <Input
+                  value={paymentLinks.venmo_username}
+                  onChange={e => setPaymentLinks(p => ({ ...p, venmo_username: e.target.value }))}
+                  placeholder="@YourVenmo"
+                  className="bg-slate-800 border-slate-700 text-white text-sm h-9"
+                  data-testid="dj-venmo-input"
+                />
+              </div>
+              <div>
+                <label className="text-slate-400 text-xs mb-1 block">Zelle (phone or email)</label>
+                <Input
+                  value={paymentLinks.zelle_info}
+                  onChange={e => setPaymentLinks(p => ({ ...p, zelle_info: e.target.value }))}
+                  placeholder="phone or email"
+                  className="bg-slate-800 border-slate-700 text-white text-sm h-9"
+                  data-testid="dj-zelle-input"
+                />
+              </div>
+              <Button
+                onClick={savePaymentLinks}
+                disabled={savingLinks}
+                className="w-full bg-green-600 hover:bg-green-700 text-white text-sm h-9 mt-1"
+                data-testid="dj-save-links-btn"
+              >
+                <Save className="w-3.5 h-3.5 mr-1.5" />
+                {savingLinks ? 'Saving...' : 'Save Payment Links'}
+              </Button>
+            </div>
           </CardContent>
         </Card>
 

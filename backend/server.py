@@ -2965,8 +2965,118 @@ async def get_dj_at_location(location_slug: str):
         "dj_name": profile.get("name"),
         "stage_name": profile.get("stage_name"),
         "avatar_emoji": profile.get("avatar_emoji", "🎧"),
-        "photo_url": profile.get("photo_url")
+        "photo_url": profile.get("photo_url"),
+        "cash_app_username": profile.get("cash_app_username"),
+        "venmo_username": profile.get("venmo_username"),
+        "zelle_info": profile.get("zelle_info")
     }
+
+
+@api_router.post("/dj/tip/stripe-checkout")
+async def create_dj_tip_stripe_checkout(request: Request, body: dict):
+    """Create Stripe checkout session for a DJ tip"""
+    location_slug = body.get("location_slug")
+    amount = body.get("amount")
+    tipper_name = body.get("tipper_name", "Anonymous")
+    song_request_id = body.get("song_request_id")
+    origin_url = body.get("origin_url", str(request.base_url).rstrip('/'))
+
+    if not location_slug or not amount or amount < 1:
+        raise HTTPException(status_code=400, detail="Location and amount (min $1) required")
+
+    profile = await db.dj_profiles.find_one(
+        {"current_location": location_slug, "is_active": True}, {"_id": 0}
+    )
+    dj_name = profile.get("name", "the DJ") if profile else "the DJ"
+
+    transaction_id = str(uuid.uuid4())
+    transaction = {
+        "id": transaction_id,
+        "type": "dj_tip",
+        "payment_provider": "stripe",
+        "location_slug": location_slug,
+        "dj_id": profile.get("id") if profile else None,
+        "dj_name": dj_name,
+        "tipper_name": tipper_name,
+        "amount": float(amount),
+        "currency": "usd",
+        "song_request_id": song_request_id,
+        "payment_status": "pending",
+        "stripe_session_id": None,
+        "created_at": datetime.now(timezone.utc),
+        "updated_at": datetime.now(timezone.utc)
+    }
+    await db.payment_transactions.insert_one(transaction)
+
+    try:
+        stripe_api_key = os.environ.get("STRIPE_API_KEY")
+        host_url = str(request.base_url).rstrip('/')
+        webhook_url = f"{host_url}/api/webhook/stripe"
+        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+
+        success_url = f"{origin_url}/checkin?tip=success&transaction_id={transaction_id}"
+        cancel_url = f"{origin_url}/checkin?tip=cancelled"
+
+        checkout_request = CheckoutSessionRequest(
+            amount=float(amount),
+            currency="usd",
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata={
+                "transaction_id": transaction_id,
+                "type": "dj_tip",
+                "dj_name": dj_name,
+                "location_slug": location_slug,
+                "tipper_name": tipper_name
+            }
+        )
+        session = await stripe_checkout.create_checkout_session(checkout_request)
+        await db.payment_transactions.update_one(
+            {"id": transaction_id},
+            {"$set": {"stripe_session_id": session.session_id, "updated_at": datetime.now(timezone.utc)}}
+        )
+        return {
+            "checkout_url": session.url,
+            "session_id": session.session_id,
+            "transaction_id": transaction_id
+        }
+    except Exception as e:
+        logging.error(f"Stripe DJ tip checkout error: {e}")
+        await db.payment_transactions.delete_one({"id": transaction_id})
+        raise HTTPException(status_code=500, detail=f"Failed to create tip checkout: {str(e)}")
+
+
+@api_router.post("/dj/tip/record")
+async def record_dj_tip(body: dict):
+    """Record a tip made via external payment link (CashApp, Venmo, Zelle)"""
+    location_slug = body.get("location_slug")
+    amount = body.get("amount", 0)
+    tipper_name = body.get("tipper_name", "Anonymous")
+    payment_method = body.get("payment_method", "external")
+    song_request_id = body.get("song_request_id")
+
+    if not location_slug:
+        raise HTTPException(status_code=400, detail="Location is required")
+
+    profile = await db.dj_profiles.find_one(
+        {"current_location": location_slug, "is_active": True}, {"_id": 0}
+    )
+
+    tip_record = {
+        "id": str(uuid.uuid4()),
+        "type": "dj_tip",
+        "location_slug": location_slug,
+        "dj_id": profile.get("id") if profile else None,
+        "dj_name": profile.get("name") if profile else "Unknown",
+        "tipper_name": tipper_name,
+        "amount": float(amount),
+        "payment_method": payment_method,
+        "song_request_id": song_request_id,
+        "payment_status": "completed",
+        "created_at": datetime.now(timezone.utc)
+    }
+    await db.dj_tips.insert_one(tip_record)
+    return {"message": "Tip recorded", "id": tip_record["id"]}
 
 
 # =====================================================
@@ -5679,6 +5789,27 @@ async def stripe_webhook(request: Request):
                             "user_id": user_id,
                             "tokens": tokens,
                             "credited": True,
+                            "created_at": datetime.now(timezone.utc)
+                        })
+
+            # Handle DJ tip payment
+            if metadata.get("type") == "dj_tip":
+                transaction_id = metadata.get("transaction_id")
+                if transaction_id:
+                    txn = await db.payment_transactions.find_one({"id": transaction_id}, {"_id": 0})
+                    if txn and txn.get("payment_status") != "paid":
+                        await db.dj_tips.insert_one({
+                            "id": str(uuid.uuid4()),
+                            "type": "dj_tip",
+                            "location_slug": txn.get("location_slug"),
+                            "dj_id": txn.get("dj_id"),
+                            "dj_name": txn.get("dj_name"),
+                            "tipper_name": txn.get("tipper_name", "Anonymous"),
+                            "amount": txn.get("amount", 0),
+                            "payment_method": "stripe",
+                            "song_request_id": txn.get("song_request_id"),
+                            "payment_status": "completed",
+                            "stripe_session_id": session_id,
                             "created_at": datetime.now(timezone.utc)
                         })
         
