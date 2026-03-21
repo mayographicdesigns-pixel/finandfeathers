@@ -704,8 +704,11 @@ class UserProfileResponse(BaseModel):
     total_posts: int = 0
     total_photos: int = 0
     allow_gallery_posts: bool = True
-    created_at: datetime
-    updated_at: datetime
+    google_picture: Optional[str] = None
+    username: Optional[str] = None
+    auth_provider: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
 
 # Token Transfer Model

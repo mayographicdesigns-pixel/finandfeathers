@@ -18,94 +18,70 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 
 ### Completed Features
 
-#### DJ Schedule System - NEW (March 2026)
+#### DJ Tipping System - NEW (March 21, 2026)
+- [x] Tipping option added to "Request a Song" flow
+- [x] After song submission, tipping step appears with preset Stripe amounts ($3, $5, $10, $20) + custom
+- [x] DJ personal payment links (CashApp, Venmo, Zelle) shown if configured
+- [x] DJs can manage their payment links from the DJ Panel dashboard
+- [x] "Skip" tipping option available
+- [x] Backend APIs: POST /api/dj/tip/stripe-checkout, POST /api/dj/tip/record
+- [x] Stripe webhook extended for dj_tip type
+- [x] GET /api/dj/at-location now returns payment link fields
+
+#### Account Page Bug Fix (March 21, 2026)
+- [x] Fixed .json error on My Account page after welcome popup registration
+- [x] Root cause: UserProfileResponse model missing `updated_at` default for quick-register profiles
+- [x] Added safe JSON parsing (try/catch) for all auth API error responses
+- [x] Welcome popup now saves profile ID to localStorage for seamless account access
+- [x] Email case-insensitive lookup for profile by email
+- [x] Better error messages for users without password (not just "use Google login")
+
+#### DJ Schedule System (March 2026)
 - [x] 22 schedule entries across 4 locations (Stone Mountain, Douglasville, Valdosta, Midtown)
-- [x] 13 DJs profiled: DJ Ron, DJ Tay, DJ Relevant, DJ PJO, DJ Flexxrated, DJ Yobz, DJ Venom, DJ Evrsince, DJ Aha, DJ Lavish, DJ 2Times, DJ DB, DJ RELLEDOTCOM
-- [x] DJ login shows all scheduled DJ names as selectable buttons
-- [x] After login, DJ sees personal weekly schedule summary
-- [x] "Your Locations" section highlights scheduled locations with day/time
-- [x] After check-in, full location schedule shown with DJ's own slot highlighted in red
-- [x] Backend APIs: /api/dj/weekly-schedule, /api/dj/weekly-schedule/{slug}, /api/dj/weekly-schedule/names/all
+- [x] 13 DJs profiled with login buttons
+- [x] DJ weekly schedule summary and location check-in
 
-#### Karaoke System - NEW (March 2026)
+#### Karaoke System (March 2026)
 - [x] DJ Panel page at /dj with login, location select, karaoke toggle, and queue management
-- [x] DJ can toggle Karaoke Mode on/off per location
-- [x] Guests submit name + song to join the karaoke queue
-- [x] DJ sees live queue with position numbers, can mark songs as played/skipped
-- [x] Recently sung songs shown below the queue
-- [x] Homepage shows "Karaoke Sign Up" button when karaoke is active
-- [x] Homepage shows "Request a Song" button when DJ is present (no karaoke)
-- [x] Check-in page shows "Karaoke Sign Up" / "Request a Song" contextually
-- [x] Public karaoke queue endpoint for location chat boards
-- [x] Backend APIs: /api/dj/login, /api/karaoke/toggle, /api/karaoke/status, /api/karaoke/queue
+- [x] Homepage shows "Karaoke Sign Up" / "Request a Song" contextually
+- [x] Check-in page shows same contextual buttons
 
-#### User Role System - NEW (March 2026)
-- [x] Welcome popup includes "I am a..." role selector: Customer, Server, Bartender, Manager, DJ
-- [x] Roles saved to user_profiles via POST /api/user/register
-- [x] DJ role redirects to /dj panel after signup
-- [x] Admin can see user roles for access control
+#### User Role System (March 2026)
+- [x] Welcome popup role selector: Customer, Server, Bartender, Manager, DJ
+- [x] Roles saved to user_profiles
 
-#### Careers Page (CareersPage.jsx) - NEW (March 2026)
-- [x] Multi-step job application form (3 steps)
-- [x] Step 1: Candidate Information (Name, Email, Phone, Social Media)
-- [x] Step 2: Role Selection (Location dropdown, Position with FOH/BOH categories, Availability grid)
-- [x] Step 3: Document Uploads (Resume required, Headshot conditional on position)
-- [x] Backend API: POST /api/careers/apply with file upload to MongoDB
-- [x] Backend API: GET /api/admin/careers/applications (admin only)
-- [x] Backend API: PATCH /api/admin/careers/applications/{id} (status update)
-- [x] Backend API: DELETE /api/admin/careers/applications/{id} (delete)
-- [x] Admin Dashboard "Careers" tab with application list, status filters, expandable details
-- [x] Status workflow: new → reviewed → interviewed → hired/rejected
-- [x] "We're Hiring - Apply Now" button on homepage under loyalty section
-- [x] /careers route in App.js
-- [x] Thank you page after successful submission
-- [x] Location emails stored for future email notifications
-- [x] Email notifications to info@, careers@, and location emails via Hostinger SMTP
-
-#### Homepage (LinkTreeHomePage.jsx)
-- [x] Official Fin & Feathers logo
-- [x] Daily video carousel for weekly specials
-- [x] Navigation buttons: View Full Menu, Find a Location, Order Online, Gallery, Leave a Review
-- [x] Contact information section
-- [x] Loyalty program signup form
-- [x] Social media links (Instagram, Facebook, Twitter)
-- [x] Social feed grid with lightbox view
-- [x] Admin inline editing with drag-and-drop reordering
-- [x] Events images grid (4 images)
-- [x] Careers button under loyalty section
+#### Careers Page (March 2026)
+- [x] Multi-step job application form with admin dashboard
+- [x] Email notifications via Hostinger SMTP
 
 #### Events & Tickets System
-- [x] Free Entry toggle in admin dashboard for events
-- [x] Free events show "Reserve" button instead of "Get Tickets"
-- [x] Free events show "FREE ENTRY" label on event cards
-- [x] Reservation modal shows location's phone number + "Text to Reserve" SMS link
-- [x] Pre-filled SMS message with event name, date, and time
-- [x] "All Locations" events show all location phone numbers to choose from
-- [x] Paid events still show normal ticket purchase flow via Stripe
+- [x] Free Entry toggle, reservation flow, 40+ weekly events across 4 locations
+
+#### Homepage (LinkTreeHomePage.jsx)
+- [x] Full Linktree-style homepage with all features
+
+### Upcoming Tasks
+- (P1) Per-Location Weekly Specials management
 - (P2) WordPress Integration
 - (P2) Apple Sign-In Integration
 - (P2) Merchandise Store Enhancements
 
-## Location Emails (for future email notifications)
-- Stone Mountain: stonemountain@finandfeathersrestaurants.com
-- Midtown: midtown@finandfeathersrestaurants.com
-- Edgewood: edgewood@finandfeathersrestaurants.com
-- Douglasville: douglasville@finandfeathersrestaurants.com
-- Valdosta: valdosta@finandfeathersrestaurants.com
-- Albany: albany@finandfeathersrestaurants.com
-- Riverdale: riverdale@finandfeathersrestaurants.com
-- Las Vegas: lasvegas@finandfeathersrestaurants.com
+### Refactoring Needed
+- server.py is 6000+ lines — should be split into feature-specific routers
 
 ## Architecture
 - Frontend: React (CRA) with Shadcn/UI, Tailwind CSS
 - Backend: FastAPI with MongoDB (motor)
 - File Storage: MongoDB (base64) + local disk
 - Auth: JWT-based admin auth
-- Package Manager: npm (frontend), pip (backend)
+- 3rd Party: Stripe, Hostinger SMTP, emergentintegrations (AI flyer reader)
 
 ## Key API Endpoints
-- POST /api/careers/apply - Submit job application (multipart/form-data)
-- GET /api/admin/careers/applications - List all applications (admin)
-- GET /api/locations - Public locations list
-- POST /api/loyalty/signup - Loyalty program signup
-- GET /api/menu - Public menu items
+- POST /api/careers/apply - Submit job application
+- POST /api/dj/tip/stripe-checkout - Create Stripe tip checkout
+- POST /api/dj/tip/record - Record external tip
+- GET /api/dj/at-location/{slug} - Get DJ + payment links at location
+- POST /api/dj/login - DJ login
+- POST /api/karaoke/toggle - Toggle karaoke mode
+- GET /api/user/profile/{id} - Get user profile
+- GET /api/user/profile/by-email/{email} - Get profile by email

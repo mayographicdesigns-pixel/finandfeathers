@@ -901,11 +901,15 @@ const LinkTreeHomePage = () => {
           onClose={() => setShowWelcomePopup(false)}
           onSubmit={async (userInfo) => {
             try {
-              await fetch(`${API_URL}/api/user/register`, {
+              const res = await fetch(`${API_URL}/api/user/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(userInfo)
               });
+              const data = await res.json();
+              if (data && data.id) {
+                localStorage.setItem('ff_user_profile_id', data.id);
+              }
             } catch (e) { console.error('Failed to save user profile:', e); }
           }}
         />

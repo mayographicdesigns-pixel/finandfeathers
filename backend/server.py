@@ -1233,10 +1233,14 @@ async def login_user_with_password(request: Request):
         if not user_profile:
             raise HTTPException(status_code=401, detail="Invalid username/email or password")
         
-        # Check if user has password (might be Google-only user)
+        # Check if user has password (might be Google-only user or quick-register user)
         password_hash = user_profile.get("password_hash")
         if not password_hash:
-            raise HTTPException(status_code=400, detail="This account uses Google login. Please sign in with Google.")
+            auth_provider = user_profile.get("auth_provider")
+            if auth_provider == "google":
+                raise HTTPException(status_code=400, detail="This account uses Google login. Please sign in with Google.")
+            else:
+                raise HTTPException(status_code=400, detail="No password set for this account. Please sign up with email to set a password, or use Google login.")
         
         # Verify password
         if not verify_password(password, password_hash):
@@ -3395,13 +3399,28 @@ async def get_user_profile(user_id: str):
     profile.setdefault("total_posts", 0)
     profile.setdefault("total_photos", 0)
     profile.setdefault("allow_gallery_posts", True)
+    profile.setdefault("google_picture", None)
+    profile.setdefault("username", None)
+    profile.setdefault("auth_provider", None)
+    profile.setdefault("birthdate", None)
+    profile.setdefault("anniversary", None)
+    profile.setdefault("instagram_handle", None)
+    profile.setdefault("facebook_handle", None)
+    profile.setdefault("twitter_handle", None)
+    profile.setdefault("tiktok_handle", None)
+    profile.setdefault("updated_at", profile.get("created_at"))
     return UserProfileResponse(**profile)
 
 
 @api_router.get("/user/profile/by-email/{email}")
 async def get_user_profile_by_email(email: str):
     """Get a user profile by email"""
-    profile = await db.user_profiles.find_one({"email": email}, {"_id": 0})
+    profile = await db.user_profiles.find_one({"email": email.lower()}, {"_id": 0})
+    if not profile:
+        # Fallback: case-insensitive search
+        profile = await db.user_profiles.find_one(
+            {"email": {"$regex": f"^{email}$", "$options": "i"}}, {"_id": 0}
+        )
     if not profile:
         return None
     # Add default values for missing fields
@@ -3416,6 +3435,16 @@ async def get_user_profile_by_email(email: str):
     profile.setdefault("total_posts", 0)
     profile.setdefault("total_photos", 0)
     profile.setdefault("allow_gallery_posts", True)
+    profile.setdefault("google_picture", None)
+    profile.setdefault("username", None)
+    profile.setdefault("auth_provider", None)
+    profile.setdefault("birthdate", None)
+    profile.setdefault("anniversary", None)
+    profile.setdefault("instagram_handle", None)
+    profile.setdefault("facebook_handle", None)
+    profile.setdefault("twitter_handle", None)
+    profile.setdefault("tiktok_handle", None)
+    profile.setdefault("updated_at", profile.get("created_at"))
     return UserProfileResponse(**profile)
 
 

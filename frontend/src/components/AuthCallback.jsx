@@ -43,8 +43,9 @@ const AuthCallback = () => {
         });
 
         if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.detail || 'Authentication failed');
+          let detail = 'Authentication failed';
+          try { const err = await response.json(); detail = err.detail || detail; } catch {}
+          throw new Error(detail);
         }
 
         const data = await response.json();
