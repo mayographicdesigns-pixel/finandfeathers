@@ -46,12 +46,12 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('customer');
+  const [staffTitle, setStaffTitle] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [findingLocation, setFindingLocation] = useState(false);
   const [closestLocation, setClosestLocation] = useState(null);
 
-  const ROLES = [
-    { id: 'customer', label: 'Customer' },
+  const STAFF_TITLES = [
     { id: 'server', label: 'Server' },
     { id: 'bartender', label: 'Bartender' },
     { id: 'manager', label: 'Manager' },
@@ -136,6 +136,7 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
         phone: phone.trim(),
         email: email.trim(),
         role: role,
+        staff_title: role === 'staff' ? staffTitle : null,
         savedAt: new Date().toISOString()
       };
       localStorage.setItem('ff_user_info', JSON.stringify(userInfo));
@@ -150,7 +151,7 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
       }
       
       // Navigate based on role
-      if (role === 'dj') {
+      if (role === 'staff' && staffTitle === 'dj') {
         navigate('/dj');
       } else if (closestLocation) {
         localStorage.setItem('ff_user_location', closestLocation.slug);
@@ -261,23 +262,51 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
 
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-1.5">I am a...</label>
-              <div className="flex flex-wrap gap-2">
-                {ROLES.map(r => (
-                  <button
-                    key={r.id}
-                    type="button"
-                    onClick={() => setRole(r.id)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                      role === r.id 
-                        ? 'bg-red-600 text-white' 
-                        : 'bg-slate-800 text-slate-400 hover:bg-slate-700 border border-slate-700'
-                    }`}
-                    data-testid={`role-${r.id}`}
-                  >
-                    {r.label}
-                  </button>
-                ))}
+              <div className="flex gap-2 mb-2">
+                <button
+                  type="button"
+                  onClick={() => { setRole('customer'); setStaffTitle(null); }}
+                  className={`flex-1 px-3 py-2 rounded-full text-sm font-medium transition-colors ${
+                    role === 'customer'
+                      ? 'bg-red-600 text-white'
+                      : 'bg-slate-800 text-slate-400 hover:bg-slate-700 border border-slate-700'
+                  }`}
+                  data-testid="role-customer"
+                >
+                  Customer
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRole('staff')}
+                  className={`flex-1 px-3 py-2 rounded-full text-sm font-medium transition-colors ${
+                    role === 'staff'
+                      ? 'bg-red-600 text-white'
+                      : 'bg-slate-800 text-slate-400 hover:bg-slate-700 border border-slate-700'
+                  }`}
+                  data-testid="role-staff"
+                >
+                  Staff
+                </button>
               </div>
+              {role === 'staff' && (
+                <div className="flex flex-wrap gap-2">
+                  {STAFF_TITLES.map(t => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setStaffTitle(t.id)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                        staffTitle === t.id
+                          ? 'bg-red-600 text-white'
+                          : 'bg-slate-800 text-slate-400 hover:bg-slate-700 border border-slate-700'
+                      }`}
+                      data-testid={`staff-title-${t.id}`}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <Button
