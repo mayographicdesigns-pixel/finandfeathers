@@ -1,64 +1,74 @@
 <analysis>**original_problem_statement:**
-The user's initial request was to build a Careers section with a multi-step job application form. This was expanded over the session to include:
-- An admin dashboard to manage job applications.
-- Email notifications for new applications.
-- A full Karaoke and DJ management system, including a DJ-specific panel () for managing song queues and activating karaoke mode.
-- Dynamic UI changes on the homepage and check-in page based on whether karaoke is active or a DJ is present.
-- A user role selection feature during the initial signup process.
-- Enhancements to the admin events dashboard, including an All Locations option, a refresh button, and an AI-powered tool to extract event details from uploaded flyers.
-- Population of the system with extensive DJ schedule data and weekly recurring events for multiple locations based on user-provided text and images.
-- A feature to distinguish between free and paid events, linking free events to a location's reservation text number.
+The user's initial request was to build a Careers section. This evolved into a comprehensive restaurant management PWA with features including an admin dashboard, a Karaoke/DJ management system with a dedicated DJ panel, dynamic UI updates based on DJ/karaoke status, user role selection at signup, and an AI-powered tool for reading event flyers.
 
-**PRODUCT REQUIREMENTS (Most Recent):**
-- **Karaoke/DJ System:** A DJ panel for check-in, karaoke activation, and song queue management. The public-facing UI should show Karaoke Sign Up when karaoke is active and Request a Song when only a DJ is present.
-- **User Roles:** A checkbox in the signup form for users to identify as Customer, Server, Bartender, Manager, or DJ.
-- **Event Management:** An AI tool to read event flyers, an All Locations option for events, and a Free Entry toggle that links to a location's reservation text number instead of a payment flow.
-- **Content Population:** Add numerous DJs, weekly schedules, and recurring location-specific events based on user-provided data.
+In the last session, the user requested:
+1.  A tipping option for the Request a Song feature.
+2.  A fix for a  error on the My Account page.
+3.  A full Social Wall and chat system to replace the My Account page for logged-in users.
+4.  A major refactoring of the monolithic  file.
+5.  Push notifications for the new social wall.
+6.  A redesign of the  page to have a simple Client vs Staff selection flow.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a comprehensive restaurant PWA with a React frontend and FastAPI backend. All major features requested in this session have been implemented. The Careers feature is complete, including an admin dashboard and email notifications. The Karaoke/DJ system is fully functional with a dedicated DJ panel at  and dynamic UI on the public-facing pages. The admin dashboard's Events tab has been enhanced with AI flyer reading, an All Locations option, and a free-entry toggle. The database has been populated with extensive DJ schedules and weekly events for multiple locations.
+The application is a feature-rich PWA with a React frontend and a FastAPI backend. All major features from previous sessions are implemented. In this session, a complete DJ tipping system (Stripe + P2P links), a social wall with feed/chat/DMs, and push notifications were added. The backend  file, originally over 6,400 lines, has been partially refactored by extracting the , , and  logic into separate router files in a new  directory. The My Account page bug has been resolved. The  has just been overwritten with a new implementation for the client/staff flow, but it is untested.
 
 **Last working item**:
--   **Last item agent was working:** The agent populated the database with 40 new weekly recurring events for four locations (Midtown, Valdosta, Riverdale, Douglasville) based on flyer images provided by the user. All events were correctly marked as free entry.
--   **Status:** USER VERIFICATION PENDING
--   **Agent Testing Done:** Y
--   **Which testing method agent to use?** Frontend testing agent to verify the  page, ensuring all 40 new events are displayed with the Reserve button and link to the correct reservation SMS number.
+-   **Last item agent was working:** The agent was implementing the user's request to redesign the . The goal was to simplify the initial view to two buttons, Client and Staff, where clicking Staff would allow the user to select their role (DJ, Bartender, etc.) and save it to their profile. The agent overwrote the existing  with a completely new implementation to achieve this.
+-   **Status:** IN PROGRESS
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** Frontend testing agent
+    -   The test should verify the new UI and logic on :
+        1.  The page initially displays only Client and Staff buttons.
+        2.  Clicking Client proceeds to the standard location-finding and check-in process.
+        3.  Clicking Staff reveals a role selection step (DJ, Bartender, Server, Manager).
+        4.  Selecting a staff role successfully updates the user's profile on the backend and then proceeds to the location-finding process.
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   None.
+-   **Issue 1 (P0):** The  functionality is incomplete and potentially broken. The agent overwrote the file with a new UI but did not implement the corresponding backend endpoint to save the selected staff role. This is a critical blocker for the new check-in flow.
+
+**Issues Detail:**
+-   **Issue 1: Backend Missing for Staff Role Update**
+    -   **Attempted fixes:** The agent created the frontend UI in  but did not create or modify a backend endpoint to handle the  request to save the user's selected .
+    -   **Next debug checklist:**
+        1.  Create a new endpoint, e.g., , in an appropriate backend router (e.g., a new  router or ).
+        2.  This endpoint should accept a  and a  and update the corresponding  document in the database.
+        3.  Ensure the  calls this new endpoint upon role selection.
+        4.  Thoroughly test the end-to-end flow using the frontend testing agent as described in Last working item.
+    -   **Why fix this issue and what will be achieved with the fix?** This is essential to complete the user's requested feature. Fixing it will allow staff members to properly identify their roles within the application.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Both
+    -   **Blocked on other issue:** None
 
 **In progress Task List**:
--   None.
+-   **Task 1 (P0): Complete  Redesign**
+    -   **Where to resume:** Address Issue 1 by implementing the backend endpoint for role updates. Then, integrate and test the complete frontend-to-backend flow.
+    -   **What will be achieved with this?** A simplified, role-based check-in process as requested by the user.
+    -   **Status:** IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?** Both
+    -   **Blocked on something:** Blocked on Issue 1.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
-    -   (P0) Add a tipping option to the Request a Song flow. This was requested by the user but has not yet been implemented.
-    -   (P1) Per-Location Weekly Specials management.
+    -   (P1) **Continue Backend Refactoring:** Extract remaining large sections from , such as auth (~1000 lines), events (~500 lines), and payments (~500 lines), into their own router files within .
+    -   (P2) Per-Location Weekly Specials management.
 -   **Future Tasks:**
     -   (P2) WordPress Integration.
     -   (P2) Apple Sign-In Integration.
     -   (P2) Merchandise Store Enhancements.
 
 **Completed work in this session**
--   **Full Careers System:** Built the multi-step job application form (), backend endpoint, admin management dashboard (), and integrated Hostinger SMTP for email notifications.
--   **Karaoke & DJ Management System:**
-    -   Created a DJ Panel at  with a multi-screen flow for login (by name), location check-in, and a dashboard.
-    -   The DJ dashboard features a Karaoke Mode toggle and a live song queue with controls to mark songs as played or skip.
-    -   The public homepage and check-in page now dynamically show a Karaoke Sign Up button (when karaoke is active) or a Request a Song button (when a DJ is present without karaoke).
--   **User Role Signup:** Added a role selection checkbox (Customer, Server, etc.) to the welcome popup, which saves the role to the user's profile in the database.
--   **Admin Dashboard Enhancements (Events):**
-    -   Integrated an AI flyer reader (using GPT-4 Vision) to auto-populate event details from an image.
-    -   Added a Refresh button and an All Locations selection option.
--   **Free Events & Reservation Linking:**
-    -   Added a Free Entry toggle to the admin events form.
-    -   Public pages now display a Reserve button for free events, which opens a modal with the location's reservation phone number and a Text to Reserve  link.
--   **Extensive Content Population:**
-    -   Parsed a text-based DJ schedule to create profiles for 13 DJs and populate the database with 22 weekly schedule entries.
-    -   The DJ Panel is now fully driven by this schedule data.
-    -   Added over 40 weekly recurring events for multiple locations based on user-provided flyers.
+-   **DJ Tipping Feature:** Implemented a song request tipping flow with options for Stripe card payments and links to a DJ's personal CashApp/Venmo/Zelle.
+-   **My Account Page Bug Fix:** Resolved a critical  parsing error for users created via the homepage welcome popup, which was caused by missing fields in the Pydantic response model. Hardened frontend API calls against non-JSON error responses.
+-   **Social Wall & Chat System:** Built a new social hub at  which replaces the My Account page for logged-in users. It includes:
+    -   A **Feed** tab for posts, photos, and shoutouts with likes/comments.
+    -   A location-based **Group Chat** tab.
+    -   A **Direct Messages** tab.
+-   ** Refactoring (Phase 1):** Reduced the main backend file from ~6,400 to ~5,200 lines by creating a  module and extracting logic into , , and .
+-   **Push Notifications:** Added push notifications for the social wall (likes, comments, DMs) and integrated a notification bell UI into the .
 
 **Earlier issues found/mentioned but not fixed**
 -   None.
@@ -70,74 +80,65 @@ The application is a comprehensive restaurant PWA with a React frontend and Fast
 
 
 **Key Technical Concepts**
--   React multi-step forms and conditional UI rendering.
--   FastAPI backend with Pydantic models for robust data validation.
--   Async database operations with MongoDB ().
--   Real-time UI updates based on backend state (e.g., karaoke status).
--   Third-party integration for AI vision capabilities ().
--   SMTP integration for sending transactional emails.
+-   **Backend:** FastAPI router modularization for improved code organization. SMTP for email notifications. Background tasks with .
+-   **Frontend:** Conditional rendering for dynamic UI (tipping flow, social wall tabs). Management of user state via . Safe API error handling.
+-   **Database:**  for async MongoDB operations. Schema extended to support tipping, social features, and staff roles.
 
 **key DB schema**
--   **user_profiles**: Added  (e.g., customer, dj).
--   **job_applications**: 
--   **dj_profiles**: 
--   **dj_schedule**: 
--   **karaoke_sessions**: 
--   **events**: Added 
--   **song_requests**: Used for both karaoke and regular song requests, linked to .
+-   **dj_profiles**: Added , , .
+-   **user_profiles**: Added . The existing  field is now used to distinguish staff/customers.
+-   **wall_posts**: New collection for social media posts .
+-   **wall_chat_messages**: New collection for location-based group chat.
+-   **wall_dms**: New collection for user-to-user direct messages.
+-   **wall_notifications**: New collection for user notifications .
+-   **dj_tips**: New collection to record non-Stripe tips.
 
 **changes in tech stack**
--   Added  library for AI vision features.
+-   No new technologies were introduced, but the backend architecture was significantly improved by adopting FastAPI's  pattern.
 
 **All files of reference**
--   **/app/backend/server.py**: Contains all backend logic. Needs refactoring.
--   **/app/frontend/src/pages/DJPanelPage.jsx**: Contains the UI and logic for the DJ-facing portal.
--   **/app/frontend/src/pages/LinkTreeHomePage.jsx**: Main homepage, modified to show dynamic Karaoke/DJ buttons.
--   **/app/frontend/src/pages/CheckInPage.jsx**: Check-in flow, also modified for dynamic Karaoke/DJ buttons.
--   **/app/frontend/src/pages/EventsPage.jsx**: Public events display, modified for free event reservations.
--   **/app/frontend/src/components/admin/EventsTab.jsx**: Admin UI for managing events, now with AI features.
--   **/app/memory/PRD.md**: Contains the evolving product requirements.
+-   : The main server file, partially refactored but still large.
+-   : Directory containing the new, modularized endpoint files.
+-   : Recently overwritten, contains the new client/staff UI.
+-   : The complete UI for the new social system.
+-   : The product requirements document, updated throughout the session.
 
 **Areas that need refactoring**:
--   The main backend file, , has grown to over 5,900 lines. It should be broken down into smaller, feature-specific routers (e.g., , ) to improve maintainability and organization.
+-    remains the top priority for refactoring. It still contains over 5,000 lines, including critical sections for auth, events, and payments that should be extracted into separate routers.
 
 **key api endpoints**
--   : Submits a job application.
--   : Manages job applications.
--   : Logs in a DJ by name.
--   : Checks a DJ into a location.
--   : Activates/deactivates karaoke mode for a location.
--   : Checks if karaoke is active.
--   : Checks if any DJ is checked in.
--   : Gets a list of all DJ names.
--   : Gets a specific DJ's schedule.
--   : Uses AI to parse an event flyer image.
+-   : Updates DJ profile, now includes payment links.
+-   : Creates a Stripe checkout session for a DJ tip.
+-   : Creates a new post on the social wall.
+-   : Retrieves posts for a location's feed.
+-   : Sends a message to a location's group chat.
+-   : Sends a direct message to another user.
+-   : Fetches notifications for a user.
 
 **Critical Info for New Agent**
--   The immediate next task is to **implement a tipping option for the Request a Song flow**. This was explicitly requested by the user but has not been started.
--   The backend file  is extremely large and difficult to manage. Propose refactoring it into separate FastAPI routers as a high-priority technical task.
--   The application now uses  for its AI flyer reading feature, which requires the  to be set in the  file.
+-   **Your immediate task is to complete the  redesign.** The frontend file  has been overwritten, but the necessary backend endpoint to save the selected staff role is missing. You must create this endpoint and test the full flow.
+-   The Stripe API key used for testing appears to be expired. While the code is correct, any live payment tests will fail with an Expired API Key error. This is a user-side key issue.
+-   The backend refactoring is a major ongoing task. After fixing the check-in page, this should be the next priority to improve maintainability.
 
 **documents and test reports created in this job**
--   
--   
--   
+-    (Social Wall Test Report)
+-    (Refactoring & Notifications Test Report)
 -   
 
 **Last 10 User Messages and any pending HUMAN messages**
--   :  (with 5 flyers). **Status: Completed**.
--   : . **Status: Completed**.
--   :  (with text schedule). **Status: Completed**.
--   :  (with 3 flyers). **Status: Completed**.
--   : . **Status: Completed**.
--   : . **Status: Partially Completed (Tipping option is pending)**.
--   : . **Status: Completed**.
--   : . **Status: Completed**.
--   : . **Status: Completed**.
--   : . **Status: Completed**.
+10. : User reported a bug. **Status: Completed**.
+9. : User provided clarification for the bug. **Status: Completed**.
+8. : User acknowledged the fix and prompted the agent to finish. **Status: Completed**.
+7. : User requested the Social Wall feature. **Status: Completed**.
+6. : User provided detailed choices for the Social Wall. **Status: Completed**.
+5. : User approved the plan to refactor the backend and add notifications. **Status: Completed**.
+4. : User acknowledged the completion of refactoring and notifications. **Status: Completed**.
+3. : User requested a redesign of the check-in page. **Status: In Progress**.
+2. : User prompted the agent, which seemed to be stuck on network errors. **Status: N/A**.
+1. : User prompted again. **Status: N/A**.
 
 **Project Health Check:**
--   **Broken**: None.
+-   **Broken**: The staff check-in flow is broken due to a missing backend endpoint.  was overwritten and is untested.
 -   **Mocked**: None.
 
 **3rd Party Integrations**
@@ -151,11 +152,12 @@ The application is a comprehensive restaurant PWA with a React frontend and Fast
 -   **Testing agent used after significant changes:** YES
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** []
--   **Known regressions:** None.
+-   **Known regressions:** The new  may have introduced regressions, as it was a complete overwrite of a previously functional file.
 
 **Credentials to test flow:**
 -   **Admin Dashboard:**  (No login required).
--   **DJ Panel:**  (Login by selecting a DJ's name from the button list).
+-   **DJ Panel:**  (Login by selecting a DJ's name from the list).
+-   **User Account:** Register via the homepage welcome popup or the  page.
 
 **What agent forgot to execute**
--   The agent did not implement the **tipping option** for the Request a Song feature, which was part of a larger user request that was otherwise completed. This is the highest-priority pending task.</analysis>
+-   The agent completely forgot to create the backend endpoint needed to save the  selected in the new  UI. This leaves the new feature non-functional.</analysis>
