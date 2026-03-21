@@ -11,51 +11,57 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 
 ## User Personas
 - **Restaurant Owner/Admin**: Needs to manage menu items, view loyalty signups, send notifications
-- **Customer**: Wants to browse menu, find locations, sign up for loyalty program
+- **Customer**: Wants to browse menu, find locations, sign up for loyalty program, socialize
 - **Job Applicant**: Wants to apply for positions at the restaurant
 
 ## Core Requirements
 
 ### Completed Features
 
-#### DJ Tipping System - NEW (March 21, 2026)
-- [x] Tipping option added to "Request a Song" flow
-- [x] After song submission, tipping step appears with preset Stripe amounts ($3, $5, $10, $20) + custom
+#### Social Wall & Chat System - NEW (March 21, 2026)
+- [x] Location-based Social Wall at `/social/:slug`
+- [x] Feed tab: text posts, photo posts, song requests, shoutouts with likes and comments
+- [x] Image upload for posts (up to 5MB)
+- [x] Location group chat for real-time messaging
+- [x] Direct messages between users with unread counts
+- [x] DM conversations list with partner info and last message
+- [x] New DM creation from list of active users at location
+- [x] "My Account" button on homepage becomes "Social Wall" link when logged in
+- [x] Settings icon on social wall navigates to /account for profile management
+- [x] User location saved in localStorage during welcome popup
+- [x] Backend APIs: /api/wall/posts, /api/wall/chat, /api/wall/dm, /api/wall/users
+- [x] 30/30 backend tests passing
+
+#### DJ Tipping System (March 21, 2026)
+- [x] Tipping option after "Request a Song" flow
+- [x] Preset Stripe amounts ($3, $5, $10, $20) + custom
 - [x] DJ personal payment links (CashApp, Venmo, Zelle) shown if configured
-- [x] DJs can manage their payment links from the DJ Panel dashboard
-- [x] "Skip" tipping option available
+- [x] DJs manage payment links from DJ Panel dashboard
 - [x] Backend APIs: POST /api/dj/tip/stripe-checkout, POST /api/dj/tip/record
-- [x] Stripe webhook extended for dj_tip type
-- [x] GET /api/dj/at-location now returns payment link fields
 
 #### Account Page Bug Fix (March 21, 2026)
 - [x] Fixed .json error on My Account page after welcome popup registration
-- [x] Root cause: UserProfileResponse model missing `updated_at` default for quick-register profiles
-- [x] Added safe JSON parsing (try/catch) for all auth API error responses
-- [x] Welcome popup now saves profile ID to localStorage for seamless account access
-- [x] Email case-insensitive lookup for profile by email
-- [x] Better error messages for users without password (not just "use Google login")
+- [x] Root cause: UserProfileResponse model missing `updated_at` default
+- [x] Safe JSON parsing for all auth API error responses
+- [x] Welcome popup saves profile ID to localStorage
+- [x] Email case-insensitive lookup
 
 #### DJ Schedule System (March 2026)
-- [x] 22 schedule entries across 4 locations (Stone Mountain, Douglasville, Valdosta, Midtown)
+- [x] 22 schedule entries across 4 locations
 - [x] 13 DJs profiled with login buttons
-- [x] DJ weekly schedule summary and location check-in
 
 #### Karaoke System (March 2026)
-- [x] DJ Panel page at /dj with login, location select, karaoke toggle, and queue management
-- [x] Homepage shows "Karaoke Sign Up" / "Request a Song" contextually
-- [x] Check-in page shows same contextual buttons
+- [x] DJ Panel at /dj with karaoke toggle and queue management
+- [x] Dynamic homepage/check-in buttons based on karaoke/DJ status
 
 #### User Role System (March 2026)
 - [x] Welcome popup role selector: Customer, Server, Bartender, Manager, DJ
-- [x] Roles saved to user_profiles
 
 #### Careers Page (March 2026)
-- [x] Multi-step job application form with admin dashboard
-- [x] Email notifications via Hostinger SMTP
+- [x] Multi-step job application form with admin dashboard and email notifications
 
 #### Events & Tickets System
-- [x] Free Entry toggle, reservation flow, 40+ weekly events across 4 locations
+- [x] Free Entry toggle, reservation flow, 40+ weekly events
 
 #### Homepage (LinkTreeHomePage.jsx)
 - [x] Full Linktree-style homepage with all features
@@ -67,21 +73,25 @@ Build a pixel-perfect clone of a restaurant website with the following features:
 - (P2) Merchandise Store Enhancements
 
 ### Refactoring Needed
-- server.py is 6000+ lines — should be split into feature-specific routers
+- server.py is 6400+ lines — should be split into feature-specific routers
 
 ## Architecture
 - Frontend: React (CRA) with Shadcn/UI, Tailwind CSS
 - Backend: FastAPI with MongoDB (motor)
-- File Storage: MongoDB (base64) + local disk
+- File Storage: MongoDB (base64) + local disk (/app/backend/uploads/)
 - Auth: JWT-based admin auth
 - 3rd Party: Stripe, Hostinger SMTP, emergentintegrations (AI flyer reader)
 
 ## Key API Endpoints
-- POST /api/careers/apply - Submit job application
-- POST /api/dj/tip/stripe-checkout - Create Stripe tip checkout
+- POST /api/wall/posts - Create social wall post
+- GET /api/wall/posts/{slug} - Get posts for location
+- POST /api/wall/chat/{slug} - Send group chat message
+- GET /api/wall/chat/{slug} - Get group chat messages
+- POST /api/wall/dm - Send direct message
+- GET /api/wall/dm/conversations/{user_id} - Get DM conversations
+- GET /api/wall/dm/thread/{user_id}/{partner_id} - Get DM thread
+- POST /api/dj/tip/stripe-checkout - Stripe tip checkout
 - POST /api/dj/tip/record - Record external tip
-- GET /api/dj/at-location/{slug} - Get DJ + payment links at location
-- POST /api/dj/login - DJ login
-- POST /api/karaoke/toggle - Toggle karaoke mode
+- GET /api/dj/at-location/{slug} - Get DJ + payment links
+- POST /api/careers/apply - Submit job application
 - GET /api/user/profile/{id} - Get user profile
-- GET /api/user/profile/by-email/{email} - Get profile by email
