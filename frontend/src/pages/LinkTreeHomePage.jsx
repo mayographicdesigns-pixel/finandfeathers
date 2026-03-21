@@ -173,38 +173,38 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
-      <Card className="bg-slate-900 border-red-600/50 w-full max-w-md relative overflow-hidden">
-        {/* Close button */}
+    <div className="fixed inset-0 bg-black/90 z-50 flex items-start sm:items-center justify-center overflow-y-auto p-4 pt-6 sm:pt-4">
+      <Card className="bg-slate-900 border-red-600/50 w-full max-w-md relative my-auto">
+        {/* Close button - positioned lower on mobile for reachability */}
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-white z-10"
+          className="absolute top-3 right-3 text-slate-400 hover:text-white z-10 bg-slate-800/80 rounded-full p-1.5"
           data-testid="welcome-close-btn"
         >
-          <X className="w-6 h-6" />
+          <X className="w-5 h-5" />
         </button>
 
-        <CardContent className="p-6 pt-8">
+        <CardContent className="p-5 sm:p-6 pt-6 sm:pt-8">
           {/* Logo */}
-          <div className="text-center mb-6">
+          <div className="text-center mb-4 sm:mb-6">
             <img 
               src="https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png"
               alt="Fin & Feathers"
-              className="max-h-20 w-auto mx-auto mb-4"
+              className="max-h-16 sm:max-h-20 w-auto mx-auto mb-3 sm:mb-4"
               loading="eager"
               decoding="async"
             />
-            <h2 className="text-2xl font-bold text-white mb-2">
+            <h2 className="text-xl sm:text-2xl font-bold text-white mb-1 sm:mb-2">
               Welcome to Fin & Feathers!
             </h2>
-            <p className="text-slate-400 text-sm">
+            <p className="text-slate-400 text-xs sm:text-sm">
               Join the vibe and connect with others at your nearest location
             </p>
           </div>
 
           {/* Closest Location */}
           {closestLocation && (
-            <div className="bg-red-900/30 border border-red-600/30 rounded-lg p-3 mb-6">
+            <div className="bg-red-900/30 border border-red-600/30 rounded-lg p-3 mb-4 sm:mb-6">
               <div className="flex items-center gap-2 text-red-400 text-sm mb-1">
                 <Navigation className="w-4 h-4" />
                 <span>Your nearest location:</span>
@@ -221,9 +221,9 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Your Name *</label>
+              <label className="block text-sm font-medium text-slate-300 mb-1.5">Your Name *</label>
               <Input
                 type="text"
                 placeholder="Enter your name"
@@ -236,7 +236,7 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Phone Number</label>
+              <label className="block text-sm font-medium text-slate-300 mb-1.5">Phone Number</label>
               <Input
                 type="tel"
                 placeholder="(555) 123-4567"
@@ -248,7 +248,7 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
+              <label className="block text-sm font-medium text-slate-300 mb-1.5">Email</label>
               <Input
                 type="email"
                 placeholder="you@example.com"
@@ -260,7 +260,7 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">I am a...</label>
+              <label className="block text-sm font-medium text-slate-300 mb-1.5">I am a...</label>
               <div className="flex flex-wrap gap-2">
                 {ROLES.map(r => (
                   <button
@@ -283,7 +283,7 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
             <Button
               type="submit"
               disabled={isSubmitting || !name.trim()}
-              className="w-full bg-red-600 hover:bg-red-700 text-white h-12 text-lg"
+              className="w-full bg-red-600 hover:bg-red-700 text-white h-11 sm:h-12 text-base sm:text-lg"
               data-testid="welcome-submit-btn"
             >
               {isSubmitting ? 'Connecting...' : 'Join the Vibe'}
