@@ -13,6 +13,7 @@ import EventsPage from "./pages/EventsPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import CareersPage from "./pages/CareersPage";
 import DJPanelPage from "./pages/DJPanelPage";
+import SocialWallPage from "./pages/SocialWallPage";
 import AuthCallback from "./components/AuthCallback";
 import { Toaster } from "./components/ui/toaster";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
@@ -44,6 +45,7 @@ function AppRouter() {
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/careers" element={<CareersPage />} />
       <Route path="/dj" element={<DJPanelPage />} />
+      <Route path="/social/:slug" element={<SocialWallPage />} />
     </Routes>
   );
 }

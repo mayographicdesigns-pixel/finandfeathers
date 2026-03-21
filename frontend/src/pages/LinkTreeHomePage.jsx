@@ -153,6 +153,7 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
       if (role === 'dj') {
         navigate('/dj');
       } else if (closestLocation) {
+        localStorage.setItem('ff_user_location', closestLocation.slug);
         navigate(`/locations/${closestLocation.slug}?checkin=true`);
       } else {
         onClose();
@@ -1204,12 +1205,22 @@ const LinkTreeHomePage = () => {
           </Button>
 
           <Button
-            onClick={() => navigate('/account')}
+            onClick={() => {
+              const profileId = localStorage.getItem('ff_user_profile_id');
+              const userLocation = localStorage.getItem('ff_user_location');
+              if (profileId && userLocation) {
+                navigate(`/social/${userLocation}`);
+              } else if (profileId) {
+                navigate(`/social/${locations[0]?.slug || 'midtown'}`);
+              } else {
+                navigate('/account');
+              }
+            }}
             className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
             data-testid="my-account-btn"
           >
             <User className="w-5 h-5 mr-2" />
-            My Account
+            {localStorage.getItem('ff_user_profile_id') ? 'Social Wall' : 'My Account'}
           </Button>
 
           <Button
