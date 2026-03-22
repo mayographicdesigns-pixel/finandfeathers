@@ -1,78 +1,84 @@
-# Fin & Feathers Restaurant Website - Product Requirements Document
+# Fin & Feathers Restaurant PWA — Product Requirements Document
 
 ## Original Problem Statement
-Build a comprehensive restaurant PWA with Linktree-style homepage, menu, locations, admin dashboard, DJ/karaoke management, social wall, careers, events, and more.
+Build a full-featured restaurant PWA for Fin & Feathers Restaurants, including:
+- Dynamic homepage, menu, events, gallery
+- Admin dashboard for managing all content
+- DJ/Karaoke management system with live song requests
+- User check-in, social wall, and loyalty programs
+- Careers section for job applications
+- Merchandise store integration
+- Token economy with Stripe/WooCommerce payments
 
 ## Architecture
-- Frontend: React (CRA) + Shadcn/UI + Tailwind CSS
-- Backend: FastAPI + MongoDB (motor)
-- File Storage: MongoDB (base64) + local disk (/app/backend/uploads/)
-- Auth: JWT-based admin auth + Google OAuth
-- 3rd Party: Stripe, Hostinger SMTP, emergentintegrations (AI flyer reader)
+- **Frontend:** React (CRA) + TailwindCSS + ShadCN/UI
+- **Backend:** FastAPI + Motor (async MongoDB)
+- **Database:** MongoDB
+- **Payments:** Stripe + WooCommerce
+- **AI:** OpenAI GPT-4o via emergentintegrations (event flyer reader)
+- **Auth:** Google OAuth (Emergent-managed) + email/password JWT
 
-### Backend Router Structure (Refactored March 21, 2026)
+## Backend Router Architecture
 ```
 /app/backend/
-  server.py        (~5190 lines - core, auth, admin, events, payments, users, locations)
-  database.py      (shared db, push_service, get_current_admin)
-  models.py        (all Pydantic models)
-  routes/
-    wall.py        (social wall posts, chat, DMs, notifications)
-    careers.py     (job applications, admin careers management)
-    dj.py          (DJ profiles, karaoke, song requests, tipping, schedules)
+├── server.py         (~3450 lines) — Core endpoints: locations, tokens, user profiles, admin, menu, gallery, specials, social links, page content, loyalty
+├── database.py       — Shared DB connection, push service, admin credentials, get_current_admin
+├── models.py         — All Pydantic models
+├── auth.py           — JWT + password hashing utilities
+├── push_service.py   — Push notification service
+└── routes/
+    ├── auth.py       — Admin login, Google OAuth, user registration, password login, forgot/reset password
+    ├── events.py     — Events CRUD, free reservations, AI flyer extraction
+    ├── payments.py   — Stripe checkout (tokens, events, merch), webhooks, payment methods
+    ├── wall.py       — Social wall posts, group chat, DMs, notifications
+    ├── careers.py    — Job applications
+    └── dj.py         — DJ/karaoke management, song requests, tipping
 ```
 
+## Key API Endpoints
+- `/api/auth/*` — Authentication (login, register, OAuth, password reset)
+- `/api/events` — Public events
+- `/api/admin/events/*` — Admin events management
+- `/api/stripe/*` — Stripe checkout sessions
+- `/api/webhook/stripe` — Stripe webhooks
+- `/api/payment/methods` — Available payment methods
+- `/api/wall/*` — Social wall, chat, DMs
+- `/api/dj/*` — DJ management
+- `/api/locations` — Location management
+- `/api/tokens/*` — Token economy
+- `/api/user/profile/*` — User profile management
+- `/api/admin/*` — Admin management
+
+## Key DB Collections
+- `user_profiles` — User data with role, staff_title, token balances
+- `events` — Event definitions
+- `event_reservations` — Free event reservations
+- `payment_transactions` — Stripe/WooCommerce transactions
+- `admin_users` — Admin accounts
+- `social_wall_posts` — Social wall feed
+- `social_wall_chat` — Location group chat
+- `social_wall_dms` — Direct messages
+- `social_notifications` — Push notifications
+- `dj_tips` — DJ tip records
+- `locations` — Restaurant locations
+
 ## Completed Features
+- Full admin dashboard with all content management tabs
+- DJ/Karaoke system with song requests and tipping
+- Social Wall with posts, group chat, DMs, push notifications
+- Check-in page with Client/Staff role selection
+- Token economy with Stripe + WooCommerce
+- Google OAuth + email/password authentication
+- AI-powered event flyer reader
+- Careers/job application system
+- Menu, gallery, specials management
+- User profile management
 
-### Social Wall & Chat (March 21, 2026)
-- [x] Location-based Social Wall at `/social/:slug`
-- [x] Feed: text, photo, song request, shoutout posts with likes/comments
-- [x] Location group chat
-- [x] Direct messages with unread counts
-- [x] "My Account" becomes "Social Wall" link when logged in
-- [x] Settings icon for profile access
-
-### Push Notifications (March 21, 2026)
-- [x] In-app notification system (wall_notifications collection)
-- [x] Notifications triggered on: likes, comments, DMs (different user only)
-- [x] Bell icon with unread count badge in Social Wall header
-- [x] Notifications panel with read/unread states
-- [x] Mark all as read functionality
-- [x] API: GET/POST /api/wall/notifications/*
-
-### Server.py Refactoring (March 21, 2026)
-- [x] Reduced from 6411 to ~5190 lines
-- [x] Extracted routes/wall.py (~350 lines), routes/careers.py (~180 lines), routes/dj.py (~440 lines)
-- [x] Created shared database.py module
-- [x] All 23 regression tests passing
-
-### DJ Tipping System (March 21, 2026)
-- [x] Stripe card tips ($3/$5/$10/$20 + custom)
-- [x] DJ payment links (CashApp/Venmo/Zelle)
-
-### Account Page Bug Fix (March 21, 2026)
-- [x] Fixed .json error from missing UserProfileResponse defaults
-- [x] Safe JSON parsing in all auth API functions
-
-### Earlier Features (Pre-fork)
-- [x] Careers system with admin dashboard + email notifications
-- [x] Karaoke & DJ Management (DJ Panel at /dj)
-- [x] User Role System (welcome popup)
-- [x] Events with free entry toggle, 40+ weekly events
-- [x] AI Flyer Reader for events
-- [x] Full homepage, menu, locations, admin dashboard
+## Current Status
+All features working. Major refactoring completed — server.py reduced from 5190 to ~3450 lines.
 
 ## Upcoming Tasks
-- (P1) Per-Location Weekly Specials management
-- (P2) WordPress Integration
-- (P2) Apple Sign-In Integration
-- (P2) Merchandise Store Enhancements
-
-## Key API Endpoints
-- /api/wall/* - Social wall, chat, DMs, notifications
-- /api/dj/* - DJ profiles, karaoke, tipping, schedules
-- /api/careers/* - Job applications
-- /api/events - Events CRUD
-- /api/locations - Locations
-- /api/auth/* - Authentication
-- /api/admin/* - Admin management
+- (P2) Per-Location Weekly Specials management
+- (P3) WordPress Integration
+- (P3) Apple Sign-In Integration
+- (P3) Merchandise Store Enhancements

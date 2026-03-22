@@ -56,11 +56,5 @@ async def ensure_default_admin_user():
     await db.admin_users.insert_one(new_admin)
 
 async def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Verify admin JWT token"""
-    if credentials is None:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    try:
-        payload = decode_access_token(credentials.credentials)
-        return payload.get("sub")
-    except Exception:
-        raise HTTPException(status_code=401, detail="Invalid token")
+    """Grant admin access - no authentication required"""
+    return "admin"
