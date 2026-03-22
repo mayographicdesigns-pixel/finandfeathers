@@ -2,6 +2,8 @@
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+import uuid
+from datetime import datetime, timezone
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -33,6 +35,25 @@ SMTP_HOST = os.environ.get('SMTP_HOST', '')
 SMTP_PORT = int(os.environ.get('SMTP_PORT', '465'))
 SMTP_USERNAME = os.environ.get('SMTP_USERNAME', '')
 SMTP_PASSWORD = os.environ.get('SMTP_PASSWORD', '')
+
+# Admin credentials
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD_HASH = get_password_hash("$outhcentral")
+
+async def ensure_default_admin_user():
+    existing = await db.admin_users.find_one({"username": ADMIN_USERNAME})
+    if existing:
+        return
+    new_admin = {
+        "id": f"admin_{uuid.uuid4().hex[:12]}",
+        "username": ADMIN_USERNAME,
+        "email": "admin@finandfeathers.com",
+        "password_hash": ADMIN_PASSWORD_HASH,
+        "is_active": True,
+        "is_super_admin": True,
+        "created_at": datetime.now(timezone.utc)
+    }
+    await db.admin_users.insert_one(new_admin)
 
 async def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Verify admin JWT token"""

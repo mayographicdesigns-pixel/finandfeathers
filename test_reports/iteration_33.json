@@ -1,0 +1,103 @@
+{
+  "summary": "Regression testing after server.py refactoring (auth.py, events.py, payments.py extraction). Backend: 30/30 tests pass (100%). Frontend: Homepage, Check-in page, Admin dashboard all load correctly. CRITICAL BUG FOUND: Admin events endpoint returns 401 Unauthorized in frontend due to inconsistent get_current_admin implementations.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "/api/admin/events",
+        "issue": "Returns 401 Unauthorized when called from frontend. Root cause: routes/events.py imports get_current_admin from database.py which requires JWT token, but server.py has a permissive version that returns 'admin' without auth. This is a regression from the refactoring.",
+        "priority": "HIGH"
+      }
+    ],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Admin Events Management",
+        "issue": "Events tab shows 'Failed to fetch events' error due to 401 Unauthorized from /api/admin/events",
+        "affected_selectors": ["Events tab in admin dashboard"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_refactored_routers.py",
+    "/app/test_reports/pytest/refactored_routers_results.xml"
+  ],
+  "action_items": [
+    "FIX CRITICAL: Align get_current_admin implementations - database.py has strict JWT auth while server.py has permissive auth. The routes/events.py imports from database.py causing 401 errors. Either make database.py permissive OR update frontend to send auth tokens.",
+    "Recommended fix: Update database.py get_current_admin to match server.py's permissive behavior: return 'admin' without requiring credentials"
+  ],
+  "critical_code_review_comments": [
+    "REGRESSION BUG: Two different get_current_admin functions exist - database.py (strict JWT) vs server.py (permissive). New routers import from database.py causing auth failures.",
+    "routes/events.py line 4: imports get_current_admin from database.py (strict auth)",
+    "routes/auth.py line 4: imports get_current_admin from database.py (strict auth)",
+    "server.py line 156: has permissive get_current_admin that returns 'admin' without auth",
+    "All other refactored endpoints (auth, payments) work correctly via API tests",
+    "Public endpoints (events, payment methods, locations, etc.) all work correctly"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_refactored_routers.py"
+  ],
+  "success_rate": {
+    "backend": "100% (30/30 tests passed via API with proper auth tokens)",
+    "frontend": "90% (Homepage, Check-in, Dashboard load correctly. Events tab fails due to auth regression)"
+  },
+  "test_credentials": {
+    "admin_username": "admin",
+    "admin_password": "$outhcentral"
+  },
+  "seed_data_creation": "Created TEST_ prefixed events and users during testing (cleaned up)",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Regression test after server.py refactoring. Found critical bug: get_current_admin in database.py requires JWT auth but server.py version is permissive. Routes/events.py imports from database.py causing 401 errors in frontend. Fix: align the two implementations.",
+  "rca_of_the_issue": {
+    "root_cause": "Inconsistent get_current_admin implementations between database.py and server.py",
+    "reproduction_steps": [
+      "1. Navigate to /dashboard",
+      "2. Click on EVENTS tab",
+      "3. Observe 'Failed to fetch events' error",
+      "4. Check network tab - /api/admin/events returns 401 Unauthorized"
+    ],
+    "mitigation": "Update database.py get_current_admin to be permissive like server.py: async def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(security)): return 'admin'"
+  },
+  "endpoints_tested": {
+    "auth_router": [
+      "POST /api/auth/login - PASS",
+      "GET /api/auth/me - PASS",
+      "POST /api/user/register - PASS",
+      "POST /api/auth/user/register - PASS",
+      "POST /api/auth/user/login - PASS",
+      "POST /api/auth/user/forgot-password - PASS",
+      "GET /api/auth/user/verify-reset-token - PASS"
+    ],
+    "events_router": [
+      "GET /api/events - PASS",
+      "GET /api/events/packages - PASS",
+      "GET /api/admin/events (with token) - PASS",
+      "POST /api/admin/events (with token) - PASS",
+      "PUT /api/admin/events/{id} (with token) - PASS",
+      "DELETE /api/admin/events/{id} (with token) - PASS"
+    ],
+    "payments_router": [
+      "GET /api/payment/methods - PASS",
+      "GET /api/stripe/checkout/status/{session_id} - PASS (404 for invalid)"
+    ],
+    "existing_endpoints": [
+      "GET /api/locations - PASS",
+      "GET /api/tokens/packages - PASS",
+      "GET /api/menu/items - PASS",
+      "GET /api/homepage/content - PASS",
+      "GET /api/specials - PASS",
+      "GET /api/gallery - PASS",
+      "GET /api/social-links - PASS",
+      "GET /api/wall/posts/{slug} - PASS",
+      "GET /api/dj/at-location/{slug} - PASS",
+      "GET /api/karaoke/status/{slug} - PASS",
+      "GET /api/admin/stats - PASS",
+      "GET /api/admin/menu-items - PASS",
+      "GET /api/admin/specials - PASS"
+    ]
+  }
+}
