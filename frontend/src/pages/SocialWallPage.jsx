@@ -5,14 +5,15 @@ import { Input } from '../components/ui/input';
 import { Card, CardContent } from '../components/ui/card';
 import {
   MessageCircle, Heart, Send, Image, Music, Megaphone, ArrowLeft,
-  Settings, Users, Hash, Mail, MoreHorizontal, Trash2, X, Camera, Loader2, ChevronLeft, Bell
+  Settings, Users, Hash, Mail, MoreHorizontal, Trash2, X, Camera, Loader2, ChevronLeft, Bell,
+  Radio, Calendar, Clock, Mic2
 } from 'lucide-react';
 import { locations } from '../mockData';
 
 const API_URL = window.location.origin;
 
 // ========== FEED TAB ==========
-const FeedTab = ({ locationSlug, userId, userName, userAvatar }) => {
+const FeedTab = ({ locationSlug, userId, userName, userAvatar, djStatus }) => {
   const [posts, setPosts] = useState([]);
   const [newContent, setNewContent] = useState('');
   const [postType, setPostType] = useState('text');
@@ -20,6 +21,8 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar }) => {
   const [imagePreview, setImagePreview] = useState(null);
   const [posting, setPosting] = useState(false);
   const fileRef = useRef(null);
+
+  const isDJLive = djStatus?.is_live || djStatus?.karaoke_active;
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -85,11 +88,20 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar }) => {
     } catch (e) { console.error(e); }
   };
 
-  const postTypeConfig = {
+  // All post type configs for display (always show icon for existing posts)
+  const allPostTypes = {
     text: { icon: MessageCircle, label: 'Post', color: 'text-slate-400' },
     photo: { icon: Camera, label: 'Photo', color: 'text-blue-400' },
     song_request: { icon: Music, label: 'Song', color: 'text-green-400' },
     shoutout: { icon: Megaphone, label: 'Shoutout', color: 'text-yellow-400' }
+  };
+
+  // Compose buttons — hide song_request when no DJ/karaoke active
+  const postTypeConfig = {
+    text: allPostTypes.text,
+    photo: allPostTypes.photo,
+    ...(isDJLive ? { song_request: allPostTypes.song_request } : {}),
+    shoutout: allPostTypes.shoutout
   };
 
   const timeAgo = (dateStr) => {
@@ -150,7 +162,7 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar }) => {
           </div>
         )}
         {posts.map(post => {
-          const cfg = postTypeConfig[post.post_type] || postTypeConfig.text;
+          const cfg = allPostTypes[post.post_type] || allPostTypes.text;
           const isLiked = (post.likes || []).includes(userId);
           const isAuthor = post.user_id === userId;
           return (
@@ -474,6 +486,109 @@ const DMsTab = ({ userId, userName, userAvatar, locationSlug }) => {
   );
 };
 
+// ========== DJ STATUS BANNER ==========
+const DJStatusBanner = ({ djStatus, locationSlug }) => {
+  if (!djStatus) return null;
+
+  const formatDate = (dateStr) => {
+    try {
+      const d = new Date(dateStr + 'T00:00:00');
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}`;
+    } catch { return dateStr; }
+  };
+
+  const formatTime = (t) => {
+    try {
+      const [h, m] = t.split(':').map(Number);
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      const hour = h % 12 || 12;
+      return `${hour}${m > 0 ? `:${String(m).padStart(2, '0')}` : ''}${ampm}`;
+    } catch { return t; }
+  };
+
+  if (djStatus.is_live || djStatus.karaoke_active) {
+    return (
+      <div className="bg-gradient-to-r from-green-900/40 to-emerald-900/30 border-b border-green-800/40 px-4 py-2.5" data-testid="dj-status-live">
+        <div className="max-w-lg mx-auto flex items-center gap-3">
+          <div className="relative">
+            <Radio className="w-5 h-5 text-green-400" />
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="text-green-400 text-xs font-bold uppercase tracking-wider">Live Now</span>
+              {djStatus.karaoke_active && (
+                <span className="bg-purple-600/30 text-purple-300 text-[10px] font-medium px-1.5 py-0.5 rounded-full border border-purple-600/30">
+                  <Mic2 className="w-2.5 h-2.5 inline mr-0.5" />Karaoke
+                </span>
+              )}
+            </div>
+            {djStatus.dj_name && (
+              <p className="text-white text-sm font-semibold truncate">{djStatus.dj_stage_name || djStatus.dj_name}</p>
+            )}
+          </div>
+          <Music className="w-4 h-4 text-green-400/60" />
+        </div>
+      </div>
+    );
+  }
+
+  const next = djStatus.next_session;
+  if (!next) {
+    return (
+      <div className="bg-slate-900/60 border-b border-slate-800 px-4 py-2.5" data-testid="dj-status-none">
+        <div className="max-w-lg mx-auto flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center">
+            <Music className="w-4 h-4 text-slate-600" />
+          </div>
+          <div>
+            <p className="text-slate-400 text-sm font-medium">No DJ</p>
+            <p className="text-slate-600 text-xs">No upcoming sessions scheduled</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-slate-900/60 border-b border-slate-800 px-4 py-2.5" data-testid="dj-status-next">
+      <div className="max-w-lg mx-auto flex items-center gap-3">
+        <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0">
+          <Music className="w-4 h-4 text-slate-500" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-slate-400 text-xs font-medium">No DJ — Next Session</p>
+          <p className="text-white text-sm font-semibold truncate">
+            {next.dj_stage_name || next.dj_name}
+            {next.event_name && <span className="text-slate-400 font-normal"> — {next.event_name}</span>}
+          </p>
+          <div className="flex items-center gap-3 mt-0.5">
+            <span className="flex items-center gap-1 text-slate-500 text-xs">
+              <Calendar className="w-3 h-3" />
+              {formatDate(next.date)}
+            </span>
+            <span className="flex items-center gap-1 text-slate-500 text-xs">
+              <Clock className="w-3 h-3" />
+              {formatTime(next.start_time)}
+            </span>
+            {next.time_slot && (
+              <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full border ${
+                next.time_slot === 'Brunch' ? 'bg-amber-600/20 text-amber-300 border-amber-600/30' :
+                next.time_slot === 'Happy Hour' ? 'bg-orange-600/20 text-orange-300 border-orange-600/30' :
+                'bg-indigo-600/20 text-indigo-300 border-indigo-600/30'
+              }`}>
+                {next.time_slot}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ========== MAIN SOCIAL WALL PAGE ==========
 const SocialWallPage = () => {
   const { slug } = useParams();
@@ -485,6 +600,7 @@ const SocialWallPage = () => {
   const [notifications, setNotifications] = useState([]);
   const [unreadNotifs, setUnreadNotifs] = useState(0);
   const [showNotifs, setShowNotifs] = useState(false);
+  const [djStatus, setDjStatus] = useState(null);
 
   const location = locations.find(l => l.slug === slug);
   const locationName = location?.name?.replace('Fin & Feathers - ', '') || slug;
@@ -503,6 +619,23 @@ const SocialWallPage = () => {
     };
     loadProfile();
   }, [navigate]);
+
+  // Fetch DJ status for this location
+  useEffect(() => {
+    if (!slug) return;
+    const fetchDJStatus = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/dj/next-session/${slug}`);
+        if (res.ok) {
+          const data = await res.json();
+          setDjStatus(data);
+        }
+      } catch (e) { console.error('DJ status fetch error:', e); }
+    };
+    fetchDJStatus();
+    const iv = setInterval(fetchDJStatus, 15000);
+    return () => clearInterval(iv);
+  }, [slug]);
 
   // Fetch unread DM count
   useEffect(() => {
@@ -627,6 +760,9 @@ const SocialWallPage = () => {
         </div>
       )}
 
+      {/* DJ Status Banner */}
+      <DJStatusBanner djStatus={djStatus} locationSlug={slug} />
+
       {/* Tabs */}
       <div className="bg-slate-950 border-b border-slate-800 px-4">
         <div className="max-w-lg mx-auto flex">
@@ -647,7 +783,7 @@ const SocialWallPage = () => {
 
       {/* Content */}
       <div className="flex-1 max-w-lg mx-auto w-full flex flex-col overflow-hidden">
-        {activeTab === 'feed' && <FeedTab locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} />}
+        {activeTab === 'feed' && <FeedTab locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} djStatus={djStatus} />}
         {activeTab === 'chat' && <ChatTab locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} />}
         {activeTab === 'dms' && <DMsTab userId={userId} userName={userName} userAvatar={userAvatar} locationSlug={slug} />}
       </div>

@@ -325,6 +325,123 @@ async def get_dj_schedules_for_location(location_slug: str):
     return [DJScheduleResponse(**s) for s in schedules]
 
 
+@router.get("/dj/next-session/{location_slug}")
+async def get_next_dj_session(location_slug: str):
+    """Get the next upcoming DJ session for a location, considering recurring schedules."""
+    from datetime import timedelta
+    now = datetime.now(timezone.utc)
+    today_str = now.strftime("%Y-%m-%d")
+    current_day = now.weekday()  # 0=Monday, 6=Sunday
+
+    # Check if DJ is currently live
+    live_dj = await db.dj_profiles.find_one(
+        {"current_location": location_slug, "is_active": True}, {"_id": 0}
+    )
+    karaoke = await db.karaoke_sessions.find_one({"location_slug": location_slug}, {"_id": 0})
+    karaoke_active = karaoke.get("active", False) if karaoke else False
+
+    if live_dj or karaoke_active:
+        return {
+            "is_live": True,
+            "karaoke_active": karaoke_active,
+            "dj_name": live_dj.get("name") if live_dj else None,
+            "dj_stage_name": live_dj.get("stage_name") if live_dj else None,
+            "dj_photo_url": live_dj.get("photo_url") if live_dj else None,
+            "dj_id": live_dj.get("id") if live_dj else None,
+            "next_session": None
+        }
+
+    # Find next scheduled session
+    # 1. Check non-recurring future sessions first
+    upcoming = await db.dj_schedules.find(
+        {"location_slug": location_slug, "is_active": True, "scheduled_date": {"$gte": today_str}, "is_recurring": {"$ne": True}},
+        {"_id": 0}
+    ).sort("scheduled_date", 1).to_list(10)
+
+    # 2. Get recurring sessions
+    recurring = await db.dj_schedules.find(
+        {"location_slug": location_slug, "is_active": True, "is_recurring": True},
+        {"_id": 0}
+    ).to_list(50)
+
+    best = None
+    best_dt = None
+
+    # Check non-recurring
+    for s in upcoming:
+        try:
+            dt = datetime.strptime(f"{s['scheduled_date']} {s.get('start_time', '20:00')}", "%Y-%m-%d %H:%M").replace(tzinfo=timezone.utc)
+            if dt > now and (best_dt is None or dt < best_dt):
+                best_dt = dt
+                best = s
+        except Exception:
+            pass
+
+    # Check recurring — find next occurrence
+    for s in recurring:
+        dow = s.get("day_of_week")
+        if dow is None:
+            continue
+        days_ahead = dow - current_day
+        if days_ahead < 0:
+            days_ahead += 7
+        elif days_ahead == 0:
+            # Same day — check if time hasn't passed
+            try:
+                start_t = s.get("start_time", "20:00")
+                session_dt = datetime.strptime(f"{today_str} {start_t}", "%Y-%m-%d %H:%M").replace(tzinfo=timezone.utc)
+                if session_dt <= now:
+                    days_ahead = 7  # Already passed today, next week
+            except Exception:
+                days_ahead = 7
+
+        next_date = now + timedelta(days=days_ahead)
+        try:
+            start_t = s.get("start_time", "20:00")
+            dt = datetime.strptime(f"{next_date.strftime('%Y-%m-%d')} {start_t}", "%Y-%m-%d %H:%M").replace(tzinfo=timezone.utc)
+            if best_dt is None or dt < best_dt:
+                best_dt = dt
+                best = {**s, "scheduled_date": next_date.strftime("%Y-%m-%d")}
+        except Exception:
+            pass
+
+    if best:
+        # Categorize time slot
+        start_time = best.get("start_time", "20:00")
+        try:
+            hour = int(start_time.split(":")[0])
+        except Exception:
+            hour = 20
+        if hour < 15:
+            time_slot = "Brunch"
+        elif hour < 19:
+            time_slot = "Happy Hour"
+        else:
+            time_slot = "Night"
+
+        return {
+            "is_live": False,
+            "karaoke_active": False,
+            "next_session": {
+                "dj_name": best.get("dj_name"),
+                "dj_stage_name": best.get("dj_stage_name"),
+                "dj_photo_url": best.get("dj_photo_url"),
+                "date": best.get("scheduled_date"),
+                "start_time": best.get("start_time"),
+                "end_time": best.get("end_time"),
+                "time_slot": time_slot,
+                "event_name": best.get("notes", ""),
+                "location_name": best.get("location_name", "")
+            }
+        }
+
+    return {
+        "is_live": False,
+        "karaoke_active": False,
+        "next_session": None
+    }
+
+
 # =====================================================
 # ADMIN DJ ENDPOINTS
 # =====================================================
