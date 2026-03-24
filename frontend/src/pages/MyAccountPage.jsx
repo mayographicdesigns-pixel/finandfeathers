@@ -5,7 +5,7 @@ import {
   Instagram, Twitter, Facebook, ArrowLeft, Edit2, 
   Save, X, Plus, Trash2, CreditCard, Sparkles, Music, Wine, Upload,
   DollarSign, Send, Award, Briefcase, BadgeCheck, ArrowRightLeft, Loader2, LogOut,
-  Image as ImageIcon
+  Image as ImageIcon, MessageCircle, MapPin
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -99,6 +99,15 @@ const MyAccountPage = () => {
     token_program_enabled: true,
     loyalty_program_enabled: true
   });
+
+  // DM state
+  const [dmConversations, setDmConversations] = useState([]);
+  const [dmUnread, setDmUnread] = useState(0);
+  const [selectedDmPartner, setSelectedDmPartner] = useState(null);
+  const [dmThread, setDmThread] = useState([]);
+  const [dmInput, setDmInput] = useState('');
+  const [sendingDm, setSendingDm] = useState(false);
+  const dmEndRef = useRef(null);
 
   // Load app settings on mount
   useEffect(() => {
@@ -550,6 +559,67 @@ const MyAccountPage = () => {
     }
   };
 
+  // ========== DM FUNCTIONS ==========
+  const API_URL = window.location.origin;
+
+  const loadDmConversations = async (userId) => {
+    try {
+      const res = await fetch(`${API_URL}/api/wall/dm/conversations/${userId}`);
+      if (res.ok) { const data = await res.json(); setDmConversations(data); }
+      const unreadRes = await fetch(`${API_URL}/api/wall/dm/unread/${userId}`);
+      if (unreadRes.ok) { const d = await unreadRes.json(); setDmUnread(d.unread || 0); }
+    } catch (e) { console.error('DM load error:', e); }
+  };
+
+  const openDmThread = async (partner) => {
+    setSelectedDmPartner(partner);
+    try {
+      const res = await fetch(`${API_URL}/api/wall/dm/thread/${profile.id}/${partner.partner_id}`);
+      if (res.ok) { const data = await res.json(); setDmThread(data); }
+      // Reload conversations to update unread count
+      loadDmConversations(profile.id);
+    } catch (e) { console.error('DM thread error:', e); }
+  };
+
+  const sendDm = async () => {
+    if (!dmInput.trim() || !selectedDmPartner || !profile) return;
+    setSendingDm(true);
+    try {
+      const res = await fetch(`${API_URL}/api/wall/dm`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from_user_id: profile.id,
+          from_user_name: profile.name,
+          from_user_avatar: profile.avatar_emoji || '',
+          to_user_id: selectedDmPartner.partner_id,
+          to_user_name: selectedDmPartner.partner_name,
+          content: dmInput.trim()
+        })
+      });
+      if (res.ok) {
+        const msg = await res.json();
+        setDmThread(prev => [...prev, msg]);
+        setDmInput('');
+        loadDmConversations(profile.id);
+      }
+    } catch (e) { console.error('DM send error:', e); }
+    finally { setSendingDm(false); }
+  };
+
+  useEffect(() => {
+    if (dmEndRef.current) dmEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  }, [dmThread]);
+
+  // Load DMs when profile is available
+  useEffect(() => {
+    if (profile?.id) {
+      loadDmConversations(profile.id);
+      const iv = setInterval(() => loadDmConversations(profile.id), 10000);
+      return () => clearInterval(iv);
+    }
+  }, [profile?.id]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -564,6 +634,8 @@ const MyAccountPage = () => {
         setProfile(newProfile);
         setEditedProfile(newProfile);
         loadAdditionalData(newProfile.id, newProfile.role);
+        // After signup/login, prompt check-in
+        navigate('/checkin');
       }}
       authError={authError}
     />;
@@ -658,21 +730,34 @@ const MyAccountPage = () => {
               <ArrowLeft className="w-5 h-5" />
               <span>Back</span>
             </button>
-            
-            {/* Logout Button */}
-            <Button
-              onClick={async () => {
-                await userLogout();
-                setProfile(null);
-                toast({ title: 'Logged Out', description: 'You have been signed out' });
-              }}
-              variant="ghost"
-              className="text-slate-400 hover:text-white hover:bg-slate-800"
-              data-testid="logout-btn"
-            >
-              <X className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
+
+            <div className="flex items-center gap-2">
+              {/* Check In Button */}
+              <Button
+                onClick={() => navigate('/checkin')}
+                className="bg-red-600 hover:bg-red-700 text-white"
+                size="sm"
+                data-testid="checkin-btn"
+              >
+                <MapPin className="w-4 h-4 mr-1" />
+                Check In
+              </Button>
+              
+              {/* Logout Button */}
+              <Button
+                onClick={async () => {
+                  await userLogout();
+                  setProfile(null);
+                  toast({ title: 'Logged Out', description: 'You have been signed out' });
+                }}
+                variant="ghost"
+                className="text-slate-400 hover:text-white hover:bg-slate-800"
+                data-testid="logout-btn"
+              >
+                <X className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
           </div>
           
           {/* Profile Header */}
@@ -794,6 +879,19 @@ const MyAccountPage = () => {
             >
               <Camera className="w-4 h-4 mr-2" />
               Photos
+            </TabsTrigger>
+            <TabsTrigger 
+              value="messages" 
+              className="flex-1 data-[state=active]:bg-red-600 relative"
+              data-testid="tab-messages"
+            >
+              <MessageCircle className="w-4 h-4 mr-2" />
+              DMs
+              {dmUnread > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {dmUnread}
+                </span>
+              )}
             </TabsTrigger>
             <TabsTrigger 
               value="history" 
@@ -1684,6 +1782,111 @@ const MyAccountPage = () => {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Messages/DMs Tab */}
+          <TabsContent value="messages" className="space-y-4" data-testid="messages-tab-content">
+            {selectedDmPartner ? (
+              <Card className="bg-slate-900 border-slate-700">
+                <CardHeader className="flex flex-row items-center gap-3 pb-3">
+                  <button
+                    onClick={() => { setSelectedDmPartner(null); setDmThread([]); }}
+                    className="text-slate-400 hover:text-white"
+                    data-testid="dm-back-btn"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                  </button>
+                  <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-lg">
+                    {selectedDmPartner.partner_avatar || '👤'}
+                  </div>
+                  <CardTitle className="text-white text-base">{selectedDmPartner.partner_name}</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="h-80 overflow-y-auto px-4 space-y-2 pb-2" data-testid="dm-thread-messages">
+                    {dmThread.length === 0 ? (
+                      <p className="text-slate-500 text-sm text-center py-8">No messages yet</p>
+                    ) : dmThread.map(msg => (
+                      <div key={msg.id} className={`flex ${msg.from_user_id === profile.id ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`max-w-[75%] px-3 py-2 rounded-2xl text-sm ${
+                          msg.from_user_id === profile.id
+                            ? 'bg-red-600 text-white rounded-br-md'
+                            : 'bg-slate-800 text-white rounded-bl-md'
+                        }`}>
+                          {msg.content}
+                          <div className={`text-[10px] mt-0.5 ${msg.from_user_id === profile.id ? 'text-red-200' : 'text-slate-500'}`}>
+                            {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    <div ref={dmEndRef} />
+                  </div>
+                  <div className="border-t border-slate-700 p-3 flex gap-2">
+                    <Input
+                      value={dmInput}
+                      onChange={e => setDmInput(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendDm()}
+                      placeholder="Type a message..."
+                      className="bg-slate-800 border-slate-700 text-white text-sm"
+                      data-testid="dm-input"
+                    />
+                    <Button
+                      onClick={sendDm}
+                      disabled={!dmInput.trim() || sendingDm}
+                      size="sm"
+                      className="bg-red-600 hover:bg-red-700"
+                      data-testid="dm-send-btn"
+                    >
+                      <Send className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="bg-slate-900 border-slate-700">
+                <CardHeader>
+                  <CardTitle className="text-white">Messages</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {dmConversations.length === 0 ? (
+                    <div className="text-center py-12 px-4">
+                      <MessageCircle className="w-12 h-12 text-slate-700 mx-auto mb-3" />
+                      <p className="text-slate-400 text-sm">No messages yet</p>
+                      <p className="text-slate-600 text-xs mt-1">Visit a location's social wall to start chatting</p>
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-slate-800">
+                      {dmConversations.map(convo => (
+                        <button
+                          key={convo.partner_id}
+                          onClick={() => openDmThread(convo)}
+                          className="w-full flex items-center gap-3 p-4 hover:bg-slate-800/50 transition-colors text-left"
+                          data-testid={`dm-convo-${convo.partner_id}`}
+                        >
+                          <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-lg shrink-0">
+                            {convo.partner_avatar || '👤'}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <p className="text-white text-sm font-medium truncate">{convo.partner_name}</p>
+                              <span className="text-slate-500 text-xs shrink-0 ml-2">
+                                {new Date(convo.last_time).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                              </span>
+                            </div>
+                            <p className="text-slate-400 text-xs truncate">{convo.last_message}</p>
+                          </div>
+                          {convo.unread > 0 && (
+                            <span className="w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shrink-0">
+                              {convo.unread}
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           {/* History Tab */}

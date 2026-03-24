@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { MapPin, Loader2, Navigation, AlertCircle, Mic, Music, DollarSign, CreditCard, ExternalLink, Users, Briefcase } from 'lucide-react';
+import { MapPin, Loader2, Navigation, AlertCircle, Mic, Music, DollarSign, CreditCard, ExternalLink, Users, Briefcase, ArrowLeft } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -201,6 +201,24 @@ const CheckInPage = () => {
     <div className="min-h-screen bg-black flex items-center justify-center p-4">
       <Card className="bg-slate-900 border-red-600/30 w-full max-w-md">
         <CardContent className="p-8 text-center">
+          {/* Header with My Account link */}
+          <div className="flex justify-between items-center mb-4">
+            <button
+              onClick={() => navigate('/')}
+              className="text-slate-400 hover:text-white text-sm"
+              data-testid="checkin-back-home"
+            >
+              <ArrowLeft className="w-4 h-4 inline mr-1" />Home
+            </button>
+            <button
+              onClick={() => navigate('/account')}
+              className="text-red-400 hover:text-red-300 text-sm font-medium"
+              data-testid="checkin-my-account"
+            >
+              My Account
+            </button>
+          </div>
+
           {/* Logo */}
           <img
             src="https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png"

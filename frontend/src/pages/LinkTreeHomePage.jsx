@@ -910,6 +910,7 @@ const LinkTreeHomePage = () => {
               const data = await res.json();
               if (data && data.id) {
                 localStorage.setItem('ff_user_profile_id', data.id);
+                navigate('/checkin');
               }
             } catch (e) { console.error('Failed to save user profile:', e); }
           }}
