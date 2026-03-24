@@ -66,6 +66,8 @@ Build a full-featured restaurant PWA for Fin & Feathers Restaurants, including:
 - Full admin dashboard with all content management tabs
 - DJ/Karaoke system with song requests and tipping
 - Social Wall with posts, group chat, DMs, push notifications
+- DJ Status Banner: Shows "LIVE NOW" or "No DJ — Next Session" with DJ name, event, date/time
+- Conditional song request: Song button only visible when DJ is live or karaoke active
 - Check-in page with Client/Staff role selection
 - Token economy with Stripe + WooCommerce
 - Google OAuth + email/password authentication
