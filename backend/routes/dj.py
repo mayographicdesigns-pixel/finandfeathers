@@ -202,15 +202,23 @@ async def dj_checkin(dj_id: str, location_slug: str):
     profile = await db.dj_profiles.find_one({"id": dj_id})
     if not profile:
         raise HTTPException(status_code=404, detail="DJ profile not found")
-    await db.dj_profiles.update_many({"current_location": location_slug}, {"$set": {"current_location": None, "checked_in_at": None}})
+    await db.dj_profiles.update_many({"current_location": location_slug}, {"$set": {"current_location": None, "checked_in_at": None, "live_stream_url": None}})
     await db.dj_profiles.update_one({"id": dj_id}, {"$set": {"current_location": location_slug, "checked_in_at": datetime.now(timezone.utc)}})
     return {"message": f"DJ checked in at {location_slug}"}
 
 
 @router.post("/dj/checkout/{dj_id}")
 async def dj_checkout(dj_id: str):
-    await db.dj_profiles.update_one({"id": dj_id}, {"$set": {"current_location": None, "checked_in_at": None}})
+    await db.dj_profiles.update_one({"id": dj_id}, {"$set": {"current_location": None, "checked_in_at": None, "live_stream_url": None}})
     return {"message": "DJ checked out"}
+
+
+@router.post("/dj/live-stream/{dj_id}")
+async def set_live_stream(dj_id: str, body: dict):
+    """Set or clear the DJ's live stream URL."""
+    url = body.get("live_stream_url", "").strip()
+    await db.dj_profiles.update_one({"id": dj_id}, {"$set": {"live_stream_url": url or None}})
+    return {"message": "Live stream updated", "live_stream_url": url or None}
 
 
 @router.get("/dj/at-location/{location_slug}")
@@ -220,9 +228,10 @@ async def get_dj_at_location(location_slug: str):
         return {"checked_in": False, "dj_id": None, "dj_name": None}
     return {
         "checked_in": True, "dj_id": profile.get("id"), "dj_name": profile.get("name"),
-        "stage_name": profile.get("stage_name"), "avatar_emoji": profile.get("avatar_emoji", "🎧"),
+        "stage_name": profile.get("stage_name"), "avatar_emoji": profile.get("avatar_emoji"),
         "photo_url": profile.get("photo_url"), "cash_app_username": profile.get("cash_app_username"),
-        "venmo_username": profile.get("venmo_username"), "zelle_info": profile.get("zelle_info")
+        "venmo_username": profile.get("venmo_username"), "zelle_info": profile.get("zelle_info"),
+        "live_stream_url": profile.get("live_stream_url")
     }
 
 
@@ -348,6 +357,7 @@ async def get_next_dj_session(location_slug: str):
             "dj_stage_name": live_dj.get("stage_name") if live_dj else None,
             "dj_photo_url": live_dj.get("photo_url") if live_dj else None,
             "dj_id": live_dj.get("id") if live_dj else None,
+            "live_stream_url": live_dj.get("live_stream_url") if live_dj else None,
             "next_session": None
         }
 

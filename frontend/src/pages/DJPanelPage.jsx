@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent } from '../components/ui/card';
-import { Check, X, Mic, Music, MapPin, LogOut, RefreshCw, ChevronRight, Calendar, Clock, DollarSign, Save } from 'lucide-react';
+import { Check, X, Mic, Music, MapPin, LogOut, RefreshCw, ChevronRight, Calendar, Clock, DollarSign, Save, Video } from 'lucide-react';
 
 const API_URL = window.location.origin;
 
@@ -26,6 +26,9 @@ const DJPanelPage = () => {
   const [paymentLinks, setPaymentLinks] = useState({ cash_app_username: '', venmo_username: '', zelle_info: '' });
   const [savingLinks, setSavingLinks] = useState(false);
   const [linksSaved, setLinksSaved] = useState(false);
+  const [liveStreamUrl, setLiveStreamUrl] = useState('');
+  const [savingStream, setSavingStream] = useState(false);
+  const [streamActive, setStreamActive] = useState(false);
 
   // Load saved DJ session
   useEffect(() => {
@@ -113,7 +116,40 @@ const DJPanelPage = () => {
         venmo_username: data.venmo_username || '',
         zelle_info: data.zelle_info || ''
       });
+      if (data.live_stream_url) {
+        setLiveStreamUrl(data.live_stream_url);
+        setStreamActive(true);
+      }
     } catch (e) { console.error(e); }
+  };
+
+  const goLive = async () => {
+    if (!djProfile || !liveStreamUrl.trim()) return;
+    setSavingStream(true);
+    try {
+      await fetch(`${API_URL}/api/dj/live-stream/${djProfile.id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ live_stream_url: liveStreamUrl.trim() })
+      });
+      setStreamActive(true);
+    } catch (e) { console.error(e); }
+    finally { setSavingStream(false); }
+  };
+
+  const stopLive = async () => {
+    if (!djProfile) return;
+    setSavingStream(true);
+    try {
+      await fetch(`${API_URL}/api/dj/live-stream/${djProfile.id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ live_stream_url: '' })
+      });
+      setStreamActive(false);
+      setLiveStreamUrl('');
+    } catch (e) { console.error(e); }
+    finally { setSavingStream(false); }
   };
 
   const savePaymentLinks = async () => {
@@ -178,6 +214,15 @@ const DJPanelPage = () => {
           body: JSON.stringify({ active: false, dj_id: djProfile.id })
         });
         setKaraokeActive(false);
+      }
+      if (streamActive) {
+        await fetch(`${API_URL}/api/dj/live-stream/${djProfile.id}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ live_stream_url: '' })
+        });
+        setStreamActive(false);
+        setLiveStreamUrl('');
       }
       await fetch(`${API_URL}/api/dj/checkout/${djProfile.id}`, { method: 'POST' });
       setCheckedInLocation(null);
@@ -430,6 +475,59 @@ const DJPanelPage = () => {
             >
               {karaokeActive ? 'Stop' : 'Start'}
             </Button>
+          </CardContent>
+        </Card>
+
+        {/* Go Live — Video Stream */}
+        <Card className={`mb-4 border ${streamActive ? 'bg-green-900/20 border-green-500/40' : 'bg-slate-900 border-slate-800'}`}>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3 mb-3">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${streamActive ? 'bg-green-500/30' : 'bg-slate-800'}`}>
+                <Video className={`w-5 h-5 ${streamActive ? 'text-green-400' : 'text-slate-500'}`} />
+              </div>
+              <div className="flex-1">
+                <p className="text-white font-medium">Go Live</p>
+                <p className={`text-xs ${streamActive ? 'text-green-400' : 'text-slate-500'}`}>
+                  {streamActive ? 'STREAMING — Viewers can watch on Social Wall' : 'Stream via YouTube, Facebook, or Instagram Live'}
+                </p>
+              </div>
+            </div>
+            {!streamActive ? (
+              <div className="space-y-2">
+                <Input
+                  value={liveStreamUrl}
+                  onChange={e => setLiveStreamUrl(e.target.value)}
+                  placeholder="Paste your live stream URL..."
+                  className="bg-slate-800 border-slate-700 text-white text-sm h-9"
+                  data-testid="dj-stream-url-input"
+                />
+                <p className="text-slate-600 text-[10px]">Supports YouTube Live, Facebook Live, or Instagram Live links</p>
+                <Button
+                  onClick={goLive}
+                  disabled={savingStream || !liveStreamUrl.trim()}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white text-sm h-9"
+                  data-testid="dj-go-live-btn"
+                >
+                  <Video className="w-3.5 h-3.5 mr-1.5" />
+                  {savingStream ? 'Starting...' : 'Go Live'}
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="bg-slate-800/50 rounded-lg p-2 text-xs text-slate-400 break-all">
+                  {liveStreamUrl}
+                </div>
+                <Button
+                  onClick={stopLive}
+                  disabled={savingStream}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white text-sm h-9"
+                  data-testid="dj-stop-live-btn"
+                >
+                  <X className="w-3.5 h-3.5 mr-1.5" />
+                  {savingStream ? 'Stopping...' : 'Stop Live Stream'}
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
 

@@ -4,6 +4,9 @@
 - Simplified CheckInPage to only Client/Staff selection + staff role picker
 - Added Close (X) bypass button to skip check-in
 - Removed location detection, song requests, tipping from check-in page
+- Updated welcome popup: "I am a..." now shows Client/Staff buttons, staff position picker on step 2
+- Fixed Facebook page URL to finandfeathersrestaurants
+- **DJ Live Streaming:** DJs can now "Go Live" by pasting a YouTube/Facebook/Instagram Live URL from their DJ panel. A "Live" tab auto-appears on the Social Wall with the embedded stream + live chat below it. Stream is auto-cleared on checkout.
 
 ## Original Problem Statement
 Build a full-featured restaurant PWA for Fin & Feathers Restaurants, including:

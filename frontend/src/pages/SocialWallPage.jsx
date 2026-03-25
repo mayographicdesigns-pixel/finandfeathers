@@ -6,7 +6,7 @@ import { Card, CardContent } from '../components/ui/card';
 import {
   MessageCircle, Heart, Send, Image, Music, Megaphone, ArrowLeft,
   Settings, Users, Hash, Mail, MoreHorizontal, Trash2, X, Camera, Loader2, ChevronLeft, Bell,
-  Radio, Calendar, Clock, Mic2
+  Radio, Calendar, Clock, Mic2, Video
 } from 'lucide-react';
 import { locations } from '../mockData';
 
@@ -487,6 +487,155 @@ const DMsTab = ({ userId, userName, userAvatar, locationSlug }) => {
 };
 
 // ========== DJ STATUS BANNER ==========
+// ========== LIVE STREAM TAB ==========
+const getEmbedUrl = (url) => {
+  if (!url) return null;
+  // YouTube: youtube.com/watch?v=ID or youtu.be/ID or youtube.com/live/ID
+  const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|live\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+  if (ytMatch) return { type: 'youtube', embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1` };
+  // Facebook video/live
+  if (url.includes('facebook.com')) {
+    return { type: 'facebook', embedUrl: `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false&width=560&autoplay=true` };
+  }
+  // Instagram — no embeddable live, link out
+  if (url.includes('instagram.com')) {
+    return { type: 'instagram', embedUrl: null, directUrl: url };
+  }
+  // Twitch
+  const twitchMatch = url.match(/twitch\.tv\/([a-zA-Z0-9_]+)/);
+  if (twitchMatch) return { type: 'twitch', embedUrl: `https://player.twitch.tv/?channel=${twitchMatch[1]}&parent=${window.location.hostname}` };
+  return { type: 'unknown', embedUrl: null, directUrl: url };
+};
+
+const LiveTab = ({ djStatus, locationSlug, userId, userName, userAvatar }) => {
+  const streamUrl = djStatus?.live_stream_url;
+  const embed = getEmbedUrl(streamUrl);
+  const djName = djStatus?.dj_stage_name || djStatus?.dj_name || 'DJ';
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Stream area */}
+      <div className="shrink-0">
+        {embed?.embedUrl ? (
+          <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+            <iframe
+              src={embed.embedUrl}
+              className="absolute inset-0 w-full h-full"
+              allow="autoplay; fullscreen; encrypted-media"
+              allowFullScreen
+              title={`${djName} Live Stream`}
+              data-testid="live-stream-embed"
+            />
+          </div>
+        ) : (
+          <div className="bg-slate-900 p-6 text-center" data-testid="live-stream-link">
+            <div className="w-16 h-16 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-3">
+              <Video className="w-8 h-8 text-red-400" />
+            </div>
+            <p className="text-white font-semibold mb-1">{djName} is Live!</p>
+            <p className="text-slate-400 text-xs mb-3">
+              {embed?.type === 'instagram' ? 'Watch on Instagram Live' : 'Watch the live stream'}
+            </p>
+            <a
+              href={embed?.directUrl || streamUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"
+              data-testid="live-stream-external-link"
+            >
+              <Video className="w-4 h-4" /> Open Live Stream
+            </a>
+          </div>
+        )}
+        <div className="bg-gradient-to-r from-green-900/40 to-emerald-900/30 px-4 py-2 flex items-center gap-2">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
+          </span>
+          <span className="text-green-400 text-xs font-bold uppercase tracking-wider">Live</span>
+          <span className="text-white text-xs font-medium">{djName}</span>
+        </div>
+      </div>
+
+      {/* Chat below the stream — reuses ChatTab logic inline */}
+      <LiveChat locationSlug={locationSlug} userId={userId} userName={userName} userAvatar={userAvatar} />
+    </div>
+  );
+};
+
+const LiveChat = ({ locationSlug, userId, userName, userAvatar }) => {
+  const [messages, setMessages] = useState([]);
+  const [newMsg, setNewMsg] = useState('');
+  const [sending, setSending] = useState(false);
+  const bottomRef = useRef(null);
+
+  const fetchMessages = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/wall/chat/${locationSlug}`);
+      const data = await res.json();
+      setMessages(data || []);
+    } catch (e) { console.error(e); }
+  }, [locationSlug]);
+
+  useEffect(() => { fetchMessages(); const iv = setInterval(fetchMessages, 3000); return () => clearInterval(iv); }, [fetchMessages]);
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
+
+  const handleSend = async () => {
+    if (!newMsg.trim()) return;
+    setSending(true);
+    try {
+      await fetch(`${API_URL}/api/wall/chat/${locationSlug}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, user_name: userName, user_avatar: userAvatar, content: newMsg.trim() })
+      });
+      setNewMsg('');
+      fetchMessages();
+    } catch (e) { console.error(e); }
+    finally { setSending(false); }
+  };
+
+  return (
+    <div className="flex flex-col flex-1 min-h-0">
+      <div className="px-3 py-1.5 border-b border-slate-800 bg-slate-900/60">
+        <p className="text-slate-400 text-xs font-medium">Live Chat</p>
+      </div>
+      <div className="flex-1 overflow-y-auto p-3 space-y-1.5" data-testid="live-chat-messages">
+        {messages.length === 0 && (
+          <p className="text-slate-600 text-xs text-center py-4">Chat while you watch!</p>
+        )}
+        {messages.map((msg) => {
+          const isMe = msg.user_id === userId;
+          return (
+            <div key={msg.id} className={`flex items-start gap-1.5 ${isMe ? 'flex-row-reverse' : ''}`}>
+              <div className="w-5 h-5 rounded-full bg-slate-800 flex items-center justify-center text-[10px] shrink-0">
+                {msg.user_avatar || '?'}
+              </div>
+              <div className={`px-2.5 py-1 rounded-xl text-xs max-w-[75%] ${isMe ? 'bg-red-600/80 text-white' : 'bg-slate-800 text-slate-200'}`}>
+                {!isMe && <span className="text-slate-500 text-[10px] font-medium block">{msg.user_name}</span>}
+                {msg.content}
+              </div>
+            </div>
+          );
+        })}
+        <div ref={bottomRef} />
+      </div>
+      <div className="p-2 border-t border-slate-800">
+        <div className="flex gap-1.5">
+          <Input value={newMsg} onChange={e => setNewMsg(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleSend()}
+            placeholder="Say something..."
+            className="bg-slate-800/60 border-slate-700 text-white text-xs flex-1 h-8"
+            data-testid="live-chat-input" />
+          <Button onClick={handleSend} disabled={sending || !newMsg.trim()}
+            className="bg-red-600 hover:bg-red-700 text-white px-2.5 h-8" size="sm" data-testid="live-chat-send-btn">
+            <Send className="w-3.5 h-3.5" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const DJStatusBanner = ({ djStatus, locationSlug }) => {
   if (!djStatus) return null;
 
@@ -683,6 +832,15 @@ const SocialWallPage = () => {
     } catch {}
   };
 
+  const isStreaming = djStatus?.is_live && djStatus?.live_stream_url;
+
+  // Auto-switch to Live tab when stream starts
+  useEffect(() => {
+    if (isStreaming && activeTab !== 'live') {
+      setActiveTab('live');
+    }
+  }, [isStreaming]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -696,6 +854,7 @@ const SocialWallPage = () => {
   const userAvatar = userProfile?.avatar_emoji || '👤';
 
   const tabs = [
+    ...(isStreaming ? [{ id: 'live', label: 'Live', icon: Video }] : []),
     { id: 'feed', label: 'Feed', icon: MessageCircle },
     { id: 'chat', label: 'Chat', icon: Hash },
     { id: 'dms', label: 'DMs', icon: Mail, badge: unreadDMs }
@@ -783,6 +942,7 @@ const SocialWallPage = () => {
 
       {/* Content */}
       <div className="flex-1 max-w-lg mx-auto w-full flex flex-col overflow-hidden">
+        {activeTab === 'live' && isStreaming && <LiveTab djStatus={djStatus} locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} />}
         {activeTab === 'feed' && <FeedTab locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} djStatus={djStatus} />}
         {activeTab === 'chat' && <ChatTab locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} />}
         {activeTab === 'dms' && <DMsTab userId={userId} userName={userName} userAvatar={userAvatar} locationSlug={slug} />}
