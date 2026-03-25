@@ -110,17 +110,19 @@ const InstagramEmbed = () => {
 const FacebookEmbed = () => {
   return (
     <div>
-      <div className="bg-white rounded-lg overflow-hidden mb-3" style={{ minHeight: 420 }}>
-        <iframe
-          src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ffinandfeathersrestaurants&tabs=timeline&width=500&height=500&small_header=false&adapt_container_width=true&hide_cover=true&show_facepile=false&hide_cta=true"
-          width="100%"
-          height="500"
-          style={{ border: 'none', overflow: 'hidden' }}
-          scrolling="no"
-          frameBorder="0"
-          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-          title="Fin & Feathers Facebook Feed"
-        />
+      <div className="rounded-lg overflow-hidden mb-3" style={{ position: 'relative' }}>
+        <div style={{ overflow: 'hidden', borderRadius: '0.5rem' }}>
+          <iframe
+            src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ffinandfeathersrestaurants&tabs=timeline&width=340&height=500&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=false&hide_cta=true"
+            width="340"
+            height="500"
+            style={{ border: 'none', overflow: 'hidden', display: 'block', margin: '0 auto' }}
+            scrolling="no"
+            frameBorder="0"
+            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+            title="Fin & Feathers Facebook Feed"
+          />
+        </div>
       </div>
       <Button
         onClick={() => window.open('https://www.facebook.com/finandfeathersrestaurants', '_blank')}
