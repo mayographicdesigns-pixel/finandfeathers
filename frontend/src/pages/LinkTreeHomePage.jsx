@@ -1143,7 +1143,7 @@ const LinkTreeHomePage = () => {
         </Card>
 
         {/* All buttons and sections — uniform spacing */}
-        <div className="space-y-3">
+        <div className="flex flex-col gap-3">
           {/* View Full Menu */}
           <Button
             onClick={() => navigate('/menu')}
@@ -1196,7 +1196,7 @@ const LinkTreeHomePage = () => {
           {karaokeLocation && (
             <Button
               onClick={() => navigate(`/locations/${karaokeLocation.slug}?checkin=true`)}
-              className="w-full bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02] animate-pulse flex items-center justify-center"
+              className="w-full bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02] animate-pulse"
               data-testid="karaoke-live-btn"
             >
               <Mic className="w-5 h-5 mr-2 shrink-0" />
@@ -1207,7 +1207,7 @@ const LinkTreeHomePage = () => {
           {!karaokeLocation && djLocation && (
             <Button
               onClick={() => navigate(`/locations/${djLocation.slug}?checkin=true`)}
-              className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02] flex items-center justify-center"
+              className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
               data-testid="request-song-btn"
             >
               <Music className="w-5 h-5 mr-2 shrink-0" />
@@ -1258,7 +1258,7 @@ const LinkTreeHomePage = () => {
           {!showFeedExpanded ? (
             <Button
               onClick={() => setShowFeedExpanded(true)}
-              className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02] flex items-center justify-center"
+              className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
               data-testid="follow-us-btn"
             >
               <Instagram className="w-5 h-5 mr-2 shrink-0" />
