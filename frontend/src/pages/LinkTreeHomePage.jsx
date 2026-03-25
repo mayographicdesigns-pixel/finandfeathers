@@ -117,7 +117,7 @@ const FacebookEmbed = () => {
     <div>
       <div className="bg-white rounded-lg overflow-hidden mb-3" style={{ minHeight: 420 }}>
         <iframe
-          src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ffinandfeathers&tabs=timeline&width=500&height=420&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false"
+          src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ffinandfeathersrestaurants&tabs=timeline&width=500&height=420&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false"
           width="100%"
           height="420"
           style={{ border: 'none', overflow: 'hidden' }}
@@ -128,7 +128,7 @@ const FacebookEmbed = () => {
         />
       </div>
       <Button
-        onClick={() => window.open('https://www.facebook.com/finandfeathers', '_blank')}
+        onClick={() => window.open('https://www.facebook.com/finandfeathersrestaurants', '_blank')}
         className="w-full bg-blue-600 hover:bg-blue-700 text-white"
         data-testid="fb-visit-btn"
       >
@@ -972,7 +972,7 @@ const LinkTreeHomePage = () => {
   // Default social links if none configured
   const defaultSocialLinks = [
     { platform: 'instagram', url: 'https://instagram.com/finandfeathers', username: '@finandfeathers' },
-    { platform: 'facebook', url: 'https://facebook.com/finandfeathers', username: 'Fin & Feathers' },
+    { platform: 'facebook', url: 'https://facebook.com/finandfeathersrestaurants', username: 'Fin & Feathers Restaurants' },
     { platform: 'twitter', url: 'https://twitter.com/finandfeathers', username: '@finandfeathers' }
   ];
 
