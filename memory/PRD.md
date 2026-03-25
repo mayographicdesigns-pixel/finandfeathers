@@ -1,5 +1,10 @@
 # Fin & Feathers Restaurant PWA — Product Requirements Document
 
+## Latest Changes (2026-03-25)
+- Simplified CheckInPage to only Client/Staff selection + staff role picker
+- Added Close (X) bypass button to skip check-in
+- Removed location detection, song requests, tipping from check-in page
+
 ## Original Problem Statement
 Build a full-featured restaurant PWA for Fin & Feathers Restaurants, including:
 - Dynamic homepage, menu, events, gallery

@@ -272,95 +272,95 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
-      <Card className="bg-slate-900 border-red-600/50 w-full max-w-md relative overflow-hidden">
-        {/* Close button */}
+    <div className="fixed inset-0 bg-black/90 z-50 flex items-start sm:items-center justify-center p-2 sm:p-4 overflow-y-auto">
+      <Card className="bg-slate-900 border-red-600/50 w-full max-w-md relative my-2 sm:my-0">
+        {/* Close X button */}
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-white z-10"
+          className="absolute top-3 right-3 text-slate-400 hover:text-white z-10"
           data-testid="welcome-close-btn"
         >
-          <X className="w-6 h-6" />
+          <X className="w-5 h-5" />
         </button>
 
-        <CardContent className="p-6 pt-8">
+        <CardContent className="p-4 sm:p-6 pt-6 sm:pt-8">
           {/* Logo */}
-          <div className="text-center mb-6">
+          <div className="text-center mb-4">
             <img 
               src="https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png"
               alt="Fin & Feathers"
-              className="max-h-20 w-auto mx-auto mb-4"
+              className="max-h-14 sm:max-h-20 w-auto mx-auto mb-3"
               loading="eager"
               decoding="async"
             />
-            <h2 className="text-2xl font-bold text-white mb-2">
+            <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">
               Welcome to Fin & Feathers!
             </h2>
-            <p className="text-slate-400 text-sm">
+            <p className="text-slate-400 text-xs sm:text-sm">
               Join the vibe and connect with others at your nearest location
             </p>
           </div>
 
           {/* Closest Location */}
           {closestLocation && (
-            <div className="bg-red-900/30 border border-red-600/30 rounded-lg p-3 mb-6">
-              <div className="flex items-center gap-2 text-red-400 text-sm mb-1">
-                <Navigation className="w-4 h-4" />
+            <div className="bg-red-900/30 border border-red-600/30 rounded-lg p-2.5 mb-4">
+              <div className="flex items-center gap-2 text-red-400 text-xs mb-0.5">
+                <Navigation className="w-3.5 h-3.5" />
                 <span>Your nearest location:</span>
               </div>
-              <p className="text-white font-semibold">{closestLocation.name.replace('Fin & Feathers - ', '')}</p>
+              <p className="text-white font-semibold text-sm">{closestLocation.name.replace('Fin & Feathers - ', '')}</p>
               <p className="text-slate-400 text-xs">{closestLocation.address}</p>
             </div>
           )}
 
           {findingLocation && (
-            <div className="text-center text-slate-400 text-sm mb-4">
+            <div className="text-center text-slate-400 text-xs mb-3">
               <span className="animate-pulse">Finding your nearest location...</span>
             </div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Your Name *</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1.5">Your Name *</label>
               <Input
                 type="text"
                 placeholder="Enter your name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="bg-slate-800 border-slate-700 text-white"
+                className="bg-slate-800 border-slate-700 text-white h-9 text-sm"
                 required
                 data-testid="welcome-name-input"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Phone Number</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1.5">Phone Number</label>
               <Input
                 type="tel"
                 placeholder="(555) 123-4567"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="bg-slate-800 border-slate-700 text-white"
+                className="bg-slate-800 border-slate-700 text-white h-9 text-sm"
                 data-testid="welcome-phone-input"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1.5">Email</label>
               <Input
                 type="email"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bg-slate-800 border-slate-700 text-white"
+                className="bg-slate-800 border-slate-700 text-white h-9 text-sm"
                 data-testid="welcome-email-input"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">I am a...</label>
-              <div className="flex flex-wrap gap-2">
+              <label className="block text-xs font-medium text-slate-300 mb-1.5">I am a...</label>
+              <div className="flex flex-wrap gap-1.5">
                 {ROLES.map(r => (
                   <button
                     key={r.id}
@@ -382,16 +382,21 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
             <Button
               type="submit"
               disabled={isSubmitting || !name.trim()}
-              className="w-full bg-red-600 hover:bg-red-700 text-white h-12 text-lg"
+              className="w-full bg-red-600 hover:bg-red-700 text-white h-11 text-base"
               data-testid="welcome-submit-btn"
             >
               {isSubmitting ? 'Connecting...' : 'Join the Vibe'}
             </Button>
-
-            <p className="text-slate-500 text-xs text-center">
-              We'll take you to the social hub at your nearest location
-            </p>
           </form>
+
+          {/* Close / Skip Button */}
+          <button
+            onClick={handleClose}
+            className="w-full mt-3 py-2.5 text-slate-400 hover:text-white text-sm font-medium transition-colors text-center"
+            data-testid="welcome-skip-btn"
+          >
+            Close
+          </button>
         </CardContent>
       </Card>
     </div>
