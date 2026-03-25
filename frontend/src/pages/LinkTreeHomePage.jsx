@@ -390,13 +390,14 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
           </form>
 
           {/* Close / Skip Button */}
-          <button
+          <Button
             onClick={handleClose}
-            className="w-full mt-3 py-2.5 text-slate-400 hover:text-white text-sm font-medium transition-colors text-center"
+            variant="ghost"
+            className="mt-4 w-full text-slate-500 hover:text-white text-sm"
             data-testid="welcome-skip-btn"
           >
-            Close
-          </button>
+            <X className="w-4 h-4 mr-1" /> Close
+          </Button>
         </CardContent>
       </Card>
     </div>
