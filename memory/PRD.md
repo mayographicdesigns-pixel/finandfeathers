@@ -70,8 +70,9 @@ Build a full-featured restaurant PWA for Fin & Feathers Restaurants, including:
 - Conditional song request: Song button only visible when DJ is live or karaoke active
 - Check-in page with Client/Staff role selection, linked to My Account
 - My Account page with Profile, Photos, DMs (Messages), and History tabs
-- Account ↔ Check-in bidirectional navigation
+- Account <-> Check-in bidirectional navigation
 - Signup/login redirects to Check-in flow
+- Social Media Feed: Official Instagram embed (@finandfeathers) + Facebook Page Plugin between Find a Location and Order Online
 - Events toggle: admin can activate/deactivate events, reflected on homepage immediately
 - Token economy with Stripe + WooCommerce
 - Google OAuth + email/password authentication
