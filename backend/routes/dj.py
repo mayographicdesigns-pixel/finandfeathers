@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, Request, Depends
 from database import db, get_current_admin
 from datetime import datetime, timezone
 from typing import Optional
+from timezone_utils import get_location_tz, get_location_tz_name, utc_now_in_location
 import os
 import uuid
 import logging
@@ -338,9 +339,11 @@ async def get_dj_schedules_for_location(location_slug: str):
 async def get_next_dj_session(location_slug: str):
     """Get the next upcoming DJ session for a location, considering recurring schedules."""
     from datetime import timedelta
-    now = datetime.now(timezone.utc)
-    today_str = now.strftime("%Y-%m-%d")
-    current_day = now.weekday()  # 0=Monday, 6=Sunday
+    # Use location's local timezone for accurate day/time comparisons
+    local_now = utc_now_in_location(location_slug)
+    today_str = local_now.strftime("%Y-%m-%d")
+    current_day = local_now.weekday()  # 0=Monday, 6=Sunday
+    tz_name = get_location_tz_name(location_slug)
 
     # Check if DJ is currently live
     live_dj = await db.dj_profiles.find_one(
@@ -358,6 +361,7 @@ async def get_next_dj_session(location_slug: str):
             "dj_photo_url": live_dj.get("photo_url") if live_dj else None,
             "dj_id": live_dj.get("id") if live_dj else None,
             "live_stream_url": live_dj.get("live_stream_url") if live_dj else None,
+            "timezone": tz_name,
             "next_session": None
         }
 
@@ -378,10 +382,11 @@ async def get_next_dj_session(location_slug: str):
     best_dt = None
 
     # Check non-recurring
+    tz = get_location_tz(location_slug)
     for s in upcoming:
         try:
-            dt = datetime.strptime(f"{s['scheduled_date']} {s.get('start_time', '20:00')}", "%Y-%m-%d %H:%M").replace(tzinfo=timezone.utc)
-            if dt > now and (best_dt is None or dt < best_dt):
+            dt = datetime.strptime(f"{s['scheduled_date']} {s.get('start_time', '20:00')}", "%Y-%m-%d %H:%M").replace(tzinfo=tz)
+            if dt > local_now and (best_dt is None or dt < best_dt):
                 best_dt = dt
                 best = s
         except Exception:
@@ -399,16 +404,16 @@ async def get_next_dj_session(location_slug: str):
             # Same day — check if time hasn't passed
             try:
                 start_t = s.get("start_time", "20:00")
-                session_dt = datetime.strptime(f"{today_str} {start_t}", "%Y-%m-%d %H:%M").replace(tzinfo=timezone.utc)
-                if session_dt <= now:
+                session_dt = datetime.strptime(f"{today_str} {start_t}", "%Y-%m-%d %H:%M").replace(tzinfo=tz)
+                if session_dt <= local_now:
                     days_ahead = 7  # Already passed today, next week
             except Exception:
                 days_ahead = 7
 
-        next_date = now + timedelta(days=days_ahead)
+        next_date = local_now + timedelta(days=days_ahead)
         try:
             start_t = s.get("start_time", "20:00")
-            dt = datetime.strptime(f"{next_date.strftime('%Y-%m-%d')} {start_t}", "%Y-%m-%d %H:%M").replace(tzinfo=timezone.utc)
+            dt = datetime.strptime(f"{next_date.strftime('%Y-%m-%d')} {start_t}", "%Y-%m-%d %H:%M").replace(tzinfo=tz)
             if best_dt is None or dt < best_dt:
                 best_dt = dt
                 best = {**s, "scheduled_date": next_date.strftime("%Y-%m-%d")}
@@ -432,6 +437,7 @@ async def get_next_dj_session(location_slug: str):
         return {
             "is_live": False,
             "karaoke_active": False,
+            "timezone": tz_name,
             "next_session": {
                 "dj_name": best.get("dj_name"),
                 "dj_stage_name": best.get("dj_stage_name"),
@@ -448,6 +454,7 @@ async def get_next_dj_session(location_slug: str):
     return {
         "is_live": False,
         "karaoke_active": False,
+        "timezone": tz_name,
         "next_session": None
     }
 

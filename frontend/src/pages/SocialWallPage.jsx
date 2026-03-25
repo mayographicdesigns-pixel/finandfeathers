@@ -9,6 +9,7 @@ import {
   Radio, Calendar, Clock, Mic2, Video
 } from 'lucide-react';
 import { locations } from '../mockData';
+import { formatTimeInTz, formatScheduleDate, timeAgoInTz, getTzAbbreviation, getCurrentLocalTime } from '../utils/timezone';
 
 const API_URL = window.location.origin;
 
@@ -639,23 +640,8 @@ const LiveChat = ({ locationSlug, userId, userName, userAvatar }) => {
 const DJStatusBanner = ({ djStatus, locationSlug }) => {
   if (!djStatus) return null;
 
-  const formatDate = (dateStr) => {
-    try {
-      const d = new Date(dateStr + 'T00:00:00');
-      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      return `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}`;
-    } catch { return dateStr; }
-  };
-
-  const formatTime = (t) => {
-    try {
-      const [h, m] = t.split(':').map(Number);
-      const ampm = h >= 12 ? 'PM' : 'AM';
-      const hour = h % 12 || 12;
-      return `${hour}${m > 0 ? `:${String(m).padStart(2, '0')}` : ''}${ampm}`;
-    } catch { return t; }
-  };
+  const tz = djStatus.timezone || locations.find(l => l.slug === locationSlug)?.timezone || 'America/New_York';
+  const tzAbbr = getTzAbbreviation(tz);
 
   if (djStatus.is_live || djStatus.karaoke_active) {
     return (
@@ -716,11 +702,11 @@ const DJStatusBanner = ({ djStatus, locationSlug }) => {
           <div className="flex items-center gap-3 mt-0.5">
             <span className="flex items-center gap-1 text-slate-500 text-xs">
               <Calendar className="w-3 h-3" />
-              {formatDate(next.date)}
+              {formatScheduleDate(next.date)}
             </span>
             <span className="flex items-center gap-1 text-slate-500 text-xs">
               <Clock className="w-3 h-3" />
-              {formatTime(next.start_time)}
+              {formatTimeInTz(next.start_time, tz)}{tzAbbr ? ` ${tzAbbr}` : ''}
             </span>
             {next.time_slot && (
               <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full border ${
@@ -871,7 +857,12 @@ const SocialWallPage = () => {
             </button>
             <div>
               <h1 className="text-white font-bold text-base leading-tight">{locationName}</h1>
-              <p className="text-slate-500 text-xs">Social Wall</p>
+              <p className="text-slate-500 text-xs">
+                {(() => {
+                  const tz = djStatus?.timezone || locations.find(l => l.slug === slug)?.timezone;
+                  return tz ? getCurrentLocalTime(tz) : 'Social Wall';
+                })()}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">

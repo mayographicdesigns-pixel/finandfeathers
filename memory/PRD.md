@@ -7,6 +7,7 @@
 - Updated welcome popup: "I am a..." now shows Client/Staff buttons, staff position picker on step 2
 - Fixed Facebook page URL to finandfeathersrestaurants
 - **DJ Live Streaming:** DJs can now "Go Live" by pasting a YouTube/Facebook/Instagram Live URL from their DJ panel. A "Live" tab auto-appears on the Social Wall with the embedded stream + live chat below it. Stream is auto-cleared on checkout.
+- **Location-Based Timezone:** Auto-detects timezone from location (GA→Eastern, NV→Pacific). Social Wall header shows current local time (e.g., "9:02 AM EDT"). DJ schedule times display with timezone abbreviation. Backend uses location-aware datetime comparisons for schedules.
 
 ## Original Problem Statement
 Build a full-featured restaurant PWA for Fin & Feathers Restaurants, including:

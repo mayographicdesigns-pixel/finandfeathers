@@ -948,6 +948,7 @@ export const locations = [
     phone: '(404) 855-5524',
     reservationPhone: '(404) 692-1252',
     coordinates: { lat: 33.7547, lng: -84.3733 },
+    timezone: 'America/New_York',
     image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6657.jpg',
     hours: {
       monday: '11am-1am',
@@ -985,6 +986,7 @@ export const locations = [
     phone: '(404) 549-7555',
     reservationPhone: '(678) 421-4083',
     coordinates: { lat: 33.7812, lng: -84.3838 },
+    timezone: 'America/New_York',
     image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6656.jpg',
     hours: {
       monday: '11am-10pm',
@@ -1022,6 +1024,7 @@ export const locations = [
     phone: '(678) 653-9577',
     reservationPhone: '(404) 458-1958',
     coordinates: { lat: 33.7515, lng: -84.7477 },
+    timezone: 'America/New_York',
     image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/fin_and_feathers_shrimp_and_grits_2-e1666107985403.jpg',
     hours: {
       monday: '12pm-10pm',
@@ -1059,6 +1062,7 @@ export const locations = [
     phone: '(770) 703-2282',
     reservationPhone: '(678) 304-8191',
     coordinates: { lat: 33.5726, lng: -84.4132 },
+    timezone: 'America/New_York',
     image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/augies_cafe_smb_parent__atlanta__new_business__86_hero-e1666179925108.jpg',
     hours: {
       monday: '11am-10pm',
@@ -1096,6 +1100,7 @@ export const locations = [
     phone: '(229) 474-4049',
     reservationPhone: '(229) 231-4653',
     coordinates: { lat: 30.8327, lng: -83.2785 },
+    timezone: 'America/New_York',
     image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Catfish-Grits-scaled.jpg',
     hours: {
       monday: '12pm-9pm',
@@ -1133,6 +1138,7 @@ export const locations = [
     phone: '(229) 231-2101',
     reservationPhone: '(229) 231-2101',
     coordinates: { lat: 31.5785, lng: -84.1558 },
+    timezone: 'America/New_York',
     image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/1ddbe3ac887b406aa6277a86d551faae-1024x1024.jpeg',
     hours: {
       monday: '11am-9pm',
@@ -1170,6 +1176,7 @@ export const locations = [
     phone: '(470) 334-8255',
     reservationPhone: '(470) 334-8255',
     coordinates: { lat: 33.8081, lng: -84.1458 },
+    timezone: 'America/New_York',
     image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC06011_edited.jpg',
     hours: {
       monday: '11am-10pm',
@@ -1207,6 +1214,7 @@ export const locations = [
     phone: '(725) 204-9655',
     reservationPhone: '(702) 546-6394',
     coordinates: { lat: 36.1622, lng: -115.1505 },
+    timezone: 'America/Los_Angeles',
     image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Malibu-Ribeye-scaled.jpg',
     hours: {
       monday: '11am-12am',

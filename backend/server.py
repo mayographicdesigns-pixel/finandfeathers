@@ -21,6 +21,7 @@ import logging
 import mimetypes
 from urllib.parse import urlparse
 from typing import List, Optional
+from timezone_utils import get_location_tz_name, utc_now_in_location, LOCATION_TIMEZONES
 from datetime import datetime, timezone, timedelta
 import shutil
 from models import (
@@ -2551,6 +2552,10 @@ def normalize_location_response(location: dict):
     address = location.get("address")
     if address:
         location["address"] = ensure_suite_placeholder(address)
+    # Auto-add timezone based on location slug
+    slug = location.get("slug", "")
+    if slug and "timezone" not in location:
+        location["timezone"] = get_location_tz_name(slug)
     return location
 
 

@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
 from pydantic import BaseModel
 from database import db, get_current_admin
 from models import EventCreate, EventUpdate
+from timezone_utils import get_location_tz_name
 from typing import Optional
 from datetime import datetime, timezone
 import base64
@@ -116,7 +117,12 @@ async def get_public_events():
     """Get all active events for public display"""
     events = await db.events.find({"is_active": True}, {"_id": 0}).sort("display_order", 1).to_list(100)
     if not events:
-        return DEFAULT_EVENTS
+        events = DEFAULT_EVENTS
+    # Add timezone to each event
+    for event in events:
+        slug = event.get("location_slug", "")
+        if slug:
+            event["timezone"] = get_location_tz_name(slug)
     return events
 
 
