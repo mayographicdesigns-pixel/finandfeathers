@@ -5,13 +5,13 @@ const API_URL = window.location.origin;
 
 // Fallback videos in case API fails
 const fallbackVideos = {
-  0: ['https://customer-assets.emergentagent.com/job_11cd3604-2f5a-48c3-ba14-b46e5b99da28/artifacts/obciq8mu_Saturday%20Sunday.mp4'], // Sunday
-  1: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/72qd1ab8_Monday.mp4'], // Monday
-  2: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/wvi3jxji_Tuesday.mp4'], // Tuesday
-  3: ['https://customer-assets.emergentagent.com/job_11cd3604-2f5a-48c3-ba14-b46e5b99da28/artifacts/nhyfm8ut_Wednesday.mp4', 'https://customer-assets.emergentagent.com/job_11cd3604-2f5a-48c3-ba14-b46e5b99da28/artifacts/ywd5m1n1_wednesday2.mp4'], // Wednesday
-  4: ['https://customer-assets.emergentagent.com/job_9c5c0528-00b8-4337-8ece-7b08da83da67/artifacts/w9nk5dsp_Thursday.mp4'], // Thursday
-  5: ['https://customer-assets.emergentagent.com/job_11cd3604-2f5a-48c3-ba14-b46e5b99da28/artifacts/jjv59jbr_Friday.mp4'], // Friday
-  6: ['https://customer-assets.emergentagent.com/job_11cd3604-2f5a-48c3-ba14-b46e5b99da28/artifacts/obciq8mu_Saturday%20Sunday.mp4'] // Saturday
+  0: [], // Sunday — no special
+  1: ['https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/2s9dz5g6_Monday.mp4'], // Monday
+  2: ['https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/v8ic00zl_Tuesday.mp4'], // Tuesday
+  3: ['https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/zxeditdb_Wednesday.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/ae6sdud1_Wednesday%20%282%29.mp4'], // Wednesday
+  4: ['https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/1rpx19mv_Thursday.mp4'], // Thursday
+  5: [], // Friday — no special
+  6: [] // Saturday — no special
 };
 
 const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
