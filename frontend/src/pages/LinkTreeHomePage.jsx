@@ -1196,10 +1196,10 @@ const LinkTreeHomePage = () => {
           {karaokeLocation && (
             <Button
               onClick={() => navigate(`/locations/${karaokeLocation.slug}?checkin=true`)}
-              className="w-full bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02] animate-pulse"
+              className="w-full bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02] animate-pulse flex items-center justify-center"
               data-testid="karaoke-live-btn"
             >
-              <Mic className="w-5 h-5 mr-2" />
+              <Mic className="w-5 h-5 mr-2 shrink-0" />
               Karaoke Sign Up - Live at {karaokeLocation.name?.replace('Fin & Feathers - ', '')}!
             </Button>
           )}
@@ -1207,10 +1207,10 @@ const LinkTreeHomePage = () => {
           {!karaokeLocation && djLocation && (
             <Button
               onClick={() => navigate(`/locations/${djLocation.slug}?checkin=true`)}
-              className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+              className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02] flex items-center justify-center"
               data-testid="request-song-btn"
             >
-              <Music className="w-5 h-5 mr-2" />
+              <Music className="w-5 h-5 mr-2 shrink-0" />
               Request a Song at {djLocation.name?.replace('Fin & Feathers - ', '')}
             </Button>
           )}
@@ -1258,12 +1258,12 @@ const LinkTreeHomePage = () => {
           {!showFeedExpanded ? (
             <Button
               onClick={() => setShowFeedExpanded(true)}
-              className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+              className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02] flex items-center justify-center"
               data-testid="follow-us-btn"
             >
-              <Instagram className="w-5 h-5 mr-1" />
+              <Instagram className="w-5 h-5 mr-2 shrink-0" />
               Follow Us
-              <Facebook className="w-5 h-5 ml-1" />
+              <Facebook className="w-5 h-5 ml-2 shrink-0" />
             </Button>
           ) : (
             <Card className="bg-slate-800/50 border-slate-700" data-testid="social-feed-section">
