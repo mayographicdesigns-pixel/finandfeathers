@@ -1,0 +1,95 @@
+{
+  "summary": "Completed frontend testing of social media feed section (Follow Us) on homepage. All 10 features verified working correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/test_reports/iteration_36.json"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend only testing)",
+    "frontend": "100% (10/10 features verified)"
+  },
+  "test_credentials": {},
+  "seed_data_creation": "",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Social media feed section (Follow Us) is fully functional. Facebook tab is default active, Instagram tab shows official embed with @finandfeathers profile, tab switching works correctly, Visit on Facebook button opens in new tab.",
+  "features_tested": {
+    "follow_us_section_position": {
+      "test": "Homepage: 'Follow Us' section appears between 'Find a Location' and 'Order Online'",
+      "result": "PASS",
+      "details": "Section order verified: Find a Location -> Follow Us -> Order Online (Y positions confirmed)"
+    },
+    "facebook_tab_default_active": {
+      "test": "Homepage: Facebook tab is default active in Follow Us section",
+      "result": "PASS",
+      "details": "Facebook tab has bg-blue-600 class indicating active state"
+    },
+    "instagram_embed_content": {
+      "test": "Homepage: Instagram tab shows official Instagram embed with @finandfeathers profile",
+      "result": "PASS",
+      "details": "Instagram media blockquote found with @finandfeathers profile link, shows 'Fin & Feathers Restaurants' text"
+    },
+    "facebook_embed_content": {
+      "test": "Homepage: Facebook tab shows iframe embed with 'Visit on Facebook' button",
+      "result": "PASS",
+      "details": "Facebook embed visible by default with 'Visit on Facebook' button present"
+    },
+    "instagram_tab_switch": {
+      "test": "Homepage: Clicking Instagram tab switches to IG embed content",
+      "result": "PASS",
+      "details": "Instagram tab becomes active (gradient classes applied), Instagram embed becomes visible"
+    },
+    "facebook_tab_switch_back": {
+      "test": "Homepage: Clicking Facebook tab switches back to FB content",
+      "result": "PASS",
+      "details": "Facebook embed visible after switching back from Instagram tab"
+    },
+    "visit_facebook_button": {
+      "test": "Homepage: 'Visit on Facebook' button opens facebook.com/finandfeathers in new tab",
+      "result": "PASS",
+      "details": "Button opens https://www.facebook.com/finandfeathers in new tab (redirects to login if not logged in)"
+    },
+    "gallery_section": {
+      "test": "Homepage: Gallery section still shows image grid with 'View Full Gallery' button",
+      "result": "PASS",
+      "details": "Gallery section has 4 preview images and 'View Full Gallery' button navigates to /gallery"
+    },
+    "events_section": {
+      "test": "Homepage: Events section still loads at the bottom",
+      "result": "PASS",
+      "details": "Events images section found at bottom of homepage"
+    },
+    "order_online_button": {
+      "test": "Homepage: 'Order Online' button still works after the social feed section",
+      "result": "PASS",
+      "details": "Button navigates to /locations?order=1"
+    }
+  },
+  "ui_verification": {
+    "social_feed_section_testid": "social-feed-section",
+    "facebook_tab_testid": "social-feed-fb-tab",
+    "instagram_tab_testid": "social-feed-ig-tab",
+    "facebook_embed_testid": "fb-feed-embed",
+    "instagram_embed_testid": "ig-feed-embed",
+    "visit_facebook_btn_testid": "fb-visit-btn",
+    "view_gallery_btn_testid": "view-gallery-btn",
+    "order_online_btn_testid": "order-online-btn"
+  },
+  "code_review_notes": {
+    "InstagramEmbed_component": "Lines 44-111 - Uses official Instagram embed.js script, renders @finandfeathers profile widget",
+    "FacebookEmbed_component": "Lines 115-139 - Uses Facebook page plugin iframe with 'Visit on Facebook' button that opens in new tab",
+    "socialFeedTab_state": "Line 655 - Default value is 'facebook' as required",
+    "section_placement": "Lines 1153-1204 - Social feed section correctly placed between Find a Location and Order Online buttons"
+  }
+}
