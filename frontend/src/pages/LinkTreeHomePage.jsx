@@ -108,45 +108,30 @@ const InstagramEmbed = () => {
 
 // Facebook Page Plugin embed — iframe with fallback link
 const FacebookEmbed = () => {
-  const containerRef = useRef(null);
-  const [containerWidth, setContainerWidth] = useState(500);
-
-  useEffect(() => {
-    const updateWidth = () => {
-      if (containerRef.current) {
-        setContainerWidth(containerRef.current.offsetWidth);
-      }
-    };
-    updateWidth();
-    window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
-  }, []);
-
-  const iframeSrc = `https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ffinandfeathersrestaurants&tabs=timeline&width=${containerWidth}&height=500&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=false&hide_cta=true`;
-
   return (
-    <div ref={containerRef}>
-      <div className="rounded-lg overflow-hidden mb-3">
-        <iframe
-          key={containerWidth}
-          src={iframeSrc}
-          width="100%"
-          height="500"
-          style={{ border: 'none', overflow: 'hidden', display: 'block' }}
-          scrolling="no"
-          frameBorder="0"
-          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-          title="Fin & Feathers Facebook Feed"
-        />
+    <div className="flex justify-center">
+      <div style={{ maxWidth: 500, width: '100%' }}>
+        <div className="rounded-lg overflow-hidden mb-3 bg-slate-900">
+          <iframe
+            src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Ffinandfeathersrestaurants&tabs=timeline&width=500&height=500&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=false&hide_cta=true"
+            width="100%"
+            height="500"
+            style={{ border: 'none', overflow: 'hidden', display: 'block' }}
+            scrolling="no"
+            frameBorder="0"
+            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+            title="Fin & Feathers Facebook Feed"
+          />
+        </div>
+        <Button
+          onClick={() => window.open('https://www.facebook.com/finandfeathersrestaurants', '_blank')}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+          data-testid="fb-visit-btn"
+        >
+          <Facebook className="w-4 h-4 mr-2" />
+          Visit on Facebook
+        </Button>
       </div>
-      <Button
-        onClick={() => window.open('https://www.facebook.com/finandfeathersrestaurants', '_blank')}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-        data-testid="fb-visit-btn"
-      >
-        <Facebook className="w-4 h-4 mr-2" />
-        Visit on Facebook
-      </Button>
     </div>
   );
 };
