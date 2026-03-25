@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ExternalLink, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Clock, X, Image as ImageIcon, Edit2, Save, LogOut, Settings, GripVertical, Navigation, User, ShoppingBag, Calendar, Download, RefreshCw, Share, MoreVertical, Plus, Briefcase, Mic, Music } from 'lucide-react';
+import { ExternalLink, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Clock, X, Image as ImageIcon, Edit2, Save, LogOut, Settings, GripVertical, Navigation, User, Users, ShoppingBag, Calendar, Download, RefreshCw, Share, MoreVertical, Plus, Briefcase, Mic, Music } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -139,116 +139,77 @@ const FacebookEmbed = () => {
   );
 };
 
+const STAFF_POSITIONS = [
+  { id: 'dj', label: 'DJ' },
+  { id: 'bartender', label: 'Bartender' },
+  { id: 'server', label: 'Server' },
+  { id: 'manager', label: 'Manager' },
+];
+
 const WelcomePopup = ({ onClose, onSubmit }) => {
   const navigate = useNavigate();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState('customer');
+  const [step, setStep] = useState('form'); // 'form' | 'staff-position'
+  const [userType, setUserType] = useState(null); // 'client' | 'staff'
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [findingLocation, setFindingLocation] = useState(false);
   const [closestLocation, setClosestLocation] = useState(null);
 
-  const ROLES = [
-    { id: 'customer', label: 'Customer' },
-    { id: 'server', label: 'Server' },
-    { id: 'bartender', label: 'Bartender' },
-    { id: 'manager', label: 'Manager' },
-    { id: 'dj', label: 'DJ' },
-  ];
-
-  // Find closest location on mount
   useEffect(() => {
     findClosestLocation();
   }, []);
 
   const findClosestLocation = () => {
     setFindingLocation(true);
-    
     if (!navigator.geolocation) {
-      // Default to first location if geolocation not available
       setClosestLocation(locations[0]);
       setFindingLocation(false);
       return;
     }
-
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
-        
-        // Calculate distance to each location
         let nearest = locations[0];
         let minDistance = Infinity;
-        
         locations.forEach(loc => {
           if (loc.coordinates) {
-            const distance = calculateDistance(
-              userLat, userLng,
-              loc.coordinates.lat, loc.coordinates.lng
-            );
-            if (distance < minDistance) {
-              minDistance = distance;
-              nearest = loc;
-            }
+            const R = 3959;
+            const dLat = (loc.coordinates.lat - userLat) * Math.PI / 180;
+            const dLon = (loc.coordinates.lng - userLng) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(userLat * Math.PI / 180) * Math.cos(loc.coordinates.lat * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+            const dist = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            if (dist < minDistance) { minDistance = dist; nearest = loc; }
           }
         });
-        
         setClosestLocation(nearest);
         setFindingLocation(false);
       },
-      (error) => {
-        console.log('Geolocation error:', error);
-        // Default to first location
-        setClosestLocation(locations[0]);
-        setFindingLocation(false);
-      },
+      () => { setClosestLocation(locations[0]); setFindingLocation(false); },
       { timeout: 5000, maximumAge: 300000 }
     );
   };
 
-  const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 3959; // Earth's radius in miles
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!name.trim()) {
-      toast({ title: "Name required", description: "Please enter your name", variant: "destructive" });
-      return;
-    }
-
+  const finishSubmit = async (role, staffTitle) => {
     setIsSubmitting(true);
-    
     try {
-      // Save user info to localStorage
       const userInfo = {
         name: name.trim(),
         phone: phone.trim(),
         email: email.trim(),
         role: role,
+        staff_title: staffTitle || null,
         savedAt: new Date().toISOString()
       };
       localStorage.setItem('ff_user_info', JSON.stringify(userInfo));
-      
-      // Mark popup as shown (both sessionStorage and localStorage for form submission)
       sessionStorage.setItem('ff_welcome_shown_session', 'true');
       localStorage.setItem('ff_welcome_shown', 'true');
-      
-      // Call onSubmit callback
-      if (onSubmit) {
-        await onSubmit(userInfo);
-      }
-      
-      // Navigate based on role
+      if (onSubmit) await onSubmit(userInfo);
+
       if (role === 'dj') {
         navigate('/dj');
       } else if (closestLocation) {
@@ -265,8 +226,29 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
     }
   };
 
+  const handleClientSelect = () => {
+    if (!name.trim()) {
+      toast({ title: "Name required", description: "Please enter your name", variant: "destructive" });
+      return;
+    }
+    setUserType('client');
+    finishSubmit('customer', null);
+  };
+
+  const handleStaffSelect = () => {
+    if (!name.trim()) {
+      toast({ title: "Name required", description: "Please enter your name", variant: "destructive" });
+      return;
+    }
+    setUserType('staff');
+    setStep('staff-position');
+  };
+
+  const handlePositionSelect = (positionId) => {
+    finishSubmit(positionId, positionId);
+  };
+
   const handleClose = () => {
-    // Set sessionStorage to prevent showing again in this session
     sessionStorage.setItem('ff_welcome_shown_session', 'true');
     onClose();
   };
@@ -274,15 +256,6 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
   return (
     <div className="fixed inset-0 bg-black/90 z-50 flex items-start sm:items-center justify-center p-2 sm:p-4 overflow-y-auto">
       <Card className="bg-slate-900 border-red-600/50 w-full max-w-md relative my-2 sm:my-0">
-        {/* Close X button */}
-        <button
-          onClick={handleClose}
-          className="absolute top-3 right-3 text-slate-400 hover:text-white z-10"
-          data-testid="welcome-close-btn"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
         <CardContent className="p-4 sm:p-6 pt-6 sm:pt-8">
           {/* Logo */}
           <div className="text-center mb-4">
@@ -319,85 +292,107 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
             </div>
           )}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1.5">Your Name *</label>
-              <Input
-                type="text"
-                placeholder="Enter your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="bg-slate-800 border-slate-700 text-white h-9 text-sm"
-                required
-                data-testid="welcome-name-input"
-              />
-            </div>
+          {/* Step 1: Form + Client/Staff */}
+          {step === 'form' && (
+            <>
+              <div className="space-y-3 mb-4">
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Your Name *</label>
+                  <Input
+                    type="text"
+                    placeholder="Enter your name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="bg-slate-800 border-slate-700 text-white h-9 text-sm"
+                    data-testid="welcome-name-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Phone Number</label>
+                  <Input
+                    type="tel"
+                    placeholder="(555) 123-4567"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="bg-slate-800 border-slate-700 text-white h-9 text-sm"
+                    data-testid="welcome-phone-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Email</label>
+                  <Input
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="bg-slate-800 border-slate-700 text-white h-9 text-sm"
+                    data-testid="welcome-email-input"
+                  />
+                </div>
+              </div>
 
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1.5">Phone Number</label>
-              <Input
-                type="tel"
-                placeholder="(555) 123-4567"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="bg-slate-800 border-slate-700 text-white h-9 text-sm"
-                data-testid="welcome-phone-input"
-              />
-            </div>
+              <label className="block text-xs font-medium text-slate-300 mb-2">I am a...</label>
+              <div className="flex gap-3">
+                <Button
+                  onClick={handleClientSelect}
+                  disabled={isSubmitting}
+                  className="flex-1 h-20 flex-col gap-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-semibold transition-all hover:scale-[1.03]"
+                  data-testid="welcome-client-btn"
+                >
+                  <Users className="w-6 h-6" />
+                  Client
+                </Button>
+                <Button
+                  onClick={handleStaffSelect}
+                  disabled={isSubmitting}
+                  className="flex-1 h-20 flex-col gap-1.5 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 rounded-xl text-sm font-semibold transition-all hover:scale-[1.03]"
+                  data-testid="welcome-staff-btn"
+                >
+                  <Briefcase className="w-6 h-6" />
+                  Staff
+                </Button>
+              </div>
 
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1.5">Email</label>
-              <Input
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="bg-slate-800 border-slate-700 text-white h-9 text-sm"
-                data-testid="welcome-email-input"
-              />
-            </div>
+              <Button
+                onClick={handleClose}
+                variant="ghost"
+                className="mt-4 w-full text-slate-500 hover:text-white text-sm"
+                data-testid="welcome-skip-btn"
+              >
+                <X className="w-4 h-4 mr-1" /> Close
+              </Button>
+            </>
+          )}
 
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1.5">I am a...</label>
-              <div className="flex flex-wrap gap-1.5">
-                {ROLES.map(r => (
-                  <button
-                    key={r.id}
-                    type="button"
-                    onClick={() => setRole(r.id)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                      role === r.id 
-                        ? 'bg-red-600 text-white' 
-                        : 'bg-slate-800 text-slate-400 hover:bg-slate-700 border border-slate-700'
-                    }`}
-                    data-testid={`role-${r.id}`}
+          {/* Step 2: Staff Position Picker */}
+          {step === 'staff-position' && (
+            <>
+              <h3 className="text-lg font-bold text-white mb-1 text-center">What's your role?</h3>
+              <p className="text-slate-400 text-xs mb-4 text-center">Select your position</p>
+              <div className="grid grid-cols-2 gap-3">
+                {STAFF_POSITIONS.map(pos => (
+                  <Button
+                    key={pos.id}
+                    onClick={() => handlePositionSelect(pos.id)}
+                    disabled={isSubmitting}
+                    className="h-20 flex-col gap-1.5 bg-slate-800 hover:bg-red-600/80 text-white border border-slate-700 hover:border-red-500 rounded-xl text-sm font-semibold transition-all hover:scale-[1.03]"
+                    data-testid={`welcome-position-${pos.id}`}
                   >
-                    {r.label}
-                  </button>
+                    <Briefcase className="w-5 h-5" />
+                    {pos.label}
+                  </Button>
                 ))}
               </div>
-            </div>
-
-            <Button
-              type="submit"
-              disabled={isSubmitting || !name.trim()}
-              className="w-full bg-red-600 hover:bg-red-700 text-white h-11 text-base"
-              data-testid="welcome-submit-btn"
-            >
-              {isSubmitting ? 'Connecting...' : 'Join the Vibe'}
-            </Button>
-          </form>
-
-          {/* Close / Skip Button */}
-          <Button
-            onClick={handleClose}
-            variant="ghost"
-            className="mt-4 w-full text-slate-500 hover:text-white text-sm"
-            data-testid="welcome-skip-btn"
-          >
-            <X className="w-4 h-4 mr-1" /> Close
-          </Button>
+              <Button
+                onClick={() => setStep('form')}
+                variant="ghost"
+                className="mt-4 w-full text-slate-500 hover:text-white text-sm"
+                data-testid="welcome-back-btn"
+              >
+                Back
+              </Button>
+            </>
+          )}
         </CardContent>
       </Card>
     </div>
