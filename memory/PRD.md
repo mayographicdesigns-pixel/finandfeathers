@@ -1,6 +1,7 @@
 # Fin & Feathers Restaurant PWA — Product Requirements Document
 
 ## Latest Changes (2026-03-25)
+- **Bug Fix:** Restored 90 accidentally deleted functions in `api.js` that were purged during an aggressive dead-code cleanup, which broke the entire frontend with `TypeError: X is not a function` errors.
 - Simplified CheckInPage to only Client/Staff selection + staff role picker
 - Added Close (X) bypass button to skip check-in
 - Removed location detection, song requests, tipping from check-in page
@@ -91,7 +92,7 @@ Build a full-featured restaurant PWA for Fin & Feathers Restaurants, including:
 - User profile management
 
 ## Current Status
-All features working. Major refactoring completed — server.py reduced from 5190 to ~3450 lines.
+All features working. `api.js` restored to full 2400-line version after botched cleanup. Major backend refactoring completed — server.py reduced from 5190 to ~3450 lines.
 
 ## Upcoming Tasks
 - (P2) Per-Location Weekly Specials management
