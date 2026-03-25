@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 
-const API_URL = window.location.origin;
-
-// Fallback videos in case API fails
+// Weekly specials videos mapped to each day
 const fallbackVideos = {
   0: ['https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/xz8dxjvw_Saturday.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/i6rmsvxo_Hookah.mp4'], // Sunday
   1: ['https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/2s9dz5g6_Monday.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/rja5gk64_m-f%205%20specials.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/i6rmsvxo_Hookah.mp4'], // Monday
@@ -21,50 +19,20 @@ const DailyVideoCarousel = () => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [showPlayButton, setShowPlayButton] = useState(false);
-  const [videosByDay, setVideosByDay] = useState(fallbackVideos);
   const videoRef = useRef(null);
+  const dayScrollRef = useRef(null);
 
-  // Fetch videos from API
+  // Auto-scroll day selector to current day on mount
   useEffect(() => {
-    const fetchVideos = async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/promo-videos`);
-        if (response.ok) {
-          const data = await response.json();
-          
-          // Organize videos by day
-          const organized = { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
-          const commonVideos = [];
-          
-          data.forEach(video => {
-            if (video.is_common) {
-              commonVideos.push(video.url);
-            } else if (video.day_of_week >= 0 && video.day_of_week <= 6) {
-              organized[video.day_of_week].push(video.url);
-            }
-          });
-          
-          // Add common videos to each day
-          for (let day = 0; day <= 6; day++) {
-            organized[day] = [...organized[day], ...commonVideos];
-            // Fallback if no videos for a day
-            if (organized[day].length === 0) {
-              organized[day] = fallbackVideos[day] || commonVideos;
-            }
-          }
-          
-          setVideosByDay(organized);
-        }
-      } catch (error) {
-        console.error('Error fetching promo videos:', error);
-        // Keep using fallback videos
+    if (dayScrollRef.current) {
+      const todayBtn = dayScrollRef.current.querySelector(`[data-day="${currentDay}"]`);
+      if (todayBtn) {
+        todayBtn.scrollIntoView({ inline: 'center', behavior: 'smooth' });
       }
-    };
-    
-    fetchVideos();
+    }
   }, []);
 
-  const videos = videosByDay[currentDay] || [];
+  const videos = fallbackVideos[currentDay] || [];
   const currentVideo = videos[currentVideoIndex];
 
   // Handle video loading and autoplay
@@ -140,11 +108,12 @@ const DailyVideoCarousel = () => {
   return (
     <div className="space-y-4">
       {/* Day Selector */}
-      <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide">
+      <div ref={dayScrollRef} className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide">
         {dayNames.map((day, index) => (
           <button
             key={index}
             onClick={() => changeDay(index)}
+            data-day={index}
             data-testid={`day-btn-${day.toLowerCase()}`}
             className={`px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition-all duration-300 ${
               currentDay === index
