@@ -219,9 +219,10 @@ export async function deleteAdminDJSchedule(scheduleId) {
 // ==================== PUBLIC API ====================
 
 // Get public menu items (no auth required)
-export async function getPublicMenuItems() {
+export async function getPublicMenuItems(locationSlug) {
   try {
-    const response = await fetch(`${API_URL}/menu/items`);
+    const url = locationSlug ? `${API_URL}/menu/items?location_slug=${locationSlug}` : `${API_URL}/menu/items`;
+    const response = await fetch(url);
     if (!response.ok) throw new Error('Failed to fetch menu items');
     return await response.json();
   } catch (error) {

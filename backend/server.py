@@ -210,15 +210,26 @@ async def update_admin_settings(settings: dict, admin: str = Depends(get_current
 
 # Public Menu Endpoints (no auth required)
 @api_router.get("/menu/items")
-async def get_public_menu_items():
-    """Get all menu items for public display"""
-    items = await db.menu_items.find({}, {"_id": 0}).to_list(1000)
+async def get_public_menu_items(location_slug: str = None):
+    """Get menu items for public display, optionally filtered by location"""
+    query = {}
+    if location_slug:
+        query["location_slug"] = location_slug
+    items = await db.menu_items.find(query, {"_id": 0}).to_list(2000)
     return items
 
 
 @api_router.get("/menu/categories")
-async def get_menu_categories():
-    """Get unique menu categories"""
+async def get_menu_categories(location_slug: str = None):
+    """Get unique menu categories, optionally filtered by location"""
+    if location_slug:
+        pipeline = [
+            {"$match": {"location_slug": location_slug}},
+            {"$group": {"_id": "$category"}},
+            {"$sort": {"_id": 1}}
+        ]
+        results = await db.menu_items.aggregate(pipeline).to_list(100)
+        return [r["_id"] for r in results]
     categories = await db.menu_items.distinct("category")
     return categories
 
@@ -588,9 +599,12 @@ async def admin_update_menu_category_styles(request: Request, username: str = De
 
 # Menu Items (Admin)
 @api_router.get("/admin/menu-items")
-async def admin_get_menu_items(username: str = Depends(get_current_admin)):
-    """Get all menu items for admin"""
-    items = await db.menu_items.find({}, {"_id": 0}).to_list(1000)
+async def admin_get_menu_items(location_slug: str = None, username: str = Depends(get_current_admin)):
+    """Get menu items for admin, optionally filtered by location"""
+    query = {}
+    if location_slug:
+        query["location_slug"] = location_slug
+    items = await db.menu_items.find(query, {"_id": 0}).to_list(2000)
     return items
 
 
@@ -600,7 +614,6 @@ async def admin_create_menu_item(item: MenuItemCreate, username: str = Depends(g
     item_dict = item.dict()
     item_dict["id"] = str(uuid.uuid4())
     await db.menu_items.insert_one(item_dict)
-    # Remove MongoDB's _id before returning
     item_dict.pop("_id", None)
     return {**item_dict}
 
@@ -658,6 +671,46 @@ async def admin_bulk_update_menu_images(request: Request, username: str = Depend
             )
             updated_count += result.modified_count
     return {"message": f"Updated {updated_count} menu items"}
+
+
+@api_router.post("/admin/menu-items/copy-to-locations")
+async def admin_copy_menu_to_locations(username: str = Depends(get_current_admin)):
+    """Copy all menu items without a location_slug to every location (except hibachi-food-truck)"""
+    # Get all locations except hibachi
+    locations = await db.locations.find(
+        {"slug": {"$ne": "hibachi-food-truck"}},
+        {"_id": 0, "slug": 1}
+    ).to_list(50)
+    location_slugs = [loc["slug"] for loc in locations]
+
+    # Get source items (those without a location_slug — the "master" menu)
+    source_items = await db.menu_items.find(
+        {"$or": [{"location_slug": None}, {"location_slug": {"$exists": False}}]},
+        {"_id": 0}
+    ).to_list(2000)
+
+    if not source_items:
+        return {"message": "No source menu items found", "created": 0}
+
+    created = 0
+    for slug in location_slugs:
+        # Check if this location already has menu items
+        existing = await db.menu_items.count_documents({"location_slug": slug})
+        if existing > 0:
+            continue  # Skip — already has a menu
+
+        new_items = []
+        for item in source_items:
+            new_item = {**item}
+            new_item["id"] = str(uuid.uuid4())
+            new_item["location_slug"] = slug
+            new_items.append(new_item)
+
+        if new_items:
+            await db.menu_items.insert_many(new_items)
+            created += len(new_items)
+
+    return {"message": f"Copied menu to {len(location_slugs)} locations", "created": created}
 
 
 @api_router.post("/admin/menu-items/store-images")

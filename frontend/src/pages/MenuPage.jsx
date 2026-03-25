@@ -13,7 +13,7 @@ import OptimizedImage from '../components/OptimizedImage';
 import { MenuStyleRenderer } from '../components/menu/MenuStyleRenderer';
 import { MENU_STYLES, DEFAULT_CATEGORY_STYLES } from '../components/menu/index';
 import { menuItems as mockMenuItems } from '../mockData';
-import { getPublicMenuItems, verifyAdminToken, updateMenuItem, createMenuItem, deleteMenuItem, getPageContent, getDailySpecials, getMenuCategoryStyles } from '../services/api';
+import { getPublicMenuItems, verifyAdminToken, updateMenuItem, createMenuItem, deleteMenuItem, getPageContent, getDailySpecials, getMenuCategoryStyles, getLocations } from '../services/api';
 import { toast } from '../hooks/use-toast';
 // Extracted components for menu page
 import { HookahSection } from '../components/menu-page';
@@ -46,6 +46,11 @@ const MenuPage = () => {
   
   // Lightbox state
   const [lightboxItem, setLightboxItem] = useState(null);
+
+  // Location state
+  const [locations, setLocations] = useState([]);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [findingLocation, setFindingLocation] = useState(true);
 
   // Category display names
   const categoryNames = {
@@ -241,17 +246,74 @@ const MenuPage = () => {
   };
 
   // Fetch menu items from API on mount
+  // Geolocation: find closest location, then load menu
   useEffect(() => {
-    const checkAdmin = async () => {
-      const isValid = await verifyAdminToken();
-      setIsAdmin(isValid);
+    const init = async () => {
+      const checkAdmin = async () => {
+        const isValid = await verifyAdminToken();
+        setIsAdmin(isValid);
+      };
+      checkAdmin();
+      fetchPageContent();
+      fetchDailySpecials();
+      fetchCategoryStyles();
+
+      // Load locations and find closest
+      try {
+        const locs = await getLocations();
+        const nonHibachi = (locs || []).filter(l => l.slug !== 'hibachi-food-truck');
+        setLocations(nonHibachi);
+
+        // Check saved location first
+        const saved = localStorage.getItem('ff_user_location');
+        if (saved && nonHibachi.find(l => l.slug === saved)) {
+          setSelectedLocation(nonHibachi.find(l => l.slug === saved));
+          setFindingLocation(false);
+          return;
+        }
+
+        // Use geolocation
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords;
+              let closest = nonHibachi[0];
+              let minDist = Infinity;
+              nonHibachi.forEach(loc => {
+                if (loc.latitude && loc.longitude) {
+                  const d = Math.sqrt(
+                    Math.pow(latitude - loc.latitude, 2) +
+                    Math.pow(longitude - loc.longitude, 2)
+                  );
+                  if (d < minDist) { minDist = d; closest = loc; }
+                }
+              });
+              setSelectedLocation(closest);
+              setFindingLocation(false);
+            },
+            () => {
+              setSelectedLocation(nonHibachi[0]);
+              setFindingLocation(false);
+            },
+            { timeout: 5000 }
+          );
+        } else {
+          setSelectedLocation(nonHibachi[0]);
+          setFindingLocation(false);
+        }
+      } catch {
+        setFindingLocation(false);
+      }
     };
-    checkAdmin();
-    fetchMenuItems();
-    fetchPageContent();
-    fetchDailySpecials();
-    fetchCategoryStyles();
+    init();
   }, []);
+
+  // Reload menu when location changes
+  useEffect(() => {
+    if (selectedLocation) {
+      fetchMenuItems(selectedLocation.slug);
+    }
+  }, [selectedLocation]);
 
   const fetchCategoryStyles = async () => {
     try {
@@ -263,10 +325,10 @@ const MenuPage = () => {
     }
   };
 
-  const fetchMenuItems = async () => {
+  const fetchMenuItems = async (locationSlug) => {
     setLoading(true);
     try {
-      const items = await getPublicMenuItems();
+      const items = await getPublicMenuItems(locationSlug);
       if (items && items.length > 0) {
         setMenuItems(items);
         setUsingMockData(false);
@@ -330,7 +392,7 @@ const MenuPage = () => {
     if (!editingItem) return;
     try {
       await updateMenuItem(editingItem.id, editingItem);
-      await fetchMenuItems();
+      await fetchMenuItems(selectedLocation?.slug);
       setEditingItem(null);
       toast({ title: 'Success', description: 'Menu item updated!' });
     } catch (err) {
@@ -346,9 +408,10 @@ const MenuPage = () => {
     try {
       await createMenuItem({
         ...newItem,
-        price: parseFloat(newItem.price)
+        price: parseFloat(newItem.price),
+        location_slug: selectedLocation?.slug
       });
-      await fetchMenuItems();
+      await fetchMenuItems(selectedLocation?.slug);
       setShowAddModal(false);
       setNewItem({
         name: '',
@@ -368,7 +431,7 @@ const MenuPage = () => {
     if (!window.confirm('Delete this menu item?')) return;
     try {
       await deleteMenuItem(itemId);
-      await fetchMenuItems();
+      await fetchMenuItems(selectedLocation?.slug);
       toast({ title: 'Deleted', description: 'Menu item removed' });
     } catch (err) {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
@@ -905,6 +968,34 @@ const MenuPage = () => {
               Locations
             </Button>
           </div>
+
+          {/* Location Picker */}
+          {selectedLocation && (
+            <div className="flex items-center gap-2 bg-slate-800/70 rounded-lg px-4 py-2 border border-slate-700/50" data-testid="menu-location-picker">
+              <MapPin className="w-4 h-4 text-red-500 shrink-0" />
+              <select
+                value={selectedLocation.slug}
+                onChange={(e) => {
+                  const loc = locations.find(l => l.slug === e.target.value);
+                  if (loc) {
+                    setSelectedLocation(loc);
+                    localStorage.setItem('ff_user_location', loc.slug);
+                  }
+                }}
+                className="bg-transparent text-white text-sm font-medium border-none outline-none cursor-pointer appearance-none pr-4"
+                data-testid="menu-location-select"
+              >
+                {locations.map(loc => (
+                  <option key={loc.slug} value={loc.slug} className="bg-slate-800 text-white">
+                    {loc.name?.replace('Fin & Feathers - ', '')}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          {findingLocation && (
+            <p className="text-slate-400 text-xs animate-pulse">Detecting your location...</p>
+          )}
         </div>
       </div>
 

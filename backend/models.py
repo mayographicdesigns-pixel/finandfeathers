@@ -146,6 +146,7 @@ class MenuItemCreate(BaseModel):
     category: str
     badges: List[str] = []
     type: Optional[str] = None  # food or drink
+    location_slug: Optional[str] = None
 
 class MenuItemUpdate(BaseModel):
     name: Optional[str] = None
@@ -155,6 +156,7 @@ class MenuItemUpdate(BaseModel):
     category: Optional[str] = None
     badges: Optional[List[str]] = None
     type: Optional[str] = None  # food or drink
+    location_slug: Optional[str] = None
 
 # Media/Photo Upload Model
 class Media(BaseModel):

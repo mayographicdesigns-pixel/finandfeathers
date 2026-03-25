@@ -6,6 +6,7 @@
 - **Geolocation Popup Every Session:** Welcome popup now shows every app session (not just once ever), using geolocation to detect the user's nearest location. Returning users see a simplified view with a "Go to Social Wall" quick action and a list of all other locations to switch to.
 - **Social Wall Images → Gallery:** Photos posted on the Social Wall feed are automatically added to the main gallery, tagged with `location_slug`, `posted_by`, and `source: social_wall`. Gallery API supports `?location_slug=` filtering.
 - **Weekly Promo Videos (Admin):** Admin panel has a "Weekly Promo Videos" card under POST SPECIAL tab. Admins can set/update video URLs for each day (Sun-Sat) — these feed the homepage video carousel. Falls back to hardcoded defaults if no admin-managed videos exist. Backend: `GET/PUT /api/admin/weekly-videos`, `GET /api/weekly-videos` (public).
+- **Per-Location Menus:** All 175 menu items copied to each of 8 locations (excluding hibachi-food-truck = 1,400 items). Menu page uses geolocation to auto-detect closest location and shows that location's menu. Location picker dropdown lets users switch. Admin can edit items per-location via the inline menu editor. Backend endpoints now accept `?location_slug=` filter. New admin endpoint: `POST /api/admin/menu-items/copy-to-locations`.
 - Simplified CheckInPage to only Client/Staff selection + staff role picker
 - Added Close (X) bypass button to skip check-in
 - Removed location detection, song requests, tipping from check-in page
