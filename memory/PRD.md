@@ -5,6 +5,7 @@
 - **DJ Status Fix:** "LIVE NOW" on Social Wall and Location pages now only shows when a DJ is actually checked in — not for karaoke alone. Song request and karaoke indicators hidden when no DJ present. Location pages show "Upcoming DJs" schedule instead.
 - **Geolocation Popup Every Session:** Welcome popup now shows every app session (not just once ever), using geolocation to detect the user's nearest location. Returning users see a simplified view with a "Go to Social Wall" quick action and a list of all other locations to switch to.
 - **Social Wall Images → Gallery:** Photos posted on the Social Wall feed are automatically added to the main gallery, tagged with `location_slug`, `posted_by`, and `source: social_wall`. Gallery API supports `?location_slug=` filtering.
+- **Weekly Promo Videos (Admin):** Admin panel has a "Weekly Promo Videos" card under POST SPECIAL tab. Admins can set/update video URLs for each day (Sun-Sat) — these feed the homepage video carousel. Falls back to hardcoded defaults if no admin-managed videos exist. Backend: `GET/PUT /api/admin/weekly-videos`, `GET /api/weekly-videos` (public).
 - Simplified CheckInPage to only Client/Staff selection + staff role picker
 - Added Close (X) bypass button to skip check-in
 - Removed location detection, song requests, tipping from check-in page

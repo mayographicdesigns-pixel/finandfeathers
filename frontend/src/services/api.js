@@ -854,6 +854,44 @@ export async function adminUpdateDailySpecials(payload) {
   return await response.json();
 }
 
+// ==================== WEEKLY VIDEOS API ====================
+
+export async function getWeeklyVideos() {
+  try {
+    const response = await fetch(`${API_URL}/weekly-videos`);
+    if (!response.ok) return [];
+    return await response.json();
+  } catch {
+    return [];
+  }
+}
+
+export async function adminGetWeeklyVideos() {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/weekly-videos`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) return [];
+  return await response.json();
+}
+
+export async function adminUpdateWeeklyVideos(payload) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/admin/weekly-videos`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(payload)
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to update weekly videos');
+  }
+  return await response.json();
+}
+
 // ==================== MENU CATEGORY STYLES API ====================
 
 // Get menu category display styles (public)

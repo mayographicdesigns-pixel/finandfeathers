@@ -499,6 +499,52 @@ async def admin_update_daily_specials(request: Request, username: str = Depends(
     return {"updated": updated}
 
 
+# Weekly Videos (Public)
+@api_router.get("/weekly-videos")
+async def get_weekly_videos():
+    videos = await db.weekly_videos.find({}, {"_id": 0}).sort("day_index", 1).to_list(7)
+    return videos
+
+
+# Weekly Videos (Admin)
+@api_router.get("/admin/weekly-videos")
+async def admin_get_weekly_videos(username: str = Depends(get_current_admin)):
+    videos = await db.weekly_videos.find({}, {"_id": 0}).sort("day_index", 1).to_list(7)
+    return videos
+
+
+@api_router.put("/admin/weekly-videos")
+async def admin_update_weekly_videos(request: Request, username: str = Depends(get_current_admin)):
+    body = await request.json()
+    if not isinstance(body, list):
+        raise HTTPException(status_code=400, detail="Expected a list of weekly video entries")
+
+    updated = 0
+    for item in body:
+        day_index = item.get("day_index")
+        if day_index is None or not isinstance(day_index, int) or day_index < 0 or day_index > 6:
+            continue
+        video_urls = item.get("video_urls", [])
+        if not isinstance(video_urls, list):
+            continue
+
+        await db.weekly_videos.update_one(
+            {"day_index": day_index},
+            {"$set": {
+                "day_index": day_index,
+                "video_urls": video_urls,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }, "$setOnInsert": {
+                "id": str(uuid.uuid4()),
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }},
+            upsert=True
+        )
+        updated += 1
+
+    return {"updated": updated}
+
+
 # Menu Category Display Settings
 @api_router.get("/menu-category-styles")
 async def get_menu_category_styles():

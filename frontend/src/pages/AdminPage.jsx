@@ -28,6 +28,7 @@ import {
   CareersTab
 } from '../components/admin';
 import { PageContentTab } from '../components/admin';
+import WeeklyVideosCard from '../components/admin/WeeklyVideosCard';
 import { Settings, Music } from 'lucide-react';
 // Main Admin Page Component
 const AdminPage = () => {
@@ -143,6 +144,7 @@ const AdminPage = () => {
         )}
 
         {activeTab === 'specials' && <SpecialsTab />}
+        {activeTab === 'specials' && <WeeklyVideosCard />}
         {activeTab === 'events' && <EventsTab />}
         {activeTab === 'careers' && <CareersTab />}
         {activeTab === 'gallery' && <GalleryTab />}

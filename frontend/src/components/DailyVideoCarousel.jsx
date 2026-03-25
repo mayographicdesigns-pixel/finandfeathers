@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import { getWeeklyVideos } from '../services/api';
 
-// Weekly specials videos mapped to each day
+// Hardcoded fallback videos (used when no admin-managed videos exist)
 const fallbackVideos = {
-  0: ['https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/xz8dxjvw_Saturday.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/i6rmsvxo_Hookah.mp4'], // Sunday
-  1: ['https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/2s9dz5g6_Monday.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/rja5gk64_m-f%205%20specials.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/i6rmsvxo_Hookah.mp4'], // Monday
-  2: ['https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/v8ic00zl_Tuesday.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/rja5gk64_m-f%205%20specials.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/i6rmsvxo_Hookah.mp4'], // Tuesday
-  3: ['https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/zxeditdb_Wednesday.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/ae6sdud1_Wednesday%20%282%29.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/rja5gk64_m-f%205%20specials.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/i6rmsvxo_Hookah.mp4'], // Wednesday
-  4: ['https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/1rpx19mv_Thursday.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/rja5gk64_m-f%205%20specials.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/i6rmsvxo_Hookah.mp4'], // Thursday
-  5: ['https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/5xyriiap_Friday.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/rja5gk64_m-f%205%20specials.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/i6rmsvxo_Hookah.mp4'], // Friday
-  6: ['https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/xz8dxjvw_Saturday.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/i6rmsvxo_Hookah.mp4'] // Saturday
+  0: ['https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/xz8dxjvw_Saturday.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/i6rmsvxo_Hookah.mp4'],
+  1: ['https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/2s9dz5g6_Monday.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/rja5gk64_m-f%205%20specials.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/i6rmsvxo_Hookah.mp4'],
+  2: ['https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/v8ic00zl_Tuesday.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/rja5gk64_m-f%205%20specials.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/i6rmsvxo_Hookah.mp4'],
+  3: ['https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/zxeditdb_Wednesday.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/ae6sdud1_Wednesday%20%282%29.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/rja5gk64_m-f%205%20specials.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/i6rmsvxo_Hookah.mp4'],
+  4: ['https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/1rpx19mv_Thursday.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/rja5gk64_m-f%205%20specials.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/i6rmsvxo_Hookah.mp4'],
+  5: ['https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/5xyriiap_Friday.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/rja5gk64_m-f%205%20specials.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/i6rmsvxo_Hookah.mp4'],
+  6: ['https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/xz8dxjvw_Saturday.mp4', 'https://customer-assets.emergentagent.com/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/i6rmsvxo_Hookah.mp4']
 };
 
 const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -19,8 +20,26 @@ const DailyVideoCarousel = () => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [showPlayButton, setShowPlayButton] = useState(false);
+  const [videoMap, setVideoMap] = useState(fallbackVideos);
   const videoRef = useRef(null);
   const dayScrollRef = useRef(null);
+
+  // Fetch admin-managed videos, fall back to hardcoded
+  useEffect(() => {
+    const loadVideos = async () => {
+      const data = await getWeeklyVideos();
+      if (data && data.length > 0) {
+        const merged = { ...fallbackVideos };
+        data.forEach(entry => {
+          if (entry.video_urls && entry.video_urls.length > 0) {
+            merged[entry.day_index] = entry.video_urls;
+          }
+        });
+        setVideoMap(merged);
+      }
+    };
+    loadVideos();
+  }, []);
 
   // Auto-scroll day selector to current day on mount
   useEffect(() => {
@@ -32,7 +51,7 @@ const DailyVideoCarousel = () => {
     }
   }, []);
 
-  const videos = fallbackVideos[currentDay] || [];
+  const videos = videoMap[currentDay] || [];
   const currentVideo = videos[currentVideoIndex];
 
   // Handle video loading and autoplay
