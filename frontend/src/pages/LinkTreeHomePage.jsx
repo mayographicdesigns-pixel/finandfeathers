@@ -1132,7 +1132,7 @@ const LinkTreeHomePage = () => {
         </div>
 
         {/* Weekly Specials Section */}
-        <Card className="mb-6 bg-gradient-to-br from-red-900/30 to-red-950/30 border-red-600/50">
+        <Card className="bg-gradient-to-br from-red-900/30 to-red-950/30 border-red-600/50">
           <CardContent className="p-6">
             <div className="flex items-center gap-2 mb-4">
               <Clock className="w-5 h-5 text-red-500" />
@@ -1142,9 +1142,9 @@ const LinkTreeHomePage = () => {
           </CardContent>
         </Card>
 
-        {/* Main Link Buttons — Reordered */}
-        <div className="space-y-3 mb-6">
-          {/* 1. View Full Menu */}
+        {/* All buttons and sections — uniform spacing */}
+        <div className="space-y-3">
+          {/* View Full Menu */}
           <Button
             onClick={() => navigate('/menu')}
             className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
@@ -1153,7 +1153,7 @@ const LinkTreeHomePage = () => {
             View Full Menu
           </Button>
 
-          {/* 2. Order Online */}
+          {/* Order Online */}
           <Button
             onClick={() => navigate('/locations?order=1')}
             className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
@@ -1163,7 +1163,7 @@ const LinkTreeHomePage = () => {
             Order Online
           </Button>
 
-          {/* 3. Find a Location */}
+          {/* Find a Location */}
           <Button
             onClick={() => navigate('/locations')}
             className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
@@ -1172,7 +1172,7 @@ const LinkTreeHomePage = () => {
             Find a Location
           </Button>
 
-          {/* 4. Social Wall / My Account */}
+          {/* Social Wall / My Account */}
           <Button
             onClick={() => {
               const profileId = localStorage.getItem('ff_user_profile_id');
@@ -1192,7 +1192,7 @@ const LinkTreeHomePage = () => {
             {localStorage.getItem('ff_user_profile_id') ? 'Social Wall' : 'My Account'}
           </Button>
 
-          {/* 5. Karaoke/Song Request (when live) */}
+          {/* Karaoke/Song Request (when live) */}
           {karaokeLocation && (
             <Button
               onClick={() => navigate(`/locations/${karaokeLocation.slug}?checkin=true`)}
@@ -1214,40 +1214,37 @@ const LinkTreeHomePage = () => {
               Request a Song at {djLocation.name?.replace('Fin & Feathers - ', '')}
             </Button>
           )}
-        </div>
 
-        {/* 6. Featured Events Images Grid */}
-        {events.length > 0 && (
-          <div className="mb-6" data-testid="events-images-section">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {events.slice(0, 4).map((event, index) => (
-                <div
-                  key={event.id || index}
-                  className="relative aspect-square rounded-lg overflow-hidden cursor-pointer group"
-                  data-testid={`event-image-${index}`}
-                  onClick={() => navigate('/events')}
-                >
-                  <img
-                    src={event.image.startsWith('/api/') ? `${window.location.origin}${event.image}` : event.image}
-                    alt={event.name || event.title || 'Event'}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-2">
-                    <div>
-                      <p className="text-white text-xs font-semibold leading-tight">{event.name || event.title}</p>
-                      <p className="text-red-400 text-[10px]">{event.date}</p>
+          {/* Featured Events Images Grid */}
+          {events.length > 0 && (
+            <div data-testid="events-images-section">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {events.slice(0, 4).map((event, index) => (
+                  <div
+                    key={event.id || index}
+                    className="relative aspect-square rounded-lg overflow-hidden cursor-pointer group"
+                    data-testid={`event-image-${index}`}
+                    onClick={() => navigate('/events')}
+                  >
+                    <img
+                      src={event.image.startsWith('/api/') ? `${window.location.origin}${event.image}` : event.image}
+                      alt={event.name || event.title || 'Event'}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-2">
+                      <div>
+                        <p className="text-white text-xs font-semibold leading-tight">{event.name || event.title}</p>
+                        <p className="text-red-400 text-[10px]">{event.date}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* 7-11: Events, Follow Us, Review, Gallery, Merch */}
-        <div className="space-y-3 mb-6">
-          {/* 7. Events & Tickets */}
+          {/* Events & Tickets */}
           <Button
             onClick={() => navigate('/events')}
             className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
@@ -1257,7 +1254,7 @@ const LinkTreeHomePage = () => {
             Events & Tickets
           </Button>
 
-          {/* 8. Follow Us — Toggle */}
+          {/* Follow Us — Toggle */}
           {!showFeedExpanded ? (
             <Button
               onClick={() => setShowFeedExpanded(true)}
@@ -1325,7 +1322,7 @@ const LinkTreeHomePage = () => {
             </Card>
           )}
 
-          {/* 9. Leave a Review */}
+          {/* Leave a Review */}
           <Button
             onClick={() => window.open('https://g.page/r/CfinandfeathersReview', '_blank')}
             className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
@@ -1333,85 +1330,81 @@ const LinkTreeHomePage = () => {
             <ExternalLink className="w-5 h-5 mr-2" />
             Leave a Review
           </Button>
-        </div>
 
-        {/* 10. Gallery Preview Grid */}
-        <Card className="mb-6 bg-slate-800/50 border-slate-700">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <ImageIcon className="w-5 h-5 text-red-500" />
-              <h2 className="text-lg font-bold text-white">Gallery</h2>
-              {editMode && (
-                <span className="bg-red-500 text-white text-xs px-2 py-1 rounded ml-2">
-                  Drag to reorder - Click to edit
-                </span>
-              )}
-            </div>
-            
-            {editMode ? (
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
-                <SortableContext
-                  items={displayContent.social_feed_images.map((_, index) => `image-${index}`)}
-                  strategy={rectSortingStrategy}
-                >
-                  <div className="grid grid-cols-4 gap-2 mb-4">
-                    {displayContent.social_feed_images.map((image, index) => (
-                      <SortableImage
-                        key={`image-${index}`}
-                        image={image}
-                        index={index}
-                        editMode={editMode}
-                        editingImageIndex={editingImageIndex}
-                        setEditingImageIndex={setEditingImageIndex}
-                        setLightboxImage={setLightboxImage}
-                        editingContent={editingContent}
-                        setEditingContent={setEditingContent}
-                        fileInputRef={fileInputRef}
-                        handleImageUpload={handleImageUpload}
-                      />
-                    ))}
-                  </div>
-                </SortableContext>
-              </DndContext>
-            ) : (
-              <div 
-                className="grid grid-cols-4 gap-2 mb-4 cursor-pointer"
-                onClick={() => navigate('/gallery')}
-              >
-                {displayContent.social_feed_images.map((image, index) => (
-                  <div key={index} className="relative group">
-                    <div
-                      className="aspect-square rounded-lg overflow-hidden block w-full"
-                      data-testid={`gallery-preview-image-${index}`}
-                    >
-                      <img 
-                        src={image.url}
-                        alt={image.caption || `Gallery image ${index + 1}`}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                    </div>
-                  </div>
-                ))}
+          {/* Gallery Preview Grid */}
+          <Card className="bg-slate-800/50 border-slate-700">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <ImageIcon className="w-5 h-5 text-red-500" />
+                <h2 className="text-lg font-bold text-white">Gallery</h2>
+                {editMode && (
+                  <span className="bg-red-500 text-white text-xs px-2 py-1 rounded ml-2">
+                    Drag to reorder - Click to edit
+                  </span>
+                )}
               </div>
-            )}
-            
-            <Button
-              onClick={() => navigate('/gallery')}
-              className="w-full bg-slate-700 hover:bg-slate-600 text-white"
-              data-testid="view-gallery-btn"
-            >
-              <ImageIcon className="w-4 h-4 mr-2" />
-              View Full Gallery
-            </Button>
-          </CardContent>
-        </Card>
+              {editMode ? (
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext
+                    items={displayContent.social_feed_images.map((_, index) => `image-${index}`)}
+                    strategy={rectSortingStrategy}
+                  >
+                    <div className="grid grid-cols-4 gap-2 mb-4">
+                      {displayContent.social_feed_images.map((image, index) => (
+                        <SortableImage
+                          key={`image-${index}`}
+                          image={image}
+                          index={index}
+                          editMode={editMode}
+                          editingImageIndex={editingImageIndex}
+                          setEditingImageIndex={setEditingImageIndex}
+                          setLightboxImage={setLightboxImage}
+                          editingContent={editingContent}
+                          setEditingContent={setEditingContent}
+                          fileInputRef={fileInputRef}
+                          handleImageUpload={handleImageUpload}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
+              ) : (
+                <div 
+                  className="grid grid-cols-4 gap-2 mb-4 cursor-pointer"
+                  onClick={() => navigate('/gallery')}
+                >
+                  {displayContent.social_feed_images.map((image, index) => (
+                    <div key={index} className="relative group">
+                      <div
+                        className="aspect-square rounded-lg overflow-hidden block w-full"
+                        data-testid={`gallery-preview-image-${index}`}
+                      >
+                        <img 
+                          src={image.url}
+                          alt={image.caption || `Gallery image ${index + 1}`}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <Button
+                onClick={() => navigate('/gallery')}
+                className="w-full bg-slate-700 hover:bg-slate-600 text-white"
+                data-testid="view-gallery-btn"
+              >
+                <ImageIcon className="w-4 h-4 mr-2" />
+                View Full Gallery
+              </Button>
+            </CardContent>
+          </Card>
 
-        {/* 11. F&F Merch */}
-        <div className="space-y-3 mb-6">
+          {/* F&F Merch */}
           <Button
             onClick={() => navigate('/merch')}
             className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
@@ -1423,7 +1416,7 @@ const LinkTreeHomePage = () => {
         </div>
 
         {/* Loyalty Signup Form */}
-        <Card className="mb-6 bg-gradient-to-br from-slate-800/80 to-slate-900/80 border-red-600/30">
+        <Card className="mt-3 bg-gradient-to-br from-slate-800/80 to-slate-900/80 border-red-600/30">
           <CardContent className="p-6">
             <h2 className="text-xl font-bold text-white mb-2 text-center">Join Our Loyalty Program</h2>
             <p className="text-slate-400 text-sm mb-4 text-center">Get exclusive offers and rewards!</p>
@@ -1488,7 +1481,7 @@ const LinkTreeHomePage = () => {
         </Card>
 
         {/* Contact Info - Editable */}
-        <Card className="mb-6 bg-slate-800/50 border-slate-700">
+        <Card className="mt-3 bg-slate-800/50 border-slate-700">
           <CardContent className="p-4">
             <h3 className="text-white font-semibold mb-3 text-center">Contact Us</h3>
             {editMode && <span className="block text-center text-xs bg-red-500 text-white px-2 py-1 rounded mb-3 mx-auto w-fit">Edit Contact Info</span>}
@@ -1542,7 +1535,7 @@ const LinkTreeHomePage = () => {
         </Card>
 
         {/* Install App Button */}
-        <Card className="mb-6 bg-gradient-to-br from-slate-800/80 to-slate-900/80 border-red-600/30">
+        <Card className="mt-3 bg-gradient-to-br from-slate-800/80 to-slate-900/80 border-red-600/30">
           <CardContent className="p-4">
             <Button
               onClick={handleInstallApp}
