@@ -352,15 +352,15 @@ async def get_next_dj_session(location_slug: str):
     karaoke = await db.karaoke_sessions.find_one({"location_slug": location_slug}, {"_id": 0})
     karaoke_active = karaoke.get("active", False) if karaoke else False
 
-    if live_dj or karaoke_active:
+    if live_dj:
         return {
             "is_live": True,
             "karaoke_active": karaoke_active,
-            "dj_name": live_dj.get("name") if live_dj else None,
-            "dj_stage_name": live_dj.get("stage_name") if live_dj else None,
-            "dj_photo_url": live_dj.get("photo_url") if live_dj else None,
-            "dj_id": live_dj.get("id") if live_dj else None,
-            "live_stream_url": live_dj.get("live_stream_url") if live_dj else None,
+            "dj_name": live_dj.get("name"),
+            "dj_stage_name": live_dj.get("stage_name"),
+            "dj_photo_url": live_dj.get("photo_url"),
+            "dj_id": live_dj.get("id"),
+            "live_stream_url": live_dj.get("live_stream_url"),
             "timezone": tz_name,
             "next_session": None
         }

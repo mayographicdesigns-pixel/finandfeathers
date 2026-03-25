@@ -23,7 +23,7 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar, djStatus }) => {
   const [posting, setPosting] = useState(false);
   const fileRef = useRef(null);
 
-  const isDJLive = djStatus?.is_live || djStatus?.karaoke_active;
+  const isDJLive = djStatus?.is_live;
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -633,7 +633,7 @@ const DJStatusBanner = ({ djStatus, locationSlug }) => {
   const tz = djStatus.timezone || locations.find(l => l.slug === locationSlug)?.timezone || 'America/New_York';
   const tzAbbr = getTzAbbreviation(tz);
 
-  if (djStatus.is_live || djStatus.karaoke_active) {
+  if (djStatus.is_live) {
     return (
       <div className="bg-gradient-to-r from-green-900/40 to-emerald-900/30 border-b border-green-800/40 px-4 py-2.5" data-testid="dj-status-live">
         <div className="max-w-lg mx-auto flex items-center gap-3">
@@ -644,11 +644,6 @@ const DJStatusBanner = ({ djStatus, locationSlug }) => {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <span className="text-green-400 text-xs font-bold uppercase tracking-wider">Live Now</span>
-              {djStatus.karaoke_active && (
-                <span className="bg-purple-600/30 text-purple-300 text-[10px] font-medium px-1.5 py-0.5 rounded-full border border-purple-600/30">
-                  <Mic2 className="w-2.5 h-2.5 inline mr-0.5" />Karaoke
-                </span>
-              )}
             </div>
             {djStatus.dj_name && (
               <p className="text-white text-sm font-semibold truncate">{djStatus.dj_stage_name || djStatus.dj_name}</p>
