@@ -1,9 +1,21 @@
 // Version Changelog Data
 // Update this with each release
 
-export const APP_VERSION = '2.2.0';
+export const APP_VERSION = '2.3.0';
 
 export const CHANGELOG = {
+  '2.3.0': {
+    date: '2026-03-25',
+    title: 'Weekly Specials, Live Streaming & Timezone Support',
+    isCritical: false,
+    changes: [
+      { type: 'feature', text: 'DJ live video streaming with side chat on Social Wall' },
+      { type: 'feature', text: 'Location-based timezone for accurate time display' },
+      { type: 'improvement', text: 'Updated weekly specials videos' },
+      { type: 'improvement', text: 'Full cache clear on Update App for fresh experience' },
+      { type: 'improvement', text: 'Simplified check-in: Client or Staff selection' }
+    ]
+  },
   '2.2.0': {
     date: '2026-02-27',
     title: 'Auto-Update & Cache Fix',

@@ -788,20 +788,31 @@ const LinkTreeHomePage = () => {
     };
   }, []);
 
-  // Handle PWA install
+  // Handle PWA install / force update
   const handleInstallApp = async () => {
     if (isAppInstalled) {
-      // App is installed, check for updates
-      if ('serviceWorker' in navigator) {
-        try {
-          const registration = await navigator.serviceWorker.getRegistration();
-          if (registration) {
-            await registration.update();
-            toast({ title: 'Checking for Updates', description: 'Looking for the latest version...' });
-          }
-        } catch (error) {
-          console.error('Update check failed:', error);
+      // Clear ALL caches, unregister service worker, and hard reload
+      toast({ title: 'Updating App', description: 'Clearing cache and loading latest version...' });
+      try {
+        // 1. Delete all caches
+        if ('caches' in window) {
+          const cacheNames = await caches.keys();
+          await Promise.all(cacheNames.map(name => caches.delete(name)));
         }
+        // 2. Unregister service workers
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(registrations.map(r => r.unregister()));
+        }
+        // 3. Clear localStorage version so UpdatePrompt re-triggers
+        localStorage.removeItem('ff_app_version');
+        // 4. Hard reload (bypass browser cache)
+        setTimeout(() => {
+          window.location.href = window.location.origin + '/?cache_bust=' + Date.now();
+        }, 500);
+      } catch (error) {
+        console.error('Update failed:', error);
+        window.location.reload();
       }
       return;
     }
@@ -1539,7 +1550,7 @@ const LinkTreeHomePage = () => {
             </Button>
             <p className="text-slate-400 text-xs text-center mt-2">
               {isAppInstalled 
-                ? 'Check for the latest version' 
+                ? 'Clear cache & get the latest version' 
                 : 'Add to your home screen for quick access'}
             </p>
           </CardContent>
