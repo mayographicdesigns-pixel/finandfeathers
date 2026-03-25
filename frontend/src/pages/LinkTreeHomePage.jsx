@@ -651,6 +651,7 @@ const LinkTreeHomePage = () => {
   const [specials, setSpecials] = useState([]);
   const [lightboxImage, setLightboxImage] = useState(null);
   const [socialFeedTab, setSocialFeedTab] = useState('facebook');
+  const [showFeedExpanded, setShowFeedExpanded] = useState(false);
   
   // Welcome popup state
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
@@ -1159,58 +1160,77 @@ const LinkTreeHomePage = () => {
             Find a Location
           </Button>
 
-          {/* Social Media Feed Section — Tabbed */}
-          <Card className="bg-slate-800/50 border-slate-700" data-testid="social-feed-section">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <Instagram className="w-5 h-5 text-pink-500" />
-                <h2 className="text-lg font-bold text-white">Follow Us</h2>
-                <Facebook className="w-5 h-5 text-blue-500" />
-              </div>
-
-              {/* Feed Tabs */}
-              <div className="flex gap-2 mb-4">
-                <button
-                  onClick={() => setSocialFeedTab('facebook')}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    socialFeedTab === 'facebook'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-700/50 text-slate-400 hover:text-white'
-                  }`}
-                  data-testid="social-feed-fb-tab"
-                >
-                  <Facebook className="w-4 h-4" />
-                  Facebook
-                </button>
-                <button
-                  onClick={() => setSocialFeedTab('instagram')}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    socialFeedTab === 'instagram'
-                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
-                      : 'bg-slate-700/50 text-slate-400 hover:text-white'
-                  }`}
-                  data-testid="social-feed-ig-tab"
-                >
-                  <Instagram className="w-4 h-4" />
-                  Instagram
-                </button>
-              </div>
-
-              {/* Facebook Feed — 2 Column */}
-              {socialFeedTab === 'facebook' && (
-                <div className="rounded-lg overflow-hidden" data-testid="fb-feed-embed">
-                  <FacebookEmbed />
+          {/* Follow Us — Toggle between button and expanded feed */}
+          {!showFeedExpanded ? (
+            <Button
+              onClick={() => setShowFeedExpanded(true)}
+              className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+              data-testid="follow-us-btn"
+            >
+              <Instagram className="w-5 h-5 mr-1" />
+              Follow Us
+              <Facebook className="w-5 h-5 ml-1" />
+            </Button>
+          ) : (
+            <Card className="bg-slate-800/50 border-slate-700" data-testid="social-feed-section">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Instagram className="w-5 h-5 text-pink-500" />
+                    <h2 className="text-lg font-bold text-white">Follow Us</h2>
+                    <Facebook className="w-5 h-5 text-blue-500" />
+                  </div>
+                  <button
+                    onClick={() => setShowFeedExpanded(false)}
+                    className="text-slate-400 hover:text-white transition-colors"
+                    data-testid="follow-us-collapse-btn"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
-              )}
 
-              {/* Instagram Feed — Original Grid */}
-              {socialFeedTab === 'instagram' && (
-                <div className="rounded-lg overflow-hidden" data-testid="ig-feed-embed">
-                  <InstagramEmbed />
+                {/* Feed Tabs */}
+                <div className="flex gap-2 mb-4">
+                  <button
+                    onClick={() => setSocialFeedTab('facebook')}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      socialFeedTab === 'facebook'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-slate-700/50 text-slate-400 hover:text-white'
+                    }`}
+                    data-testid="social-feed-fb-tab"
+                  >
+                    <Facebook className="w-4 h-4" />
+                    Facebook
+                  </button>
+                  <button
+                    onClick={() => setSocialFeedTab('instagram')}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      socialFeedTab === 'instagram'
+                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
+                        : 'bg-slate-700/50 text-slate-400 hover:text-white'
+                    }`}
+                    data-testid="social-feed-ig-tab"
+                  >
+                    <Instagram className="w-4 h-4" />
+                    Instagram
+                  </button>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+
+                {socialFeedTab === 'facebook' && (
+                  <div className="rounded-lg overflow-hidden" data-testid="fb-feed-embed">
+                    <FacebookEmbed />
+                  </div>
+                )}
+
+                {socialFeedTab === 'instagram' && (
+                  <div className="rounded-lg overflow-hidden" data-testid="ig-feed-embed">
+                    <InstagramEmbed />
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           <Button
             onClick={() => navigate('/locations?order=1')}
