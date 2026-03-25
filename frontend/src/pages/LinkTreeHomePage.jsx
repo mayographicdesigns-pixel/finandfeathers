@@ -1142,8 +1142,9 @@ const LinkTreeHomePage = () => {
           </CardContent>
         </Card>
 
-        {/* Main Link Buttons */}
+        {/* Main Link Buttons — Reordered */}
         <div className="space-y-3 mb-6">
+          {/* 1. View Full Menu */}
           <Button
             onClick={() => navigate('/menu')}
             className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
@@ -1152,6 +1153,17 @@ const LinkTreeHomePage = () => {
             View Full Menu
           </Button>
 
+          {/* 2. Order Online */}
+          <Button
+            onClick={() => navigate('/locations?order=1')}
+            className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+            data-testid="order-online-btn"
+          >
+            <ExternalLink className="w-5 h-5 mr-2" />
+            Order Online
+          </Button>
+
+          {/* 3. Find a Location */}
           <Button
             onClick={() => navigate('/locations')}
             className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
@@ -1160,7 +1172,92 @@ const LinkTreeHomePage = () => {
             Find a Location
           </Button>
 
-          {/* Follow Us — Toggle between button and expanded feed */}
+          {/* 4. Social Wall / My Account */}
+          <Button
+            onClick={() => {
+              const profileId = localStorage.getItem('ff_user_profile_id');
+              const userLocation = localStorage.getItem('ff_user_location');
+              if (profileId && userLocation) {
+                navigate(`/social/${userLocation}`);
+              } else if (profileId) {
+                navigate(`/social/${locations[0]?.slug || 'midtown'}`);
+              } else {
+                navigate('/account');
+              }
+            }}
+            className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+            data-testid="my-account-btn"
+          >
+            <User className="w-5 h-5 mr-2" />
+            {localStorage.getItem('ff_user_profile_id') ? 'Social Wall' : 'My Account'}
+          </Button>
+
+          {/* 5. Karaoke/Song Request (when live) */}
+          {karaokeLocation && (
+            <Button
+              onClick={() => navigate(`/locations/${karaokeLocation.slug}?checkin=true`)}
+              className="w-full bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02] animate-pulse"
+              data-testid="karaoke-live-btn"
+            >
+              <Mic className="w-5 h-5 mr-2" />
+              Karaoke Sign Up - Live at {karaokeLocation.name?.replace('Fin & Feathers - ', '')}!
+            </Button>
+          )}
+
+          {!karaokeLocation && djLocation && (
+            <Button
+              onClick={() => navigate(`/locations/${djLocation.slug}?checkin=true`)}
+              className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+              data-testid="request-song-btn"
+            >
+              <Music className="w-5 h-5 mr-2" />
+              Request a Song at {djLocation.name?.replace('Fin & Feathers - ', '')}
+            </Button>
+          )}
+        </div>
+
+        {/* 6. Featured Events Images Grid */}
+        {events.length > 0 && (
+          <div className="mb-6" data-testid="events-images-section">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {events.slice(0, 4).map((event, index) => (
+                <div
+                  key={event.id || index}
+                  className="relative aspect-square rounded-lg overflow-hidden cursor-pointer group"
+                  data-testid={`event-image-${index}`}
+                  onClick={() => navigate('/events')}
+                >
+                  <img
+                    src={event.image.startsWith('/api/') ? `${window.location.origin}${event.image}` : event.image}
+                    alt={event.name || event.title || 'Event'}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-2">
+                    <div>
+                      <p className="text-white text-xs font-semibold leading-tight">{event.name || event.title}</p>
+                      <p className="text-red-400 text-[10px]">{event.date}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 7-11: Events, Follow Us, Review, Gallery, Merch */}
+        <div className="space-y-3 mb-6">
+          {/* 7. Events & Tickets */}
+          <Button
+            onClick={() => navigate('/events')}
+            className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+            data-testid="events-btn"
+          >
+            <Calendar className="w-5 h-5 mr-2" />
+            Events & Tickets
+          </Button>
+
+          {/* 8. Follow Us — Toggle */}
           {!showFeedExpanded ? (
             <Button
               onClick={() => setShowFeedExpanded(true)}
@@ -1188,8 +1285,6 @@ const LinkTreeHomePage = () => {
                     <X className="w-5 h-5" />
                   </button>
                 </div>
-
-                {/* Feed Tabs */}
                 <div className="flex gap-2 mb-4">
                   <button
                     onClick={() => setSocialFeedTab('facebook')}
@@ -1216,13 +1311,11 @@ const LinkTreeHomePage = () => {
                     Instagram
                   </button>
                 </div>
-
                 {socialFeedTab === 'facebook' && (
                   <div className="rounded-lg overflow-hidden" data-testid="fb-feed-embed">
                     <FacebookEmbed />
                   </div>
                 )}
-
                 {socialFeedTab === 'instagram' && (
                   <div className="rounded-lg overflow-hidden" data-testid="ig-feed-embed">
                     <InstagramEmbed />
@@ -1232,48 +1325,17 @@ const LinkTreeHomePage = () => {
             </Card>
           )}
 
+          {/* 9. Leave a Review */}
           <Button
-            onClick={() => navigate('/locations?order=1')}
+            onClick={() => window.open('https://g.page/r/CfinandfeathersReview', '_blank')}
             className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
-            data-testid="order-online-btn"
           >
             <ExternalLink className="w-5 h-5 mr-2" />
-            Order Online
+            Leave a Review
           </Button>
-
-          <Button
-            onClick={() => navigate('/gallery')}
-            className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
-            data-testid="gallery-btn"
-          >
-            <ImageIcon className="w-5 h-5 mr-2" />
-            Gallery
-          </Button>
-
-          {karaokeLocation && (
-            <Button
-              onClick={() => navigate(`/locations/${karaokeLocation.slug}?checkin=true`)}
-              className="w-full bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02] animate-pulse"
-              data-testid="karaoke-live-btn"
-            >
-              <Mic className="w-5 h-5 mr-2" />
-              Karaoke Sign Up - Live at {karaokeLocation.name?.replace('Fin & Feathers - ', '')}!
-            </Button>
-          )}
-
-          {!karaokeLocation && djLocation && (
-            <Button
-              onClick={() => navigate(`/locations/${djLocation.slug}?checkin=true`)}
-              className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
-              data-testid="request-song-btn"
-            >
-              <Music className="w-5 h-5 mr-2" />
-              Request a Song at {djLocation.name?.replace('Fin & Feathers - ', '')}
-            </Button>
-          )}
         </div>
 
-        {/* Gallery Preview - Links to Gallery Page */}
+        {/* 10. Gallery Preview Grid */}
         <Card className="mb-6 bg-slate-800/50 border-slate-700">
           <CardContent className="p-6">
             <div className="flex items-center justify-center gap-2 mb-4">
@@ -1337,7 +1399,6 @@ const LinkTreeHomePage = () => {
               </div>
             )}
             
-            {/* View Full Gallery Button */}
             <Button
               onClick={() => navigate('/gallery')}
               className="w-full bg-slate-700 hover:bg-slate-600 text-white"
@@ -1349,7 +1410,7 @@ const LinkTreeHomePage = () => {
           </CardContent>
         </Card>
 
-        {/* More Link Buttons */}
+        {/* 11. F&F Merch */}
         <div className="space-y-3 mb-6">
           <Button
             onClick={() => navigate('/merch')}
@@ -1359,72 +1420,7 @@ const LinkTreeHomePage = () => {
             <ShoppingBag className="w-5 h-5 mr-2" />
             F&F Merch Shop
           </Button>
-
-          <Button
-            onClick={() => navigate('/events')}
-            className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
-            data-testid="events-btn"
-          >
-            <Calendar className="w-5 h-5 mr-2" />
-            Events & Tickets
-          </Button>
-
-          <Button
-            onClick={() => {
-              const profileId = localStorage.getItem('ff_user_profile_id');
-              const userLocation = localStorage.getItem('ff_user_location');
-              if (profileId && userLocation) {
-                navigate(`/social/${userLocation}`);
-              } else if (profileId) {
-                navigate(`/social/${locations[0]?.slug || 'midtown'}`);
-              } else {
-                navigate('/account');
-              }
-            }}
-            className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
-            data-testid="my-account-btn"
-          >
-            <User className="w-5 h-5 mr-2" />
-            {localStorage.getItem('ff_user_profile_id') ? 'Social Wall' : 'My Account'}
-          </Button>
-
-          <Button
-            onClick={() => window.open('https://g.page/r/CfinandfeathersReview', '_blank')}
-            className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
-          >
-            <ExternalLink className="w-5 h-5 mr-2" />
-            Leave a Review
-          </Button>
         </div>
-
-        {/* Events Images Grid */}
-        {events.length > 0 && (
-          <div className="mb-6" data-testid="events-images-section">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {events.slice(0, 4).map((event, index) => (
-                <div
-                  key={event.id || index}
-                  className="relative aspect-square rounded-lg overflow-hidden cursor-pointer group"
-                  data-testid={`event-image-${index}`}
-                  onClick={() => navigate('/events')}
-                >
-                  <img
-                    src={event.image.startsWith('/api/') ? `${window.location.origin}${event.image}` : event.image}
-                    alt={event.name || event.title || 'Event'}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-2">
-                    <div>
-                      <p className="text-white text-xs font-semibold leading-tight">{event.name || event.title}</p>
-                      <p className="text-red-400 text-[10px]">{event.date}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Loyalty Signup Form */}
         <Card className="mb-6 bg-gradient-to-br from-slate-800/80 to-slate-900/80 border-red-600/30">
