@@ -259,7 +259,7 @@ const LocationDetailPage = () => {
     try {
       // Load DJ profile first (currently live)
       const dj = await getDJAtLocation(slug);
-      setCurrentDJ(dj);
+      setCurrentDJ(dj?.checked_in ? dj : null);
     } catch (e) {
       console.error('Error loading DJ:', e);
       setCurrentDJ(null);
