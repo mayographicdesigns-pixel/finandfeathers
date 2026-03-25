@@ -105,16 +105,6 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar, djStatus }) => {
     shoutout: allPostTypes.shoutout
   };
 
-  const timeAgo = (dateStr) => {
-    const d = new Date(dateStr);
-    const now = new Date();
-    const diff = Math.floor((now - d) / 1000);
-    if (diff < 60) return 'just now';
-    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-    return `${Math.floor(diff / 86400)}d ago`;
-  };
-
   return (
     <div className="flex flex-col h-full">
       {/* Compose */}
@@ -181,7 +171,7 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar, djStatus }) => {
                           <cfg.icon className="w-3 h-3" /> {cfg.label}
                         </span>
                       )}
-                      <span className="text-slate-600 text-xs ml-auto shrink-0">{timeAgo(post.created_at)}</span>
+                      <span className="text-slate-600 text-xs ml-auto shrink-0">{timeAgoInTz(post.created_at)}</span>
                       {isAuthor && (
                         <button onClick={() => handleDelete(post.id)} className="text-slate-600 hover:text-red-400 ml-1" data-testid={`delete-post-${post.id}`}>
                           <Trash2 className="w-3 h-3" />

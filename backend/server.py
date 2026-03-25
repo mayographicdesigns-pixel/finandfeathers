@@ -23,7 +23,6 @@ from urllib.parse import urlparse
 from typing import List, Optional
 from timezone_utils import get_location_tz_name, utc_now_in_location, LOCATION_TIMEZONES
 from datetime import datetime, timezone, timedelta
-import shutil
 from models import (
     LoyaltyMember, LoyaltyMemberCreate, PushSubscription,
     PushNotification, PushNotificationCreate,
