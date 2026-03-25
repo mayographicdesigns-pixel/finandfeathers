@@ -2,6 +2,9 @@
 
 ## Latest Changes (2026-03-25)
 - **Bug Fix:** Restored 90 accidentally deleted functions in `api.js` that were purged during an aggressive dead-code cleanup, which broke the entire frontend with `TypeError: X is not a function` errors.
+- **DJ Status Fix:** "LIVE NOW" on Social Wall now only shows when a DJ is actually checked in — not for karaoke alone. Song request and karaoke indicators hidden when no DJ present.
+- **Geolocation Popup Every Session:** Welcome popup now shows every app session (not just once ever), using geolocation to detect the user's nearest location. Returning users see a simplified view with a "Go to Social Wall" quick action.
+- **Social Wall Images → Gallery:** Photos posted on the Social Wall feed are automatically added to the main gallery, tagged with `location_slug`, `posted_by`, and `source: social_wall`. Gallery API supports `?location_slug=` filtering.
 - Simplified CheckInPage to only Client/Staff selection + staff role picker
 - Added Close (X) bypass button to skip check-in
 - Removed location detection, song requests, tipping from check-in page

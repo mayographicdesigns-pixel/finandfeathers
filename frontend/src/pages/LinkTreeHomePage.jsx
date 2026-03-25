@@ -154,6 +154,9 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
   const [findingLocation, setFindingLocation] = useState(false);
   const [closestLocation, setClosestLocation] = useState(null);
 
+  const isReturningUser = !!localStorage.getItem('ff_welcome_shown');
+  const hasProfile = !!localStorage.getItem('ff_user_profile_id');
+
   useEffect(() => {
     findClosestLocation();
   }, []);
@@ -289,8 +292,41 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
             </div>
           )}
 
-          {/* Step 1: Form + Client/Staff */}
-          {step === 'form' && (
+          {/* Returning user — simplified quick-action view */}
+          {isReturningUser && step === 'form' && (
+            <>
+              {closestLocation && (
+                <Button
+                  onClick={() => {
+                    sessionStorage.setItem('ff_welcome_shown_session', 'true');
+                    localStorage.setItem('ff_user_location', closestLocation.slug);
+                    if (hasProfile) {
+                      navigate(`/social/${closestLocation.slug}`);
+                    } else {
+                      navigate(`/locations/${closestLocation.slug}?checkin=true`);
+                    }
+                  }}
+                  className="w-full h-14 bg-red-600 hover:bg-red-700 text-white rounded-xl text-base font-semibold transition-all hover:scale-[1.02] mb-3"
+                  data-testid="welcome-goto-social-btn"
+                >
+                  <Users className="w-5 h-5 mr-2" />
+                  {hasProfile ? 'Go to Social Wall' : 'Check In Here'}
+                </Button>
+              )}
+
+              <Button
+                onClick={handleClose}
+                variant="ghost"
+                className="w-full text-slate-500 hover:text-white text-sm"
+                data-testid="welcome-close-btn"
+              >
+                <X className="w-4 h-4 mr-1" /> Close
+              </Button>
+            </>
+          )}
+
+          {/* New user — Step 1: Form + Client/Staff */}
+          {!isReturningUser && step === 'form' && (
             <>
               <div className="space-y-3 mb-4">
                 <div>
@@ -724,11 +760,9 @@ const LinkTreeHomePage = () => {
 
   // Check if welcome popup should be shown - uses sessionStorage to show once per browser session
   useEffect(() => {
-    // Check both sessionStorage (current session) and localStorage (user submitted form)
     const hasSeenThisSession = sessionStorage.getItem('ff_welcome_shown_session');
-    const hasSubmittedForm = localStorage.getItem('ff_welcome_shown');
     
-    if (!hasSeenThisSession && !hasSubmittedForm) {
+    if (!hasSeenThisSession) {
       // Small delay to let the page load first
       const timer = setTimeout(() => {
         setShowWelcomePopup(true);

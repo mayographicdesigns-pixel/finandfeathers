@@ -1274,12 +1274,15 @@ async def get_checkin_count(location_slug: str):
 
 # Public: Get active gallery items
 @api_router.get("/gallery")
-async def get_public_gallery():
-    """Get all active gallery items for public display"""
+async def get_public_gallery(location_slug: str = None):
+    """Get all active gallery items for public display, optionally filtered by location"""
+    query = {"is_active": True}
+    if location_slug:
+        query["location_slug"] = location_slug
     items = await db.gallery_items.find(
-        {"is_active": True},
+        query,
         {"_id": 0}
-    ).sort("display_order", 1).to_list(100)
+    ).sort("created_at", -1).to_list(200)
     return items
 
 

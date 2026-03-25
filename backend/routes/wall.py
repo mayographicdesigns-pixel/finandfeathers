@@ -34,6 +34,26 @@ async def create_wall_post(body: dict):
     }
     await db.wall_posts.insert_one(post)
     post.pop("_id", None)
+
+    # Auto-add photo posts to the main gallery tagged with location
+    if post.get("image_url"):
+        gallery_item = {
+            "id": str(uuid.uuid4()),
+            "title": post.get("content", "")[:100] or f"Photo by {post['user_name']}",
+            "image_url": post["image_url"],
+            "category": "social",
+            "is_active": True,
+            "display_order": 999,
+            "location_slug": location_slug,
+            "posted_by": post["user_name"],
+            "posted_by_id": user_id,
+            "source": "social_wall",
+            "source_post_id": post["id"],
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.gallery_items.insert_one(gallery_item)
+        logging.info(f"Gallery item created from wall post {post['id']} at {location_slug}")
+
     return post
 
 
