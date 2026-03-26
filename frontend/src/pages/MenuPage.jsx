@@ -1385,7 +1385,7 @@ const MenuPage = () => {
         {/* HOOKAH VIEW */}
         {activeCategory === 'hookah' && (
           <div className="space-y-10">
-            <HookahSection />
+            <HookahSection locationSlug={selectedLocation?.slug} />
           </div>
         )}
 

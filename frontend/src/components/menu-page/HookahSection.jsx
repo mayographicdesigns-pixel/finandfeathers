@@ -84,7 +84,7 @@ const premiumFlavors = [
   }
 ];
 
-const HookahSection = () => {
+const HookahSection = ({ locationSlug }) => {
   return (
     <div className="space-y-6" data-testid="hookah-section">
       {/* Safety & Policies - At the top */}
@@ -98,7 +98,8 @@ const HookahSection = () => {
         </ul>
       </div>
 
-      {/* Header with pricing */}
+      {/* Header with pricing - hidden for Las Vegas */}
+      {locationSlug !== 'las-vegas' && (
       <div className="bg-gradient-to-r from-purple-900/50 to-slate-800/50 border border-purple-500/30 rounded-xl p-6">
         <h3 className="text-3xl font-bold text-white mb-2" data-testid="hookah-title">HOOKAH</h3>
         <div className="flex flex-wrap gap-4 text-sm">
@@ -117,6 +118,7 @@ const HookahSection = () => {
           </div>
         </div>
       </div>
+      )}
 
       {/* Signature Mixes - Base price $30 */}
       <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-6" data-testid="hookah-signature-section">
