@@ -370,6 +370,31 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
                 Log In / Sign Up
               </Button>
 
+              {/* Other locations */}
+              <div className="mb-3">
+                <p className="text-slate-500 text-xs text-center mb-2">Or choose another location</p>
+                <div className="space-y-1.5 max-h-36 overflow-y-auto">
+                  {locations.filter(l => l.slug !== closestLocation?.slug).map(loc => (
+                    <button
+                      key={loc.slug}
+                      onClick={() => {
+                        sessionStorage.setItem('ff_welcome_shown_session', 'true');
+                        localStorage.setItem('ff_user_location', loc.slug);
+                        navigate('/account');
+                      }}
+                      className="w-full flex items-center gap-2.5 p-2.5 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-red-600/40 transition-all text-left"
+                      data-testid={`welcome-newuser-location-${loc.slug}`}
+                    >
+                      <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-white text-sm font-medium truncate">{loc.name.replace('Fin & Feathers - ', '')}</p>
+                        <p className="text-slate-500 text-xs truncate">{loc.address}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Secondary: Continue as Guest */}
               <div className="relative my-3">
                 <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-700/50" /></div>
