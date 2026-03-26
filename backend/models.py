@@ -275,6 +275,7 @@ class CheckInCreate(BaseModel):
     mood: Optional[str] = None
     message: Optional[str] = None
     selfie_url: Optional[str] = None
+    user_profile_id: Optional[str] = None
 
 class CheckInResponse(BaseModel):
     id: str
@@ -285,6 +286,7 @@ class CheckInResponse(BaseModel):
     message: Optional[str]
     selfie_url: Optional[str] = None
     checked_in_at: datetime
+    user_profile_id: Optional[str] = None
 
 
 # Gallery Item Model

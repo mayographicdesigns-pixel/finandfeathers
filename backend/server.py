@@ -1304,7 +1304,14 @@ async def check_in(checkin_data: CheckInCreate):
     """Check in at a location"""
     # Auto-expire after 4 hours
     expires_at = datetime.now(timezone.utc) + timedelta(hours=4)
-    
+
+    # Remove existing check-in for same user at same location
+    if checkin_data.user_profile_id:
+        await db.checkins.delete_many({
+            "user_profile_id": checkin_data.user_profile_id,
+            "location_slug": checkin_data.location_slug
+        })
+
     checkin = CheckIn(
         id=str(uuid.uuid4()),
         location_slug=checkin_data.location_slug,
@@ -1316,10 +1323,11 @@ async def check_in(checkin_data: CheckInCreate):
         checked_in_at=datetime.now(timezone.utc),
         expires_at=expires_at
     )
-    
+
     checkin_dict = checkin.model_dump()
+    checkin_dict["user_profile_id"] = checkin_data.user_profile_id
     await db.checkins.insert_one(checkin_dict)
-    
+
     return CheckInResponse(
         id=checkin.id,
         location_slug=checkin.location_slug,
@@ -1328,7 +1336,8 @@ async def check_in(checkin_data: CheckInCreate):
         mood=checkin.mood,
         message=checkin.message,
         selfie_url=checkin.selfie_url,
-        checked_in_at=checkin.checked_in_at
+        checked_in_at=checkin.checked_in_at,
+        user_profile_id=checkin_data.user_profile_id
     )
 
 @api_router.get("/checkin/{location_slug}", response_model=List[CheckInResponse])

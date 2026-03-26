@@ -709,6 +709,66 @@ const DJStatusBanner = ({ djStatus, locationSlug }) => {
   );
 };
 
+// ========== WHO'S HERE TAB ==========
+const WhosHereTab = ({ locationSlug, userId }) => {
+  const [checkedIn, setCheckedIn] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCheckedIn = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/checkin/${locationSlug}`);
+        if (res.ok) {
+          const data = await res.json();
+          setCheckedIn(data);
+        }
+      } catch {}
+      setLoading(false);
+    };
+    fetchCheckedIn();
+    const iv = setInterval(fetchCheckedIn, 10000);
+    return () => clearInterval(iv);
+  }, [locationSlug]);
+
+  if (loading) return <div className="flex-1 flex items-center justify-center"><Loader2 className="w-6 h-6 text-red-500 animate-spin" /></div>;
+
+  return (
+    <div className="flex-1 overflow-y-auto p-4">
+      <div className="text-center mb-4">
+        <p className="text-slate-400 text-sm">{checkedIn.length} {checkedIn.length === 1 ? 'person' : 'people'} checked in</p>
+      </div>
+      {checkedIn.length === 0 ? (
+        <div className="text-center py-12">
+          <Users className="w-12 h-12 text-slate-700 mx-auto mb-3" />
+          <p className="text-slate-500 text-sm">No one has checked in yet</p>
+          <p className="text-slate-600 text-xs mt-1">Be the first!</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {checkedIn.map(user => (
+            <div key={user.id} className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${user.user_profile_id === userId ? 'bg-red-600/10 border-red-600/30' : 'bg-slate-900/50 border-slate-800/50'}`}>
+              <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-lg shrink-0">
+                {user.avatar_emoji || '👤'}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-white text-sm font-semibold truncate">
+                  {user.display_name}
+                  {user.user_profile_id === userId && <span className="text-red-400 text-xs ml-2">(You)</span>}
+                </p>
+                {user.mood && <p className="text-slate-400 text-xs">{user.mood}</p>}
+                {user.message && <p className="text-slate-500 text-xs mt-0.5 truncate">{user.message}</p>}
+              </div>
+              <span className="text-slate-600 text-xs shrink-0">
+                {new Date(user.checked_in_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ========== MAIN SOCIAL WALL PAGE ==========
 const SocialWallPage = () => {
   const { slug } = useParams();
@@ -826,6 +886,7 @@ const SocialWallPage = () => {
 
   const tabs = [
     ...(isStreaming ? [{ id: 'live', label: 'Live', icon: Video }] : []),
+    { id: 'here', label: 'Here', icon: Users },
     { id: 'feed', label: 'Feed', icon: MessageCircle },
     { id: 'chat', label: 'Chat', icon: Hash },
     { id: 'dms', label: 'DMs', icon: Mail, badge: unreadDMs }
@@ -919,6 +980,7 @@ const SocialWallPage = () => {
       {/* Content */}
       <div className="flex-1 max-w-lg mx-auto w-full flex flex-col overflow-hidden">
         {activeTab === 'live' && isStreaming && <LiveTab djStatus={djStatus} locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} />}
+        {activeTab === 'here' && <WhosHereTab locationSlug={slug} userId={userId} />}
         {activeTab === 'feed' && <FeedTab locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} djStatus={djStatus} />}
         {activeTab === 'chat' && <ChatTab locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} />}
         {activeTab === 'dms' && <DMsTab userId={userId} userName={userName} userAvatar={userAvatar} locationSlug={slug} />}
