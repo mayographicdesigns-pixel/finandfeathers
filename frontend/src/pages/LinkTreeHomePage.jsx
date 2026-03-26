@@ -274,14 +274,14 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
             </p>
           </div>
 
-          {/* Closest Location */}
+          {/* Closest Location - Primary focus */}
           {closestLocation && (
-            <div className="bg-red-900/30 border border-red-600/30 rounded-lg p-2.5 mb-4">
-              <div className="flex items-center gap-2 text-red-400 text-xs mb-0.5">
+            <div className="bg-red-900/20 border border-red-600/30 rounded-xl p-4 mb-4 text-center">
+              <div className="flex items-center justify-center gap-2 text-red-400 text-xs font-medium mb-1.5">
                 <Navigation className="w-3.5 h-3.5" />
-                <span>Your nearest location:</span>
+                <span>You're near</span>
               </div>
-              <p className="text-white font-semibold text-sm">{closestLocation.name.replace('Fin & Feathers - ', '')}</p>
+              <p className="text-white font-bold text-lg mb-0.5">{closestLocation.name.replace('Fin & Feathers - ', '')}</p>
               <p className="text-slate-400 text-xs">{closestLocation.address}</p>
             </div>
           )}
@@ -354,9 +354,28 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
             </>
           )}
 
-          {/* New user — Step 1: Form + Client/Staff */}
+          {/* New user — Step 1: Login prompt + Guest option */}
           {!isReturningUser && step === 'form' && (
             <>
+              {/* Primary: Log In / Sign Up */}
+              <Button
+                onClick={() => {
+                  sessionStorage.setItem('ff_welcome_shown_session', 'true');
+                  if (closestLocation) localStorage.setItem('ff_user_location', closestLocation.slug);
+                  navigate('/account');
+                }}
+                className="w-full h-14 bg-red-600 hover:bg-red-700 text-white rounded-xl text-base font-semibold transition-all hover:scale-[1.02] mb-3"
+                data-testid="welcome-login-btn"
+              >
+                Log In / Sign Up
+              </Button>
+
+              {/* Secondary: Continue as Guest */}
+              <div className="relative my-3">
+                <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-700/50" /></div>
+                <div className="relative flex justify-center"><span className="bg-slate-900 px-3 text-slate-500 text-xs">or continue as guest</span></div>
+              </div>
+
               <div className="space-y-3 mb-4">
                 <div>
                   <label className="block text-xs font-medium text-slate-300 mb-1.5">Your Name *</label>
@@ -367,28 +386,6 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
                     onChange={(e) => setName(e.target.value)}
                     className="bg-slate-800 border-slate-700 text-white h-9 text-sm"
                     data-testid="welcome-name-input"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Phone Number</label>
-                  <Input
-                    type="tel"
-                    placeholder="(555) 123-4567"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="bg-slate-800 border-slate-700 text-white h-9 text-sm"
-                    data-testid="welcome-phone-input"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Email</label>
-                  <Input
-                    type="email"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="bg-slate-800 border-slate-700 text-white h-9 text-sm"
-                    data-testid="welcome-email-input"
                   />
                 </div>
               </div>
