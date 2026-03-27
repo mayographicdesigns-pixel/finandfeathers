@@ -855,7 +855,7 @@ const WhosHereTab = ({ locationSlug, userId, userName, djStatus }) => {
                 {user.message && <p className="text-slate-500 text-xs mt-0.5 truncate">{user.message}</p>}
               </div>
               <span className="text-slate-600 text-xs shrink-0">
-                {new Date(user.checked_in_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                {new Date(user.checked_in_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', timeZone: djStatus?.timezone || 'America/New_York' })}
               </span>
             </div>
           ))}

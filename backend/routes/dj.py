@@ -370,36 +370,58 @@ async def get_next_dj_session(location_slug: str):
     karaoke = await db.karaoke_sessions.find_one({"location_slug": location_slug}, {"_id": 0})
     karaoke_active = karaoke.get("active", False) if karaoke else False
 
+    # Check all karaoke schedules to determine if we're in a window right now
+    current_hour_min = local_now.strftime("%H:%M")
+    in_any_karaoke_window = False
+    matching_schedule = None
+
+    for s in await db.dj_schedules.find(
+        {"location_slug": location_slug, "is_active": True, "is_recurring": True},
+        {"_id": 0}
+    ).to_list(50):
+        notes = (s.get("notes") or "").upper()
+        if "KARAOKE" not in notes:
+            continue
+        dow = s.get("day_of_week")
+        if dow is None:
+            continue
+
+        start_t = s.get("start_time", "20:00")
+        end_t = s.get("end_time", "02:00")
+        in_window = False
+
+        if end_t < start_t:  # Crosses midnight (e.g., 20:00-02:00)
+            if dow == current_day and current_hour_min >= start_t:
+                in_window = True
+            # Also check if we're past midnight on the next day
+            prev_day = (current_day - 1) % 7
+            if dow == prev_day and current_hour_min < end_t:
+                in_window = True
+        else:
+            if dow == current_day and start_t <= current_hour_min < end_t:
+                in_window = True
+
+        if in_window:
+            in_any_karaoke_window = True
+            matching_schedule = s
+            break
+
     # Auto-activate karaoke if a scheduled karaoke night is happening right now
-    if not karaoke_active:
-        tz = get_location_tz(location_slug)
-        current_hour_min = local_now.strftime("%H:%M")
-        for s in await db.dj_schedules.find(
-            {"location_slug": location_slug, "is_active": True, "is_recurring": True},
-            {"_id": 0}
-        ).to_list(50):
-            notes = (s.get("notes") or "").upper()
-            if "KARAOKE" not in notes:
-                continue
-            dow = s.get("day_of_week")
-            if dow is None or dow != current_day:
-                continue
-            start_t = s.get("start_time", "20:00")
-            end_t = s.get("end_time", "02:00")
-            # Check if current time is within the schedule window
-            in_window = False
-            if end_t < start_t:  # Crosses midnight
-                in_window = current_hour_min >= start_t or current_hour_min < end_t
-            else:
-                in_window = start_t <= current_hour_min < end_t
-            if in_window:
-                await db.karaoke_sessions.update_one(
-                    {"location_slug": location_slug},
-                    {"$set": {"location_slug": location_slug, "active": True, "dj_id": s.get("dj_id", ""), "started_at": datetime.now(timezone.utc).isoformat(), "auto_activated": True}},
-                    upsert=True
-                )
-                karaoke_active = True
-                break
+    if not karaoke_active and in_any_karaoke_window and matching_schedule:
+        await db.karaoke_sessions.update_one(
+            {"location_slug": location_slug},
+            {"$set": {"location_slug": location_slug, "active": True, "dj_id": matching_schedule.get("dj_id", ""), "started_at": datetime.now(timezone.utc).isoformat(), "auto_activated": True}},
+            upsert=True
+        )
+        karaoke_active = True
+
+    # Auto-deactivate karaoke if it was auto-activated and the schedule window has ended
+    if karaoke_active and karaoke and karaoke.get("auto_activated") and not in_any_karaoke_window:
+        await db.karaoke_sessions.update_one(
+            {"location_slug": location_slug},
+            {"$set": {"active": False, "ended_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        karaoke_active = False
 
     if live_dj:
         return {
