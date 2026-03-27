@@ -76,6 +76,24 @@ async def submit_song_request(request: SongRequestCreate):
     request_dict["status"] = "pending"
     request_dict["created_at"] = datetime.now(timezone.utc)
     await db.song_requests.insert_one(request_dict)
+
+    # Auto-post karaoke signups to the wall feed
+    if request_dict.get("request_type") == "karaoke":
+        wall_post = {
+            "id": str(uuid.uuid4()),
+            "location_slug": request_dict.get("location_slug", ""),
+            "user_id": request_dict.get("name", "Guest"),
+            "user_name": request_dict.get("name", "Someone"),
+            "user_avatar": "🎤",
+            "post_type": "karaoke_signup",
+            "content": f"🎤 {request_dict.get('name', 'Someone')} signed up for karaoke: \"{request_dict.get('song', 'a song')}\"",
+            "image_url": None,
+            "likes": [],
+            "comments": [],
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.wall_posts.insert_one(wall_post)
+
     return SongRequestResponse(**request_dict)
 
 
@@ -352,6 +370,37 @@ async def get_next_dj_session(location_slug: str):
     karaoke = await db.karaoke_sessions.find_one({"location_slug": location_slug}, {"_id": 0})
     karaoke_active = karaoke.get("active", False) if karaoke else False
 
+    # Auto-activate karaoke if a scheduled karaoke night is happening right now
+    if not karaoke_active:
+        tz = get_location_tz(location_slug)
+        current_hour_min = local_now.strftime("%H:%M")
+        for s in await db.dj_schedules.find(
+            {"location_slug": location_slug, "is_active": True, "is_recurring": True},
+            {"_id": 0}
+        ).to_list(50):
+            notes = (s.get("notes") or "").upper()
+            if "KARAOKE" not in notes:
+                continue
+            dow = s.get("day_of_week")
+            if dow is None or dow != current_day:
+                continue
+            start_t = s.get("start_time", "20:00")
+            end_t = s.get("end_time", "02:00")
+            # Check if current time is within the schedule window
+            in_window = False
+            if end_t < start_t:  # Crosses midnight
+                in_window = current_hour_min >= start_t or current_hour_min < end_t
+            else:
+                in_window = start_t <= current_hour_min < end_t
+            if in_window:
+                await db.karaoke_sessions.update_one(
+                    {"location_slug": location_slug},
+                    {"$set": {"location_slug": location_slug, "active": True, "dj_id": s.get("dj_id", ""), "started_at": datetime.now(timezone.utc).isoformat(), "auto_activated": True}},
+                    upsert=True
+                )
+                karaoke_active = True
+                break
+
     if live_dj:
         return {
             "is_live": True,
@@ -436,7 +485,7 @@ async def get_next_dj_session(location_slug: str):
 
         return {
             "is_live": False,
-            "karaoke_active": False,
+            "karaoke_active": karaoke_active,
             "timezone": tz_name,
             "next_session": {
                 "dj_name": best.get("dj_name"),

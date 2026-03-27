@@ -710,9 +710,14 @@ const DJStatusBanner = ({ djStatus, locationSlug }) => {
 };
 
 // ========== WHO'S HERE TAB ==========
-const WhosHereTab = ({ locationSlug, userId }) => {
+const WhosHereTab = ({ locationSlug, userId, userName, djStatus }) => {
   const [checkedIn, setCheckedIn] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [karaokeSong, setKaraokeSong] = useState('');
+  const [karaokeSubmitting, setKaraokeSubmitting] = useState(false);
+  const [karaokeQueue, setKaraokeQueue] = useState([]);
+
+  const karaokeActive = djStatus?.karaoke_active;
 
   useEffect(() => {
     const fetchCheckedIn = async () => {
@@ -730,11 +735,102 @@ const WhosHereTab = ({ locationSlug, userId }) => {
     return () => clearInterval(iv);
   }, [locationSlug]);
 
+  // Fetch karaoke queue when active
+  useEffect(() => {
+    if (!karaokeActive) return;
+    const fetchQueue = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/karaoke/queue/${locationSlug}`);
+        if (res.ok) {
+          const data = await res.json();
+          setKaraokeQueue(data.pending || []);
+        }
+      } catch {}
+    };
+    fetchQueue();
+    const iv = setInterval(fetchQueue, 8000);
+    return () => clearInterval(iv);
+  }, [locationSlug, karaokeActive]);
+
+  const submitKaraoke = async () => {
+    if (!karaokeSong.trim()) return;
+    setKaraokeSubmitting(true);
+    try {
+      await fetch(`${API_URL}/api/social/song-request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          location_slug: locationSlug,
+          name: userName || 'Guest',
+          song: karaokeSong.trim(),
+          request_type: 'karaoke'
+        })
+      });
+      setKaraokeSong('');
+      // Refresh queue
+      const res = await fetch(`${API_URL}/api/karaoke/queue/${locationSlug}`);
+      if (res.ok) {
+        const data = await res.json();
+        setKaraokeQueue(data.pending || []);
+      }
+    } catch {}
+    setKaraokeSubmitting(false);
+  };
+
   if (loading) return <div className="flex-1 flex items-center justify-center"><Loader2 className="w-6 h-6 text-red-500 animate-spin" /></div>;
 
   return (
-    <div className="flex-1 overflow-y-auto p-4">
-      <div className="text-center mb-4">
+    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {/* Karaoke sign-up when active */}
+      {karaokeActive && (
+        <div className="bg-purple-900/30 border border-purple-500/40 rounded-xl p-4" data-testid="karaoke-signup">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 rounded-full bg-purple-600/30 flex items-center justify-center">
+              <span className="text-lg">🎤</span>
+            </div>
+            <div>
+              <p className="text-purple-300 font-bold text-sm">Karaoke is LIVE!</p>
+              <p className="text-purple-400/70 text-xs">Sign up to sing</p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={karaokeSong}
+              onChange={(e) => setKaraokeSong(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && submitKaraoke()}
+              placeholder="What song are you singing?"
+              className="flex-1 bg-slate-800/80 border border-purple-600/30 rounded-lg px-3 py-2 text-white text-sm placeholder:text-slate-500 outline-none focus:border-purple-500"
+              data-testid="karaoke-song-input"
+            />
+            <Button
+              onClick={submitKaraoke}
+              disabled={karaokeSubmitting || !karaokeSong.trim()}
+              className="bg-purple-600 hover:bg-purple-700 px-4 shrink-0"
+              data-testid="karaoke-submit-btn"
+            >
+              {karaokeSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Sign Up'}
+            </Button>
+          </div>
+          {/* Queue */}
+          {karaokeQueue.length > 0 && (
+            <div className="mt-3 space-y-1.5">
+              <p className="text-purple-400 text-xs font-medium">Up Next ({karaokeQueue.length})</p>
+              {karaokeQueue.map((item, i) => (
+                <div key={item.id} className="flex items-center gap-2 text-sm">
+                  <span className="text-purple-500 text-xs w-5 text-right">{i + 1}.</span>
+                  <span className="text-white font-medium">{item.name}</span>
+                  <span className="text-slate-500">—</span>
+                  <span className="text-purple-300 truncate">{item.song}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Who's here */}
+      <div className="text-center">
         <p className="text-slate-400 text-sm">{checkedIn.length} {checkedIn.length === 1 ? 'person' : 'people'} checked in</p>
       </div>
       {checkedIn.length === 0 ? (
@@ -995,7 +1091,7 @@ const SocialWallPage = () => {
       {/* Content */}
       <div className="flex-1 max-w-lg mx-auto w-full flex flex-col overflow-hidden">
         {activeTab === 'live' && isStreaming && <LiveTab djStatus={djStatus} locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} />}
-        {activeTab === 'here' && <WhosHereTab locationSlug={slug} userId={userId} />}
+        {activeTab === 'here' && <WhosHereTab locationSlug={slug} userId={userId} userName={userName} djStatus={djStatus} />}
         {activeTab === 'feed' && <FeedTab locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} djStatus={djStatus} />}
         {activeTab === 'chat' && <ChatTab locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} />}
         {activeTab === 'dms' && <DMsTab userId={userId} userName={userName} userAvatar={userAvatar} locationSlug={slug} />}
