@@ -1,20 +1,11 @@
 # Fin & Feathers Restaurant PWA — Product Requirements Document
 
-## Latest Changes (2026-03-25)
-- **Bug Fix:** Restored 90 accidentally deleted functions in `api.js` that were purged during an aggressive dead-code cleanup, which broke the entire frontend with `TypeError: X is not a function` errors.
-- **DJ Status Fix:** "LIVE NOW" on Social Wall and Location pages now only shows when a DJ is actually checked in — not for karaoke alone. Song request and karaoke indicators hidden when no DJ present. Location pages show "Upcoming DJs" schedule instead.
-- **Geolocation Popup Every Session:** Welcome popup now shows every app session (not just once ever), using geolocation to detect the user's nearest location. Returning users see a simplified view with a "Go to Social Wall" quick action and a list of all other locations to switch to.
-- **Social Wall Images → Gallery:** Photos posted on the Social Wall feed are automatically added to the main gallery, tagged with `location_slug`, `posted_by`, and `source: social_wall`. Gallery API supports `?location_slug=` filtering.
-- **Weekly Promo Videos (Admin):** Admin panel has a "Weekly Promo Videos" card under POST SPECIAL tab. Admins can set/update video URLs for each day (Sun-Sat) — these feed the homepage video carousel. Falls back to hardcoded defaults if no admin-managed videos exist. Backend: `GET/PUT /api/admin/weekly-videos`, `GET /api/weekly-videos` (public).
-- **Per-Location Menus:** All 175 menu items copied to each of 8 locations (excluding hibachi-food-truck = 1,400 items). Menu page uses geolocation to auto-detect closest location and shows that location's menu. Location picker dropdown lets users switch. Admin can edit items per-location via the inline menu editor. Backend endpoints now accept `?location_slug=` filter. New admin endpoint: `POST /api/admin/menu-items/copy-to-locations`.
-- **Check-in → Social Wall Integration:** CheckInPage uses geolocation, creates a check-in record on Client/Staff selection, then routes directly to `/social/{location_slug}`. New "Here" tab on the Social Wall shows everyone currently checked in at that location, with real-time polling every 10s. Current user is highlighted in red.
-- Simplified CheckInPage to only Client/Staff selection + staff role picker
-- Added Close (X) bypass button to skip check-in
-- Removed location detection, song requests, tipping from check-in page
-- Updated welcome popup: "I am a..." now shows Client/Staff buttons, staff position picker on step 2
-- Fixed Facebook page URL to finandfeathersrestaurants
-- **DJ Live Streaming:** DJs can now "Go Live" by pasting a YouTube/Facebook/Instagram Live URL from their DJ panel. A "Live" tab auto-appears on the Social Wall with the embedded stream + live chat below it. Stream is auto-cleared on checkout.
-- **Location-Based Timezone:** Auto-detects timezone from location (GA→Eastern, NV→Pacific). Social Wall header shows current local time (e.g., "9:02 AM EDT"). DJ schedule times display with timezone abbreviation. Backend uses location-aware datetime comparisons for schedules.
+## Latest Changes (2026-03-27)
+- **Timezone Verification:** Confirmed all Georgia locations use `America/New_York` (EDT) and Las Vegas uses `America/Los_Angeles` (PDT). Backend `timezone_utils.py` maps all 9 locations correctly. Frontend displays timezone abbreviation in headers, DJ schedules, and check-in times.
+- **Karaoke Auto-Deactivation Fix:** Added logic to auto-deactivate karaoke sessions when the schedule window ends. Previously, auto-activated sessions stayed active forever. Now checks if current time is outside all karaoke schedule windows for the location and deactivates if `auto_activated` flag is set.
+- **Midnight-Crossing Fix:** Improved karaoke schedule window detection to properly handle events crossing midnight (e.g., 20:00-02:00). Now checks both the starting day and the next day for the post-midnight portion.
+- **Check-in Time Display Fix:** Fixed check-in timestamps on the "Who's Here" tab to display in the location's timezone instead of the browser's local timezone (which was UTC in some clients).
+- **Check-in TTL Confirmed:** Check-ins auto-expire after 4 hours via `expires_at` field, cleaned up on read. Manual check-out also available via DELETE endpoint.
 
 ## Original Problem Statement
 Build a full-featured restaurant PWA for Fin & Feathers Restaurants, including:
@@ -42,13 +33,14 @@ Build a full-featured restaurant PWA for Fin & Feathers Restaurants, including:
 ├── models.py         — All Pydantic models
 ├── auth.py           — JWT + password hashing utilities
 ├── push_service.py   — Push notification service
+├── timezone_utils.py — Location timezone mapping (GA→Eastern, NV→Pacific)
 └── routes/
     ├── auth.py       — Admin login, Google OAuth, user registration, password login, forgot/reset password
     ├── events.py     — Events CRUD, free reservations, AI flyer extraction
     ├── payments.py   — Stripe checkout (tokens, events, merch), webhooks, payment methods
     ├── wall.py       — Social wall posts, group chat, DMs, notifications
     ├── careers.py    — Job applications
-    └── dj.py         — DJ/karaoke management, song requests, tipping
+    └── dj.py         — DJ/karaoke management, song requests, tipping, auto-activation/deactivation
 ```
 
 ## Key API Endpoints
@@ -59,11 +51,14 @@ Build a full-featured restaurant PWA for Fin & Feathers Restaurants, including:
 - `/api/webhook/stripe` — Stripe webhooks
 - `/api/payment/methods` — Available payment methods
 - `/api/wall/*` — Social wall, chat, DMs
-- `/api/dj/*` — DJ management
+- `/api/dj/*` — DJ management, karaoke
+- `/api/dj/next-session/{location_slug}` — Returns DJ status, karaoke state, timezone info
 - `/api/locations` — Location management
 - `/api/tokens/*` — Token economy
 - `/api/user/profile/*` — User profile management
 - `/api/admin/*` — Admin management
+- `/api/checkin` — Check-in/out with 4-hour TTL
+- `/api/menu/items?location_slug=X` — Per-location menus
 
 ## Key DB Collections
 - `user_profiles` — User data with role, staff_title, token balances
@@ -76,32 +71,38 @@ Build a full-featured restaurant PWA for Fin & Feathers Restaurants, including:
 - `social_wall_dms` — Direct messages
 - `social_notifications` — Push notifications
 - `dj_tips` — DJ tip records
+- `dj_schedules` — DJ schedule with day_of_week (0=Mon, 6=Sun)
+- `karaoke_sessions` — Per-location karaoke state with auto_activated flag
 - `locations` — Restaurant locations
+- `checkins` — User check-ins with expires_at (4h TTL)
+- `menu_items` — Per-location menu items
+- `gallery` — Gallery items with location_slug and source tags
 
 ## Completed Features
 - Full admin dashboard with all content management tabs
 - DJ/Karaoke system with song requests and tipping
-- Social Wall with posts, group chat, DMs, push notifications
-- DJ Status Banner: Shows "LIVE NOW" or "No DJ — Next Session" with DJ name, event, date/time
-- Conditional song request: Song button only visible when DJ is live or karaoke active
-- Check-in page with Client/Staff role selection, linked to My Account
-- My Account page with Profile, Photos, DMs (Messages), and History tabs
-- Account <-> Check-in bidirectional navigation
-- Signup/login redirects to Check-in flow
-- Social Media Feed: Official Instagram embed (@finandfeathers) + Facebook Page Plugin between Find a Location and Order Online
-- Events toggle: admin can activate/deactivate events, reflected on homepage immediately
+- Karaoke auto-activation AND auto-deactivation by schedule
+- Social Wall (Vibe page) with posts, group chat, DMs, push notifications
+- DJ Status Banner: Shows "LIVE NOW" or "No DJ — Next Session" with timezone
+- Check-in with 4-hour TTL auto-expiry and manual check-out
+- Per-location menus with geolocation auto-detect
+- Location-based timezone support (EST/EDT for GA, PST/PDT for NV)
+- Geolocation welcome popup every session
+- Gallery auto-add from social wall images
+- Weekly promo videos admin management
 - Token economy with Stripe + WooCommerce
 - Google OAuth + email/password authentication
 - AI-powered event flyer reader
 - Careers/job application system
-- Menu, gallery, specials management
-- User profile management
+- Las Vegas hookah pricing hidden
 
 ## Current Status
-All features working. `api.js` restored to full 2400-line version after botched cleanup. Major backend refactoring completed — server.py reduced from 5190 to ~3450 lines.
+All features working. Timezone handling verified for all locations. Karaoke auto-activation/deactivation fully functional. 100% test pass rate (16 backend + frontend verification).
 
 ## Upcoming Tasks
+- (P2) Continue `server.py` refactoring (extract menus, gallery, etc.)
 - (P2) Per-Location Weekly Specials management
 - (P3) WordPress Integration
 - (P3) Apple Sign-In Integration
 - (P3) Merchandise Store Enhancements
+- (P3) Safe `api.js` dead code cleanup (use AST-aware tools only)
