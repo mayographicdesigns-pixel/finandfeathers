@@ -310,7 +310,7 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
                   data-testid="welcome-goto-social-btn"
                 >
                   <Users className="w-5 h-5 mr-2" />
-                  {hasProfile ? 'Go to Social Wall' : 'Check In Here'}
+                  {hasProfile ? 'Join the Vibe' : 'Check In Here'}
                 </Button>
               )}
 
@@ -1257,7 +1257,7 @@ const LinkTreeHomePage = () => {
             Find a Location
           </Button>
 
-          {/* Social Wall / My Account */}
+          {/* Join the Vibe / My Account */}
           <Button
             onClick={() => {
               const profileId = localStorage.getItem('ff_user_profile_id');
@@ -1274,7 +1274,7 @@ const LinkTreeHomePage = () => {
             data-testid="my-account-btn"
           >
             <User className="w-5 h-5 mr-2" />
-            {localStorage.getItem('ff_user_profile_id') ? 'Social Wall' : 'My Account'}
+            {localStorage.getItem('ff_user_profile_id') ? 'Join the Vibe' : 'My Account'}
           </Button>
 
           {/* Karaoke/Song Request (when live) */}

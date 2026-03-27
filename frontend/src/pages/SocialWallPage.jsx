@@ -773,7 +773,7 @@ const WhosHereTab = ({ locationSlug, userId }) => {
 const SocialWallPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('feed');
+  const [activeTab, setActiveTab] = useState('here');
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [unreadDMs, setUnreadDMs] = useState(0);
@@ -794,11 +794,26 @@ const SocialWallPage = () => {
         if (!res.ok) { navigate('/account'); return; }
         const data = await res.json();
         setUserProfile(data);
+
+        // Auto check-in at this location
+        try {
+          await fetch(`${API_URL}/api/checkin`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              location_slug: slug,
+              display_name: data.name || 'Guest',
+              avatar_emoji: data.avatar_emoji || '👤',
+              user_profile_id: data.id
+            })
+          });
+          localStorage.setItem('ff_user_location', slug);
+        } catch {}
       } catch { navigate('/account'); }
       finally { setLoading(false); }
     };
     loadProfile();
-  }, [navigate]);
+  }, [navigate, slug]);
 
   // Fetch DJ status for this location
   useEffect(() => {
@@ -906,7 +921,7 @@ const SocialWallPage = () => {
               <p className="text-slate-500 text-xs">
                 {(() => {
                   const tz = djStatus?.timezone || locations.find(l => l.slug === slug)?.timezone;
-                  return tz ? getCurrentLocalTime(tz) : 'Social Wall';
+                  return tz ? getCurrentLocalTime(tz) : 'Checked In';
                 })()}
               </p>
             </div>

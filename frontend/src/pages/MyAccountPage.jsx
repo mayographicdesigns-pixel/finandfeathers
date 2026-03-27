@@ -1852,7 +1852,7 @@ const MyAccountPage = () => {
                     <div className="text-center py-12 px-4">
                       <MessageCircle className="w-12 h-12 text-slate-700 mx-auto mb-3" />
                       <p className="text-slate-400 text-sm">No messages yet</p>
-                      <p className="text-slate-600 text-xs mt-1">Visit a location's social wall to start chatting</p>
+                      <p className="text-slate-600 text-xs mt-1">Join the vibe at a location to start chatting</p>
                     </div>
                   ) : (
                     <div className="divide-y divide-slate-800">

@@ -488,7 +488,7 @@ const DJPanelPage = () => {
               <div className="flex-1">
                 <p className="text-white font-medium">Go Live</p>
                 <p className={`text-xs ${streamActive ? 'text-green-400' : 'text-slate-500'}`}>
-                  {streamActive ? 'STREAMING — Viewers can watch on Social Wall' : 'Stream via YouTube, Facebook, or Instagram Live'}
+                  {streamActive ? 'STREAMING — Viewers can watch on the Vibe page' : 'Stream via YouTube, Facebook, or Instagram Live'}
                 </p>
               </div>
             </div>
