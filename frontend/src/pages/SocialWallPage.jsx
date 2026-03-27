@@ -481,6 +481,8 @@ const DMsTab = ({ userId, userName, userAvatar, locationSlug }) => {
 // ========== LIVE STREAM TAB ==========
 const getEmbedUrl = (url) => {
   if (!url) return null;
+  // In-app camera stream
+  if (url.startsWith('in-app://')) return { type: 'in-app', embedUrl: null, locationSlug: url.replace('in-app://', '') };
   // YouTube: youtube.com/watch?v=ID or youtu.be/ID or youtube.com/live/ID
   const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|live\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/);
   if (ytMatch) return { type: 'youtube', embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1` };
@@ -502,12 +504,142 @@ const LiveTab = ({ djStatus, locationSlug, userId, userName, userAvatar }) => {
   const streamUrl = djStatus?.live_stream_url;
   const embed = getEmbedUrl(streamUrl);
   const djName = djStatus?.dj_stage_name || djStatus?.dj_name || 'DJ';
+  const videoRef = React.useRef(null);
+  const wsRef = React.useRef(null);
+  const mediaSourceRef = React.useRef(null);
+  const sourceBufferRef = React.useRef(null);
+  const chunkQueue = React.useRef([]);
+  const [wsConnected, setWsConnected] = React.useState(false);
+  const [viewerCount, setViewerCount] = React.useState(0);
+
+  // In-app stream player via WebSocket + MediaSource
+  React.useEffect(() => {
+    if (embed?.type !== 'in-app') return;
+
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${wsProtocol}//${window.location.host}/api/ws/live-stream/${locationSlug}?role=viewer`;
+
+    let ms, sb;
+    const video = videoRef.current;
+    if (!video) return;
+
+    const connectStream = () => {
+      ms = new MediaSource();
+      mediaSourceRef.current = ms;
+      video.src = URL.createObjectURL(ms);
+
+      ms.addEventListener('sourceopen', () => {
+        try {
+          const mimeType = 'video/webm;codecs=vp9,opus';
+          const fallback = 'video/webm;codecs=vp8,opus';
+          sb = ms.addSourceBuffer(MediaSource.isTypeSupported(mimeType) ? mimeType : fallback);
+          sourceBufferRef.current = sb;
+          sb.mode = 'sequence';
+
+          sb.addEventListener('updateend', () => {
+            if (chunkQueue.current.length > 0 && !sb.updating) {
+              sb.appendBuffer(chunkQueue.current.shift());
+            }
+            // Keep buffer trim — only keep last 30 seconds
+            if (video.buffered.length > 0) {
+              const end = video.buffered.end(video.buffered.length - 1);
+              if (end - video.currentTime > 30) {
+                try { sb.remove(0, end - 15); } catch {}
+              }
+            }
+          });
+        } catch (e) {
+          console.error('SourceBuffer error:', e);
+        }
+      });
+
+      const ws = new WebSocket(wsUrl);
+      wsRef.current = ws;
+
+      ws.onopen = () => setWsConnected(true);
+
+      ws.onmessage = (e) => {
+        if (typeof e.data === 'string') {
+          if (e.data === 'STREAM_ENDED' || e.data === 'NO_STREAM') {
+            setWsConnected(false);
+            return;
+          }
+          return;
+        }
+        // Binary data — video chunk
+        const reader = new FileReader();
+        reader.onload = () => {
+          const buf = new Uint8Array(reader.result);
+          if (sourceBufferRef.current && !sourceBufferRef.current.updating) {
+            try { sourceBufferRef.current.appendBuffer(buf); } catch { chunkQueue.current.push(buf); }
+          } else {
+            chunkQueue.current.push(buf);
+          }
+          // Auto-play and seek to live edge
+          if (video.paused) video.play().catch(() => {});
+          if (video.buffered.length > 0) {
+            const liveEdge = video.buffered.end(video.buffered.length - 1);
+            if (liveEdge - video.currentTime > 3) {
+              video.currentTime = liveEdge - 0.5;
+            }
+          }
+        };
+        reader.readAsArrayBuffer(e.data);
+      };
+
+      ws.onclose = () => setWsConnected(false);
+      ws.onerror = () => setWsConnected(false);
+    };
+
+    connectStream();
+
+    // Poll viewer count
+    const poll = setInterval(async () => {
+      try {
+        const res = await fetch(`${window.location.origin}/api/stream/active/${locationSlug}`);
+        const data = await res.json();
+        setViewerCount(data.viewer_count || 0);
+      } catch {}
+    }, 5000);
+
+    return () => {
+      clearInterval(poll);
+      if (wsRef.current) { try { wsRef.current.close(); } catch {} }
+      if (mediaSourceRef.current && mediaSourceRef.current.readyState === 'open') {
+        try { mediaSourceRef.current.endOfStream(); } catch {}
+      }
+      chunkQueue.current = [];
+    };
+  }, [embed?.type, locationSlug]);
+
+  const isInApp = embed?.type === 'in-app';
 
   return (
     <div className="flex flex-col h-full">
       {/* Stream area */}
       <div className="shrink-0">
-        {embed?.embedUrl ? (
+        {isInApp ? (
+          <div className="relative w-full bg-black">
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              className="w-full aspect-video object-contain bg-black"
+              data-testid="in-app-stream-player"
+            />
+            {!wsConnected && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/80">
+                <div className="text-center">
+                  <Video className="w-10 h-10 text-slate-500 mx-auto mb-2 animate-pulse" />
+                  <p className="text-slate-400 text-sm">Connecting to stream...</p>
+                </div>
+              </div>
+            )}
+            <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded-lg text-white text-xs">
+              {viewerCount} watching
+            </div>
+          </div>
+        ) : embed?.embedUrl ? (
           <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
             <iframe
               src={embed.embedUrl}
@@ -545,10 +677,11 @@ const LiveTab = ({ djStatus, locationSlug, userId, userName, userAvatar }) => {
           </span>
           <span className="text-green-400 text-xs font-bold uppercase tracking-wider">Live</span>
           <span className="text-white text-xs font-medium">{djName}</span>
+          {isInApp && <span className="text-slate-400 text-xs ml-auto">{viewerCount} viewers</span>}
         </div>
       </div>
 
-      {/* Chat below the stream — reuses ChatTab logic inline */}
+      {/* Chat below the stream */}
       <LiveChat locationSlug={locationSlug} userId={userId} userName={userName} userAvatar={userAvatar} />
     </div>
   );

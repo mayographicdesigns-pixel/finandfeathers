@@ -770,30 +770,41 @@ const LinkTreeHomePage = () => {
   // Karaoke & DJ state - check if any location has active karaoke or a DJ present
   const [karaokeLocation, setKaraokeLocation] = useState(null);
   const [djLocation, setDjLocation] = useState(null);
+  const [liveStreamInfo, setLiveStreamInfo] = useState(null); // { location_slug, dj_name, viewer_count }
 
   useEffect(() => {
     const checkLiveStatus = async () => {
       try {
+        // Check for active in-app streams first
+        const streamRes = await fetch(`${API_URL}/api/stream/active`);
+        const streams = await streamRes.json();
+        if (streams.length > 0) {
+          setLiveStreamInfo(streams[0]);
+        }
+
         const res = await fetch(`${API_URL}/api/locations`);
         const locs = await res.json();
         for (const loc of locs) {
-          // Check karaoke first
-          const kRes = await fetch(`${API_URL}/api/karaoke/status/${loc.slug}`);
-          const kData = await kRes.json();
-          if (kData.active) {
-            setKaraokeLocation(loc);
-            return;
-          }
-          // Check if DJ is present
-          const dRes = await fetch(`${API_URL}/api/dj/at-location/${loc.slug}`);
+          // Check if DJ is live and streaming
+          const dRes = await fetch(`${API_URL}/api/dj/next-session/${loc.slug}`);
           const dData = await dRes.json();
-          if (dData && dData.checked_in) {
+          if (dData.is_live && dData.live_stream_url) {
             setDjLocation(loc);
+            // If it's not an in-app stream, still show as live
+            if (!liveStreamInfo && !dData.live_stream_url.startsWith('in-app://')) {
+              setLiveStreamInfo({ location_slug: loc.slug, dj_name: dData.dj_stage_name || dData.dj_name, viewer_count: 0 });
+            }
+          }
+          // Check karaoke
+          if (dData.karaoke_active) {
+            setKaraokeLocation(loc);
           }
         }
       } catch (e) { console.error(e); }
     };
     checkLiveStatus();
+    const poll = setInterval(checkLiveStatus, 15000);
+    return () => clearInterval(poll);
   }, []);
 
   // Handle drag end for image reordering
@@ -1276,6 +1287,24 @@ const LinkTreeHomePage = () => {
             <User className="w-5 h-5 mr-2" />
             {localStorage.getItem('ff_user_profile_id') ? 'Join the Vibe' : 'My Account'}
           </Button>
+
+          {/* DJ IS LIVE STREAMING banner */}
+          {liveStreamInfo && (
+            <Button
+              onClick={() => navigate(`/social/${liveStreamInfo.location_slug}`)}
+              className="w-full bg-gradient-to-r from-red-600 via-red-500 to-orange-500 hover:from-red-700 hover:via-red-600 hover:to-orange-600 text-white h-16 text-lg font-bold rounded-xl transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-red-600/30 relative overflow-hidden"
+              data-testid="dj-live-streaming-btn"
+            >
+              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" style={{ animationDuration: '2s', animationIterationCount: 'infinite' }} />
+              <span className="relative flex items-center gap-2">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-white" />
+                </span>
+                DJ {liveStreamInfo.dj_name} is LIVE — Watch Now
+              </span>
+            </Button>
+          )}
 
           {/* Karaoke/Song Request (when live) */}
           {karaokeLocation && (

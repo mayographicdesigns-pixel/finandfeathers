@@ -3528,6 +3528,7 @@ from routes.dj import router as dj_router
 from routes.auth import router as auth_router
 from routes.events import router as events_router
 from routes.payments import router as payments_router
+from routes.stream import router as stream_router
 
 app.include_router(wall_router)
 app.include_router(careers_router)
@@ -3535,6 +3536,7 @@ app.include_router(dj_router)
 app.include_router(auth_router)
 app.include_router(events_router)
 app.include_router(payments_router)
+app.include_router(stream_router)
 
 # Include the main router
 app.include_router(api_router)
