@@ -300,17 +300,13 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
                   onClick={() => {
                     sessionStorage.setItem('ff_welcome_shown_session', 'true');
                     localStorage.setItem('ff_user_location', closestLocation.slug);
-                    if (hasProfile) {
-                      navigate(`/social/${closestLocation.slug}`);
-                    } else {
-                      navigate(`/locations/${closestLocation.slug}?checkin=true`);
-                    }
+                    onClose();
                   }}
                   className="w-full h-14 bg-red-600 hover:bg-red-700 text-white rounded-xl text-base font-semibold transition-all hover:scale-[1.02] mb-3"
                   data-testid="welcome-goto-social-btn"
                 >
                   <Users className="w-5 h-5 mr-2" />
-                  {hasProfile ? 'Join the Vibe' : 'Check In Here'}
+                  {hasProfile ? 'Check In !' : 'Check In Here'}
                 </Button>
               )}
 
@@ -324,11 +320,7 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
                       onClick={() => {
                         sessionStorage.setItem('ff_welcome_shown_session', 'true');
                         localStorage.setItem('ff_user_location', loc.slug);
-                        if (hasProfile) {
-                          navigate(`/social/${loc.slug}`);
-                        } else {
-                          navigate(`/locations/${loc.slug}?checkin=true`);
-                        }
+                        onClose();
                       }}
                       className="w-full flex items-center gap-2.5 p-2.5 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-red-600/40 transition-all text-left"
                       data-testid={`welcome-location-${loc.slug}`}
@@ -380,7 +372,7 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
                       onClick={() => {
                         sessionStorage.setItem('ff_welcome_shown_session', 'true');
                         localStorage.setItem('ff_user_location', loc.slug);
-                        navigate('/account');
+                        onClose();
                       }}
                       className="w-full flex items-center gap-2.5 p-2.5 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-red-600/40 transition-all text-left"
                       data-testid={`welcome-newuser-location-${loc.slug}`}
@@ -1268,7 +1260,7 @@ const LinkTreeHomePage = () => {
             Find a Location
           </Button>
 
-          {/* Join the Vibe / My Account */}
+          {/* Check In ! / My Account */}
           <Button
             onClick={() => {
               const profileId = localStorage.getItem('ff_user_profile_id');
@@ -1285,7 +1277,7 @@ const LinkTreeHomePage = () => {
             data-testid="my-account-btn"
           >
             <User className="w-5 h-5 mr-2" />
-            {localStorage.getItem('ff_user_profile_id') ? 'Join the Vibe' : 'My Account'}
+            {localStorage.getItem('ff_user_profile_id') ? 'Check In !' : 'My Account'}
           </Button>
 
           {/* DJ IS LIVE STREAMING banner */}
