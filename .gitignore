@@ -84,29 +84,17 @@ frontend/node_modules/.cache/default-development/24.pack
 frontend/node_modules/.cache/default-development/1.pack
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 frontend/node_modules/.cache/default-development/9.pack
 -e 
 # Environment files
-*.env
-*.env.*
 frontend/node_modules/.cache/default-development/16.pack
 frontend/node_modules/.cache/default-development/0.pack
 frontend/node_modules/.cache/default-development/2.pack
@@ -116,107 +104,59 @@ frontend/node_modules/.cache/default-development/8.pack
 frontend/node_modules/.cache/default-development/4.pack
 -e 
 # Environment files
-*.env
-*.env.*
 frontend/node_modules/.cache/default-development/5.pack
 -e 
 # Environment files
-*.env
-*.env.*
 frontend/node_modules/.cache/default-development/7.pack
 frontend/node_modules/.cache/default-development/11.pack
 frontend/node_modules/.cache/default-development/13.pack
 frontend/node_modules/.cache/default-development/13.pack
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 source_app/.git/objects/pack/pack-8acd9e78ede86a98a8bbe237dbccee7338675ae7.pack
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 frontend/node_modules/.cache/default-development/12.pack
 -e 
 # Environment files
-*.env
-*.env.*
 archive.zip
 exports/root/source_app/.git/objects/pack/pack-8acd9e78ede86a98a8bbe237dbccee7338675ae7.pack
 exports/root/frontend/node_modules/.cache/default-development/30.pack
@@ -226,61 +166,33 @@ exports/root/frontend/node_modules/.cache/default-development/10.pack
 frontend/node_modules/.cache/default-development/10.pack
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 -e 
 # Environment files
-*.env
-*.env.*
 frontend/node_modules/.cache/default-development/15.pack
 -e 
 # Environment files
-*.env
-*.env.*
 frontend/node_modules/.cache/default-development/19.pack
 frontend/node_modules/.cache/default-development/21.pack
 frontend/node_modules/.cache/default-development/23.pack
@@ -288,5 +200,3 @@ frontend/node_modules/.cache/default-development/22.pack
 frontend/node_modules/.cache/default-development/26.pack
 -e 
 # Environment files
-*.env
-*.env.*
