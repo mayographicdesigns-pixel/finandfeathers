@@ -1191,21 +1191,19 @@ const MenuPage = () => {
               </div>
             )}
             {renderSection('Salads', (itemsByCategory['salads'] || []).filter(item => !item.name.toLowerCase().startsWith('add ')), 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'salads')}
-            {/* Protein Add-Ons as line items */}
+            {/* Protein Add-Ons as single centered line */}
             {(itemsByCategory['salads'] || []).filter(item => item.name.toLowerCase().startsWith('add ')).length > 0 && (
-              <div className="-mt-6 mb-10 px-1">
+              <div className="-mt-6 mb-10 px-1 text-center">
                 <p className="text-slate-500 text-xs uppercase tracking-wider mb-2">Add Protein <span className="normal-case">(for an additional charge)</span></p>
-                <div className="space-y-1.5">
-                  {(itemsByCategory['salads'] || []).filter(item => item.name.toLowerCase().startsWith('add ')).map((item) => (
-                    <div key={item.id} className="flex items-center justify-between py-1.5 border-b border-slate-800/50 last:border-0">
-                      <span className="text-slate-400 text-sm">{item.name.replace('Add ', '')}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="flex-1 border-b border-dotted border-slate-700 w-8" />
-                        <span className="text-amber-400 font-bold text-sm">{item.price > 0 ? `+$${item.price}` : 'MKT'}</span>
-                      </div>
-                    </div>
+                <p className="text-slate-300 text-sm">
+                  {(itemsByCategory['salads'] || []).filter(item => item.name.toLowerCase().startsWith('add ')).map((item, idx, arr) => (
+                    <span key={item.id}>
+                      <span>{item.name.replace('Add ', '')}</span>{' '}
+                      <span className="text-amber-400 font-bold">{item.price > 0 ? `$${item.price}` : 'MKT'}</span>
+                      {idx < arr.length - 1 && <span className="text-slate-600 mx-2">|</span>}
+                    </span>
                   ))}
-                </div>
+                </p>
               </div>
             )}
             {renderSection('Brunch', itemsByCategory['brunch'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'brunch')}
