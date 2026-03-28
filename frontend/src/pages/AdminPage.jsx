@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Home, BarChart3, Megaphone, Ticket, Grid3X3, ImageUp, MessageSquare,
-  MapPin, Video, Share2, UtensilsCrossed, Coins, Users, Mail, Bell, Shield, FileText, Briefcase
+  MapPin, Video, Share2, UtensilsCrossed, Coins, Users, Mail, Bell, Shield, FileText, Briefcase, UserCheck
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
@@ -25,7 +25,8 @@ import {
   UsersTab,
   DJScheduleTab,
   SettingsTab,
-  CareersTab
+  CareersTab,
+  PeopleTab
 } from '../components/admin';
 import { PageContentTab } from '../components/admin';
 import WeeklyVideosCard from '../components/admin/WeeklyVideosCard';
@@ -64,8 +65,7 @@ const AdminPage = () => {
     { id: 'menu', label: 'Menu Items', icon: UtensilsCrossed },
     { id: 'page-content', label: 'Page Content', icon: FileText },
     { id: 'users', label: 'Users', icon: Coins },
-    { id: 'members', label: 'Loyalty', icon: Users },
-    { id: 'contacts', label: 'Contacts', icon: Mail },
+    { id: 'people', label: 'People', icon: UserCheck },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'admins', label: 'Admin Accounts', icon: Shield },
     { id: 'settings', label: 'Settings', icon: Settings },
@@ -154,8 +154,7 @@ const AdminPage = () => {
         {activeTab === 'videos' && <VideosTab />}
         {activeTab === 'social' && <SocialTab />}
         {activeTab === 'users' && <UsersTab />}
-        {activeTab === 'members' && <LoyaltyMembersTab />}
-        {activeTab === 'contacts' && <ContactsTab />}
+        {activeTab === 'people' && <PeopleTab />}
         {activeTab === 'menu' && <MenuItemsTab />}
         {activeTab === 'page-content' && <PageContentTab />}
         {activeTab === 'notifications' && <NotificationsTab />}

@@ -948,6 +948,7 @@ export const locations = [
     phone: '(404) 855-5524',
     reservationPhone: '(404) 692-1252',
     coordinates: { lat: 33.7547, lng: -84.3733 },
+    googleReviewUrl: 'https://search.google.com/local/writereview?placeid=ChIJ26FE7bAD9YgRW0ewfP-8kXU',
     timezone: 'America/New_York',
     image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6657.jpg',
     hours: {
@@ -986,6 +987,7 @@ export const locations = [
     phone: '(404) 549-7555',
     reservationPhone: '(678) 421-4083',
     coordinates: { lat: 33.7812, lng: -84.3838 },
+    googleReviewUrl: 'https://search.google.com/local/writereview?placeid=ChIJHQGGRs8F9YgRVNrWFBjshBU',
     timezone: 'America/New_York',
     image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6656.jpg',
     hours: {
@@ -1024,6 +1026,7 @@ export const locations = [
     phone: '(678) 653-9577',
     reservationPhone: '(404) 458-1958',
     coordinates: { lat: 33.7515, lng: -84.7477 },
+    googleReviewUrl: 'https://search.google.com/local/writereview?placeid=ChIJDaHd-Pkn9YgRo-4rMjJQLq4',
     timezone: 'America/New_York',
     image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/fin_and_feathers_shrimp_and_grits_2-e1666107985403.jpg',
     hours: {
@@ -1062,6 +1065,7 @@ export const locations = [
     phone: '(770) 703-2282',
     reservationPhone: '(678) 304-8191',
     coordinates: { lat: 33.5726, lng: -84.4132 },
+    googleReviewUrl: 'https://search.google.com/local/writereview?placeid=ChIJm6CTOJL99IgRs557vVVTr18',
     timezone: 'America/New_York',
     image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/augies_cafe_smb_parent__atlanta__new_business__86_hero-e1666179925108.jpg',
     hours: {
@@ -1100,6 +1104,7 @@ export const locations = [
     phone: '(229) 474-4049',
     reservationPhone: '(229) 231-4653',
     coordinates: { lat: 30.8327, lng: -83.2785 },
+    googleReviewUrl: 'https://www.google.com/maps/search/Fin+and+Feathers+Valdosta+reviews',
     timezone: 'America/New_York',
     image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Catfish-Grits-scaled.jpg',
     hours: {
@@ -1138,6 +1143,7 @@ export const locations = [
     phone: '(229) 231-2101',
     reservationPhone: '(229) 231-2101',
     coordinates: { lat: 31.5785, lng: -84.1558 },
+    googleReviewUrl: 'https://www.google.com/maps/search/Fin+and+Feathers+Albany+GA+reviews',
     timezone: 'America/New_York',
     image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/1ddbe3ac887b406aa6277a86d551faae-1024x1024.jpeg',
     hours: {
@@ -1176,6 +1182,7 @@ export const locations = [
     phone: '(470) 334-8255',
     reservationPhone: '(470) 334-8255',
     coordinates: { lat: 33.8081, lng: -84.1458 },
+    googleReviewUrl: 'https://www.google.com/maps/search/Fin+and+Feathers+Stone+Mountain+reviews',
     timezone: 'America/New_York',
     image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC06011_edited.jpg',
     hours: {
@@ -1214,6 +1221,7 @@ export const locations = [
     phone: '(725) 204-9655',
     reservationPhone: '(702) 546-6394',
     coordinates: { lat: 36.1622, lng: -115.1505 },
+    googleReviewUrl: 'https://www.google.com/maps/search/Fin+and+Feathers+Las+Vegas+reviews',
     timezone: 'America/Los_Angeles',
     image: 'https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Malibu-Ribeye-scaled.jpg',
     hours: {

@@ -1465,8 +1465,14 @@ const LinkTreeHomePage = () => {
 
           {/* Leave a Review */}
           <Button
-            onClick={() => window.open('https://g.page/r/CfinandfeathersReview', '_blank')}
+            onClick={() => {
+              const savedSlug = localStorage.getItem('ff_user_location');
+              const loc = locations.find(l => l.slug === savedSlug);
+              const reviewUrl = loc?.googleReviewUrl || locations[0]?.googleReviewUrl || 'https://search.google.com/local/writereview?placeid=ChIJ26FE7bAD9YgRW0ewfP-8kXU';
+              window.open(reviewUrl, '_blank');
+            }}
             className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+            data-testid="leave-review-btn"
           >
             <ExternalLink className="w-5 h-5 mr-2" />
             Leave a Review

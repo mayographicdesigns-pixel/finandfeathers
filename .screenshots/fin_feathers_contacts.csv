@@ -1,0 +1,11 @@
+Name,Email,Phone,Source,Status,Location,Message,Date
+Darrell Mayo,mayographicdesigns@gmail.com,7027151630,Loyalty Signup,active,,,2026-02-16 23:34:58.943000
+Test User,test_new@test.com,5551234567,Loyalty Signup,active,,,2026-03-16 02:05:21.833000
+Jane Smith,jane_smith_unique_test@example.com,5551112222,Loyalty Signup,active,,,2026-03-16 02:08:27.737000
+Test Contact,TEST_contact_fedf80ec@test.com,555-9876,Contact Form,new,,This is a test contact message,2026-02-15 02:50:45.766000
+Status Test,TEST_status_24d6eebf@test.com,,Contact Form,reviewed,,Test message for status update,2026-02-15 02:50:46.684000
+Test Contact,TEST_contact_59772f80@test.com,555-9876,Contact Form,new,,This is a test contact message,2026-02-15 02:51:27.920000
+Status Test,TEST_status_b1a7bf08@test.com,,Contact Form,reviewed,,Test message for status update,2026-02-15 02:51:28.836000
+Test Contact,TEST_contact_d27e6725@test.com,555-9876,Contact Form,new,,This is a test contact message,2026-02-18 05:57:19.963000
+Status Test,TEST_status_46eff1f2@test.com,,Contact Form,reviewed,,Test message for status update,2026-02-18 05:57:20.864000
+TEST Contact User,TEST_contact_5b83981c@example.com,555-0200,Contact Form,new,,Test message from automated testing,2026-03-28 16:12:13.907000

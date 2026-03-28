@@ -441,6 +441,125 @@ async def admin_delete_contact(contact_id: str, username: str = Depends(get_curr
     return {"message": "Contact deleted successfully"}
 
 
+# Unified People Export (Admin) — merges loyalty, contacts, and check-ins into CSV
+@api_router.get("/admin/people/export")
+async def admin_export_people(username: str = Depends(get_current_admin)):
+    """Export all contacts, loyalty members, and check-ins as CSV"""
+    import csv
+    import io
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Name", "Email", "Phone", "Source", "Status", "Location", "Message", "Date"])
+
+    # Loyalty members
+    members = await db.loyalty_members.find({}, {"_id": 0}).to_list(5000)
+    for m in members:
+        writer.writerow([
+            m.get("name", ""),
+            m.get("email", ""),
+            m.get("phone", ""),
+            "Loyalty Signup",
+            "active",
+            "",
+            "",
+            m.get("created_at", m.get("joined_at", ""))
+        ])
+
+    # Contact form submissions
+    contacts = await db.contact_forms.find({"is_deleted": {"$ne": True}}, {"_id": 0}).to_list(5000)
+    for c in contacts:
+        writer.writerow([
+            c.get("name", ""),
+            c.get("email", ""),
+            c.get("phone", ""),
+            "Contact Form",
+            c.get("status", "new"),
+            "",
+            c.get("message", ""),
+            c.get("created_at", "")
+        ])
+
+    # Check-ins
+    checkins = await db.checkins.find({}, {"_id": 0}).sort("checked_in_at", -1).to_list(5000)
+    for ci in checkins:
+        writer.writerow([
+            ci.get("display_name", ""),
+            "",
+            "",
+            "Check-in",
+            "active",
+            ci.get("location_slug", ""),
+            ci.get("message", ci.get("mood", "")),
+            ci.get("checked_in_at", "")
+        ])
+
+    csv_content = output.getvalue()
+    output.close()
+
+    return Response(
+        content=csv_content,
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=fin_feathers_contacts.csv"}
+    )
+
+
+# Unified People List (Admin) — merges loyalty, contacts, and check-ins
+@api_router.get("/admin/people")
+async def admin_get_people(username: str = Depends(get_current_admin)):
+    """Get all people from loyalty, contacts, and check-ins combined"""
+    people = []
+
+    # Loyalty members
+    members = await db.loyalty_members.find({}, {"_id": 0}).to_list(5000)
+    for m in members:
+        people.append({
+            "id": m.get("id", ""),
+            "name": m.get("name", ""),
+            "email": m.get("email", ""),
+            "phone": m.get("phone", ""),
+            "source": "loyalty",
+            "status": "active",
+            "location": "",
+            "message": "",
+            "date": str(m.get("created_at", m.get("joined_at", "")))
+        })
+
+    # Contact form submissions
+    contacts = await db.contact_forms.find({"is_deleted": {"$ne": True}}, {"_id": 0}).to_list(5000)
+    for c in contacts:
+        people.append({
+            "id": c.get("id", ""),
+            "name": c.get("name", ""),
+            "email": c.get("email", ""),
+            "phone": c.get("phone", ""),
+            "source": "contact",
+            "status": c.get("status", "new"),
+            "location": "",
+            "message": c.get("message", ""),
+            "date": str(c.get("created_at", ""))
+        })
+
+    # Check-ins
+    checkins = await db.checkins.find({}, {"_id": 0}).sort("checked_in_at", -1).to_list(5000)
+    for ci in checkins:
+        people.append({
+            "id": ci.get("id", ""),
+            "name": ci.get("display_name", ""),
+            "email": "",
+            "phone": "",
+            "source": "checkin",
+            "status": "active",
+            "location": ci.get("location_slug", ""),
+            "message": ci.get("message", ci.get("mood", "")),
+            "date": str(ci.get("checked_in_at", ""))
+        })
+
+    # Sort all by date descending
+    people.sort(key=lambda x: x.get("date", ""), reverse=True)
+    return people
+
+
 # Page Content (Public)
 @api_router.get("/page-content/{page_key}")
 async def get_page_content(page_key: str):
