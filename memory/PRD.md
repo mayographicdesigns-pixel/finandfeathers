@@ -1,6 +1,9 @@
 # Fin & Feathers Restaurant PWA — Product Requirements Document
 
 ## Latest Changes (2026-03-28)
+- **Unified People Tab (2026-03-28):** Merged Loyalty Members, Contact Forms, and Check-ins into a single searchable "People" tab in the admin panel. Added CSV export for all contacts. Replaced separate Loyalty/Contacts tabs.
+- **Fixed Google Review Links (2026-03-28):** Replaced broken `g.page/r/CfinandfeathersReview` with location-specific Google Review URLs using verified Place IDs (Edgewood, Midtown, Douglasville, Riverdale). The "Leave a Review" button now opens the correct review page for the user's saved location.
+- **PWA & Push Verified (2026-03-28):** Confirmed service worker registers, manifest is valid with all icons, VAPID keys are configured, and push subscription flow is wired end-to-end.
 - **Welcome Popup Routing Fix (2026-03-28):** Geolocation denied → no default location shown, "Find Your Location" prompt with full scrollable list. Selecting a location saves it and closes popup (stays on homepage). Only the "Check In !" button on the homepage navigates to the Social Wall.
 - **Menu Image Sync Across Locations:** Admin image updates now auto-propagate to all locations sharing the same item name. Added "Sync Images to All Locations" button in admin panel.
 - **All Images Stored in MongoDB:** Added "Store All Images Locally" button that converts external URLs to `/api/media/` (MongoDB). Converted 386 external images, 0 remaining external.
@@ -36,6 +39,9 @@ Build a full-featured restaurant PWA for Fin & Feathers Restaurants with dynamic
 - Karaoke auto-activation/deactivation
 - Timezone-correct displays
 - Welcome Popup: geolocation-off shows "Find Your Location" + full list; location selection stays on homepage; only "Check In !" button goes to Social Wall
+- Unified People tab: Loyalty + Contacts + Check-ins merged with search, filter, delete, status management, and CSV export
+- Location-specific Google Review URLs (verified Place IDs for 4 main locations)
+- PWA: Service worker, manifest, icons, push notifications all verified working
 
 ## Upcoming Tasks
 - (P2) Continue `server.py` refactoring
