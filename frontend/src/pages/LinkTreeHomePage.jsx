@@ -157,11 +157,11 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
   const isReturningUser = !!localStorage.getItem('ff_welcome_shown');
   const hasProfile = !!localStorage.getItem('ff_user_profile_id');
 
-  const goToWall = (slug) => {
+  // Save selected location and close popup — stay on homepage
+  const selectLocation = (slug) => {
     sessionStorage.setItem('ff_welcome_shown_session', 'true');
     localStorage.setItem('ff_user_location', slug);
     onClose();
-    navigate(`/social/${slug}`);
   };
 
   useEffect(() => {
@@ -171,7 +171,8 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
   const findClosestLocation = () => {
     setFindingLocation(true);
     if (!navigator.geolocation) {
-      setClosestLocation(locations[0]);
+      // No geolocation support — don't default, let user pick
+      setClosestLocation(null);
       setFindingLocation(false);
       return;
     }
@@ -179,7 +180,7 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
       (position) => {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
-        let nearest = locations[0];
+        let nearest = null;
         let minDistance = Infinity;
         locations.forEach(loc => {
           if (loc.coordinates) {
@@ -196,7 +197,11 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
         setClosestLocation(nearest);
         setFindingLocation(false);
       },
-      () => { setClosestLocation(locations[0]); setFindingLocation(false); },
+      () => {
+        // Geolocation denied — don't default, let user pick
+        setClosestLocation(null);
+        setFindingLocation(false);
+      },
       { timeout: 5000, maximumAge: 300000 }
     );
   };
@@ -219,10 +224,11 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
 
       if (role === 'dj') {
         navigate('/dj');
-      } else if (closestLocation) {
-        localStorage.setItem('ff_user_location', closestLocation.slug);
-        navigate(`/locations/${closestLocation.slug}?checkin=true`);
       } else {
+        // Save location if detected, then close popup (stay on homepage)
+        if (closestLocation) {
+          localStorage.setItem('ff_user_location', closestLocation.slug);
+        }
         onClose();
       }
     } catch (error) {
@@ -302,37 +308,65 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
           {/* Returning user — simplified quick-action view */}
           {isReturningUser && step === 'form' && (
             <>
-              {closestLocation && (
-                <Button
-                  onClick={() => goToWall(closestLocation.slug)}
-                  className="w-full h-14 bg-red-600 hover:bg-red-700 text-white rounded-xl text-base font-semibold transition-all hover:scale-[1.02] mb-3"
-                  data-testid="welcome-goto-social-btn"
-                >
-                  <Users className="w-5 h-5 mr-2" />
-                  {hasProfile ? 'Check In !' : 'Check In Here'}
-                </Button>
-              )}
+              {closestLocation ? (
+                <>
+                  {/* Geolocation detected — show nearest + select button */}
+                  <Button
+                    onClick={() => selectLocation(closestLocation.slug)}
+                    className="w-full h-14 bg-red-600 hover:bg-red-700 text-white rounded-xl text-base font-semibold transition-all hover:scale-[1.02] mb-3"
+                    data-testid="welcome-select-location-btn"
+                  >
+                    <MapPin className="w-5 h-5 mr-2" />
+                    Select {closestLocation.name.replace('Fin & Feathers - ', '')}
+                  </Button>
 
-              {/* Other locations */}
-              <div className="mb-3">
-                <p className="text-slate-500 text-xs text-center mb-2">Or choose another location</p>
-                <div className="space-y-1.5 max-h-36 overflow-y-auto">
-                  {locations.filter(l => l.slug !== closestLocation?.slug).map(loc => (
-                    <button
-                      key={loc.slug}
-                      onClick={() => goToWall(loc.slug)}
-                      className="w-full flex items-center gap-2.5 p-2.5 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-red-600/40 transition-all text-left"
-                      data-testid={`welcome-location-${loc.slug}`}
-                    >
-                      <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                      <div className="min-w-0">
-                        <p className="text-white text-sm font-medium truncate">{loc.name.replace('Fin & Feathers - ', '')}</p>
-                        <p className="text-slate-500 text-xs truncate">{loc.address}</p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
+                  {/* Other locations */}
+                  <div className="mb-3">
+                    <p className="text-slate-500 text-xs text-center mb-2">Or choose another location</p>
+                    <div className="space-y-1.5 max-h-36 overflow-y-auto">
+                      {locations.filter(l => l.slug !== closestLocation.slug).map(loc => (
+                        <button
+                          key={loc.slug}
+                          onClick={() => selectLocation(loc.slug)}
+                          className="w-full flex items-center gap-2.5 p-2.5 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-red-600/40 transition-all text-left"
+                          data-testid={`welcome-location-${loc.slug}`}
+                        >
+                          <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                          <div className="min-w-0">
+                            <p className="text-white text-sm font-medium truncate">{loc.name.replace('Fin & Feathers - ', '')}</p>
+                            <p className="text-slate-500 text-xs truncate">{loc.address}</p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              ) : !findingLocation ? (
+                <>
+                  {/* Geolocation denied/off — show full location list */}
+                  <div className="text-center mb-3">
+                    <MapPin className="w-6 h-6 text-red-400 mx-auto mb-1" />
+                    <p className="text-white text-sm font-semibold">Find Your Location</p>
+                    <p className="text-slate-400 text-xs">Select the location you're visiting</p>
+                  </div>
+                  <div className="space-y-1.5 max-h-52 overflow-y-auto mb-3">
+                    {locations.map(loc => (
+                      <button
+                        key={loc.slug}
+                        onClick={() => selectLocation(loc.slug)}
+                        className="w-full flex items-center gap-2.5 p-2.5 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-red-600/40 transition-all text-left"
+                        data-testid={`welcome-location-${loc.slug}`}
+                      >
+                        <MapPin className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-white text-sm font-medium truncate">{loc.name.replace('Fin & Feathers - ', '')}</p>
+                          <p className="text-slate-500 text-xs truncate">{loc.address}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              ) : null}
 
               <Button
                 onClick={handleClose}
@@ -361,14 +395,21 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
                 Log In / Sign Up
               </Button>
 
-              {/* Other locations */}
+              {/* Location selection */}
               <div className="mb-3">
-                <p className="text-slate-500 text-xs text-center mb-2">Or choose another location</p>
+                {closestLocation ? (
+                  <p className="text-slate-500 text-xs text-center mb-2">Or choose another location</p>
+                ) : !findingLocation ? (
+                  <div className="text-center mb-2">
+                    <MapPin className="w-5 h-5 text-red-400 mx-auto mb-1" />
+                    <p className="text-slate-400 text-xs">Select your location</p>
+                  </div>
+                ) : null}
                 <div className="space-y-1.5 max-h-36 overflow-y-auto">
-                  {locations.filter(l => l.slug !== closestLocation?.slug).map(loc => (
+                  {(closestLocation ? locations.filter(l => l.slug !== closestLocation.slug) : locations).map(loc => (
                     <button
                       key={loc.slug}
-                      onClick={() => goToWall(loc.slug)}
+                      onClick={() => selectLocation(loc.slug)}
                       className="w-full flex items-center gap-2.5 p-2.5 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-red-600/40 transition-all text-left"
                       data-testid={`welcome-newuser-location-${loc.slug}`}
                     >
