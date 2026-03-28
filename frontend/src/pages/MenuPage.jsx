@@ -1194,7 +1194,7 @@ const MenuPage = () => {
               <div className="-mt-6 mb-10 px-1">
                 <p className="text-slate-500 text-xs uppercase tracking-wider mb-2">Add Protein <span className="normal-case">(for an additional charge)</span></p>
                 <p className="text-slate-300 text-sm">
-                  {(itemsByCategory['salads'] || []).filter(item => item.name.toLowerCase().startsWith('add ')).map((item, idx, arr) => (
+                  {(itemsByCategory['salads'] || []).filter(item => item.name.toLowerCase().startsWith('add ')).sort((a, b) => (a.sort_order || 99) - (b.sort_order || 99)).map((item, idx, arr) => (
                     <span key={item.id}>
                       <span>{item.name.replace('Add ', '')}</span>{' '}
                       <span className="text-amber-400 font-bold">{item.price > 0 ? `$${item.price}` : 'MKT'}</span>
