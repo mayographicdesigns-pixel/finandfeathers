@@ -1,6 +1,7 @@
 # Fin & Feathers Restaurant PWA — Product Requirements Document
 
 ## Latest Changes (2026-03-28)
+- **Welcome Popup Routing Fix (2026-03-28):** Geolocation denied → no default location shown, "Find Your Location" prompt with full scrollable list. Selecting a location saves it and closes popup (stays on homepage). Only the "Check In !" button on the homepage navigates to the Social Wall.
 - **Menu Image Sync Across Locations:** Admin image updates now auto-propagate to all locations sharing the same item name. Added "Sync Images to All Locations" button in admin panel.
 - **All Images Stored in MongoDB:** Added "Store All Images Locally" button that converts external URLs to `/api/media/` (MongoDB). Converted 386 external images, 0 remaining external.
 - **Better Admin Image Editing:** Item images are now clickable for quick photo replacement. "LOCAL"/"EXTERNAL" badge shows storage status. `download_image_to_uploads` now stores in MongoDB (production-safe).
@@ -34,6 +35,7 @@ Build a full-featured restaurant PWA for Fin & Feathers Restaurants with dynamic
 - "DJ IS LIVE" homepage banner
 - Karaoke auto-activation/deactivation
 - Timezone-correct displays
+- Welcome Popup: geolocation-off shows "Find Your Location" + full list; location selection stays on homepage; only "Check In !" button goes to Social Wall
 
 ## Upcoming Tasks
 - (P2) Continue `server.py` refactoring
