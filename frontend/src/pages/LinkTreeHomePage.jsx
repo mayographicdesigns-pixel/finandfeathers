@@ -157,6 +157,13 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
   const isReturningUser = !!localStorage.getItem('ff_welcome_shown');
   const hasProfile = !!localStorage.getItem('ff_user_profile_id');
 
+  const goToWall = (slug) => {
+    sessionStorage.setItem('ff_welcome_shown_session', 'true');
+    localStorage.setItem('ff_user_location', slug);
+    onClose();
+    navigate(`/social/${slug}`);
+  };
+
   useEffect(() => {
     findClosestLocation();
   }, []);
@@ -297,11 +304,7 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
             <>
               {closestLocation && (
                 <Button
-                  onClick={() => {
-                    sessionStorage.setItem('ff_welcome_shown_session', 'true');
-                    localStorage.setItem('ff_user_location', closestLocation.slug);
-                    onClose();
-                  }}
+                  onClick={() => goToWall(closestLocation.slug)}
                   className="w-full h-14 bg-red-600 hover:bg-red-700 text-white rounded-xl text-base font-semibold transition-all hover:scale-[1.02] mb-3"
                   data-testid="welcome-goto-social-btn"
                 >
@@ -317,11 +320,7 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
                   {locations.filter(l => l.slug !== closestLocation?.slug).map(loc => (
                     <button
                       key={loc.slug}
-                      onClick={() => {
-                        sessionStorage.setItem('ff_welcome_shown_session', 'true');
-                        localStorage.setItem('ff_user_location', loc.slug);
-                        onClose();
-                      }}
+                      onClick={() => goToWall(loc.slug)}
                       className="w-full flex items-center gap-2.5 p-2.5 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-red-600/40 transition-all text-left"
                       data-testid={`welcome-location-${loc.slug}`}
                     >
@@ -369,11 +368,7 @@ const WelcomePopup = ({ onClose, onSubmit }) => {
                   {locations.filter(l => l.slug !== closestLocation?.slug).map(loc => (
                     <button
                       key={loc.slug}
-                      onClick={() => {
-                        sessionStorage.setItem('ff_welcome_shown_session', 'true');
-                        localStorage.setItem('ff_user_location', loc.slug);
-                        onClose();
-                      }}
+                      onClick={() => goToWall(loc.slug)}
                       className="w-full flex items-center gap-2.5 p-2.5 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-red-600/40 transition-all text-left"
                       data-testid={`welcome-newuser-location-${loc.slug}`}
                     >
