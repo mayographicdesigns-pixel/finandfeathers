@@ -1176,7 +1176,7 @@ const MenuPage = () => {
             {renderSection('Sandwiches', (itemsByCategory['sandwiches'] || []).filter(item => !item.name.toLowerCase().startsWith('add ')), 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'sandwiches')}
             {/* Sandwich Add-Ons as single centered line */}
             {(itemsByCategory['sandwiches'] || []).filter(item => item.name.toLowerCase().startsWith('add ')).length > 0 && (
-              <div className="-mt-6 mb-10 px-1 text-center">
+              <div className="-mt-6 mb-10 px-1">
                 <p className="text-slate-300 text-sm">
                   {(itemsByCategory['sandwiches'] || []).filter(item => item.name.toLowerCase().startsWith('add ')).map((item, idx, arr) => (
                     <span key={item.id}>
@@ -1191,7 +1191,7 @@ const MenuPage = () => {
             {renderSection('Salads', (itemsByCategory['salads'] || []).filter(item => !item.name.toLowerCase().startsWith('add ')), 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'salads')}
             {/* Protein Add-Ons as single centered line */}
             {(itemsByCategory['salads'] || []).filter(item => item.name.toLowerCase().startsWith('add ')).length > 0 && (
-              <div className="-mt-6 mb-10 px-1 text-center">
+              <div className="-mt-6 mb-10 px-1">
                 <p className="text-slate-500 text-xs uppercase tracking-wider mb-2">Add Protein <span className="normal-case">(for an additional charge)</span></p>
                 <p className="text-slate-300 text-sm">
                   {(itemsByCategory['salads'] || []).filter(item => item.name.toLowerCase().startsWith('add ')).map((item, idx, arr) => (
