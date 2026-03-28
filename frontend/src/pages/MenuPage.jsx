@@ -1207,6 +1207,13 @@ const MenuPage = () => {
             {renderSection('Brunch', itemsByCategory['brunch'], 'default', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'brunch')}
             {renderSection('Brunch Sides', itemsByCategory['brunch-sides'], 'compact', 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', true, 'brunch-sides')}
 
+            {/* Allergy Warning */}
+            <div className="mt-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl">
+              <p className="text-red-400 text-sm text-center">
+                Some food items may contain raw or undercooked ingredients and/or dairy. Consuming raw or undercooked meats, poultry, seafood, shellfish, or eggs could heighten the risk of foodborne illness, particularly for individuals with specific medical conditions. If you have food allergies or dietary restrictions, kindly notify one of our team members prior to ordering.
+              </p>
+            </div>
+
             {/* DRINKS AT THE BOTTOM */}
             <div className="pt-8 border-t border-slate-700">
               <div className="flex items-center gap-3 mb-8">
@@ -1331,8 +1338,8 @@ const MenuPage = () => {
             
             {/* Allergy Warning */}
             <div className="mt-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl">
-              <p className="text-red-400 text-sm text-center font-medium">
-                <strong>Allergy Warning:</strong> Food prepared in our kitchen may contain wheat, milk, eggs, soybeans, peanuts, tree nuts, fish, and shellfish. Please notify your server of any food allergies before ordering.
+              <p className="text-red-400 text-sm text-center">
+                Some food items may contain raw or undercooked ingredients and/or dairy. Consuming raw or undercooked meats, poultry, seafood, shellfish, or eggs could heighten the risk of foodborne illness, particularly for individuals with specific medical conditions. If you have food allergies or dietary restrictions, kindly notify one of our team members prior to ordering.
               </p>
             </div>
           </div>
