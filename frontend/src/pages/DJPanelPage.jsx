@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent } from '../components/ui/card';
-import { Check, X, Mic, Music, MapPin, LogOut, RefreshCw, ChevronRight, Calendar, Clock, DollarSign, Save, Video } from 'lucide-react';
+import { Check, X, Mic, Music, MapPin, LogOut, RefreshCw, ChevronRight, Calendar, Clock, DollarSign, Save, Video, Users } from 'lucide-react';
 
 const API_URL = window.location.origin;
 
@@ -378,6 +378,38 @@ const DJPanelPage = () => {
     localStorage.removeItem('ff_dj_profile');
   };
 
+  const goToVibeWall = async () => {
+    if (!checkedInLocation || !djProfile) return;
+    // Ensure DJ has a user profile for the social wall
+    let profileId = localStorage.getItem('ff_user_profile_id');
+    if (!profileId) {
+      try {
+        const res = await fetch(`${API_URL}/api/user/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: djProfile.stage_name || djProfile.name,
+            role: 'dj',
+            staff_title: 'DJ',
+            avatar_emoji: djProfile.avatar_emoji || '🎧'
+          })
+        });
+        const data = await res.json();
+        if (data && data.id) {
+          profileId = data.id;
+          localStorage.setItem('ff_user_profile_id', data.id);
+          localStorage.setItem('ff_user_info', JSON.stringify({
+            name: djProfile.stage_name || djProfile.name,
+            role: 'dj',
+            staff_title: 'DJ'
+          }));
+        }
+      } catch (e) { console.error('Failed to create DJ user profile:', e); }
+    }
+    localStorage.setItem('ff_user_location', checkedInLocation);
+    navigate(`/social/${checkedInLocation}`);
+  };
+
   const locationName = (slug) => {
     const loc = locations.find(l => l.slug === slug);
     return loc ? loc.name?.replace('Fin & Feathers - ', '') : slug;
@@ -552,6 +584,15 @@ const DJPanelPage = () => {
             <LogOut className="w-4 h-4 mr-1" /> Check Out
           </Button>
         </div>
+
+        {/* View Vibe Wall Button */}
+        <Button
+          onClick={goToVibeWall}
+          className="w-full mb-4 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white h-12 text-sm font-semibold rounded-xl"
+          data-testid="dj-view-vibe-btn"
+        >
+          <Users className="w-4 h-4 mr-2" /> View Vibe Wall &amp; Chat
+        </Button>
 
         {/* Today's Schedule at this location */}
         {locationSchedule.length > 0 && (

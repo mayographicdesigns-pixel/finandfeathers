@@ -273,6 +273,22 @@ async def get_wall_users(location_slug: str):
     ).sort("created_at", -1).limit(50).to_list(length=50)
     seen = set()
     users = []
+
+    # Include checked-in DJ at this location so users can DM them
+    live_dj = await db.dj_profiles.find_one(
+        {"current_location": location_slug, "is_active": True},
+        {"_id": 0}
+    )
+    if live_dj:
+        dj_id = live_dj.get("id")
+        if dj_id:
+            seen.add(dj_id)
+            users.append({
+                "user_id": dj_id,
+                "user_name": f"DJ {live_dj.get('stage_name') or live_dj.get('name', 'Unknown')}",
+                "user_avatar": live_dj.get("avatar_emoji", "🎧")
+            })
+
     for u in recent_posters + recent_chatters:
         uid = u.get("user_id")
         if uid and uid not in seen:

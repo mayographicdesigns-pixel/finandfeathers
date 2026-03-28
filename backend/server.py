@@ -1574,7 +1574,7 @@ async def check_in(checkin_data: CheckInCreate):
 
 @api_router.get("/checkin/{location_slug}", response_model=List[CheckInResponse])
 async def get_checked_in_users(location_slug: str):
-    """Get all users currently checked in at a location"""
+    """Get all users currently checked in at a location, including the live DJ"""
     # Clean up expired check-ins
     await db.checkins.delete_many({
         "expires_at": {"$lt": datetime.now(timezone.utc)}
@@ -1585,6 +1585,29 @@ async def get_checked_in_users(location_slug: str):
         {"location_slug": location_slug},
         {"_id": 0}
     ).sort("checked_in_at", -1).to_list(100)
+
+    # Also include the checked-in DJ (from dj_profiles) if present
+    live_dj = await db.dj_profiles.find_one(
+        {"current_location": location_slug, "is_active": True},
+        {"_id": 0}
+    )
+    if live_dj:
+        dj_checkin_id = f"dj-{live_dj.get('id', '')}"
+        # Only add if DJ isn't already in the checkins list
+        existing_ids = {c.get("id") for c in checkins}
+        existing_profile_ids = {c.get("user_profile_id") for c in checkins}
+        if dj_checkin_id not in existing_ids and live_dj.get("id") not in existing_profile_ids:
+            checkins.insert(0, {
+                "id": dj_checkin_id,
+                "location_slug": location_slug,
+                "display_name": f"DJ {live_dj.get('stage_name') or live_dj.get('name', 'Unknown')}",
+                "avatar_emoji": live_dj.get("avatar_emoji", "🎧"),
+                "mood": "🎵 Live DJ",
+                "message": "",
+                "user_profile_id": live_dj.get("id", ""),
+                "checked_in_at": live_dj.get("checked_in_at", datetime.now(timezone.utc).isoformat()),
+                "expires_at": (datetime.now(timezone.utc) + timedelta(hours=12)).isoformat()
+            })
     
     return [CheckInResponse(**c) for c in checkins]
 
