@@ -26,22 +26,21 @@ const ReservationModal = ({ isOpen, onClose, location }) => {
     const dateObj = new Date(selectedDate + 'T12:00:00'); // Add time to avoid timezone issues
     const dayOfWeek = dateObj.getDay(); // 0 = Sunday, 1 = Monday, etc.
     
-    let startHour, endHour, startMinute = 0;
+    let startHour, endHour;
     
-    // Operating hours based on day:
-    // Mon-Thu (1-4): 11am-10pm, last seating 8pm (2hr before close)
-    // Fri-Sat (5-6): 11am-11:30pm, last seating 9:30pm
-    // Sun (0): 10am-10pm, last seating 8pm
+    // Last reservation time:
+    // Sun-Thu (0-4): 10pm
+    // Fri-Sat (5-6): 12:00am (midnight)
     
     if (dayOfWeek === 0) { // Sunday
       startHour = 10; // 10am
-      endHour = 20;   // Last seating 8pm (closes 10pm)
+      endHour = 22;   // Last reservation 10pm
     } else if (dayOfWeek >= 1 && dayOfWeek <= 4) { // Mon-Thu
       startHour = 11; // 11am
-      endHour = 20;   // Last seating 8pm (closes 10pm)
+      endHour = 22;   // Last reservation 10pm
     } else { // Fri-Sat
       startHour = 11;  // 11am
-      endHour = 21;    // Last seating 9:30pm (closes 11:30pm)
+      endHour = 23;    // Last :30 slot at 11:30pm, then add midnight
     }
     
     const slots = [];
@@ -55,14 +54,20 @@ const ReservationModal = ({ isOpen, onClose, location }) => {
         label: `${hour12}:00 ${ampm}`
       });
       
-      // Add :30 slot (except for last hour on Fri-Sat which goes to 9:30)
-      if (hour < endHour || (dayOfWeek >= 5 && hour === 21)) {
+      // Add :30 slot
+      if (hour < endHour) {
         const time24Half = `${hour.toString().padStart(2, '0')}:30`;
         slots.push({
           value: time24Half,
           label: `${hour12}:30 ${ampm}`
         });
       }
+    }
+
+    // Fri-Sat: add 11:30 PM and 12:00 AM (midnight)
+    if (dayOfWeek >= 5) {
+      slots.push({ value: '23:30', label: '11:30 PM' });
+      slots.push({ value: '00:00', label: '12:00 AM' });
     }
     
     return slots;
@@ -89,11 +94,11 @@ const ReservationModal = ({ isOpen, onClose, location }) => {
     const dayOfWeek = dateObj.getDay();
     
     if (dayOfWeek === 0) {
-      return { day: 'Sunday', hours: '10AM - 10PM', lastSeating: '8:00 PM' };
+      return { day: 'Sunday', hours: '10AM - 10PM', lastSeating: '10:00 PM' };
     } else if (dayOfWeek >= 1 && dayOfWeek <= 4) {
-      return { day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'][dayOfWeek], hours: '11AM - 10PM', lastSeating: '8:00 PM' };
+      return { day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'][dayOfWeek], hours: '11AM - 10PM', lastSeating: '10:00 PM' };
     } else {
-      return { day: dayOfWeek === 5 ? 'Friday' : 'Saturday', hours: '11AM - 11:30PM', lastSeating: '9:30 PM' };
+      return { day: dayOfWeek === 5 ? 'Friday' : 'Saturday', hours: '11AM - 12AM', lastSeating: '12:00 AM' };
     }
   };
 
