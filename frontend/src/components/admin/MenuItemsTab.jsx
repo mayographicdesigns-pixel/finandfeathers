@@ -27,7 +27,11 @@ const MenuItemsTab = () => {
   const [imageEditorItem, setImageEditorItem] = useState(null);
   const [categoryStyles, setCategoryStyles] = useState({});
   const [showStyleEditor, setShowStyleEditor] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [converting, setConverting] = useState(false);
   const fileInputRef = useRef(null);
+  const quickFileRef = useRef(null);
+  const [quickUploadItemId, setQuickUploadItemId] = useState(null);
   const [formData, setFormData] = useState({
     name: '', description: '', price: '', category: '', image: '', badges: ''
   });
@@ -131,6 +135,60 @@ const MenuItemsTab = () => {
     }
   };
 
+  // Quick image upload for a specific item (click photo to replace)
+  const handleQuickImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !quickUploadItemId) return;
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ title: 'Error', description: 'Please upload a valid image', variant: 'destructive' });
+      return;
+    }
+    try {
+      const result = await uploadImage(file);
+      await updateMenuItem(quickUploadItemId, { image: result.url });
+      setItems(items.map(i => i.id === quickUploadItemId ? { ...i, image: result.url, image_url: result.url } : i));
+      toast({ title: 'Image updated', description: 'Synced to all locations automatically' });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+    if (quickFileRef.current) quickFileRef.current.value = '';
+    setQuickUploadItemId(null);
+  };
+
+  // Sync master images to all locations
+  const syncImagesToLocations = async () => {
+    setSyncing(true);
+    try {
+      const token = localStorage.getItem('adminToken');
+      const res = await fetch(`${window.location.origin}/api/admin/menu-items/sync-images-to-locations`, {
+        method: 'POST', headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      toast({ title: 'Images Synced', description: `${data.synced} items updated across all locations` });
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+    setSyncing(false);
+  };
+
+  // Convert all external URLs to local storage
+  const convertExternalImages = async () => {
+    setConverting(true);
+    try {
+      const token = localStorage.getItem('adminToken');
+      const res = await fetch(`${window.location.origin}/api/admin/menu-items/convert-external-images`, {
+        method: 'POST', headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      toast({ title: 'Images Converted', description: `${data.converted} images stored locally, ${data.failed} failed` });
+      fetchItems(); // Reload to show new URLs
+    } catch (err) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    }
+    setConverting(false);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -209,9 +267,29 @@ const MenuItemsTab = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-wrap justify-between items-center gap-2">
         <h3 className="text-lg font-semibold text-white">Menu Items ({items.length})</h3>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Button
+            onClick={syncImagesToLocations}
+            disabled={syncing}
+            variant="outline"
+            className="border-blue-600 text-blue-400 hover:bg-blue-900/30 text-xs"
+            data-testid="sync-images-btn"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${syncing ? 'animate-spin' : ''}`} />
+            {syncing ? 'Syncing...' : 'Sync Images to All Locations'}
+          </Button>
+          <Button
+            onClick={convertExternalImages}
+            disabled={converting}
+            variant="outline"
+            className="border-green-600 text-green-400 hover:bg-green-900/30 text-xs"
+            data-testid="convert-images-btn"
+          >
+            <Upload className={`w-3.5 h-3.5 mr-1.5 ${converting ? 'animate-spin' : ''}`} />
+            {converting ? 'Converting...' : 'Store All Images Locally'}
+          </Button>
           <Button 
             onClick={() => setShowStyleEditor(!showStyleEditor)} 
             variant="outline"
@@ -225,6 +303,15 @@ const MenuItemsTab = () => {
           </Button>
         </div>
       </div>
+
+      {/* Hidden quick-upload file input */}
+      <input
+        ref={quickFileRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleQuickImageUpload}
+      />
 
       {/* Display Styles Editor */}
       {showStyleEditor && (
@@ -474,8 +561,13 @@ const MenuItemsTab = () => {
           {filteredItems.map((item) => (
             <Card key={item.id} className="bg-slate-800/50 border-slate-700 overflow-hidden">
               <CardContent className="p-0">
-                {/* Image */}
-                <div className="relative aspect-[4/3] bg-slate-700">
+                {/* Clickable Image — click to replace photo */}
+                <div
+                  className="relative aspect-[4/3] bg-slate-700 cursor-pointer group"
+                  onClick={() => { setQuickUploadItemId(item.id); quickFileRef.current?.click(); }}
+                  title="Click to replace image"
+                  data-testid={`menu-item-image-${item.id}`}
+                >
                   {item.image ? (
                     <img 
                       src={getImageSrc(item.image)} 
@@ -487,6 +579,21 @@ const MenuItemsTab = () => {
                     <div className="w-full h-full flex items-center justify-center text-slate-500 text-xs">
                       No Image
                     </div>
+                  )}
+                  {/* Hover overlay */}
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="text-center">
+                      <Upload className="w-6 h-6 text-white mx-auto mb-1" />
+                      <span className="text-white text-xs font-medium">Replace Photo</span>
+                    </div>
+                  </div>
+                  {/* Image type indicator */}
+                  {item.image && (
+                    <span className={`absolute top-2 left-2 text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                      item.image.startsWith('/api/media/') ? 'bg-green-600/80 text-white' : 'bg-amber-600/80 text-white'
+                    }`}>
+                      {item.image.startsWith('/api/media/') ? 'LOCAL' : 'EXTERNAL'}
+                    </span>
                   )}
                   {/* Price badge */}
                   <span className="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">

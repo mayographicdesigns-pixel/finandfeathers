@@ -620,18 +620,38 @@ async def admin_create_menu_item(item: MenuItemCreate, username: str = Depends(g
 
 @api_router.put("/admin/menu-items/{item_id}")
 async def admin_update_menu_item(item_id: str, update: MenuItemUpdate, username: str = Depends(get_current_admin)):
-    """Update a menu item"""
+    """Update a menu item. If image changes, auto-sync to all locations with the same item name."""
     update_dict = {k: v for k, v in update.dict().items() if v is not None}
     if not update_dict:
         raise HTTPException(status_code=400, detail="No fields to update")
-    
+
+    # Get the original item to check the name (for cross-location sync)
+    original = await db.menu_items.find_one({"id": item_id}, {"_id": 0})
+    if not original:
+        raise HTTPException(status_code=404, detail="Menu item not found")
+
+    # Update the specific item
     result = await db.menu_items.update_one(
         {"id": item_id},
         {"$set": update_dict}
     )
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Menu item not found")
-    return {"message": "Menu item updated successfully"}
+
+    # If image was changed, sync to all locations with the same item name
+    image_changed = "image" in update_dict or "image_url" in update_dict
+    synced_count = 0
+    if image_changed:
+        new_image = update_dict.get("image") or update_dict.get("image_url")
+        if new_image and original.get("name"):
+            sync_result = await db.menu_items.update_many(
+                {"name": original["name"], "id": {"$ne": item_id}},
+                {"$set": {"image": new_image, "image_url": new_image}}
+            )
+            synced_count = sync_result.modified_count
+
+    return {
+        "message": "Menu item updated successfully",
+        "synced_locations": synced_count
+    }
 
 
 @api_router.delete("/admin/menu-items/{item_id}")
@@ -711,6 +731,70 @@ async def admin_copy_menu_to_locations(username: str = Depends(get_current_admin
             created += len(new_items)
 
     return {"message": f"Copied menu to {len(location_slugs)} locations", "created": created}
+
+
+@api_router.post("/admin/menu-items/sync-images-to-locations")
+async def admin_sync_images_to_locations(username: str = Depends(get_current_admin)):
+    """Sync images from the master menu (no location_slug) to all location copies by item name."""
+    # Get master items
+    master_items = await db.menu_items.find(
+        {"$or": [{"location_slug": None}, {"location_slug": {"$exists": False}}]},
+        {"_id": 0}
+    ).to_list(2000)
+
+    if not master_items:
+        return {"message": "No master menu items found", "synced": 0}
+
+    synced = 0
+    for item in master_items:
+        image = item.get("image") or item.get("image_url")
+        if not image:
+            continue
+        result = await db.menu_items.update_many(
+            {"name": item["name"], "location_slug": {"$ne": None, "$exists": True}},
+            {"$set": {"image": image, "image_url": image}}
+        )
+        synced += result.modified_count
+
+    return {"message": f"Synced images for {len(master_items)} master items", "synced": synced}
+
+
+@api_router.post("/admin/menu-items/convert-external-images")
+async def admin_convert_external_images(username: str = Depends(get_current_admin)):
+    """Download ALL external/old images and store them in local /api/media/ storage.
+    Processes unique image URLs only, then updates all items sharing that URL."""
+    # Get all items with external URLs
+    all_items = await db.menu_items.find({}, {"_id": 0, "id": 1, "name": 1, "image": 1, "image_url": 1}).to_list(5000)
+
+    # Build a map of unique external URLs -> list of item IDs
+    url_to_ids = {}
+    for item in all_items:
+        img = item.get("image") or item.get("image_url") or ""
+        # Skip if already local /api/media/ or empty
+        if not img or img.startswith("/api/media/"):
+            continue
+        # External http URLs and old /api/uploads/ paths need conversion
+        if img.startswith("http") or img.startswith("/api/uploads/"):
+            if img not in url_to_ids:
+                url_to_ids[img] = []
+            url_to_ids[img].append(item["id"])
+
+    converted = 0
+    failed = 0
+    for url, item_ids in url_to_ids.items():
+        try:
+            stored_url = await download_image_to_uploads(url)
+            if stored_url:
+                # Update all items using this URL
+                await db.menu_items.update_many(
+                    {"id": {"$in": item_ids}},
+                    {"$set": {"image": stored_url, "image_url": stored_url}}
+                )
+                converted += len(item_ids)
+        except Exception as e:
+            failed += 1
+
+    return {"message": f"Converted {converted} images, {failed} failed", "converted": converted, "failed": failed}
 
 
 @api_router.post("/admin/menu-items/store-images")
@@ -1087,36 +1171,65 @@ MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 MAX_VIDEO_SIZE = 50 * 1024 * 1024  # 50MB
 
 async def download_image_to_uploads(image_url: str):
+    """Download external image and store in MongoDB media_files (production-safe)."""
     if not image_url:
         return None
 
     try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(image_url) as response:
-                if response.status != 200:
-                    logging.warning(f"Image download failed {response.status} for {image_url}")
-                    return None
-                content = await response.read()
-                if len(content) > MAX_FILE_SIZE:
-                    logging.warning(f"Image too large for {image_url}")
-                    return None
+        # Handle local /api/uploads/ paths by reading from disk
+        if image_url.startswith("/api/uploads/"):
+            filename = image_url.split("/")[-1]
+            file_path = UPLOAD_DIR / filename
+            if file_path.exists():
+                content = file_path.read_bytes()
+                ext = Path(filename).suffix.lower()
+            else:
+                return None
+        else:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(image_url) as response:
+                    if response.status != 200:
+                        logging.warning(f"Image download failed {response.status} for {image_url}")
+                        return None
+                    content = await response.read()
+                    if len(content) > MAX_FILE_SIZE:
+                        logging.warning(f"Image too large for {image_url}")
+                        return None
 
-                parsed_path = urlparse(image_url).path
-                ext = Path(parsed_path).suffix.lower()
-                if ext not in ALLOWED_EXTENSIONS:
-                    content_type = response.headers.get("Content-Type", "").split(";")[0].strip()
-                    guessed_ext = mimetypes.guess_extension(content_type) if content_type else None
-                    if guessed_ext and guessed_ext.lower() in ALLOWED_EXTENSIONS:
-                        ext = guessed_ext.lower()
-                    else:
-                        ext = ".jpg"
+                    parsed_path = urlparse(image_url).path
+                    ext = Path(parsed_path).suffix.lower()
+                    if ext not in ALLOWED_EXTENSIONS:
+                        content_type = response.headers.get("Content-Type", "").split(";")[0].strip()
+                        guessed_ext = mimetypes.guess_extension(content_type) if content_type else None
+                        if guessed_ext and guessed_ext.lower() in ALLOWED_EXTENSIONS:
+                            ext = guessed_ext.lower()
+                        else:
+                            ext = ".jpg"
 
-                filename = f"{uuid.uuid4()}{ext}"
-                file_path = UPLOAD_DIR / filename
-                with open(file_path, "wb") as f:
-                    f.write(content)
+        # Store in MongoDB for production persistence
+        file_id = str(uuid.uuid4())
+        base64_data = base64.b64encode(content).decode('utf-8')
+        content_type = f"image/{ext[1:]}" if ext else "image/jpeg"
 
-                return f"/api/uploads/{filename}"
+        await db.media_files.insert_one({
+            "file_id": file_id,
+            "filename": f"{file_id}{ext}",
+            "data": base64_data,
+            "content_type": content_type,
+            "size": len(content),
+            "uploaded_at": datetime.now(timezone.utc),
+            "uploaded_by": "system-convert"
+        })
+
+        # Also save to disk for preview
+        try:
+            file_path = UPLOAD_DIR / f"{file_id}{ext}"
+            with open(file_path, "wb") as f:
+                f.write(content)
+        except Exception:
+            pass
+
+        return f"/api/media/{file_id}"
     except Exception as e:
         logging.error(f"Failed to store image {image_url}: {e}")
         return None
