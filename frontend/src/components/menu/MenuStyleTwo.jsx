@@ -92,8 +92,10 @@ export const MenuStyleTwo = ({ item, isExpanded, onToggleExpand, onImageClick })
           )}
           
           {/* Price badge overlay */}
-          <div className="absolute bottom-2 right-2 bg-amber-500 text-white font-bold rounded-full w-12 h-12 flex items-center justify-center text-sm shadow-lg">
-            ${item.price}
+          <div className="absolute bottom-2 right-2 bg-amber-500 text-white font-bold rounded-full flex items-center justify-center text-sm shadow-lg" style={{ minWidth: '3rem', minHeight: '3rem', padding: '0.25rem 0.5rem' }}>
+            {item.variations && item.variations.length > 0
+              ? item.variations.map(v => `$${v.price}`).join('/')
+              : `$${item.price}`}
           </div>
         </div>
       </div>

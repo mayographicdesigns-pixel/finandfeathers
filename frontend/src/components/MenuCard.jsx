@@ -108,9 +108,20 @@ const MenuCard = ({ item, variant = 'default', editMode = false, onEdit, onImage
           )}
         </div>
         <div className="ml-4 flex-shrink-0">
-          <span className="text-red-500 font-bold text-base">
-            {item.priceLabel ? item.priceLabel : item.price !== null ? `$${item.price}` : 'MKT'}
-          </span>
+          {item.variations && item.variations.length > 0 ? (
+            <div className="text-right">
+              {item.variations.map((v, vi) => (
+                <div key={vi} className="flex items-center gap-1.5">
+                  <span className="text-slate-500 text-[10px]">{v.name}</span>
+                  <span className="text-red-500 font-bold text-sm">${v.price}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <span className="text-red-500 font-bold text-base">
+              {item.priceLabel ? item.priceLabel : item.price !== null ? `$${item.price}` : 'MKT'}
+            </span>
+          )}
         </div>
       </div>
     );
@@ -131,7 +142,11 @@ const MenuCard = ({ item, variant = 'default', editMode = false, onEdit, onImage
           className="w-full h-full transition-transform duration-500 group-hover:scale-110"
         />
         <div className={`absolute top-3 right-3 bg-red-500 text-white ${isCompact ? 'px-2.5 py-1' : 'px-3 py-1.5'} rounded-full font-bold ${isCompact ? 'text-xs' : 'text-sm'} shadow-lg`}>
-          {item.priceLabel ? item.priceLabel : item.price !== null ? `$${item.price}` : 'MKT'}
+          {item.variations && item.variations.length > 0 ? (
+            <span>{item.variations.map(v => `$${v.price}`).join(' / ')}</span>
+          ) : (
+            <span>{item.priceLabel ? item.priceLabel : item.price !== null ? `$${item.price}` : 'MKT'}</span>
+          )}
         </div>
         {editMode ? (
           <div className="absolute top-3 left-3 bg-red-600 text-white px-2 py-1 rounded text-xs flex items-center gap-1">

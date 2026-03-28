@@ -137,6 +137,7 @@ class MenuItem(BaseModel):
     image: str
     category: str
     badges: List[str] = []
+    variations: Optional[List[dict]] = None  # e.g. [{"name": "Full Order", "price": 15}, {"name": "Side Order", "price": 8}]
 
 class MenuItemCreate(BaseModel):
     name: str
@@ -147,6 +148,7 @@ class MenuItemCreate(BaseModel):
     badges: List[str] = []
     type: Optional[str] = None  # food or drink
     location_slug: Optional[str] = None
+    variations: Optional[List[dict]] = None
 
 class MenuItemUpdate(BaseModel):
     name: Optional[str] = None
@@ -157,6 +159,7 @@ class MenuItemUpdate(BaseModel):
     badges: Optional[List[str]] = None
     type: Optional[str] = None  # food or drink
     location_slug: Optional[str] = None
+    variations: Optional[List[dict]] = None
 
 # Media/Photo Upload Model
 class Media(BaseModel):

@@ -604,9 +604,20 @@ const MenuPage = () => {
                 )}
               </div>
               <div className="ml-3 flex-shrink-0">
-                <span className="text-red-500 font-bold text-sm">
-                  {item.price > 0 ? `$${item.price}` : 'MKT'}
-                </span>
+                {item.variations && item.variations.length > 0 ? (
+                  <div className="text-right">
+                    {item.variations.map((v, vi) => (
+                      <div key={vi} className="flex items-center gap-1.5">
+                        <span className="text-slate-500 text-[10px]">{v.name}</span>
+                        <span className="text-red-500 font-bold text-sm">${v.price}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-red-500 font-bold text-sm">
+                    {item.price > 0 ? `$${item.price}` : 'MKT'}
+                  </span>
+                )}
               </div>
             </div>
           ))}

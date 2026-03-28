@@ -101,7 +101,18 @@ export const MenuStyleFour = ({ item, isExpanded, onToggleExpand, onImageClick }
           )}
         </div>
         
-        <p className="text-slate-800 font-bold text-lg">${item.price}</p>
+        {item.variations && item.variations.length > 0 ? (
+          <div className="flex items-center gap-2">
+            {item.variations.map((v, vi) => (
+              <span key={vi} className="text-slate-800 font-bold text-sm">
+                <span className="text-slate-500 text-[10px] font-normal mr-0.5">{v.name}</span>
+                ${v.price}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <p className="text-slate-800 font-bold text-lg">${item.price}</p>
+        )}
         
         {isExpanded && item.description && (
           <p className="text-slate-600 text-xs mt-1 line-clamp-2">{item.description}</p>

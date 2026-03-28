@@ -116,7 +116,18 @@ export const MenuStyleThree = ({ item, isExpanded, onToggleExpand, onImageClick 
       {/* Price with dotted line */}
       <div className="flex items-center gap-2 flex-shrink-0 self-center">
         <span className="hidden sm:block w-16 border-b border-dotted border-slate-600" />
-        <span className="text-amber-400 font-bold text-base md:text-lg">${item.price}</span>
+        {item.variations && item.variations.length > 0 ? (
+          <div className="text-right">
+            {item.variations.map((v, vi) => (
+              <div key={vi} className="flex items-center gap-1">
+                <span className="text-slate-500 text-[10px]">{v.name}</span>
+                <span className="text-amber-400 font-bold text-sm">${v.price}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <span className="text-amber-400 font-bold text-base md:text-lg">${item.price}</span>
+        )}
       </div>
     </div>
   );

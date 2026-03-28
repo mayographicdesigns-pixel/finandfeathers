@@ -93,7 +93,15 @@ export const MenuStyleOne = ({ item, isExpanded, onToggleExpand, onImageClick })
               </span>
             )}
             <span className="flex-1 border-b border-dotted border-slate-600 mx-2 hidden sm:block" />
-            <span className="text-amber-400 font-bold text-lg">${item.price}</span>
+            {item.variations && item.variations.length > 0 ? (
+              <span className="flex items-center gap-2">
+                {item.variations.map((v, vi) => (
+                  <span key={vi}><span className="text-slate-500 text-[10px]">{v.name} </span><span className="text-amber-400 font-bold">${v.price}</span></span>
+                ))}
+              </span>
+            ) : (
+              <span className="text-amber-400 font-bold text-lg">${item.price}</span>
+            )}
           </div>
           
           <p className={`text-slate-400 text-sm leading-relaxed ${isExpanded ? '' : 'line-clamp-2'}`}>
