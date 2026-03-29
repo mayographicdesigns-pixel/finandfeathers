@@ -1246,10 +1246,14 @@ const LinkTreeHomePage = () => {
             />
           )}
           
-          {/* Service Charge Notice */}
-          <div className="mt-4 p-3 bg-red-900/30 border border-red-600/50 rounded-lg">
-            <p className="text-red-400 text-base text-center font-semibold">
-              Service Charge: A 20% automatic gratuity will be added to all checks.
+          {/* House Rules */}
+          <div className="mt-4 p-3 bg-red-900/30 border border-red-600/50 rounded-lg space-y-1.5">
+            <p className="text-red-400 text-base text-center font-bold">House Rules</p>
+            <p className="text-red-300/90 text-sm text-center">
+              <span className="font-semibold">Age Requirement:</span> We are a 21+ establishment. Please ensure all guests have a valid government-issued ID ready upon arrival.
+            </p>
+            <p className="text-red-300/90 text-sm text-center">
+              <span className="font-semibold">Service Policy:</span> To support our dedicated team, a 20% automatic gratuity is added to all checks.
             </p>
           </div>
         </div>

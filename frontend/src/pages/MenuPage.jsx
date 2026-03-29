@@ -1109,10 +1109,14 @@ const MenuPage = () => {
       {/* Menu Grid */}
       <div className="container mx-auto px-4 pb-16">
         
-        {/* Service Charge Notice - At the top */}
-        <div className="mb-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl">
-          <p className="text-red-400 text-lg text-center font-semibold">
-            Service Charge: A 20% automatic gratuity will be added to all checks.
+        {/* House Rules - At the top */}
+        <div className="mb-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl space-y-2">
+          <p className="text-red-400 text-lg text-center font-bold">House Rules</p>
+          <p className="text-red-300/90 text-sm text-center">
+            <span className="font-semibold">Age Requirement:</span> We are a 21+ establishment. Please ensure all guests have a valid government-issued ID ready upon arrival.
+          </p>
+          <p className="text-red-300/90 text-sm text-center">
+            <span className="font-semibold">Service Policy:</span> To support our dedicated team, a 20% automatic gratuity is added to all checks.
           </p>
         </div>
 
