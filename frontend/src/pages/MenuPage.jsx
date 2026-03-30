@@ -317,11 +317,13 @@ const MenuPage = () => {
 
   const fetchCategoryStyles = async () => {
     try {
-      const styles = await getMenuCategoryStyles();
-      setCategoryStyles(styles || {});
+      const dbStyles = await getMenuCategoryStyles();
+      // Merge: DB styles override defaults, ensuring all categories are covered
+      const merged = { ...DEFAULT_CATEGORY_STYLES, ...(dbStyles || {}) };
+      setCategoryStyles(merged);
     } catch (error) {
       console.error('Failed to fetch category styles', error);
-      setCategoryStyles({});
+      setCategoryStyles({ ...DEFAULT_CATEGORY_STYLES });
     }
   };
 

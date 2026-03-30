@@ -14,6 +14,7 @@ import {
   adminGetMenuCategoryStyles,
   adminUpdateMenuCategoryStyles
 } from '../../services/api';
+import { MENU_STYLES, DEFAULT_CATEGORY_STYLES } from '../menu';
 import MenuImageEditor from './MenuImageEditor';
 
 const LOCATIONS = [
@@ -89,10 +90,18 @@ const MenuItemsTab = () => {
 
   const fetchCategoryStyles = async () => {
     try {
-      const styles = await adminGetMenuCategoryStyles();
-      setCategoryStyles(styles);
+      const dbStyles = await adminGetMenuCategoryStyles();
+      // Merge: DB styles override defaults, but all categories are present
+      const merged = { ...DEFAULT_CATEGORY_STYLES, ...dbStyles };
+      setCategoryStyles(merged);
+      // Persist merged styles to DB if new categories were added from defaults
+      const hasNew = Object.keys(DEFAULT_CATEGORY_STYLES).some(k => !(k in dbStyles));
+      if (hasNew) {
+        await adminUpdateMenuCategoryStyles(merged);
+      }
     } catch (err) {
       console.error('Error fetching category styles:', err);
+      setCategoryStyles({ ...DEFAULT_CATEGORY_STYLES });
     }
   };
 

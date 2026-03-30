@@ -1,6 +1,8 @@
 # Fin & Feathers Restaurant PWA — Product Requirements Document
 
-## Latest Changes (2026-03-28)
+## Latest Changes (2026-03-30)
+- **Menu Style Sync Fix (2026-03-30):** Admin and public menu now always use the same merged styles (DB styles + defaults). All 19 category styles persisted to DB on first admin load. No more fallback mismatch where admin showed "Default Cards" but public rendered "Horizontal".
+- **Local Menu Images Verified (2026-03-30):** All 84 local images load correctly (0 broken). 95 items have no image (drinks, etc.). External image URLs fully converted.
 - **DJ Social Wall Integration (2026-03-28):** DJ Panel now has "View Vibe Wall & Chat" button. Checked-in DJs appear in "Who's Here" tab and are DM-able by patrons. Auto-creates user profile for DJs visiting the wall. Song request feed button only appears when DJ is live.
 - **Unified People Tab (2026-03-28):** Merged Loyalty Members, Contact Forms, and Check-ins into a single searchable "People" tab in the admin panel. Added CSV export for all contacts. Replaced separate Loyalty/Contacts tabs.
 - **Fixed Google Review Links (2026-03-28):** Replaced broken `g.page/r/CfinandfeathersReview` with location-specific Google Review URLs using verified Place IDs (Edgewood, Midtown, Douglasville, Riverdale). The "Leave a Review" button now opens the correct review page for the user's saved location.
