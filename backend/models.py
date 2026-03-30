@@ -160,6 +160,7 @@ class MenuItemUpdate(BaseModel):
     type: Optional[str] = None  # food or drink
     location_slug: Optional[str] = None
     variations: Optional[List[dict]] = None
+    sync_all_locations: Optional[bool] = None
 
 # Media/Photo Upload Model
 class Media(BaseModel):

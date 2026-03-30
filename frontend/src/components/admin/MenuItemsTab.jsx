@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Edit2, Trash2, Upload, RefreshCw, Image, Grid3X3 } from 'lucide-react';
+import { Plus, Edit2, Trash2, Upload, RefreshCw, Image, Grid3X3, MapPin, Globe } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
@@ -16,6 +16,18 @@ import {
 } from '../../services/api';
 import MenuImageEditor from './MenuImageEditor';
 
+const LOCATIONS = [
+  { slug: 'edgewood-atlanta', name: 'Edgewood' },
+  { slug: 'midtown-atlanta', name: 'Midtown' },
+  { slug: 'douglasville', name: 'Douglasville' },
+  { slug: 'riverdale', name: 'Riverdale' },
+  { slug: 'valdosta', name: 'Valdosta' },
+  { slug: 'albany', name: 'Albany' },
+  { slug: 'stone-mountain', name: 'Stone Mountain' },
+  { slug: 'las-vegas', name: 'Las Vegas' },
+  { slug: 'hibachi-food-truck', name: 'Hibachi Food Truck' }
+];
+
 const MenuItemsTab = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,6 +36,8 @@ const MenuItemsTab = () => {
   const [uploading, setUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
+  const [filterLocation, setFilterLocation] = useState('edgewood-atlanta');
+  const [syncAllLocations, setSyncAllLocations] = useState(true);
   const [imageEditorItem, setImageEditorItem] = useState(null);
   const [categoryStyles, setCategoryStyles] = useState({});
   const [showStyleEditor, setShowStyleEditor] = useState(false);
@@ -71,7 +85,7 @@ const MenuItemsTab = () => {
   useEffect(() => {
     fetchItems();
     fetchCategoryStyles();
-  }, []);
+  }, [filterLocation]);
 
   const fetchCategoryStyles = async () => {
     try {
@@ -96,8 +110,9 @@ const MenuItemsTab = () => {
   };
 
   const fetchItems = async () => {
+    setLoading(true);
     try {
-      const data = await getAdminMenuItems();
+      const data = await getAdminMenuItems(filterLocation);
       setItems(data);
     } catch (err) {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
@@ -202,10 +217,12 @@ const MenuItemsTab = () => {
       };
 
       if (editingItem) {
-        await updateMenuItem(editingItem.id, itemData);
+        const result = await updateMenuItem(editingItem.id, { ...itemData, sync_all_locations: syncAllLocations });
         setItems(items.map(i => i.id === editingItem.id ? { ...i, ...itemData } : i));
-        toast({ title: 'Success', description: 'Menu item updated' });
+        const syncMsg = result?.synced_locations > 0 ? ` (synced to ${result.synced_locations} other locations)` : '';
+        toast({ title: 'Success', description: `Menu item updated${syncMsg}` });
       } else {
+        itemData.location_slug = filterLocation;
         const newItem = await createMenuItem(itemData);
         setItems([...items, newItem]);
         toast({ title: 'Success', description: 'Menu item created' });
@@ -301,6 +318,37 @@ const MenuItemsTab = () => {
           <Button onClick={() => setShowForm(true)} className="bg-red-600 hover:bg-red-700">
             <Plus className="w-4 h-4 mr-2" /> Add Item
           </Button>
+        </div>
+      </div>
+
+      {/* Location Filter */}
+      <div className="flex items-center gap-3 p-3 bg-slate-800/70 border border-slate-700 rounded-lg">
+        <MapPin className="w-4 h-4 text-red-400 shrink-0" />
+        <span className="text-slate-300 text-sm font-medium shrink-0">Location:</span>
+        <select
+          value={filterLocation}
+          onChange={(e) => setFilterLocation(e.target.value)}
+          className="bg-slate-900 border border-slate-600 text-white rounded-md px-3 py-1.5 text-sm flex-1"
+          data-testid="menu-location-filter"
+        >
+          {LOCATIONS.map(loc => (
+            <option key={loc.slug} value={loc.slug}>{loc.name}</option>
+          ))}
+        </select>
+        <div className="flex items-center gap-2 shrink-0">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={syncAllLocations}
+              onChange={(e) => setSyncAllLocations(e.target.checked)}
+              className="rounded border-slate-600"
+              data-testid="sync-all-toggle"
+            />
+            <span className="text-sm text-slate-300 flex items-center gap-1">
+              <Globe className="w-3.5 h-3.5 text-green-400" />
+              Apply edits to all locations
+            </span>
+          </label>
         </div>
       </div>
 

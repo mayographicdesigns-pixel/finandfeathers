@@ -739,8 +739,12 @@ async def admin_create_menu_item(item: MenuItemCreate, username: str = Depends(g
 
 @api_router.put("/admin/menu-items/{item_id}")
 async def admin_update_menu_item(item_id: str, update: MenuItemUpdate, username: str = Depends(get_current_admin)):
-    """Update a menu item. If image changes, auto-sync to all locations with the same item name."""
+    """Update a menu item. Optionally sync changes to all locations with the same item name."""
     update_dict = {k: v for k, v in update.dict().items() if v is not None}
+    
+    # Extract sync flag (not a DB field)
+    sync_all = update_dict.pop("sync_all_locations", None)
+    
     if not update_dict:
         raise HTTPException(status_code=400, detail="No fields to update")
 
@@ -755,17 +759,27 @@ async def admin_update_menu_item(item_id: str, update: MenuItemUpdate, username:
         {"$set": update_dict}
     )
 
-    # If image was changed, sync to all locations with the same item name
-    image_changed = "image" in update_dict or "image_url" in update_dict
     synced_count = 0
-    if image_changed:
-        new_image = update_dict.get("image") or update_dict.get("image_url")
-        if new_image and original.get("name"):
+    # If sync_all is true, propagate ALL changed fields to items with same name at other locations
+    if sync_all and original.get("name"):
+        sync_fields = {k: v for k, v in update_dict.items() if k not in ("location_slug", "id")}
+        if sync_fields:
             sync_result = await db.menu_items.update_many(
                 {"name": original["name"], "id": {"$ne": item_id}},
-                {"$set": {"image": new_image, "image_url": new_image}}
+                {"$set": sync_fields}
             )
             synced_count = sync_result.modified_count
+    else:
+        # Legacy behavior: auto-sync only image changes
+        image_changed = "image" in update_dict or "image_url" in update_dict
+        if image_changed:
+            new_image = update_dict.get("image") or update_dict.get("image_url")
+            if new_image and original.get("name"):
+                sync_result = await db.menu_items.update_many(
+                    {"name": original["name"], "id": {"$ne": item_id}},
+                    {"$set": {"image": new_image, "image_url": new_image}}
+                )
+                synced_count = sync_result.modified_count
 
     return {
         "message": "Menu item updated successfully",

@@ -937,9 +937,12 @@ export async function adminUpdateMenuCategoryStyles(styles) {
 }
 
 // Get menu items (admin)
-export async function getAdminMenuItems() {
+export async function getAdminMenuItems(locationSlug) {
   const token = localStorage.getItem('adminToken');
-  const response = await fetch(`${API_URL}/admin/menu-items`, {
+  const url = locationSlug 
+    ? `${API_URL}/admin/menu-items?location_slug=${locationSlug}` 
+    : `${API_URL}/admin/menu-items`;
+  const response = await fetch(url, {
     headers: {
       'Authorization': `Bearer ${token}`
     }
