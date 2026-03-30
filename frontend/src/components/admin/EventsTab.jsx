@@ -502,6 +502,13 @@ const EventsTab = () => {
       )}
 
       {/* Events List */}
+      {/* Featured info banner */}
+      <div className="mb-4 p-3 bg-yellow-900/20 border border-yellow-600/40 rounded-lg flex items-center gap-2">
+        <Star className="w-4 h-4 text-yellow-400 shrink-0" />
+        <p className="text-yellow-300/90 text-sm">
+          <span className="font-semibold">Featured events</span> appear on the homepage. Toggle the star to feature/unfeature.
+        </p>
+      </div>
       {events.length === 0 ? (
         <Card className="bg-slate-800/50 border-slate-700">
           <CardContent className="p-12 text-center">
@@ -561,8 +568,13 @@ const EventsTab = () => {
                       <Button size="sm" variant="outline" onClick={() => handleEdit(event)} className="border-yellow-600 text-yellow-400">
                         <Edit2 className="w-3 h-3 mr-1" /> Edit
                       </Button>
-                      <Button size="sm" variant="outline" onClick={() => handleToggleFeatured(event)} className="border-slate-600 text-slate-300">
-                        <Star className="w-3 h-3 mr-1" /> {event.featured ? 'Unfeature' : 'Feature'}
+                      <Button size="sm" variant="outline" onClick={() => handleToggleFeatured(event)} 
+                        className={event.featured 
+                          ? 'border-yellow-500 bg-yellow-500/20 text-yellow-300' 
+                          : 'border-slate-600 text-slate-300'}
+                        data-testid={`feature-event-${event.id}`}
+                      >
+                        <Star className="w-3 h-3 mr-1" /> {event.featured ? 'On Homepage' : 'Feature'}
                       </Button>
                       <Button size="sm" variant="outline" onClick={() => handleToggleActive(event)} className="border-slate-600 text-slate-300">
                         {event.is_active !== false ? 'Hide' : 'Show'}

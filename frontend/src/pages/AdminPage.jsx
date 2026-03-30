@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Home, BarChart3, Megaphone, Ticket, Grid3X3, ImageUp, MessageSquare,
-  MapPin, Video, Share2, UtensilsCrossed, Coins, Users, Mail, Bell, Shield, FileText, Briefcase, UserCheck
+  MapPin, Video, Share2, UtensilsCrossed, Coins, Users, Mail, Bell, Shield, FileText, Briefcase, UserCheck, Save
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { getAdminStats } from '../services/api';
+import { toast } from '../hooks/use-toast';
 import {
   DashboardStats,
   LoyaltyMembersTab,
@@ -86,6 +87,17 @@ const AdminPage = () => {
             <span className="text-white font-semibold">Admin Panel</span>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              onClick={() => {
+                toast({ title: 'Saved', description: 'All changes are live on the homepage' });
+                setTimeout(() => window.open('/', '_blank'), 500);
+              }}
+              className="bg-green-600 hover:bg-green-700 text-white"
+              data-testid="dashboard-save-btn"
+            >
+              <Save className="w-4 h-4 mr-2" /> Save Changes
+            </Button>
             <Button
               variant="ghost"
               size="sm"

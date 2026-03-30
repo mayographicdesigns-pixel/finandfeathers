@@ -975,7 +975,7 @@ const LinkTreeHomePage = () => {
         setSocialLinks(links);
         setInstagramFeed(feed);
         setSpecials(activeSpecials);
-        setEvents(eventsData.filter(e => e.image));
+        setEvents(eventsData.filter(e => e.image && e.featured));
 
         const pageContentMap = {};
         (homePageContent || []).forEach((entry) => {
@@ -1362,7 +1362,8 @@ const LinkTreeHomePage = () => {
 
           {/* Featured Events Images Grid */}
           {events.length > 0 && (
-            <div data-testid="events-images-section">
+            <div data-testid="featured-events-section">
+              <p className="text-slate-400 text-xs text-center mb-2 uppercase tracking-wider font-semibold">Featured Events</p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {events.slice(0, 4).map((event, index) => (
                   <div
