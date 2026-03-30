@@ -353,15 +353,65 @@ async def get_dj_schedules_for_location(location_slug: str):
     return [DJScheduleResponse(**s) for s in schedules]
 
 
+def _check_karaoke_window(schedule, current_day, current_hour_min):
+    """Check if the current time falls within a karaoke schedule window."""
+    notes = (schedule.get("notes") or "").upper()
+    if "KARAOKE" not in notes:
+        return False
+    dow = schedule.get("day_of_week")
+    if dow is None:
+        return False
+    start_t = schedule.get("start_time", "20:00")
+    end_t = schedule.get("end_time", "02:00")
+    if end_t < start_t:  # Crosses midnight
+        if dow == current_day and current_hour_min >= start_t:
+            return True
+        prev_day = (current_day - 1) % 7
+        if dow == prev_day and current_hour_min < end_t:
+            return True
+    else:
+        if dow == current_day and start_t <= current_hour_min < end_t:
+            return True
+    return False
+
+
+def _build_live_dj_response(live_dj, karaoke_active, tz_name):
+    """Build response for a currently-live DJ."""
+    return {
+        "is_live": True,
+        "karaoke_active": karaoke_active,
+        "dj_name": live_dj.get("name"),
+        "dj_stage_name": live_dj.get("stage_name"),
+        "dj_photo_url": live_dj.get("photo_url"),
+        "dj_id": live_dj.get("id"),
+        "live_stream_url": live_dj.get("live_stream_url"),
+        "timezone": tz_name,
+        "next_session": None
+    }
+
+
+def _categorize_time_slot(start_time):
+    """Categorize a session start time into Brunch/Happy Hour/Night."""
+    try:
+        hour = int(start_time.split(":")[0])
+    except Exception:
+        hour = 20
+    if hour < 15:
+        return "Brunch"
+    elif hour < 19:
+        return "Happy Hour"
+    return "Night"
+
+
 @router.get("/dj/next-session/{location_slug}")
 async def get_next_dj_session(location_slug: str):
     """Get the next upcoming DJ session for a location, considering recurring schedules."""
     from datetime import timedelta
-    # Use location's local timezone for accurate day/time comparisons
     local_now = utc_now_in_location(location_slug)
     today_str = local_now.strftime("%Y-%m-%d")
-    current_day = local_now.weekday()  # 0=Monday, 6=Sunday
+    current_day = local_now.weekday()
     tz_name = get_location_tz_name(location_slug)
+    current_hour_min = local_now.strftime("%H:%M")
 
     # Check if DJ is currently live
     live_dj = await db.dj_profiles.find_one(
@@ -370,53 +420,26 @@ async def get_next_dj_session(location_slug: str):
     karaoke = await db.karaoke_sessions.find_one({"location_slug": location_slug}, {"_id": 0})
     karaoke_active = karaoke.get("active", False) if karaoke else False
 
-    # Check all karaoke schedules to determine if we're in a window right now
-    current_hour_min = local_now.strftime("%H:%M")
-    in_any_karaoke_window = False
+    # Check karaoke schedule windows
     matching_schedule = None
+    schedules = await db.dj_schedules.find(
+        {"location_slug": location_slug, "is_active": True, "is_recurring": True}, {"_id": 0}
+    ).to_list(50)
 
-    for s in await db.dj_schedules.find(
-        {"location_slug": location_slug, "is_active": True, "is_recurring": True},
-        {"_id": 0}
-    ).to_list(50):
-        notes = (s.get("notes") or "").upper()
-        if "KARAOKE" not in notes:
-            continue
-        dow = s.get("day_of_week")
-        if dow is None:
-            continue
-
-        start_t = s.get("start_time", "20:00")
-        end_t = s.get("end_time", "02:00")
-        in_window = False
-
-        if end_t < start_t:  # Crosses midnight (e.g., 20:00-02:00)
-            if dow == current_day and current_hour_min >= start_t:
-                in_window = True
-            # Also check if we're past midnight on the next day
-            prev_day = (current_day - 1) % 7
-            if dow == prev_day and current_hour_min < end_t:
-                in_window = True
-        else:
-            if dow == current_day and start_t <= current_hour_min < end_t:
-                in_window = True
-
-        if in_window:
-            in_any_karaoke_window = True
+    for s in schedules:
+        if _check_karaoke_window(s, current_day, current_hour_min):
             matching_schedule = s
             break
 
-    # Auto-activate karaoke if a scheduled karaoke night is happening right now
-    if not karaoke_active and in_any_karaoke_window and matching_schedule:
+    # Auto-activate/deactivate karaoke based on schedule
+    if not karaoke_active and matching_schedule:
         await db.karaoke_sessions.update_one(
             {"location_slug": location_slug},
             {"$set": {"location_slug": location_slug, "active": True, "dj_id": matching_schedule.get("dj_id", ""), "started_at": datetime.now(timezone.utc).isoformat(), "auto_activated": True}},
             upsert=True
         )
         karaoke_active = True
-
-    # Auto-deactivate karaoke if it was auto-activated and the schedule window has ended
-    if karaoke_active and karaoke and karaoke.get("auto_activated") and not in_any_karaoke_window:
+    elif karaoke_active and karaoke and karaoke.get("auto_activated") and not matching_schedule:
         await db.karaoke_sessions.update_one(
             {"location_slug": location_slug},
             {"$set": {"active": False, "ended_at": datetime.now(timezone.utc).isoformat()}}
@@ -424,47 +447,28 @@ async def get_next_dj_session(location_slug: str):
         karaoke_active = False
 
     if live_dj:
-        return {
-            "is_live": True,
-            "karaoke_active": karaoke_active,
-            "dj_name": live_dj.get("name"),
-            "dj_stage_name": live_dj.get("stage_name"),
-            "dj_photo_url": live_dj.get("photo_url"),
-            "dj_id": live_dj.get("id"),
-            "live_stream_url": live_dj.get("live_stream_url"),
-            "timezone": tz_name,
-            "next_session": None
-        }
+        return _build_live_dj_response(live_dj, karaoke_active, tz_name)
 
     # Find next scheduled session
-    # 1. Check non-recurring future sessions first
+    tz = get_location_tz(location_slug)
+    best, best_dt = None, None
+
+    # Non-recurring future sessions
     upcoming = await db.dj_schedules.find(
         {"location_slug": location_slug, "is_active": True, "scheduled_date": {"$gte": today_str}, "is_recurring": {"$ne": True}},
         {"_id": 0}
     ).sort("scheduled_date", 1).to_list(10)
 
-    # 2. Get recurring sessions
-    recurring = await db.dj_schedules.find(
-        {"location_slug": location_slug, "is_active": True, "is_recurring": True},
-        {"_id": 0}
-    ).to_list(50)
-
-    best = None
-    best_dt = None
-
-    # Check non-recurring
-    tz = get_location_tz(location_slug)
     for s in upcoming:
         try:
             dt = datetime.strptime(f"{s['scheduled_date']} {s.get('start_time', '20:00')}", "%Y-%m-%d %H:%M").replace(tzinfo=tz)
             if dt > local_now and (best_dt is None or dt < best_dt):
-                best_dt = dt
-                best = s
+                best_dt, best = dt, s
         except Exception:
-            pass
+            continue
 
-    # Check recurring — find next occurrence
-    for s in recurring:
+    # Recurring sessions — find next occurrence
+    for s in schedules:
         dow = s.get("day_of_week")
         if dow is None:
             continue
@@ -472,39 +476,23 @@ async def get_next_dj_session(location_slug: str):
         if days_ahead < 0:
             days_ahead += 7
         elif days_ahead == 0:
-            # Same day — check if time hasn't passed
             try:
                 start_t = s.get("start_time", "20:00")
                 session_dt = datetime.strptime(f"{today_str} {start_t}", "%Y-%m-%d %H:%M").replace(tzinfo=tz)
                 if session_dt <= local_now:
-                    days_ahead = 7  # Already passed today, next week
+                    days_ahead = 7
             except Exception:
                 days_ahead = 7
-
         next_date = local_now + timedelta(days=days_ahead)
         try:
             start_t = s.get("start_time", "20:00")
             dt = datetime.strptime(f"{next_date.strftime('%Y-%m-%d')} {start_t}", "%Y-%m-%d %H:%M").replace(tzinfo=tz)
             if best_dt is None or dt < best_dt:
-                best_dt = dt
-                best = {**s, "scheduled_date": next_date.strftime("%Y-%m-%d")}
+                best_dt, best = dt, {**s, "scheduled_date": next_date.strftime("%Y-%m-%d")}
         except Exception:
-            pass
+            continue
 
     if best:
-        # Categorize time slot
-        start_time = best.get("start_time", "20:00")
-        try:
-            hour = int(start_time.split(":")[0])
-        except Exception:
-            hour = 20
-        if hour < 15:
-            time_slot = "Brunch"
-        elif hour < 19:
-            time_slot = "Happy Hour"
-        else:
-            time_slot = "Night"
-
         return {
             "is_live": False,
             "karaoke_active": karaoke_active,
@@ -516,18 +504,13 @@ async def get_next_dj_session(location_slug: str):
                 "date": best.get("scheduled_date"),
                 "start_time": best.get("start_time"),
                 "end_time": best.get("end_time"),
-                "time_slot": time_slot,
+                "time_slot": _categorize_time_slot(best.get("start_time", "20:00")),
                 "event_name": best.get("notes", ""),
                 "location_name": best.get("location_name", "")
             }
         }
 
-    return {
-        "is_live": False,
-        "karaoke_active": False,
-        "timezone": tz_name,
-        "next_session": None
-    }
+    return {"is_live": False, "karaoke_active": False, "timezone": tz_name, "next_session": None}
 
 
 # =====================================================

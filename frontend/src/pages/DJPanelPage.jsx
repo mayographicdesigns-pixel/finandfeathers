@@ -501,7 +501,7 @@ const DJPanelPage = () => {
                 </h3>
                 <div className="space-y-1">
                   {mySchedule.map((s, i) => (
-                    <div key={i} className="flex items-center justify-between text-sm">
+                    <div key={`sched-${i}`} className="flex items-center justify-between text-sm">
                       <span className="text-white">{s.day_of_week}</span>
                       <span className="text-slate-400">{locationName(s.location_slug)} • {s.time_slot}</span>
                     </div>
@@ -601,7 +601,7 @@ const DJPanelPage = () => {
               <h3 className="text-xs text-slate-500 uppercase tracking-wide mb-2">Schedule — {locationName(checkedInLocation)}</h3>
               <div className="space-y-1">
                 {locationSchedule.map((s, i) => (
-                  <div key={i} className={`flex items-center justify-between text-sm py-1 px-2 rounded ${s.dj_name === djProfile.name ? 'bg-red-500/10 text-red-400' : 'text-slate-400'}`}>
+                  <div key={`slot-${i}`} className={`flex items-center justify-between text-sm py-1 px-2 rounded ${s.dj_name === djProfile.name ? 'bg-red-500/10 text-red-400' : 'text-slate-400'}`}>
                     <span className="font-medium">{s.day_of_week}</span>
                     <span>{s.dj_name} • {s.time_slot}</span>
                   </div>

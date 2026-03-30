@@ -544,7 +544,7 @@ const LiveTab = ({ djStatus, locationSlug, userId, userName, userAvatar }) => {
             if (video.buffered.length > 0) {
               const end = video.buffered.end(video.buffered.length - 1);
               if (end - video.currentTime > 30) {
-                try { sb.remove(0, end - 15); } catch {}
+                try { sb.remove(0, end - 15); } catch (e) { console.error(e); }
               }
             }
           });
@@ -599,14 +599,14 @@ const LiveTab = ({ djStatus, locationSlug, userId, userName, userAvatar }) => {
         const res = await fetch(`${window.location.origin}/api/stream/active/${locationSlug}`);
         const data = await res.json();
         setViewerCount(data.viewer_count || 0);
-      } catch {}
+      } catch (e) { console.error(e); }
     }, 5000);
 
     return () => {
       clearInterval(poll);
-      if (wsRef.current) { try { wsRef.current.close(); } catch {} }
+      if (wsRef.current) { try { wsRef.current.close(); } catch (e) { console.error(e); } }
       if (mediaSourceRef.current && mediaSourceRef.current.readyState === 'open') {
-        try { mediaSourceRef.current.endOfStream(); } catch {}
+        try { mediaSourceRef.current.endOfStream(); } catch (e) { console.error(e); }
       }
       chunkQueue.current = [];
     };
@@ -860,7 +860,7 @@ const WhosHereTab = ({ locationSlug, userId, userName, djStatus }) => {
           const data = await res.json();
           setCheckedIn(data);
         }
-      } catch {}
+      } catch (e) { console.error(e); }
       setLoading(false);
     };
     fetchCheckedIn();
@@ -878,7 +878,7 @@ const WhosHereTab = ({ locationSlug, userId, userName, djStatus }) => {
           const data = await res.json();
           setKaraokeQueue(data.pending || []);
         }
-      } catch {}
+      } catch (e) { console.error(e); }
     };
     fetchQueue();
     const iv = setInterval(fetchQueue, 8000);
@@ -906,7 +906,7 @@ const WhosHereTab = ({ locationSlug, userId, userName, djStatus }) => {
         const data = await res.json();
         setKaraokeQueue(data.pending || []);
       }
-    } catch {}
+    } catch (e) { console.error(e); }
     setKaraokeSubmitting(false);
   };
 
@@ -1037,7 +1037,7 @@ const SocialWallPage = () => {
             })
           });
           localStorage.setItem('ff_user_location', slug);
-        } catch {}
+        } catch (e) { console.error(e); }
       } catch { navigate('/account'); }
       finally { setLoading(false); }
     };
@@ -1069,7 +1069,7 @@ const SocialWallPage = () => {
         const res = await fetch(`${API_URL}/api/wall/dm/unread/${userProfile.id}`);
         const data = await res.json();
         setUnreadDMs(data.unread || 0);
-      } catch {}
+      } catch (e) { console.error(e); }
     };
     fetchUnread();
     const iv = setInterval(fetchUnread, 10000);
@@ -1089,7 +1089,7 @@ const SocialWallPage = () => {
         const cData = await cRes.json();
         setNotifications(nData || []);
         setUnreadNotifs(cData.count || 0);
-      } catch {}
+      } catch (e) { console.error(e); }
     };
     fetchNotifs();
     const iv = setInterval(fetchNotifs, 10000);
@@ -1104,7 +1104,7 @@ const SocialWallPage = () => {
       });
       setUnreadNotifs(0);
       setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-    } catch {}
+    } catch (e) { console.error(e); }
   };
 
   const isStreaming = djStatus?.is_live && djStatus?.live_stream_url;

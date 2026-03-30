@@ -472,7 +472,7 @@ export async function processGoogleSession(sessionId) {
 
     if (!response.ok) {
       let detail = 'Authentication failed';
-      try { const err = await response.json(); detail = err.detail || detail; } catch {}
+      try { const err = await response.json(); detail = err.detail || detail; } catch (e) { /* parse error */ }
       throw new Error(detail);
     }
 
@@ -530,7 +530,7 @@ export async function registerUserWithPassword(email, password, name, username) 
 
     if (!response.ok) {
       let detail = 'Registration failed';
-      try { const err = await response.json(); detail = err.detail || detail; } catch {}
+      try { const err = await response.json(); detail = err.detail || detail; } catch (e) { /* parse error */ }
       throw new Error(detail);
     }
 
@@ -554,7 +554,7 @@ export async function loginUserWithPassword(identifier, password) {
 
     if (!response.ok) {
       let detail = 'Login failed';
-      try { const err = await response.json(); detail = err.detail || detail; } catch {}
+      try { const err = await response.json(); detail = err.detail || detail; } catch (e) { /* parse error */ }
       throw new Error(detail);
     }
 
@@ -1813,7 +1813,7 @@ export async function createUserProfile(profile) {
   });
   if (!response.ok) {
     let detail = 'Failed to create profile';
-    try { const err = await response.json(); detail = err.detail || detail; } catch {}
+    try { const err = await response.json(); detail = err.detail || detail; } catch (e) { /* parse error */ }
     throw new Error(detail);
   }
   return await response.json();

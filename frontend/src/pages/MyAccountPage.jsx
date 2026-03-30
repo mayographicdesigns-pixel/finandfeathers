@@ -1112,7 +1112,7 @@ const MyAccountPage = () => {
                   {isEditing ? (
                     <div className="space-y-2">
                       {(editedProfile?.special_dates || []).map((sd, idx) => (
-                        <div key={idx} className="flex gap-2">
+                        <div key={`item-${idx}`} className="flex gap-2">
                           <Input
                             value={sd.name}
                             onChange={e => updateSpecialDate(idx, 'name', e.target.value)}
@@ -1149,7 +1149,7 @@ const MyAccountPage = () => {
                     <div className="space-y-1">
                       {(profile.special_dates || []).length > 0 ? (
                         profile.special_dates.map((sd, idx) => (
-                          <p key={idx} className="text-white">
+                          <p key={`item-${idx}`} className="text-white">
                             {sd.name}: {new Date(sd.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                           </p>
                         ))
@@ -1339,7 +1339,7 @@ const MyAccountPage = () => {
                 {tokenHistory.length > 0 ? (
                   <div className="space-y-2">
                     {tokenHistory.map((tx, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
+                      <div key={`item-${idx}`} className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
                         <div className="flex items-center gap-3">
                           {tx.payment_method === 'gift' ? (
                             <Gift className="w-5 h-5 text-pink-400" />
@@ -1497,7 +1497,7 @@ const MyAccountPage = () => {
                 {transferHistory.length > 0 ? (
                   <div className="space-y-2">
                     {transferHistory.slice(0, 10).map((tx, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
+                      <div key={`item-${idx}`} className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
                         <div className="flex items-center gap-3">
                           {tx.from_user_id === profile.id ? (
                             <Send className="w-5 h-5 text-red-400" />
@@ -1688,7 +1688,7 @@ const MyAccountPage = () => {
                   {cashoutHistory.length > 0 ? (
                     <div className="space-y-2">
                       {cashoutHistory.map((co, idx) => (
-                        <div key={idx} className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
+                        <div key={`item-${idx}`} className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
                           <div>
                             <p className="text-white font-medium">${co.amount_usd.toFixed(2)} via {co.payment_method}</p>
                             <p className="text-xs text-slate-400">{new Date(co.created_at).toLocaleDateString()}</p>
@@ -1763,7 +1763,7 @@ const MyAccountPage = () => {
                 {submissions.length > 0 ? (
                   <div className="grid grid-cols-2 gap-3">
                     {submissions.map((sub, idx) => (
-                      <div key={idx} className="relative group">
+                      <div key={`item-${idx}`} className="relative group">
                         <img 
                           src={sub.image_url} 
                           alt={sub.caption || 'Gallery submission'}
@@ -1925,7 +1925,7 @@ const MyAccountPage = () => {
                 {visits.length > 0 ? (
                   <div className="space-y-2">
                     {visits.map((visit, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
+                      <div key={`item-${idx}`} className="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
                         <div>
                           <p className="text-white font-medium">{visit.location_name}</p>
                           <p className="text-xs text-slate-400">
