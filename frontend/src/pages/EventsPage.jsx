@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Home, Calendar, MapPin, Clock, Users, Ticket, CreditCard, Loader2, CheckCircle, Star, Music, Wine, Phone, MessageSquare } from 'lucide-react';
+import { Home, Calendar, MapPin, Clock, Users, Ticket, CreditCard, Loader2, CheckCircle, Star, Music, Wine, Phone, MessageSquare, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -68,12 +68,20 @@ const EventsPage = () => {
   const [loading, setLoading] = useState(true);
   const [locations, setLocations] = useState([]);
   const [pageContent, setPageContent] = useState({});
+  const [viewingImage, setViewingImage] = useState(null);
   const heroHtml = pageContent.hero || 'From live music to exclusive tastings, discover unforgettable experiences at Fin & Feathers.';
 
   useEffect(() => {
     fetchData();
     checkPaymentReturn();
   }, []);
+
+  // ESC to close image popup
+  useEffect(() => {
+    const handleKey = (e) => { if (e.key === 'Escape') setViewingImage(null); };
+    if (viewingImage) window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [viewingImage]);
 
   const fetchData = async () => {
     try {
@@ -270,11 +278,11 @@ const EventsPage = () => {
         <div key={event.id} className="max-w-7xl mx-auto px-4 mb-12">
           <Card className="overflow-hidden bg-gradient-to-r from-red-900/30 to-slate-900 border-red-600/30">
             <div className="md:flex">
-              <div className="md:w-1/2">
+              <div className="md:w-1/2 cursor-pointer" onClick={() => setViewingImage(event)} data-testid={`featured-image-${event.id}`}>
                 <img 
                   src={event.image} 
                   alt={event.name}
-                  className="w-full h-64 md:h-full object-cover"
+                  className="w-full h-64 md:h-full object-cover hover:scale-105 transition-transform duration-300"
                 />
               </div>
               <CardContent className="md:w-1/2 p-8 flex flex-col justify-center">
@@ -332,11 +340,14 @@ const EventsPage = () => {
           {events.map(event => (
             <Card 
               key={event.id} 
-              className="overflow-hidden bg-slate-800/50 border-slate-700 hover:border-red-600/50 transition-all duration-300 group cursor-pointer"
-              onClick={() => setSelectedEvent(event)}
+              className="overflow-hidden bg-slate-800/50 border-slate-700 hover:border-red-600/50 transition-all duration-300 group"
               data-testid={`event-card-${event.id}`}
             >
-              <div className="relative h-48 overflow-hidden">
+              <div 
+                className="relative h-48 overflow-hidden cursor-pointer"
+                onClick={() => setViewingImage(event)}
+                data-testid={`event-image-click-${event.id}`}
+              >
                 <img 
                   src={event.image} 
                   alt={event.name}
@@ -576,6 +587,53 @@ const EventsPage = () => {
               )}
             </CardContent>
           </Card>
+        </div>
+      )}
+
+      {/* Image Popup / Lightbox for event flyers */}
+      {viewingImage && (
+        <div 
+          className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4"
+          onClick={(e) => { if (e.target === e.currentTarget) setViewingImage(null); }}
+          data-testid="event-image-lightbox"
+        >
+          <button
+            onClick={() => setViewingImage(null)}
+            className="absolute top-4 right-4 text-white hover:bg-white/20 rounded-full p-2 z-10"
+            data-testid="event-lightbox-close"
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <div className="max-w-4xl max-h-[90vh] relative">
+            <img
+              src={viewingImage.image}
+              alt={viewingImage.name}
+              className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+              data-testid="event-lightbox-image"
+            />
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-5 rounded-b-lg">
+              <h3 className="text-white text-xl font-bold">{viewingImage.name}</h3>
+              {viewingImage.description && (
+                <p className="text-slate-300 text-sm mt-1 line-clamp-3">{viewingImage.description}</p>
+              )}
+              <div className="flex items-center gap-4 mt-2 text-sm text-slate-400">
+                {viewingImage.date && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {viewingImage.date}</span>}
+                {viewingImage.time && <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {viewingImage.time}</span>}
+                {viewingImage.location && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {viewingImage.location}</span>}
+              </div>
+              <Button
+                onClick={() => { setViewingImage(null); setSelectedEvent(viewingImage); }}
+                className="mt-3 bg-red-600 hover:bg-red-700 text-white"
+                data-testid="event-lightbox-tickets-btn"
+              >
+                <Ticket className="w-4 h-4 mr-2" />
+                {isFreeEntry(viewingImage) ? 'Reserve — Free Entry' : 'Get Tickets'}
+              </Button>
+            </div>
+          </div>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-slate-500 text-sm">
+            Press ESC to close
+          </div>
         </div>
       )}
     </div>

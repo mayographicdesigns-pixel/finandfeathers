@@ -778,6 +778,7 @@ const LinkTreeHomePage = () => {
   const [editingContent, setEditingContent] = useState(defaultContent);
   const [pageContent, setPageContent] = useState({});
   const [events, setEvents] = useState([]);
+  const [viewingEvent, setViewingEvent] = useState(null);
   const [saving, setSaving] = useState(false);
   const [editingImageIndex, setEditingImageIndex] = useState(null);
   const fileInputRef = useRef(null);
@@ -1370,7 +1371,7 @@ const LinkTreeHomePage = () => {
                     key={event.id || index}
                     className="relative aspect-square rounded-lg overflow-hidden cursor-pointer group"
                     data-testid={`event-image-${index}`}
-                    onClick={() => navigate('/events')}
+                    onClick={() => setViewingEvent(event)}
                   >
                     <img
                       src={event.image.startsWith('/api/') ? `${window.location.origin}${event.image}` : event.image}
@@ -1759,6 +1760,46 @@ const LinkTreeHomePage = () => {
             {lightboxImage.caption && (
               <p className="text-white text-center mt-4 text-lg">{lightboxImage.caption}</p>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Event Image Popup */}
+      {viewingEvent && (
+        <div 
+          className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4"
+          onClick={() => setViewingEvent(null)}
+          data-testid="event-image-popup"
+        >
+          <button
+            onClick={() => setViewingEvent(null)}
+            className="absolute top-4 right-4 text-white hover:bg-white/20 rounded-full p-2 z-10"
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <div className="max-w-4xl max-h-[90vh] relative" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={viewingEvent.image?.startsWith('/api/') ? `${window.location.origin}${viewingEvent.image}` : viewingEvent.image}
+              alt={viewingEvent.name}
+              className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+            />
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-5 rounded-b-lg">
+              <h3 className="text-white text-xl font-bold">{viewingEvent.name}</h3>
+              {viewingEvent.description && (
+                <p className="text-slate-300 text-sm mt-1 line-clamp-3">{viewingEvent.description}</p>
+              )}
+              <div className="flex items-center gap-4 mt-2 text-sm text-slate-400">
+                {viewingEvent.date && <span>{viewingEvent.date}</span>}
+                {viewingEvent.time && <span>{viewingEvent.time}</span>}
+                {viewingEvent.location && <span>{viewingEvent.location}</span>}
+              </div>
+              <Button
+                onClick={() => { setViewingEvent(null); navigate('/events'); }}
+                className="mt-3 bg-red-600 hover:bg-red-700 text-white"
+              >
+                View Event Details
+              </Button>
+            </div>
           </div>
         </div>
       )}
