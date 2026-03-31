@@ -364,8 +364,11 @@ async def bulk_import_weekly_schedule(payload: BulkScheduleImport):
     else:
         deleted = 0
 
+    days_order = {"Monday": 0, "Tuesday": 1, "Wednesday": 2, "Thursday": 3, "Friday": 4, "Saturday": 5, "Sunday": 6}
+    sorted_entries = sorted(payload.entries, key=lambda e: days_order.get(e.day_of_week, 7))
+
     docs = []
-    for entry in payload.entries:
+    for entry in sorted_entries:
         docs.append({
             "id": str(uuid.uuid4()),
             "dj_name": entry.dj_name,
@@ -382,6 +385,53 @@ async def bulk_import_weekly_schedule(payload: BulkScheduleImport):
     if docs:
         await db.dj_schedule.insert_many(docs)
         inserted = len(docs)
+
+    # Auto-publish DJ lineup to the Social Wall
+    if inserted > 0:
+        location_name = loc.get("name", "").replace("Fin & Feathers - ", "")
+        lines = [f"This Week's DJ Lineup - {location_name}"]
+        if payload.week_label:
+            lines[0] += f" ({payload.week_label})"
+        lines.append("")
+        for entry in sorted_entries:
+            line = f"  {entry.day_of_week}: {entry.dj_name}"
+            if entry.time_slot:
+                line += f" {entry.time_slot}"
+            lines.append(line)
+
+        post_content = "\n".join(lines)
+        post_id = str(uuid.uuid4())
+
+        # Write to wall_posts (SocialWallPage)
+        wall_post = {
+            "id": post_id,
+            "location_slug": payload.location_slug,
+            "user_id": "system",
+            "user_name": "Fin & Feathers",
+            "user_avatar": "",
+            "post_type": "announcement",
+            "content": post_content,
+            "image_url": None,
+            "likes": [],
+            "comments": [],
+            "created_at": now,
+        }
+        await db.wall_posts.insert_one(wall_post)
+
+        # Write to social_posts (LocationDetailPage)
+        social_post = {
+            "id": str(uuid.uuid4()),
+            "location_slug": payload.location_slug,
+            "checkin_id": "system",
+            "author_name": "Fin & Feathers",
+            "author_emoji": "",
+            "author_selfie": None,
+            "message": post_content,
+            "image_url": None,
+            "likes": [],
+            "created_at": now,
+        }
+        await db.social_posts.insert_one(social_post)
 
     return {"inserted": inserted, "deleted": deleted, "location_slug": payload.location_slug}
 

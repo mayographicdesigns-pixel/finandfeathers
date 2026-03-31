@@ -1758,7 +1758,7 @@ const LocationDetailPage = () => {
                             {new Date(post.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>
-                        <p className="text-slate-300 mt-1">{post.message}</p>
+                        <p className="text-slate-300 mt-1 whitespace-pre-wrap">{post.message}</p>
                         {post.image_url && (
                           <img 
                             src={post.image_url} 
