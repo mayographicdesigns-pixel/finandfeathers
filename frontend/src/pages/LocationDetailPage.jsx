@@ -1442,27 +1442,28 @@ const LocationDetailPage = () => {
               <div className="flex items-center gap-2 mb-3">
                 <Music className="w-5 h-5 text-purple-400" />
                 <h3 className="font-bold text-white">Upcoming DJs</h3>
+                {djSchedules[0]?.week_label && (
+                  <span className="text-xs text-slate-500 ml-auto">{djSchedules[0].week_label}</span>
+                )}
               </div>
               <div className="space-y-2">
-                {djSchedules.slice(0, 3).map((schedule) => {
-                  const dateObj = new Date(schedule.scheduled_date + 'T00:00:00');
-                  const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
-                  const monthDay = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                  const formatTime = (t) => {
-                    const [h, m] = t.split(':');
-                    const hr = parseInt(h);
-                    return `${hr > 12 ? hr - 12 : hr}:${m} ${hr >= 12 ? 'PM' : 'AM'}`;
-                  };
+                {djSchedules.map((schedule) => {
+                  const dayLabel = schedule.day_of_week || '';
+                  const timeLabel = schedule.time_slot || (() => {
+                    if (!schedule.start_time) return '';
+                    const fmt = (t) => { const [h, m] = t.split(':'); const hr = parseInt(h); return `${hr > 12 ? hr - 12 : hr}:${m} ${hr >= 12 ? 'PM' : 'AM'}`; };
+                    return `${fmt(schedule.start_time)} - ${fmt(schedule.end_time)}`;
+                  })();
                   return (
-                    <div key={schedule.id} className="flex items-center justify-between bg-slate-700/50 rounded-lg p-3">
+                    <div key={schedule.id} className="flex items-center justify-between bg-slate-700/50 rounded-lg p-3" data-testid={`dj-schedule-${schedule.id}`}>
                       <div className="flex items-center gap-3">
-                        <span className="text-xl">{schedule.dj_photo_url ? '🎧' : '🎧'}</span>
+                        <span className="text-xl">🎧</span>
                         <div>
-                          <p className="font-medium text-white">{schedule.dj_stage_name || schedule.dj_name}</p>
+                          <p className="font-medium text-white">{schedule.dj_name}</p>
                           <p className="text-xs text-slate-400">
-                            {schedule.is_recurring && <span className="text-blue-400">Every {dayName} • </span>}
-                            {!schedule.is_recurring && `${dayName}, ${monthDay} • `}
-                            {formatTime(schedule.start_time)} - {formatTime(schedule.end_time)}
+                            <span className="text-blue-400">{dayLabel}</span>
+                            {dayLabel && timeLabel && ' • '}
+                            {timeLabel}
                           </p>
                         </div>
                       </div>

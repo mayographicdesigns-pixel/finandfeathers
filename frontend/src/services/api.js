@@ -83,7 +83,7 @@ export async function getDJSchedules() {
 // Get DJ schedules for a specific location
 export async function getDJSchedulesForLocation(locationSlug) {
   try {
-    const response = await fetch(`${API_URL}/dj/schedules/location/${locationSlug}`);
+    const response = await fetch(`${API_URL}/dj/weekly-schedule/${locationSlug}`);
     if (!response.ok) throw new Error('Failed to fetch location DJ schedules');
     return await response.json();
   } catch (error) {
