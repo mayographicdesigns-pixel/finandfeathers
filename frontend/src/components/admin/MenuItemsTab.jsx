@@ -647,9 +647,9 @@ const MenuItemsTab = () => {
                   {/* Image type indicator */}
                   {item.image && (
                     <span className={`absolute top-2 left-2 text-[9px] font-bold px-1.5 py-0.5 rounded ${
-                      item.image.startsWith('/api/media/') ? 'bg-green-600/80 text-white' : 'bg-amber-600/80 text-white'
+                      item.image.startsWith('/images/') || item.image.startsWith('/api/media/') ? 'bg-green-600/80 text-white' : 'bg-amber-600/80 text-white'
                     }`}>
-                      {item.image.startsWith('/api/media/') ? 'LOCAL' : 'EXTERNAL'}
+                      {item.image.startsWith('/images/') || item.image.startsWith('/api/media/') ? 'LOCAL' : 'EXTERNAL'}
                     </span>
                   )}
                   {/* Price badge */}
