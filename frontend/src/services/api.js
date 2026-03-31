@@ -3,7 +3,8 @@ const API_URL = `${BACKEND_URL}/api`;
 
 // Auth helper
 function adminHeaders() {
-  return adminHeaders();
+  const token = localStorage.getItem('adminToken');
+  return token ? { 'Authorization': `Bearer ${token}` } : {};
 }
 function adminJsonHeaders() {
   return { ...adminHeaders(), 'Content-Type': 'application/json' };
@@ -1250,6 +1251,7 @@ export async function updateHomepageContent(update) {
 // Check if user is admin
 // Verify admin token is still valid
 export async function verifyAdminToken() {
+  const token = localStorage.getItem('adminToken');
   if (!token) return false;
   
   try {
