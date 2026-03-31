@@ -335,6 +335,57 @@ async def get_all_scheduled_dj_names():
     return sorted(set(e["dj_name"] for e in entries))
 
 
+from pydantic import BaseModel
+from typing import List
+
+class BulkScheduleEntry(BaseModel):
+    dj_name: str
+    day_of_week: str
+    time_slot: str
+    notes: str = ""
+
+class BulkScheduleImport(BaseModel):
+    location_slug: str
+    week_label: str
+    entries: List[BulkScheduleEntry]
+    replace_existing: bool = True
+
+@router.post("/dj/weekly-schedule/bulk")
+async def bulk_import_weekly_schedule(payload: BulkScheduleImport):
+    loc = await db.locations.find_one({"slug": payload.location_slug})
+    if not loc:
+        raise HTTPException(status_code=404, detail="Location not found")
+
+    now = datetime.now(timezone.utc).isoformat()
+
+    if payload.replace_existing:
+        result = await db.dj_schedule.delete_many({"location_slug": payload.location_slug})
+        deleted = result.deleted_count
+    else:
+        deleted = 0
+
+    docs = []
+    for entry in payload.entries:
+        docs.append({
+            "id": str(uuid.uuid4()),
+            "dj_name": entry.dj_name,
+            "location_slug": payload.location_slug,
+            "day_of_week": entry.day_of_week,
+            "time_slot": entry.time_slot,
+            "notes": entry.notes,
+            "week_label": payload.week_label,
+            "is_active": True,
+            "created_at": now,
+        })
+
+    inserted = 0
+    if docs:
+        await db.dj_schedule.insert_many(docs)
+        inserted = len(docs)
+
+    return {"inserted": inserted, "deleted": deleted, "location_slug": payload.location_slug}
+
+
 @router.get("/dj/schedules")
 async def get_all_dj_schedules():
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")

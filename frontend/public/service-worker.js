@@ -152,6 +152,25 @@ self.addEventListener('message', (event) => {
     }
   }
 
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    console.log('[SW] Clearing all caches');
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          console.log('[SW] Deleting cache:', cacheName);
+          return caches.delete(cacheName);
+        })
+      );
+    }).then(() => {
+      console.log('[SW] All caches cleared');
+      self.clients.matchAll({ type: 'window' }).then((clients) => {
+        clients.forEach((client) => {
+          try { client.postMessage({ type: 'CACHE_CLEARED' }); } catch (e) {}
+        });
+      });
+    });
+  }
+
   if (event.data && event.data.type === 'TRIGGER_SYNC') {
     // Register a sync event
     self.registration.sync.register('sync-posts')

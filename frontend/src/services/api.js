@@ -216,6 +216,17 @@ export async function deleteAdminDJSchedule(scheduleId) {
   return await response.json();
 }
 
+export async function bulkImportDJSchedule(payload) {
+  const token = localStorage.getItem('adminToken');
+  const response = await fetch(`${API_URL}/dj/weekly-schedule/bulk`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify(payload)
+  });
+  if (!response.ok) throw new Error('Failed to bulk import DJ schedule');
+  return await response.json();
+}
+
 // ==================== PUBLIC API ====================
 
 // Get public menu items (no auth required)
