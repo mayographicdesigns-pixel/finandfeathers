@@ -1,6 +1,14 @@
 const BACKEND_URL = window.location.origin;
 const API_URL = `${BACKEND_URL}/api`;
 
+// Auth helper
+function adminHeaders() {
+  return adminHeaders();
+}
+function adminJsonHeaders() {
+  return { ...adminHeaders(), 'Content-Type': 'application/json' };
+}
+
 // Base64 URL encode helper
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -34,9 +42,8 @@ export async function getAppSettings() {
 // Get admin settings
 export async function getAdminSettings() {
   try {
-    const token = localStorage.getItem('adminToken');
     const response = await fetch(`${API_URL}/admin/settings`, {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: adminHeaders()
     });
     if (!response.ok) throw new Error('Failed to fetch admin settings');
     return await response.json();
@@ -49,7 +56,6 @@ export async function getAdminSettings() {
 // Update admin settings
 export async function updateAdminSettings(settings) {
   try {
-    const token = localStorage.getItem('adminToken');
     const response = await fetch(`${API_URL}/admin/settings`, {
       method: 'PUT',
       headers: {
@@ -69,17 +75,6 @@ export async function updateAdminSettings(settings) {
 // ==================== DJ SCHEDULE API ====================
 
 // Get all public DJ schedules
-export async function getDJSchedules() {
-  try {
-    const response = await fetch(`${API_URL}/dj/schedules`);
-    if (!response.ok) throw new Error('Failed to fetch DJ schedules');
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching DJ schedules:', error);
-    return [];
-  }
-}
-
 // Get DJ schedules for a specific location
 export async function getDJSchedulesForLocation(locationSlug) {
   try {
@@ -107,9 +102,8 @@ export async function getDJAtLocation(locationSlug) {
 // Admin: Get all DJ profiles
 export async function getAdminDJProfiles() {
   try {
-    const token = localStorage.getItem('adminToken');
     const response = await fetch(`${API_URL}/admin/dj/profiles`, {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: adminHeaders()
     });
     if (!response.ok) throw new Error('Failed to fetch DJ profiles');
     return await response.json();
@@ -121,7 +115,6 @@ export async function getAdminDJProfiles() {
 
 // Admin: Create DJ profile
 export async function createAdminDJProfile(profile) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/dj/profiles`, {
     method: 'POST',
     headers: {
@@ -136,7 +129,6 @@ export async function createAdminDJProfile(profile) {
 
 // Admin: Update DJ profile
 export async function updateAdminDJProfile(djId, update) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/dj/profiles/${djId}`, {
     method: 'PUT',
     headers: {
@@ -151,10 +143,9 @@ export async function updateAdminDJProfile(djId, update) {
 
 // Admin: Delete DJ profile
 export async function deleteAdminDJProfile(djId) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/dj/profiles/${djId}`, {
     method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) throw new Error('Failed to delete DJ profile');
   return await response.json();
@@ -163,9 +154,8 @@ export async function deleteAdminDJProfile(djId) {
 // Admin: Get all DJ schedules
 export async function getAdminDJSchedules() {
   try {
-    const token = localStorage.getItem('adminToken');
     const response = await fetch(`${API_URL}/admin/dj/schedules`, {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: adminHeaders()
     });
     if (!response.ok) throw new Error('Failed to fetch DJ schedules');
     return await response.json();
@@ -177,7 +167,6 @@ export async function getAdminDJSchedules() {
 
 // Admin: Create DJ schedule
 export async function createAdminDJSchedule(schedule) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/dj/schedules`, {
     method: 'POST',
     headers: {
@@ -192,7 +181,6 @@ export async function createAdminDJSchedule(schedule) {
 
 // Admin: Update DJ schedule
 export async function updateAdminDJSchedule(scheduleId, update) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/dj/schedules/${scheduleId}`, {
     method: 'PUT',
     headers: {
@@ -207,17 +195,15 @@ export async function updateAdminDJSchedule(scheduleId, update) {
 
 // Admin: Delete DJ schedule
 export async function deleteAdminDJSchedule(scheduleId) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/dj/schedules/${scheduleId}`, {
     method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) throw new Error('Failed to delete DJ schedule');
   return await response.json();
 }
 
 export async function bulkImportDJSchedule(payload) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/dj/weekly-schedule/bulk`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -243,17 +229,6 @@ export async function getPublicMenuItems(locationSlug) {
 }
 
 // Get menu categories (no auth required)
-export async function getMenuCategories() {
-  try {
-    const response = await fetch(`${API_URL}/menu/categories`);
-    if (!response.ok) throw new Error('Failed to fetch categories');
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-    return [];
-  }
-}
-
 // ==================== LOCATION API ====================
 
 // Get all public locations
@@ -284,17 +259,6 @@ export async function getLocationBySlug(slug) {
 }
 
 // Get VAPID public key from server
-export async function getVapidPublicKey() {
-  try {
-    const response = await fetch(`${API_URL}/push/public-key`);
-    const data = await response.json();
-    return data.publicKey;
-  } catch (error) {
-    console.error('Error fetching VAPID key:', error);
-    return null;
-  }
-}
-
 // Register service worker and subscribe to push
 export async function subscribeToPush(memberId) {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
@@ -356,30 +320,9 @@ export async function signupLoyalty(data) {
 }
 
 // Contact form submission
-export async function submitContactForm(data) {
-  try {
-    const response = await fetch(`${API_URL}/contact`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data)
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to submit contact form');
-    }
-
-    return await response.json();
-  } catch (error) {
-    throw error;
-  }
-}
-
 // Send push notification (admin only)
 export async function sendPushNotification(data) {
   try {
-    const token = localStorage.getItem('adminToken');
     const response = await fetch(`${API_URL}/admin/notifications/send`, {
       method: 'POST',
       headers: {
@@ -437,29 +380,6 @@ export function adminLogout() {
 }
 
 // Check if admin is authenticated
-export async function checkAdminAuth() {
-  const token = localStorage.getItem('adminToken');
-  if (!token) return null;
-
-  try {
-    const response = await fetch(`${API_URL}/auth/me`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (!response.ok) {
-      localStorage.removeItem('adminToken');
-      return null;
-    }
-
-    return await response.json();
-  } catch (error) {
-    localStorage.removeItem('adminToken');
-    return null;
-  }
-}
-
 // ==================== USER AUTH API ====================
 
 // Initiate Google OAuth login
@@ -470,29 +390,6 @@ export function initiateGoogleLogin() {
 }
 
 // Process Google OAuth session (called from AuthCallback)
-export async function processGoogleSession(sessionId) {
-  try {
-    const response = await fetch(`${API_URL}/auth/google/session`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({ session_id: sessionId })
-    });
-
-    if (!response.ok) {
-      let detail = 'Authentication failed';
-      try { const err = await response.json(); detail = err.detail || detail; } catch (e) { /* parse error */ }
-      throw new Error(detail);
-    }
-
-    return await response.json();
-  } catch (error) {
-    throw error;
-  }
-}
-
 // Check if user is authenticated (via session cookie)
 export async function checkUserAuth() {
   try {
@@ -628,7 +525,6 @@ export async function verifyResetToken(token) {
 
 // Get all admin users
 export async function getAdminUsers() {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/users/admins`, {
     headers: {
       'Authorization': `Bearer ${token}`
@@ -640,7 +536,6 @@ export async function getAdminUsers() {
 
 // Create new admin user
 export async function createAdminUser(userData) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/users/admins`, {
     method: 'POST',
     headers: {
@@ -659,7 +554,6 @@ export async function createAdminUser(userData) {
 
 // Update admin user
 export async function updateAdminUser(adminId, userData) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/users/admins/${adminId}`, {
     method: 'PUT',
     headers: {
@@ -678,7 +572,6 @@ export async function updateAdminUser(adminId, userData) {
 
 // Delete admin user
 export async function deleteAdminUser(adminId) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/users/admins/${adminId}`, {
     method: 'DELETE',
     headers: {
@@ -695,7 +588,6 @@ export async function deleteAdminUser(adminId) {
 
 // Change current admin's password
 export async function changeAdminPassword(currentPassword, newPassword) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/users/admins/change-password`, {
     method: 'POST',
     headers: {
@@ -714,7 +606,6 @@ export async function changeAdminPassword(currentPassword, newPassword) {
 
 // Get admin dashboard stats
 export async function getAdminStats() {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/stats`, {
     headers: {
       'Authorization': `Bearer ${token}`
@@ -727,7 +618,6 @@ export async function getAdminStats() {
 
 // Get loyalty members
 export async function getLoyaltyMembers() {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/loyalty-members`, {
     headers: {
       'Authorization': `Bearer ${token}`
@@ -740,7 +630,6 @@ export async function getLoyaltyMembers() {
 
 // Delete loyalty member
 export async function deleteLoyaltyMember(memberId) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/loyalty-members/${memberId}`, {
     method: 'DELETE',
     headers: {
@@ -754,7 +643,6 @@ export async function deleteLoyaltyMember(memberId) {
 
 // Get contacts
 export async function getContacts() {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/contacts`, {
     headers: {
       'Authorization': `Bearer ${token}`
@@ -767,7 +655,6 @@ export async function getContacts() {
 
 // Update contact status
 export async function updateContactStatus(contactId, status) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/contacts/${contactId}`, {
     method: 'PATCH',
     headers: {
@@ -783,7 +670,6 @@ export async function updateContactStatus(contactId, status) {
 
 // Delete contact (soft delete)
 export async function deleteContact(contactId) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/contacts/${contactId}`, {
     method: 'DELETE',
     headers: {
@@ -810,7 +696,6 @@ export async function getPageContent(pageKey) {
 
 // Page content (admin)
 export async function updatePageContent(pageKey, sectionKey, html) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/page-content/${pageKey}/${sectionKey}`, {
     method: 'PUT',
     headers: {
@@ -837,7 +722,6 @@ export async function getDailySpecials() {
 
 // Daily specials (admin)
 export async function adminGetDailySpecials() {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/daily-specials`, {
     headers: {
       'Authorization': `Bearer ${token}`
@@ -850,7 +734,6 @@ export async function adminGetDailySpecials() {
 }
 
 export async function adminUpdateDailySpecials(payload) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/daily-specials`, {
     method: 'PUT',
     headers: {
@@ -879,16 +762,14 @@ export async function getWeeklyVideos() {
 }
 
 export async function adminGetWeeklyVideos() {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/weekly-videos`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) return [];
   return await response.json();
 }
 
 export async function adminUpdateWeeklyVideos(payload) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/weekly-videos`, {
     method: 'PUT',
     headers: {
@@ -920,7 +801,6 @@ export async function getMenuCategoryStyles() {
 
 // Get menu category display styles (admin)
 export async function adminGetMenuCategoryStyles() {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/menu-category-styles`, {
     headers: {
       'Authorization': `Bearer ${token}`
@@ -933,7 +813,6 @@ export async function adminGetMenuCategoryStyles() {
 
 // Update menu category display styles (admin)
 export async function adminUpdateMenuCategoryStyles(styles) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/menu-category-styles`, {
     method: 'PUT',
     headers: {
@@ -949,7 +828,6 @@ export async function adminUpdateMenuCategoryStyles(styles) {
 
 // Get menu items (admin)
 export async function getAdminMenuItems(locationSlug) {
-  const token = localStorage.getItem('adminToken');
   const url = locationSlug 
     ? `${API_URL}/admin/menu-items?location_slug=${locationSlug}` 
     : `${API_URL}/admin/menu-items`;
@@ -965,7 +843,6 @@ export async function getAdminMenuItems(locationSlug) {
 
 // Create menu item
 export async function createMenuItem(item) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/menu-items`, {
     method: 'POST',
     headers: {
@@ -981,7 +858,6 @@ export async function createMenuItem(item) {
 
 // Update menu item
 export async function updateMenuItem(itemId, update) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/menu-items/${itemId}`, {
     method: 'PUT',
     headers: {
@@ -997,7 +873,6 @@ export async function updateMenuItem(itemId, update) {
 
 // Delete menu item
 export async function deleteMenuItem(itemId) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/menu-items/${itemId}`, {
     method: 'DELETE',
     headers: {
@@ -1011,7 +886,6 @@ export async function deleteMenuItem(itemId) {
 
 // Get notification history
 export async function getNotificationHistory() {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/notifications/history`, {
     headers: {
       'Authorization': `Bearer ${token}`
@@ -1024,7 +898,6 @@ export async function getNotificationHistory() {
 
 // Upload image file
 export async function uploadImage(file) {
-  const token = localStorage.getItem('adminToken');
   const formData = new FormData();
   formData.append('file', file);
 
@@ -1045,32 +918,7 @@ export async function uploadImage(file) {
 }
 
 // List uploaded images
-export async function listUploads() {
-  const token = localStorage.getItem('adminToken');
-  const response = await fetch(`${API_URL}/admin/uploads`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
-
-  if (!response.ok) throw new Error('Failed to fetch uploads');
-  return await response.json();
-}
-
 // Delete uploaded image
-export async function deleteUpload(filename) {
-  const token = localStorage.getItem('adminToken');
-  const response = await fetch(`${API_URL}/admin/uploads/${filename}`, {
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
-
-  if (!response.ok) throw new Error('Failed to delete upload');
-  return await response.json();
-}
-
 // ==================== SPECIALS API ====================
 
 // Get public specials (no auth)
@@ -1087,7 +935,6 @@ export async function getPublicSpecials() {
 
 // Get all specials (admin)
 export async function getAdminSpecials() {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/specials`, {
     headers: {
       'Authorization': `Bearer ${token}`
@@ -1100,7 +947,6 @@ export async function getAdminSpecials() {
 
 // Create/Post a special (admin) - auto sends notification
 export async function createSpecial(special) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/specials`, {
     method: 'POST',
     headers: {
@@ -1119,7 +965,6 @@ export async function createSpecial(special) {
 
 // Update a special (admin)
 export async function updateSpecial(specialId, update) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/specials/${specialId}`, {
     method: 'PUT',
     headers: {
@@ -1135,7 +980,6 @@ export async function updateSpecial(specialId, update) {
 
 // Delete a special (admin)
 export async function deleteSpecial(specialId) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/specials/${specialId}`, {
     method: 'DELETE',
     headers: {
@@ -1149,7 +993,6 @@ export async function deleteSpecial(specialId) {
 
 // Resend notification for a special (admin)
 export async function resendSpecialNotification(specialId) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/specials/${specialId}/notify`, {
     method: 'POST',
     headers: {
@@ -1177,9 +1020,8 @@ export async function getPublicSocialLinks() {
 
 // Get admin social links
 export async function getAdminSocialLinks() {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/social-links`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) throw new Error('Failed to fetch social links');
   return await response.json();
@@ -1187,7 +1029,6 @@ export async function getAdminSocialLinks() {
 
 // Create social link
 export async function createSocialLink(link) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/social-links`, {
     method: 'POST',
     headers: {
@@ -1202,7 +1043,6 @@ export async function createSocialLink(link) {
 
 // Update social link
 export async function updateSocialLink(linkId, update) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/social-links/${linkId}`, {
     method: 'PUT',
     headers: {
@@ -1217,10 +1057,9 @@ export async function updateSocialLink(linkId, update) {
 
 // Delete social link
 export async function deleteSocialLink(linkId) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/social-links/${linkId}`, {
     method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) throw new Error('Failed to delete social link');
   return await response.json();
@@ -1242,9 +1081,8 @@ export async function getPublicInstagramFeed() {
 
 // Get admin Instagram posts
 export async function getAdminInstagramPosts() {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/instagram-posts`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) throw new Error('Failed to fetch Instagram posts');
   return await response.json();
@@ -1252,7 +1090,6 @@ export async function getAdminInstagramPosts() {
 
 // Create Instagram post
 export async function createInstagramPost(post) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/instagram-posts`, {
     method: 'POST',
     headers: {
@@ -1266,26 +1103,11 @@ export async function createInstagramPost(post) {
 }
 
 // Update Instagram post
-export async function updateInstagramPost(postId, update) {
-  const token = localStorage.getItem('adminToken');
-  const response = await fetch(`${API_URL}/admin/instagram-posts/${postId}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify(update)
-  });
-  if (!response.ok) throw new Error('Failed to update Instagram post');
-  return await response.json();
-}
-
 // Delete Instagram post
 export async function deleteInstagramPost(postId) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/instagram-posts/${postId}`, {
     method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) throw new Error('Failed to delete Instagram post');
   return await response.json();
@@ -1327,18 +1149,6 @@ export async function checkOut(checkInId) {
 }
 
 // Get check-in count for a location
-export async function getCheckInCount(locationSlug) {
-  try {
-    const response = await fetch(`${API_URL}/checkin/count/${locationSlug}`);
-    if (!response.ok) throw new Error('Failed to get count');
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching check-in count:', error);
-    return { count: 0 };
-  }
-}
-
-
 // ==================== GALLERY API ====================
 
 // Get public gallery items (no auth)
@@ -1355,7 +1165,6 @@ export async function getPublicGallery() {
 
 // Get all gallery items (admin)
 export async function getAdminGallery() {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/gallery`, {
     headers: {
       'Authorization': `Bearer ${token}`
@@ -1367,7 +1176,6 @@ export async function getAdminGallery() {
 
 // Create gallery item (admin)
 export async function createGalleryItem(item) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/gallery`, {
     method: 'POST',
     headers: {
@@ -1385,7 +1193,6 @@ export async function createGalleryItem(item) {
 
 // Update gallery item (admin)
 export async function updateGalleryItem(itemId, update) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/gallery/${itemId}`, {
     method: 'PUT',
     headers: {
@@ -1400,7 +1207,6 @@ export async function updateGalleryItem(itemId, update) {
 
 // Delete gallery item (admin)
 export async function deleteGalleryItem(itemId) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/gallery/${itemId}`, {
     method: 'DELETE',
     headers: {
@@ -1427,20 +1233,8 @@ export async function getHomepageContent() {
 }
 
 // Get homepage content (admin)
-export async function getAdminHomepageContent() {
-  const token = localStorage.getItem('adminToken');
-  const response = await fetch(`${API_URL}/admin/homepage/content`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
-  if (!response.ok) throw new Error('Failed to fetch homepage content');
-  return await response.json();
-}
-
 // Update homepage content (admin)
 export async function updateHomepageContent(update) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/homepage/content`, {
     method: 'PUT',
     headers: {
@@ -1454,14 +1248,8 @@ export async function updateHomepageContent(update) {
 }
 
 // Check if user is admin
-export function isAdminLoggedIn() {
-  const token = localStorage.getItem('adminToken');
-  return !!token;
-}
-
 // Verify admin token is still valid
 export async function verifyAdminToken() {
-  const token = localStorage.getItem('adminToken');
   if (!token) return false;
   
   try {
@@ -1605,72 +1393,14 @@ export async function submitSongRequest(request) {
 }
 
 // Get song requests for a location
-export async function getSongRequests(locationSlug, requestType = null) {
-  let url = `${API_URL}/social/song-requests/${locationSlug}`;
-  if (requestType) url += `?request_type=${requestType}`;
-  const response = await fetch(url);
-  if (!response.ok) throw new Error('Failed to fetch song requests');
-  return await response.json();
-}
-
-
 // ==================== DJ PROFILE API ====================
 
 // Register a new DJ
-export async function registerDJ(profile) {
-  const response = await fetch(`${API_URL}/dj/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(profile)
-  });
-  if (!response.ok) throw new Error('Failed to register DJ');
-  return await response.json();
-}
-
 // Get all DJ profiles
-export async function getAllDJProfiles() {
-  const response = await fetch(`${API_URL}/dj/profiles`);
-  if (!response.ok) throw new Error('Failed to fetch DJ profiles');
-  return await response.json();
-}
-
 // Get DJ profile by ID
-export async function getDJProfile(djId) {
-  const response = await fetch(`${API_URL}/dj/profile/${djId}`);
-  if (!response.ok) throw new Error('Failed to fetch DJ profile');
-  return await response.json();
-}
-
 // Update DJ profile
-export async function updateDJProfile(djId, update) {
-  const response = await fetch(`${API_URL}/dj/profile/${djId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(update)
-  });
-  if (!response.ok) throw new Error('Failed to update DJ profile');
-  return await response.json();
-}
-
 // DJ check-in at location
-export async function djCheckin(djId, locationSlug) {
-  const response = await fetch(`${API_URL}/dj/checkin/${djId}?location_slug=${locationSlug}`, {
-    method: 'POST'
-  });
-  if (!response.ok) throw new Error('Failed to check in DJ');
-  return await response.json();
-}
-
 // DJ check-out
-export async function djCheckout(djId) {
-  const response = await fetch(`${API_URL}/dj/checkout/${djId}`, {
-    method: 'POST'
-  });
-  if (!response.ok) throw new Error('Failed to check out DJ');
-  return await response.json();
-}
-
-
 // ==================== SEND A DRINK API ====================
 
 // Send a drink to another user
@@ -1707,12 +1437,6 @@ export async function getDrinksForUser(checkinId) {
 // ==================== STRIPE PAYMENT API ====================
 
 // Get available payment methods
-export async function getPaymentMethods() {
-  const response = await fetch(`${API_URL}/payment/methods`);
-  if (!response.ok) throw new Error('Failed to fetch payment methods');
-  return await response.json();
-}
-
 // Create Stripe checkout for token purchase
 export async function createStripeTokenCheckout(packageId, userId) {
   const originUrl = window.location.origin;
@@ -1803,15 +1527,6 @@ export async function pollStripePaymentStatus(sessionId, maxAttempts = 5, interv
   }
   return { success: false, status: { payment_status: 'pending' }, error: 'Timeout' };
 }
-
-export async function updateDrinkStatus(orderId, status) {
-  const response = await fetch(`${API_URL}/social/drinks/${orderId}/status?status=${status}`, {
-    method: 'PUT'
-  });
-  if (!response.ok) throw new Error('Failed to update drink status');
-  return await response.json();
-}
-
 
 // ==================== USER PROFILE API ====================
 
@@ -1974,20 +1689,8 @@ export async function getTokenHistory(userId) {
 }
 
 // Spend tokens
-export async function spendTokens(userId, amount) {
-  const response = await fetch(`${API_URL}/user/tokens/spend/${userId}?amount=${amount}`, {
-    method: 'POST'
-  });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.detail || 'Failed to spend tokens');
-  }
-  return await response.json();
-}
-
 // Admin: Gift tokens
 export async function adminGiftTokens(userId, tokens, message = null) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/tokens/gift`, {
     method: 'POST',
     headers: {
@@ -2005,9 +1708,8 @@ export async function adminGiftTokens(userId, tokens, message = null) {
 
 // Admin: Get all users
 export async function adminGetUsers() {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/users`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) throw new Error('Failed to fetch users');
   return await response.json();
@@ -2024,27 +1726,8 @@ export async function getUserVisits(userId) {
 }
 
 // Get user's post history
-export async function getUserPosts(userId) {
-  const response = await fetch(`${API_URL}/user/history/posts/${userId}`);
-  if (!response.ok) throw new Error('Failed to fetch posts');
-  return await response.json();
-}
-
 // Get user's drink history
-export async function getUserDrinkHistory(userId) {
-  const response = await fetch(`${API_URL}/user/history/drinks/${userId}`);
-  if (!response.ok) throw new Error('Failed to fetch drinks');
-  return await response.json();
-}
-
 // Get user's tip history
-export async function getUserTipHistory(userId) {
-  const response = await fetch(`${API_URL}/user/history/tips/${userId}`);
-  if (!response.ok) throw new Error('Failed to fetch tips');
-  return await response.json();
-}
-
-
 // ==================== USER GALLERY SUBMISSION API ====================
 
 // Submit photo to gallery
@@ -2140,7 +1823,6 @@ export async function transferTipsToPersonal(userId, amount) {
 
 // Admin: Update user role
 export async function adminUpdateUserRole(userId, newRole, staffTitle = null) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/users/role`, {
     method: 'POST',
     headers: {
@@ -2158,9 +1840,8 @@ export async function adminUpdateUserRole(userId, newRole, staffTitle = null) {
 
 // Admin: Get all cashout requests
 export async function adminGetCashouts() {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/cashouts`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) throw new Error('Failed to fetch cashouts');
   return await response.json();
@@ -2168,10 +1849,9 @@ export async function adminGetCashouts() {
 
 // Admin: Process cashout request
 export async function adminProcessCashout(cashoutId, status) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/cashouts/${cashoutId}?status=${status}`, {
     method: 'PUT',
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) {
     const error = await response.json();
@@ -2185,9 +1865,8 @@ export async function adminProcessCashout(cashoutId, status) {
 
 // Get all locations (admin)
 export async function adminGetLocations() {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/locations`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) throw new Error('Failed to fetch locations');
   return await response.json();
@@ -2195,7 +1874,6 @@ export async function adminGetLocations() {
 
 // Create location (admin)
 export async function adminCreateLocation(location) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/locations`, {
     method: 'POST',
     headers: {
@@ -2213,7 +1891,6 @@ export async function adminCreateLocation(location) {
 
 // Update location (admin)
 export async function adminUpdateLocation(locationId, update) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/locations/${locationId}`, {
     method: 'PUT',
     headers: {
@@ -2231,10 +1908,9 @@ export async function adminUpdateLocation(locationId, update) {
 
 // Delete location (admin)
 export async function adminDeleteLocation(locationId) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/locations/${locationId}`, {
     method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) {
     const error = await response.json();
@@ -2244,21 +1920,6 @@ export async function adminDeleteLocation(locationId) {
 }
 
 // Reorder locations (admin)
-export async function adminReorderLocations(order) {
-  const token = localStorage.getItem('adminToken');
-  const response = await fetch(`${API_URL}/admin/locations/reorder`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify(order)
-  });
-  if (!response.ok) throw new Error('Failed to reorder locations');
-  return await response.json();
-}
-
-
 // ==================== ADMIN EVENTS API ====================
 
 // Get all events (public)
@@ -2275,9 +1936,8 @@ export async function getPublicEvents() {
 
 // Get all events (admin)
 export async function adminGetEvents() {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/events`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) throw new Error('Failed to fetch events');
   return await response.json();
@@ -2285,7 +1945,6 @@ export async function adminGetEvents() {
 
 // Create event (admin)
 export async function adminCreateEvent(event) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/events`, {
     method: 'POST',
     headers: {
@@ -2303,7 +1962,6 @@ export async function adminCreateEvent(event) {
 
 // Update event (admin)
 export async function adminUpdateEvent(eventId, update) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/events/${eventId}`, {
     method: 'PUT',
     headers: {
@@ -2321,10 +1979,9 @@ export async function adminUpdateEvent(eventId, update) {
 
 // Delete event (admin)
 export async function adminDeleteEvent(eventId) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/events/${eventId}`, {
     method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) {
     const error = await response.json();
@@ -2338,9 +1995,8 @@ export async function adminDeleteEvent(eventId) {
 
 // Get all gallery submissions (admin)
 export async function adminGetGallerySubmissions() {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/gallery-submissions`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) throw new Error('Failed to fetch gallery submissions');
   return await response.json();
@@ -2348,10 +2004,9 @@ export async function adminGetGallerySubmissions() {
 
 // Delete gallery submission (admin)
 export async function adminDeleteGallerySubmission(submissionId) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/gallery-submissions/${submissionId}`, {
     method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) {
     const error = await response.json();
@@ -2365,9 +2020,8 @@ export async function adminDeleteGallerySubmission(submissionId) {
 
 // Get all social posts (admin)
 export async function adminGetAllSocialPosts() {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/social-posts`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) throw new Error('Failed to fetch social posts');
   return await response.json();
@@ -2375,10 +2029,9 @@ export async function adminGetAllSocialPosts() {
 
 // Delete social post (admin)
 export async function adminDeleteSocialPost(postId) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/social-posts/${postId}`, {
     method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) {
     const error = await response.json();
@@ -2389,10 +2042,9 @@ export async function adminDeleteSocialPost(postId) {
 
 // Cleanup old posts (admin)
 export async function adminCleanupOldPosts() {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/social-posts/cleanup/old`, {
     method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) {
     const error = await response.json();
@@ -2403,10 +2055,9 @@ export async function adminCleanupOldPosts() {
 
 // Delete user (admin)
 export async function adminDeleteUser(userId) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/users/${userId}`, {
     method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) {
     const error = await response.json();
@@ -2420,16 +2071,14 @@ export async function adminDeleteUser(userId) {
 // ===================== CAREERS / JOB APPLICATIONS =====================
 
 export async function getJobApplications() {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/careers/applications`, {
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) throw new Error('Failed to fetch applications');
   return await response.json();
 }
 
 export async function updateApplicationStatus(id, status) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/careers/applications/${id}`, {
     method: 'PATCH',
     headers: {
@@ -2443,10 +2092,9 @@ export async function updateApplicationStatus(id, status) {
 }
 
 export async function deleteApplication(id) {
-  const token = localStorage.getItem('adminToken');
   const response = await fetch(`${API_URL}/admin/careers/applications/${id}`, {
     method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${token}` }
+    headers: adminHeaders()
   });
   if (!response.ok) throw new Error('Failed to delete application');
   return await response.json();
