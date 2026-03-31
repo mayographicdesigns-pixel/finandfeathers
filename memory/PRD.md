@@ -1,30 +1,64 @@
 # Fin & Feathers Restaurant PWA — Product Requirements Document
 
-## Latest Changes (2026-03-31)
-- **Display Style Sync Fix (2026-03-31):** Fixed $5 Daily Specials and Cocktails to display as card layout (not horizontal/circular). Updated DB `menu_settings` for `daily-specials` and `cocktails` to `default` (cards). Set `layout: 'card'` for 36 daily specials with images. Admin Display Styles panel now reflects and controls the public menu rendering for both desktop and mobile.
-- **Local Image Migration (2026-03-31):** Exported all 81 food images from MongoDB to `/images/menu/{category}/`. Deleted 183 media_files entries. Admin badge shows "LOCAL" for all images.
-- **Cocktails Update (2026-03-31):** 11 signature cocktails with new descriptions + images. 5 Happy Hour Favorites added.
-- **DJ Schedule Bulk Import + Auto-Publisher (2026-03-31):** Paste-and-parse bulk import with auto-post to Social Wall.
-- **PWA Cache Refresh (2026-03-31):** Installed app shows Refresh button.
+## Overview
+A full-featured Progressive Web App (PWA) for Fin & Feathers restaurant chain. Built with React (frontend) + FastAPI (backend) + MongoDB. Features location-based routing, menu management, DJ/karaoke management, social wall, loyalty tokens, merchandise, and admin dashboard.
 
-## Image Storage
-All menu images stored as LOCAL files:
-- Food: `/app/frontend/public/images/menu/{category}/{name}.jpg`
-- Cocktails: `/app/frontend/public/images/cocktails/{name}.jpg`
-- MongoDB `media_files` collection: EMPTY
+## Core Architecture
+- **Frontend:** React (CRA) at `/app/frontend/`, served on port 3000
+- **Backend:** FastAPI at `/app/backend/`, served on port 8001 (proxied via /api)
+- **Database:** MongoDB via MONGO_URL
+- **Deployment:** Kubernetes with supervisor-managed services
 
-## Display Styles (DB: menu_settings)
-- daily-specials: default (cards)
-- cocktails: default (cards)
-- signature-cocktails: default (cards)
-- starters: default (cards)
-- entrees: default (cards)
-- sides: compact
-- salads: compact
-- beer-wine: compact
+## Backend Structure (Modular Routers)
+```
+server.py (199 lines) — App creation, media serving, scheduler, router registration
+database.py (171 lines) — Shared DB connection, helpers (download_image, create_woocommerce_order)
+routes/
+  auth.py (687 lines) — Authentication, admin login, Google OAuth
+  admin.py (430 lines) — Settings, stats, loyalty, contacts, people, notifications, moderation
+  menu.py (482 lines) — Menu items CRUD, category styles, bulk ops, uploads
+  content.py (430 lines) — Homepage, page content, daily specials, weekly videos, specials, social links, Instagram
+  social.py (377 lines) — Check-in, social wall posts, DMs, gallery
+  user.py (866 lines) — User profiles, tokens, transfers, cashout, staff, history, gallery submissions
+  locations.py (480 lines) — Locations CRUD, seed, promo videos
+  merchandise.py (226 lines) — WooCommerce products, cart checkout
+  dj.py (732 lines) — DJ profiles, karaoke, song requests, tipping
+  events.py (280 lines) — Events CRUD, AI flyer reader
+  careers.py (178 lines) — Job applications
+  payments.py (333 lines) — Stripe payments
+  wall.py (388 lines) — Social wall v2, chat, DMs
+  stream.py (172 lines) — Live streaming
+```
 
-## Upcoming Tasks
-- (P1) Code quality: localStorage security, api.js dead code cleanup
-- (P2) Continue `server.py` refactoring (3839 lines remaining)
-- (P2) Per-Location Weekly Specials management
-- (P3) WordPress Integration, Apple Sign-In, Merchandise Store
+## Implemented Features
+- Multi-location restaurant directory with geolocation
+- Full menu system with local image storage (all images in frontend/public/images/)
+- DJ/Karaoke management with live check-in status
+- Social Wall with group chat and DMs
+- Push notifications
+- F&F Token economy (purchase, transfer, spend, tip)
+- Staff cashout system
+- WooCommerce merchandise integration
+- Admin dashboard with 18+ management tabs
+- PWA install/refresh functionality
+- AI-powered event creation from flyers (OpenAI GPT-4 Vision)
+- DJ schedule bulk import with auto-publish to social wall
+
+## 3rd Party Integrations
+- Stripe (Payments)
+- WooCommerce (Merchandise)
+- Hostinger SMTP (Email)
+- OpenAI GPT-4 Vision (AI Flyer Reader) via emergentintegrations
+- APScheduler (Background tasks)
+
+## Completed Tasks (Latest Session — March 2026)
+- [x] Complete server.py refactoring: 3839 → 199 lines (14 feature routers)
+- [x] Fixed api.js token auth bugs (verifyAdminToken, adminHeaders recursion)
+- [x] All 25 API endpoint regression tests passing
+- [x] Frontend loads correctly after refactoring
+
+## Backlog
+- [ ] Per-Location Weekly Specials management (P2)
+- [ ] WordPress Integration (P2)
+- [ ] Apple Sign-In Integration (P2)
+- [ ] Merchandise Store Enhancements (P2)
