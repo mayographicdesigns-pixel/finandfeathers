@@ -18,6 +18,7 @@ import { MENU_STYLES, DEFAULT_CATEGORY_STYLES } from '../menu';
 import MenuImageEditor from './MenuImageEditor';
 
 const LOCATIONS = [
+  { slug: '', name: 'Global (All Locations)' },
   { slug: 'edgewood-atlanta', name: 'Edgewood' },
   { slug: 'midtown-atlanta', name: 'Midtown' },
   { slug: 'douglasville', name: 'Douglasville' },
@@ -37,7 +38,7 @@ const MenuItemsTab = () => {
   const [uploading, setUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
-  const [filterLocation, setFilterLocation] = useState('edgewood-atlanta');
+  const [filterLocation, setFilterLocation] = useState('');
   const [syncAllLocations, setSyncAllLocations] = useState(true);
   const [imageEditorItem, setImageEditorItem] = useState(null);
   const [categoryStyles, setCategoryStyles] = useState({});

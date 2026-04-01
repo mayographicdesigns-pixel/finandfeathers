@@ -103,11 +103,25 @@ async def admin_update_menu_category_styles(request: Request, username: str = De
 
 @router.get("/admin/menu-items")
 async def admin_get_menu_items(location_slug: str = None, username: str = Depends(get_current_admin)):
-    """Get menu items for admin, optionally filtered by location"""
-    query = {}
+    """Get menu items for admin, optionally filtered by location.
+    Falls back to global items if no location-specific items exist.
+    """
     if location_slug:
-        query["location_slug"] = location_slug
-    items = await db.menu_items.find(query, {"_id": 0}).to_list(2000)
+        loc_items = await db.menu_items.find(
+            {"location_slug": location_slug}, {"_id": 0}
+        ).to_list(2000)
+
+        if loc_items:
+            return loc_items
+
+        # Fallback: return global items (no location_slug)
+        global_items = await db.menu_items.find(
+            {"$or": [{"location_slug": None}, {"location_slug": {"$exists": False}}]},
+            {"_id": 0}
+        ).to_list(2000)
+        return global_items
+
+    items = await db.menu_items.find({}, {"_id": 0}).to_list(2000)
     return items
 
 
