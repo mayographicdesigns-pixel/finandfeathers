@@ -260,6 +260,17 @@ export async function getLocationBySlug(slug) {
 }
 
 // Get VAPID public key from server
+async function getVapidPublicKey() {
+  try {
+    const response = await fetch(`${API_URL}/push/public-key`);
+    if (!response.ok) return null;
+    const data = await response.json();
+    return data.publicKey;
+  } catch {
+    return null;
+  }
+}
+
 // Register service worker and subscribe to push
 export async function subscribeToPush(memberId) {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
