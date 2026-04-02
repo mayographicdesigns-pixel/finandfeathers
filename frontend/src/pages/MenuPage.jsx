@@ -1216,7 +1216,7 @@ const MenuPage = () => {
             {/* Allergy Warning */}
             <div className="mt-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl">
               <p className="text-red-400 text-sm text-center">
-                Some food items may contain raw or undercooked ingredients and/or dairy. Consuming raw or undercooked meats, poultry, seafood, shellfish, or eggs could heighten the risk of foodborne illness, particularly for individuals with specific medical conditions. If you have food allergies or dietary restrictions, kindly notify one of our team members prior to ordering.
+                Allergens are marked with an *. Some food items may contain raw or undercooked ingredients and/or dairy. Consuming raw or undercooked meats, poultry, seafood, shellfish, or eggs could heighten the risk of foodborne illness, particularly for individuals with specific medical conditions. If you have food allergies or dietary restrictions, kindly notify one of our team members prior to ordering.
               </p>
             </div>
 
@@ -1279,6 +1279,13 @@ const MenuPage = () => {
                 </div>
               </div>
             )}
+
+            {/* Allergy Warning */}
+            <div className="mt-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl">
+              <p className="text-red-400 text-sm text-center">
+                Allergens are marked with an *. Some food items may contain raw or undercooked ingredients and/or dairy. Consuming raw or undercooked meats, poultry, seafood, shellfish, or eggs could heighten the risk of foodborne illness, particularly for individuals with specific medical conditions. If you have food allergies or dietary restrictions, kindly notify one of our team members prior to ordering.
+              </p>
+            </div>
           </div>
         )}
 
@@ -1345,7 +1352,7 @@ const MenuPage = () => {
             {/* Allergy Warning */}
             <div className="mt-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl">
               <p className="text-red-400 text-sm text-center">
-                Some food items may contain raw or undercooked ingredients and/or dairy. Consuming raw or undercooked meats, poultry, seafood, shellfish, or eggs could heighten the risk of foodborne illness, particularly for individuals with specific medical conditions. If you have food allergies or dietary restrictions, kindly notify one of our team members prior to ordering.
+                Allergens are marked with an *. Some food items may contain raw or undercooked ingredients and/or dairy. Consuming raw or undercooked meats, poultry, seafood, shellfish, or eggs could heighten the risk of foodborne illness, particularly for individuals with specific medical conditions. If you have food allergies or dietary restrictions, kindly notify one of our team members prior to ordering.
               </p>
             </div>
           </div>
