@@ -79,6 +79,9 @@ routes/
 - [x] **Global location filter** — added "Global (All Locations)" to admin dashboard
 - [x] All regression tests passing (iteration_46, iteration_47)
 
+### April 2026 Session
+- [x] Check-in Page Redesign (Client vs Staff flow) — Premium dark UI with unique colored icons per staff role (DJ/Headphones, Bartender/Wine, Server/Utensils, Cook/ChefHat, Manager/Shield), smooth step transitions, location auto-detection, mobile responsive
+
 ## Backlog
 - [ ] Per-Location Weekly Specials management (P2)
 - [ ] WordPress Integration (P2)
