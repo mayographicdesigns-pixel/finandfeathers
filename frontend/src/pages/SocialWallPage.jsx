@@ -1101,6 +1101,9 @@ const SocialWallPage = () => {
   const [unreadNotifs, setUnreadNotifs] = useState(0);
   const [showNotifs, setShowNotifs] = useState(false);
   const [djStatus, setDjStatus] = useState(null);
+  const [guestMode, setGuestMode] = useState(false);
+  const [showGuestPrompt, setShowGuestPrompt] = useState(false);
+  const [guestName, setGuestName] = useState('');
 
   const location = locations.find(l => l.slug === slug);
   const locationName = location?.name?.replace('Fin & Feathers - ', '') || slug;
@@ -1108,10 +1111,46 @@ const SocialWallPage = () => {
   useEffect(() => {
     const loadProfile = async () => {
       const profileId = localStorage.getItem('ff_user_profile_id');
-      if (!profileId) { navigate('/account'); return; }
+
+      // Check for existing guest session
+      const guestId = localStorage.getItem('ff_guest_id');
+      const savedGuestName = localStorage.getItem('ff_guest_name');
+
+      if (!profileId && guestId && savedGuestName) {
+        // Restore guest session
+        setGuestMode(true);
+        setUserProfile({ id: guestId, name: savedGuestName, avatar_emoji: '👤', role: 'guest' });
+        try {
+          await fetch(`${API_URL}/api/checkin`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              location_slug: slug,
+              display_name: savedGuestName,
+              avatar_emoji: '👤',
+              user_profile_id: guestId
+            })
+          });
+          localStorage.setItem('ff_user_location', slug);
+        } catch (e) { console.error(e); }
+        setLoading(false);
+        return;
+      }
+
+      if (!profileId) {
+        // No profile and no guest session — show guest prompt
+        setShowGuestPrompt(true);
+        setLoading(false);
+        return;
+      }
+
       try {
         const res = await fetch(`${API_URL}/api/user/profile/${profileId}`);
-        if (!res.ok) { navigate('/account'); return; }
+        if (!res.ok) {
+          setShowGuestPrompt(true);
+          setLoading(false);
+          return;
+        }
         const data = await res.json();
         setUserProfile(data);
 
@@ -1129,8 +1168,10 @@ const SocialWallPage = () => {
           });
           localStorage.setItem('ff_user_location', slug);
         } catch (e) { console.error(e); }
-      } catch { navigate('/account'); }
-      finally { setLoading(false); }
+      } catch {
+        setShowGuestPrompt(true);
+        setLoading(false);
+      }
     };
     loadProfile();
   }, [navigate, slug]);
@@ -1215,6 +1256,85 @@ const SocialWallPage = () => {
     );
   }
 
+  const handleGuestEnter = async () => {
+    if (!guestName.trim()) return;
+    const guestId = `guest-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    localStorage.setItem('ff_guest_id', guestId);
+    localStorage.setItem('ff_guest_name', guestName.trim());
+    setGuestMode(true);
+    setUserProfile({ id: guestId, name: guestName.trim(), avatar_emoji: '👤', role: 'guest' });
+    setShowGuestPrompt(false);
+    try {
+      await fetch(`${API_URL}/api/checkin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          location_slug: slug,
+          display_name: guestName.trim(),
+          avatar_emoji: '👤',
+          user_profile_id: guestId
+        })
+      });
+      localStorage.setItem('ff_user_location', slug);
+    } catch (e) { console.error(e); }
+  };
+
+  // Guest prompt screen
+  if (showGuestPrompt) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
+        <div className="w-full max-w-sm">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 rounded-full bg-red-600/20 flex items-center justify-center mx-auto mb-4">
+              <Users className="w-8 h-8 text-red-400" />
+            </div>
+            <h1 className="text-xl font-bold text-white mb-1">Join the Social Wall</h1>
+            <p className="text-slate-500 text-sm">{locationName}</p>
+          </div>
+
+          <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-6 space-y-4">
+            <div>
+              <label className="text-slate-400 text-xs font-medium mb-1.5 block">Your Name</label>
+              <Input
+                value={guestName}
+                onChange={(e) => setGuestName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleGuestEnter()}
+                placeholder="Enter your name"
+                className="bg-slate-800/60 border-slate-700 text-white"
+                autoFocus
+                data-testid="guest-name-input"
+              />
+            </div>
+            <Button
+              onClick={handleGuestEnter}
+              disabled={!guestName.trim()}
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold"
+              data-testid="guest-enter-btn"
+            >
+              Enter as Guest
+            </Button>
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-800" /></div>
+              <div className="relative flex justify-center text-xs"><span className="bg-slate-900 px-3 text-slate-600">or</span></div>
+            </div>
+            <Button
+              onClick={() => navigate('/account')}
+              variant="ghost"
+              className="w-full text-slate-400 hover:text-white text-sm"
+              data-testid="guest-signup-btn"
+            >
+              Sign Up for Full Access
+            </Button>
+          </div>
+
+          <button onClick={() => navigate('/')} className="mt-6 text-slate-600 hover:text-slate-400 text-sm flex items-center justify-center gap-1 w-full transition-colors" data-testid="guest-back-home">
+            <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const userId = userProfile?.id;
   const userName = userProfile?.name || 'Anonymous';
   const userAvatar = userProfile?.avatar_emoji || '👤';
@@ -1224,7 +1344,7 @@ const SocialWallPage = () => {
     { id: 'here', label: 'Here', icon: Users },
     { id: 'feed', label: 'Feed', icon: MessageCircle },
     { id: 'chat', label: 'Chat', icon: Hash },
-    { id: 'dms', label: 'DMs', icon: Mail, badge: unreadDMs }
+    ...(!guestMode ? [{ id: 'dms', label: 'DMs', icon: Mail, badge: unreadDMs }] : [])
   ];
 
   return (
