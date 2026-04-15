@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, Briefcase, ArrowLeft, X, MapPin, Loader2 } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Card, CardContent } from '../components/ui/card';
+import {
+  Users, ArrowLeft, X, MapPin, Loader2, ChevronDown,
+  Music, Wine, UtensilsCrossed, Shield, Headphones, ChefHat
+} from 'lucide-react';
 import { getLocations } from '../services/api';
 
 const API_URL = window.location.origin;
 
 const STAFF_POSITIONS = [
-  { id: 'dj', label: 'DJ', icon: Briefcase },
-  { id: 'bartender', label: 'Bartender', icon: Briefcase },
-  { id: 'server', label: 'Server', icon: Briefcase },
-  { id: 'manager', label: 'Manager', icon: Briefcase },
+  { id: 'dj', label: 'DJ', icon: Headphones, color: '#ef4444' },
+  { id: 'bartender', label: 'Bartender', icon: Wine, color: '#f97316' },
+  { id: 'server', label: 'Server', icon: UtensilsCrossed, color: '#eab308' },
+  { id: 'cook', label: 'Cook', icon: ChefHat, color: '#22c55e' },
+  { id: 'manager', label: 'Manager', icon: Shield, color: '#6366f1' },
 ];
 
 const CheckInPage = () => {
@@ -21,6 +23,13 @@ const CheckInPage = () => {
   const [locations, setLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [findingLocation, setFindingLocation] = useState(true);
+  const [animateIn, setAnimateIn] = useState(false);
+  const [stepTransition, setStepTransition] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setAnimateIn(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Detect closest location on mount
   useEffect(() => {
@@ -30,7 +39,6 @@ const CheckInPage = () => {
         const nonHibachi = (locs || []).filter(l => l.slug !== 'hibachi-food-truck');
         setLocations(nonHibachi);
 
-        // Check saved location
         const saved = localStorage.getItem('ff_user_location');
         if (saved && nonHibachi.find(l => l.slug === saved)) {
           setSelectedLocation(nonHibachi.find(l => l.slug === saved));
@@ -38,7 +46,6 @@ const CheckInPage = () => {
           return;
         }
 
-        // Geolocation
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             (pos) => {
@@ -71,14 +78,21 @@ const CheckInPage = () => {
     detectLocation();
   }, []);
 
+  const switchStep = useCallback((newStep) => {
+    setStepTransition(true);
+    setTimeout(() => {
+      setStep(newStep);
+      setStepTransition(false);
+    }, 200);
+  }, []);
+
   const checkInAndNavigate = async (role) => {
     if (!selectedLocation) return;
     setSaving(true);
     const profileId = localStorage.getItem('ff_user_profile_id');
     const userName = localStorage.getItem('ff_user_name') || 'Guest';
-    const userAvatar = localStorage.getItem('ff_user_avatar') || '😊';
+    const userAvatar = localStorage.getItem('ff_user_avatar') || '';
 
-    // Update profile role
     if (profileId) {
       try {
         await fetch(`${API_URL}/api/user/profile/${profileId}`, {
@@ -86,10 +100,9 @@ const CheckInPage = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ role, staff_title: role !== 'customer' ? role : undefined }),
         });
-      } catch {}
+      } catch { /* silent */ }
     }
 
-    // Create check-in record
     try {
       await fetch(`${API_URL}/api/checkin`, {
         method: 'POST',
@@ -101,12 +114,11 @@ const CheckInPage = () => {
           user_profile_id: profileId
         }),
       });
-    } catch {}
+    } catch { /* silent */ }
 
     localStorage.setItem('ff_user_location', selectedLocation.slug);
     setSaving(false);
 
-    // Route DJ to DJ panel, everyone else to social wall
     if (role === 'dj') {
       navigate('/dj');
     } else {
@@ -114,119 +126,209 @@ const CheckInPage = () => {
     }
   };
 
-  const handleClose = () => navigate('/');
-
-  const locationLabel = selectedLocation?.name?.replace('Fin & Feathers - ', '') || '';
-
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
-      <Card className="bg-slate-900 border-red-600/30 w-full max-w-md">
-        <CardContent className="p-8 text-center">
-          {/* Navigation */}
-          <div className="flex justify-between items-center mb-4">
-            <button onClick={() => navigate('/')} className="text-slate-400 hover:text-white text-sm" data-testid="checkin-back-home">
-              <ArrowLeft className="w-4 h-4 inline mr-1" />Home
-            </button>
-            <button onClick={() => navigate('/account')} className="text-red-400 hover:text-red-300 text-sm font-medium" data-testid="checkin-my-account">
-              My Account
-            </button>
-          </div>
+    <div className="min-h-screen bg-black relative overflow-hidden flex items-center justify-center p-4">
+      {/* Ambient background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-[-40%] left-[-20%] w-[70vw] h-[70vw] rounded-full bg-red-900/10 blur-[120px]" />
+        <div className="absolute bottom-[-30%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-red-800/8 blur-[100px]" />
+      </div>
 
-          {/* Logo */}
-          <img
-            src="https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png"
-            alt="Fin & Feathers Restaurants"
-            className="max-h-24 w-auto mx-auto mb-4 object-contain"
-          />
+      {/* Main card */}
+      <div
+        className={`relative w-full max-w-md transition-all duration-700 ease-out ${
+          animateIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
+      >
+        {/* Top nav */}
+        <div className="flex justify-between items-center mb-5 px-1">
+          <button
+            onClick={() => navigate('/')}
+            className="flex items-center gap-1.5 text-slate-500 hover:text-white text-sm transition-colors"
+            data-testid="checkin-back-home"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Home</span>
+          </button>
+          <button
+            onClick={() => navigate('/account')}
+            className="text-red-400/80 hover:text-red-300 text-sm font-medium transition-colors"
+            data-testid="checkin-my-account"
+          >
+            My Account
+          </button>
+        </div>
 
-          {/* Location Badge */}
-          {findingLocation ? (
-            <div className="flex items-center justify-center gap-2 text-slate-400 text-sm mb-4">
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Finding your location...
-            </div>
-          ) : selectedLocation && (
-            <div className="mb-5">
-              <div className="inline-flex items-center gap-2 bg-slate-800/70 rounded-full px-4 py-2 border border-slate-700/50">
-                <MapPin className="w-4 h-4 text-red-500" />
+        {/* Card container */}
+        <div className="bg-slate-950/80 backdrop-blur-xl border border-slate-800/60 rounded-2xl overflow-hidden shadow-2xl shadow-black/40">
+          {/* Header section */}
+          <div className="px-8 pt-8 pb-5 text-center">
+            <img
+              src="https://customer-assets.emergentagent.com/job_57379523-4651-4150-aa1e-60b8df6a4f7c/artifacts/zzljit87_Untitled%20design.png"
+              alt="Fin & Feathers"
+              className="max-h-20 w-auto mx-auto mb-5 object-contain"
+            />
+
+            {/* Location selector */}
+            {findingLocation ? (
+              <div className="flex items-center justify-center gap-2 text-slate-500 text-sm">
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <span>Finding your location...</span>
+              </div>
+            ) : selectedLocation && (
+              <div className="inline-flex items-center gap-2 bg-slate-900/70 border border-slate-700/40 rounded-full px-4 py-2">
+                <MapPin className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
                 <select
                   value={selectedLocation.slug}
                   onChange={(e) => {
                     const loc = locations.find(l => l.slug === e.target.value);
                     if (loc) setSelectedLocation(loc);
                   }}
-                  className="bg-transparent text-white text-sm font-semibold border-none outline-none cursor-pointer appearance-none"
+                  className="bg-transparent text-white text-sm font-medium border-none outline-none cursor-pointer appearance-none pr-1"
                   data-testid="checkin-location-select"
                 >
                   {locations.map(loc => (
-                    <option key={loc.slug} value={loc.slug} className="bg-slate-800 text-white">
+                    <option key={loc.slug} value={loc.slug} className="bg-slate-900 text-white">
                       {loc.name?.replace('Fin & Feathers - ', '')}
                     </option>
                   ))}
                 </select>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
-          {/* Step 1: Client or Staff */}
-          {step === 'choose' && (
-            <>
-              <h1 className="text-2xl font-bold text-white mb-2">Check In</h1>
-              <p className="text-slate-400 text-sm mb-6">How are you joining us today?</p>
-              <div className="flex gap-4">
-                <Button
-                  onClick={() => checkInAndNavigate('customer')}
-                  disabled={saving || !selectedLocation}
-                  className="flex-1 h-28 flex-col gap-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-base font-semibold transition-all hover:scale-[1.03]"
-                  data-testid="checkin-client-btn"
-                >
-                  {saving ? <Loader2 className="w-8 h-8 animate-spin" /> : <Users className="w-8 h-8" />}
-                  Client
-                </Button>
-                <Button
-                  onClick={() => setStep('staff-role')}
-                  disabled={!selectedLocation}
-                  className="flex-1 h-28 flex-col gap-2 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 rounded-xl text-base font-semibold transition-all hover:scale-[1.03]"
-                  data-testid="checkin-staff-btn"
-                >
-                  <Briefcase className="w-8 h-8" />
-                  Staff
-                </Button>
-              </div>
-              <Button onClick={handleClose} variant="ghost" className="mt-6 w-full text-slate-500 hover:text-white text-sm" data-testid="checkin-close-btn">
-                <X className="w-4 h-4 mr-1" /> Close
-              </Button>
-            </>
-          )}
+          {/* Divider */}
+          <div className="mx-6 h-px bg-gradient-to-r from-transparent via-slate-700/50 to-transparent" />
 
-          {/* Step 2: Staff Role Picker */}
-          {step === 'staff-role' && (
-            <>
-              <h1 className="text-2xl font-bold text-white mb-2">What's your role?</h1>
-              <p className="text-slate-400 text-sm mb-6">Select your position</p>
-              <div className="grid grid-cols-2 gap-3">
-                {STAFF_POSITIONS.map((pos) => (
-                  <Button
-                    key={pos.id}
-                    onClick={() => checkInAndNavigate(pos.id)}
-                    disabled={saving}
-                    className="h-24 flex-col gap-2 bg-slate-800 hover:bg-red-600/80 text-white border border-slate-700 hover:border-red-500 rounded-xl text-sm font-semibold transition-all hover:scale-[1.03]"
-                    data-testid={`staff-position-${pos.id}`}
-                  >
-                    {saving ? <Loader2 className="w-6 h-6 animate-spin" /> : <pos.icon className="w-6 h-6" />}
-                    {pos.label}
-                  </Button>
-                ))}
-              </div>
-              <Button onClick={() => setStep('choose')} variant="ghost" className="mt-4 text-slate-500 hover:text-white text-sm" data-testid="back-to-type-btn">
-                Back
-              </Button>
-            </>
-          )}
-        </CardContent>
-      </Card>
+          {/* Step content with transition */}
+          <div
+            className={`px-8 py-6 transition-all duration-200 ${
+              stepTransition ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
+            }`}
+          >
+            {step === 'choose' && (
+              <ChooseStep
+                saving={saving}
+                selectedLocation={selectedLocation}
+                onClientClick={() => checkInAndNavigate('customer')}
+                onStaffClick={() => switchStep('staff-role')}
+                onClose={() => navigate('/')}
+              />
+            )}
+            {step === 'staff-role' && (
+              <StaffRoleStep
+                saving={saving}
+                onRoleClick={checkInAndNavigate}
+                onBack={() => switchStep('choose')}
+              />
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
+
+/* ── Step 1: Client or Staff ── */
+const ChooseStep = ({ saving, selectedLocation, onClientClick, onStaffClick, onClose }) => (
+  <>
+    <h1 className="text-xl font-semibold text-white mb-1 tracking-tight" data-testid="checkin-title">
+      Check In
+    </h1>
+    <p className="text-slate-500 text-sm mb-6">How are you joining us today?</p>
+
+    <div className="grid grid-cols-2 gap-3">
+      {/* Client button */}
+      <button
+        onClick={onClientClick}
+        disabled={saving || !selectedLocation}
+        className="group relative flex flex-col items-center justify-center gap-3 h-32 rounded-xl bg-red-600 hover:bg-red-500 transition-all duration-300 active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none"
+        data-testid="checkin-client-btn"
+      >
+        {saving ? (
+          <Loader2 className="w-8 h-8 text-white animate-spin" />
+        ) : (
+          <div className="w-12 h-12 rounded-full bg-white/15 flex items-center justify-center group-hover:bg-white/20 transition-colors">
+            <Users className="w-6 h-6 text-white" />
+          </div>
+        )}
+        <span className="text-white font-semibold text-base">Client</span>
+      </button>
+
+      {/* Staff button */}
+      <button
+        onClick={onStaffClick}
+        disabled={!selectedLocation}
+        className="group relative flex flex-col items-center justify-center gap-3 h-32 rounded-xl bg-slate-800/70 border border-slate-700/50 hover:border-slate-600 hover:bg-slate-800 transition-all duration-300 active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none"
+        data-testid="checkin-staff-btn"
+      >
+        <div className="w-12 h-12 rounded-full bg-slate-700/50 flex items-center justify-center group-hover:bg-slate-700 transition-colors">
+          <Music className="w-6 h-6 text-slate-300" />
+        </div>
+        <span className="text-white font-semibold text-base">Staff</span>
+      </button>
+    </div>
+
+    <button
+      onClick={onClose}
+      className="mt-5 w-full py-2.5 text-slate-600 hover:text-slate-400 text-sm transition-colors flex items-center justify-center gap-1.5"
+      data-testid="checkin-close-btn"
+    >
+      <X className="w-3.5 h-3.5" />
+      <span>Close</span>
+    </button>
+  </>
+);
+
+/* ── Step 2: Staff Role Picker ── */
+const StaffRoleStep = ({ saving, onRoleClick, onBack }) => (
+  <>
+    <h1 className="text-xl font-semibold text-white mb-1 tracking-tight" data-testid="staff-role-title">
+      Select Your Role
+    </h1>
+    <p className="text-slate-500 text-sm mb-6">Tap your position to check in</p>
+
+    <div className="space-y-2.5">
+      {STAFF_POSITIONS.map((pos, idx) => {
+        const Icon = pos.icon;
+        return (
+          <button
+            key={pos.id}
+            onClick={() => onRoleClick(pos.id)}
+            disabled={saving}
+            className="group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl bg-slate-800/50 border border-slate-700/40 hover:border-slate-600 transition-all duration-300 active:scale-[0.98] disabled:opacity-40"
+            style={{
+              animationDelay: `${idx * 60}ms`,
+            }}
+            data-testid={`staff-position-${pos.id}`}
+          >
+            <div
+              className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-110"
+              style={{ backgroundColor: `${pos.color}20`, border: `1px solid ${pos.color}30` }}
+            >
+              {saving ? (
+                <Loader2 className="w-5 h-5 animate-spin" style={{ color: pos.color }} />
+              ) : (
+                <Icon className="w-5 h-5" style={{ color: pos.color }} />
+              )}
+            </div>
+            <span className="text-white font-medium text-sm">{pos.label}</span>
+            <ArrowLeft className="w-4 h-4 text-slate-600 ml-auto rotate-180 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </button>
+        );
+      })}
+    </div>
+
+    <button
+      onClick={onBack}
+      className="mt-5 w-full py-2.5 text-slate-600 hover:text-slate-400 text-sm transition-colors flex items-center justify-center gap-1.5"
+      data-testid="back-to-type-btn"
+    >
+      <ArrowLeft className="w-3.5 h-3.5" />
+      <span>Back</span>
+    </button>
+  </>
+);
 
 export default CheckInPage;
