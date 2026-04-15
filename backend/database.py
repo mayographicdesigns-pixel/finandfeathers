@@ -83,7 +83,7 @@ async def ensure_menu_items():
         {
             "name": "Add Fried Egg to Any Sandwich*",
             "description": "Add a fried egg to any sandwich",
-            "price": 4.0,
+            "price": 3.0,
             "category": "sandwiches",
             "type": "food",
             "image": "",
@@ -93,7 +93,7 @@ async def ensure_menu_items():
         {
             "name": "Add Sauteed Mushrooms to Any Sandwich*",
             "description": "Add sauteed mushrooms to any sandwich",
-            "price": 4.0,
+            "price": 3.0,
             "category": "sandwiches",
             "type": "food",
             "image": "",

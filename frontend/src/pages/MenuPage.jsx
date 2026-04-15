@@ -1200,7 +1200,7 @@ const MenuPage = () => {
             {(itemsByCategory['sandwiches'] || []).filter(item => item.name.toLowerCase().startsWith('add ')).length > 0 && (
               <div className="-mt-6 mb-10 px-1">
                 <p className="text-slate-300 text-sm">
-                  {(itemsByCategory['sandwiches'] || []).filter(item => item.name.toLowerCase().startsWith('add ')).map((item, idx, arr) => (
+                  {(itemsByCategory['sandwiches'] || []).filter(item => item.name.toLowerCase().startsWith('add ')).sort((a, b) => (b.price || 0) - (a.price || 0)).map((item, idx, arr) => (
                     <span key={item.id}>
                       <span>{item.name.replace('Add ', '').replace(' to Any Sandwich', '')}</span>{' '}
                       <span className="text-amber-400 font-bold">{item.price > 0 ? `$${item.price}` : 'MKT'}</span>
@@ -1330,7 +1330,7 @@ const MenuPage = () => {
                 {(itemsByCategory['sandwiches'] || []).filter(item => item.name.toLowerCase().startsWith('add ')).length > 0 && (
                   <div className="-mt-6 mb-10 px-1">
                     <div className="space-y-1.5">
-                      {(itemsByCategory['sandwiches'] || []).filter(item => item.name.toLowerCase().startsWith('add ')).map((item) => (
+                      {(itemsByCategory['sandwiches'] || []).filter(item => item.name.toLowerCase().startsWith('add ')).sort((a, b) => (b.price || 0) - (a.price || 0)).map((item) => (
                         <div key={item.id} className="flex items-center justify-between py-1.5 border-b border-slate-800/50 last:border-0">
                           <span className="text-slate-400 text-sm">{item.name}</span>
                           <div className="flex items-center gap-2">
