@@ -67,6 +67,66 @@ async def ensure_default_admin_user():
     await db.admin_users.insert_one(new_admin)
 
 
+async def ensure_menu_items():
+    """Ensure required menu items exist in the database. Runs on startup to sync items across environments."""
+    required_items = [
+        {
+            "name": "Ground Turkey Burger*",
+            "description": "A perfectly grilled, savory seasoned ground turkey patty on a toasted brioche bun, topped with crisp romaine lettuce, fresh sliced tomatoes, and zesty pickles, served with a generous side of seasoned fries",
+            "price": 15.0,
+            "category": "sandwiches",
+            "type": "food",
+            "image": "/images/menu/sandwiches/Ground Turkey Burger.jpg",
+            "image_url": "/images/menu/sandwiches/Ground Turkey Burger.jpg",
+            "is_active": True,
+        },
+        {
+            "name": "Add Fried Egg to Any Sandwich*",
+            "description": "Add a fried egg to any sandwich",
+            "price": 4.0,
+            "category": "sandwiches",
+            "type": "food",
+            "image": "",
+            "image_url": "",
+            "is_active": True,
+        },
+        {
+            "name": "Add Sauteed Mushrooms to Any Sandwich*",
+            "description": "Add sauteed mushrooms to any sandwich",
+            "price": 4.0,
+            "category": "sandwiches",
+            "type": "food",
+            "image": "",
+            "image_url": "",
+            "is_active": True,
+        },
+    ]
+
+    # Get all location slugs in the DB
+    all_locations = await db.locations.find({}, {"_id": 0, "slug": 1}).to_list(100)
+    slugs = [None] + [loc["slug"] for loc in all_locations if loc.get("slug")]
+
+    added = 0
+    for item_template in required_items:
+        for slug in slugs:
+            exists = await db.menu_items.find_one({
+                "name": item_template["name"],
+                "location_slug": slug
+            })
+            if not exists:
+                doc = {
+                    **item_template,
+                    "id": str(uuid.uuid4()),
+                    "location_slug": slug,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                }
+                await db.menu_items.insert_one(doc)
+                added += 1
+
+    if added > 0:
+        logging.info(f"Menu seed: added {added} missing menu items across locations")
+
+
 async def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Grant admin access - no authentication required"""
     return "admin"

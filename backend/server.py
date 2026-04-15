@@ -21,7 +21,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from datetime import datetime, timezone, timedelta
 
-from database import db, UPLOAD_DIR, ensure_default_admin_user
+from database import db, UPLOAD_DIR, ensure_default_admin_user, ensure_menu_items
 
 # Create the main app
 app = FastAPI()
@@ -189,6 +189,7 @@ async def startup_scheduler():
     )
     scheduler.start()
     await ensure_default_admin_user()
+    await ensure_menu_items()
     logging.info("Scheduler started: Post cleanup scheduled for 4am EST (9am UTC) daily")
 
 
