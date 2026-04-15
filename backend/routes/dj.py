@@ -123,7 +123,7 @@ async def toggle_karaoke(location_slug: str, body: dict):
     if active:
         await db.karaoke_sessions.update_one(
             {"location_slug": location_slug},
-            {"$set": {"location_slug": location_slug, "active": True, "dj_id": dj_id, "started_at": datetime.now(timezone.utc).isoformat()}},
+            {"$set": {"location_slug": location_slug, "active": True, "dj_id": dj_id, "started_at": datetime.now(timezone.utc).isoformat(), "auto_activated": False}},
             upsert=True
         )
     else:
@@ -611,7 +611,7 @@ async def get_next_dj_session(location_slug: str):
             }
         }
 
-    return {"is_live": False, "karaoke_active": False, "timezone": tz_name, "next_session": None}
+    return {"is_live": False, "karaoke_active": karaoke_active, "timezone": tz_name, "next_session": None}
 
 
 # =====================================================

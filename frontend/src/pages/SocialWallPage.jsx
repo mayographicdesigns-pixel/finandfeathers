@@ -22,8 +22,12 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar, djStatus }) => {
   const [imagePreview, setImagePreview] = useState(null);
   const [posting, setPosting] = useState(false);
   const fileRef = useRef(null);
+  const [karaokeSong, setKaraokeSong] = useState('');
+  const [karaokeSubmitting, setKaraokeSubmitting] = useState(false);
+  const [karaokeQueue, setKaraokeQueue] = useState([]);
 
   const isDJLive = djStatus?.is_live;
+  const karaokeActive = djStatus?.karaoke_active;
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -34,6 +38,47 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar, djStatus }) => {
   }, [locationSlug]);
 
   useEffect(() => { fetchPosts(); const iv = setInterval(fetchPosts, 10000); return () => clearInterval(iv); }, [fetchPosts]);
+
+  // Fetch karaoke queue when active
+  useEffect(() => {
+    if (!karaokeActive) return;
+    const fetchQueue = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/karaoke/queue/${locationSlug}`);
+        if (res.ok) {
+          const data = await res.json();
+          setKaraokeQueue(data.pending || []);
+        }
+      } catch (e) { console.error(e); }
+    };
+    fetchQueue();
+    const iv = setInterval(fetchQueue, 8000);
+    return () => clearInterval(iv);
+  }, [locationSlug, karaokeActive]);
+
+  const submitKaraoke = async () => {
+    if (!karaokeSong.trim()) return;
+    setKaraokeSubmitting(true);
+    try {
+      await fetch(`${API_URL}/api/social/song-request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          location_slug: locationSlug,
+          name: userName || 'Guest',
+          song: karaokeSong.trim(),
+          request_type: 'karaoke'
+        })
+      });
+      setKaraokeSong('');
+      const res = await fetch(`${API_URL}/api/karaoke/queue/${locationSlug}`);
+      if (res.ok) {
+        const data = await res.json();
+        setKaraokeQueue(data.pending || []);
+      }
+    } catch (e) { console.error(e); }
+    setKaraokeSubmitting(false);
+  };
 
   const handleImageSelect = (e) => {
     const file = e.target.files?.[0];
@@ -143,6 +188,52 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar, djStatus }) => {
           </div>
         )}
       </div>
+
+      {/* Karaoke sign-up banner when active */}
+      {karaokeActive && (
+        <div className="mx-3 mt-3 bg-purple-900/30 border border-purple-500/40 rounded-xl p-4" data-testid="feed-karaoke-signup">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 rounded-full bg-purple-600/30 flex items-center justify-center">
+              <Mic2 className="w-4 h-4 text-purple-400" />
+            </div>
+            <div>
+              <p className="text-purple-300 font-bold text-sm">Karaoke is LIVE!</p>
+              <p className="text-purple-400/70 text-xs">Sign up to sing</p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Input
+              value={karaokeSong}
+              onChange={(e) => setKaraokeSong(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && submitKaraoke()}
+              placeholder="What song are you singing?"
+              className="bg-slate-800/80 border-purple-600/30 text-white text-sm placeholder:text-slate-500 focus:border-purple-500 flex-1"
+              data-testid="feed-karaoke-song-input"
+            />
+            <Button
+              onClick={submitKaraoke}
+              disabled={karaokeSubmitting || !karaokeSong.trim()}
+              className="bg-purple-600 hover:bg-purple-700 px-4 shrink-0"
+              data-testid="feed-karaoke-submit-btn"
+            >
+              {karaokeSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Sign Up'}
+            </Button>
+          </div>
+          {karaokeQueue.length > 0 && (
+            <div className="mt-3 space-y-1.5">
+              <p className="text-purple-400 text-xs font-medium">Up Next ({karaokeQueue.length})</p>
+              {karaokeQueue.slice(0, 5).map((item, i) => (
+                <div key={item.id} className="flex items-center gap-2 text-sm">
+                  <span className="text-purple-500 text-xs w-5 text-right">{i + 1}.</span>
+                  <span className="text-white font-medium">{item.name}</span>
+                  <span className="text-slate-500">—</span>
+                  <span className="text-purple-300 truncate">{item.song}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Posts */}
       <div className="flex-1 overflow-y-auto p-3 space-y-3" data-testid="feed-posts">
