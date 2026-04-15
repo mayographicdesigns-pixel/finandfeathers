@@ -539,9 +539,25 @@ const MenuPage = () => {
   const renderSection = (title, items, variant = 'compact', gridCols = 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', isLineItem = false, categoryId = null) => {
     if (!items || items.length === 0) return null;
     
-    // Determine style from category settings
+    // Determine style from category settings — DB style OVERRIDES hardcoded params
     const style = categoryId ? (categoryStyles[categoryId] || DEFAULT_CATEGORY_STYLES[categoryId] || 'default') : null;
-    const useNewStyle = style && style !== 'default' && !isLineItem;
+    
+    // 'default' = image cards, 'style_three' = line items, others = MenuStyleRenderer
+    let effectiveIsLineItem = isLineItem;
+    let effectiveGridCols = gridCols;
+    let useNewStyle = false;
+    
+    if (style) {
+      if (style === 'default') {
+        effectiveIsLineItem = false;
+        effectiveGridCols = 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
+      } else if (style === 'style_three') {
+        effectiveIsLineItem = true;
+        effectiveGridCols = 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4';
+      } else {
+        useNewStyle = true;
+      }
+    }
     
     return (
       <div className="mb-10">
@@ -560,9 +576,9 @@ const MenuPage = () => {
             onEdit={handleEditItem}
           />
         ) : (
-          <div className={`grid ${gridCols} ${isLineItem ? 'gap-3' : 'gap-5'}`}>
+          <div className={`grid ${effectiveGridCols} ${effectiveIsLineItem ? 'gap-3' : 'gap-5'}`}>
             {items.map((item) => (
-              isLineItem ? (
+              effectiveIsLineItem ? (
                 <MenuLineItem key={item.id} item={item} isExpanded={expandedItemId === item.id} onToggleExpand={handleToggleExpand} />
               ) : (
                 <MenuCard 

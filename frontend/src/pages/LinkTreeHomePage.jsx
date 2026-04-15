@@ -991,6 +991,13 @@ const LinkTreeHomePage = () => {
           if (!mergedContent.social_feed_images || !Array.isArray(mergedContent.social_feed_images)) {
             mergedContent.social_feed_images = defaultContent.social_feed_images;
           }
+          // Shuffle gallery images for variety on each page load
+          const shuffled = [...mergedContent.social_feed_images];
+          for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+          }
+          mergedContent.social_feed_images = shuffled;
           setContent(mergedContent);
           setEditingContent(mergedContent);
         }
