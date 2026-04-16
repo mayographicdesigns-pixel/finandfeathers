@@ -133,7 +133,7 @@ async def _seed_specific_items(slugs: list) -> int:
 
 
 async def _seed_full_menu(slugs: list):
-    """Seed complete menu from seed_menu.json across all location slugs."""
+    """Seed complete menu from seed_menu.json across all location slugs. Clears partial data first."""
     import json as _json
     seed_path = ROOT_DIR / "seed_menu.json"
     if not seed_path.exists():
@@ -146,6 +146,12 @@ async def _seed_full_menu(slugs: list):
     if not seed_items:
         return
 
+    # Clear any partial/bad menu data before full seed
+    old_count = await db.menu_items.count_documents({})
+    if old_count > 0:
+        await db.menu_items.delete_many({})
+        logging.info(f"Menu seed: cleared {old_count} stale menu items before full seed")
+
     docs = []
     for item in seed_items:
         for slug in slugs:
@@ -154,7 +160,10 @@ async def _seed_full_menu(slugs: list):
             docs.append(doc)
 
     if docs:
-        await db.menu_items.insert_many(docs)
+        # Insert in batches to avoid memory issues
+        batch_size = 500
+        for i in range(0, len(docs), batch_size):
+            await db.menu_items.insert_many(docs[i:i + batch_size])
         logging.info(f"Menu seed: inserted {len(docs)} items ({len(seed_items)} items x {len(slugs)} locations)")
 
 
