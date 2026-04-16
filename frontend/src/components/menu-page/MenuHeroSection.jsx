@@ -1,4 +1,5 @@
 import React from 'react';
+import { safeHtml } from '../../utils/sanitize';
 
 const MenuHeroSection = ({ heroHtml, todayName, todaysSpecial }) => {
   return (
@@ -10,7 +11,7 @@ const MenuHeroSection = ({ heroHtml, todayName, todaysSpecial }) => {
         </h1>
         <p 
           className="text-slate-400 text-lg max-w-2xl mx-auto"
-          dangerouslySetInnerHTML={{ __html: heroHtml }}
+          {...safeHtml(heroHtml)}
         />
       </div>
 

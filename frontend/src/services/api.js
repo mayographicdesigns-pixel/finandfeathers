@@ -251,7 +251,8 @@ async function getVapidPublicKey() {
     if (!response.ok) return null;
     const data = await response.json();
     return data.publicKey;
-  } catch {
+  } catch (e) {
+    console.error('VAPID key fetch failed:', e);
     return null;
   }
 }
@@ -715,7 +716,8 @@ export async function getWeeklyVideos() {
     const response = await fetch(`${API_URL}/weekly-videos`);
     if (!response.ok) return [];
     return await response.json();
-  } catch {
+  } catch (e) {
+    console.error('Weekly videos fetch failed:', e);
     return [];
   }
 }
@@ -1161,7 +1163,8 @@ export async function verifyAdminToken() {
       headers: adminHeaders()
     });
     return response.ok;
-  } catch {
+  } catch (e) {
+    console.error('Admin token verification failed:', e);
     return false;
   }
 }

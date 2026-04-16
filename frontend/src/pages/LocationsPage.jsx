@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import ImageUploader from '../components/ImageUploader';
 import { getLocations, verifyAdminToken, adminUpdateLocation, adminCreateLocation, adminDeleteLocation, adminGetLocations, getPageContent, getDJSchedulesForLocation, getDJAtLocation } from '../services/api';
 import { toast } from '../hooks/use-toast';
+import { safeHtml } from '../utils/sanitize';
 
 // Reservation Modal Component
 const ReservationModal = ({ isOpen, onClose, location }) => {
@@ -867,7 +868,7 @@ const LocationsPage = () => {
           <div
             className="text-slate-300 text-lg max-w-2xl mx-auto mb-6"
             data-testid="page-content-locations-hero"
-            dangerouslySetInnerHTML={{ __html: heroHtml }}
+            {...safeHtml(heroHtml)}
           />
           
           {/* Home Button */}

@@ -14,6 +14,7 @@ import {
   getPublicEvents,
   getPageContent
 } from '../services/api';
+import { safeHtml } from '../utils/sanitize';
 
 const API_URL = window.location.origin;
 
@@ -269,7 +270,7 @@ const EventsPage = () => {
         <div
           className="text-slate-300 text-lg max-w-2xl mx-auto"
           data-testid="page-content-events-hero"
-          dangerouslySetInnerHTML={{ __html: heroHtml }}
+          {...safeHtml(heroHtml)}
         />
       </div>
 

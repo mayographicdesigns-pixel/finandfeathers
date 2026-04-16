@@ -36,6 +36,7 @@ import {
   getPageContent,
   getPublicEvents
 } from '../services/api';
+import { safeHtml } from '../utils/sanitize';
 
 const API_URL = window.location.origin;
 
@@ -1250,7 +1251,7 @@ const LinkTreeHomePage = () => {
             <div
               className="text-slate-300 text-sm"
               data-testid="page-content-home-hero"
-              dangerouslySetInnerHTML={{ __html: heroHtml }}
+              {...safeHtml(heroHtml)}
             />
           )}
           

@@ -15,6 +15,7 @@ import { MENU_STYLES, DEFAULT_CATEGORY_STYLES } from '../components/menu/index';
 import { menuItems as mockMenuItems } from '../mockData';
 import { getPublicMenuItems, verifyAdminToken, updateMenuItem, createMenuItem, deleteMenuItem, getPageContent, getDailySpecials, getMenuCategoryStyles, getLocations } from '../services/api';
 import { toast } from '../hooks/use-toast';
+import { safeHtml } from '../utils/sanitize';
 // Extracted components for menu page
 import { HookahSection } from '../components/menu-page';
 
@@ -1036,7 +1037,7 @@ const MenuPage = () => {
         <div
           className="text-slate-300 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed"
           data-testid="page-content-menu-hero"
-          dangerouslySetInnerHTML={{ __html: heroHtml }}
+          {...safeHtml(heroHtml)}
         />
       </div>
 

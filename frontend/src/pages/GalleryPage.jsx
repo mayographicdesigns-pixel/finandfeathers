@@ -14,6 +14,7 @@ import {
   deleteGalleryItem,
   getPageContent
 } from '../services/api';
+import { safeHtml } from '../utils/sanitize';
 
 // Default gallery content using actual Fin & Feathers images (fallback)
 const defaultGalleryItems = [
@@ -320,7 +321,7 @@ const GalleryPage = () => {
               <div
                 className="text-slate-400 text-sm"
                 data-testid="page-content-gallery-hero"
-                dangerouslySetInnerHTML={{ __html: heroHtml }}
+                {...safeHtml(heroHtml)}
               />
             </div>
           </div>

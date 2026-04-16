@@ -222,7 +222,7 @@ const DJPanelPage = () => {
           const res = await fetch(`${API_URL}/api/stream/active/${checkedInLocation}`);
           const data = await res.json();
           setViewerCount(data.viewer_count || 0);
-        } catch {}
+        } catch (e) { console.error('Viewer poll error:', e); }
       }, 5000);
       wsRef.current._viewerPoll = pollViewers;
 
@@ -240,7 +240,7 @@ const DJPanelPage = () => {
   const stopCameraStream = () => {
     // Stop MediaRecorder
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      try { mediaRecorderRef.current.stop(); } catch {}
+      try { mediaRecorderRef.current.stop(); } catch (e) { console.error('MediaRecorder stop error:', e); }
     }
     mediaRecorderRef.current = null;
 

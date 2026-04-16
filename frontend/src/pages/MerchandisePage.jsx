@@ -6,6 +6,7 @@ import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { toast } from '../hooks/use-toast';
 import { createCartCheckout, getCartOrderStatus, createStripeMerchCheckout, getStripeCheckoutStatus, pollStripePaymentStatus, getPageContent } from '../services/api';
+import { safeHtml } from '../utils/sanitize';
 
 const API_URL = window.location.origin;
 
@@ -251,7 +252,7 @@ const MerchandisePage = () => {
         <div
           className="text-slate-400 text-center max-w-lg"
           data-testid="page-content-merch-hero"
-          dangerouslySetInnerHTML={{ __html: heroHtml }}
+          {...safeHtml(heroHtml)}
         />
       </div>
 
@@ -322,7 +323,7 @@ const MerchandisePage = () => {
                   {product.description && (
                     <p 
                       className="text-slate-400 text-sm mb-3 line-clamp-2"
-                      dangerouslySetInnerHTML={{ __html: product.description }}
+                      {...safeHtml(product.description)}
                     />
                   )}
                   

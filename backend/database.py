@@ -108,40 +108,35 @@ async def _seed_locations():
 
 
 
-async def ensure_menu_items():
-    """Ensure menu items exist in the database. Seeds from seed_menu.json if DB is empty."""
+async def _get_all_location_slugs() -> list:
+    """Get all location slugs including None for global items."""
+    all_locs = await db.locations.find({}, {"_id": 0, "slug": 1}).to_list(100)
+    return [None] + [loc["slug"] for loc in all_locs if loc.get("slug")]
+
+
+async def _seed_specific_items(slugs: list) -> int:
+    """Ensure specific new menu items exist across all locations. Returns count added."""
+    new_items = [
+        {"name": "Ground Turkey Burger*", "price": 15.0, "category": "sandwiches", "type": "food",
+         "description": "A perfectly grilled, savory seasoned ground turkey patty on a toasted brioche bun, topped with crisp romaine lettuce, fresh sliced tomatoes, and zesty pickles, served with a generous side of seasoned fries",
+         "image": "/images/menu/sandwiches/Ground Turkey Burger.jpg", "image_url": "/images/menu/sandwiches/Ground Turkey Burger.jpg", "is_active": True},
+        {"name": "Add Fried Egg to Any Sandwich*", "price": 3.0, "category": "sandwiches", "type": "food",
+         "description": "Add a fried egg to any sandwich", "image": "", "image_url": "", "is_active": True},
+        {"name": "Add Sauteed Mushrooms to Any Sandwich*", "price": 3.0, "category": "sandwiches", "type": "food",
+         "description": "Add sauteed mushrooms to any sandwich", "image": "", "image_url": "", "is_active": True},
+    ]
+    added = 0
+    for tmpl in new_items:
+        for slug in slugs:
+            if not await db.menu_items.find_one({"name": tmpl["name"], "location_slug": slug}):
+                await db.menu_items.insert_one({**tmpl, "id": str(uuid.uuid4()), "location_slug": slug, "created_at": datetime.now(timezone.utc).isoformat()})
+                added += 1
+    return added
+
+
+async def _seed_full_menu(slugs: list):
+    """Seed complete menu from seed_menu.json across all location slugs."""
     import json as _json
-
-    # First ensure locations exist (menu seed depends on them)
-    loc_count = await db.locations.count_documents({})
-    if loc_count == 0:
-        await _seed_locations()
-
-    existing_count = await db.menu_items.count_documents({})
-    if existing_count > 5:
-        # DB already has menu items — just ensure specific new items exist
-        new_items = [
-            {"name": "Ground Turkey Burger*", "price": 15.0, "category": "sandwiches", "type": "food",
-             "description": "A perfectly grilled, savory seasoned ground turkey patty on a toasted brioche bun, topped with crisp romaine lettuce, fresh sliced tomatoes, and zesty pickles, served with a generous side of seasoned fries",
-             "image": "/images/menu/sandwiches/Ground Turkey Burger.jpg", "image_url": "/images/menu/sandwiches/Ground Turkey Burger.jpg", "is_active": True},
-            {"name": "Add Fried Egg to Any Sandwich*", "price": 3.0, "category": "sandwiches", "type": "food",
-             "description": "Add a fried egg to any sandwich", "image": "", "image_url": "", "is_active": True},
-            {"name": "Add Sauteed Mushrooms to Any Sandwich*", "price": 3.0, "category": "sandwiches", "type": "food",
-             "description": "Add sauteed mushrooms to any sandwich", "image": "", "image_url": "", "is_active": True},
-        ]
-        all_locs = await db.locations.find({}, {"_id": 0, "slug": 1}).to_list(100)
-        slugs = [None] + [l["slug"] for l in all_locs if l.get("slug")]
-        added = 0
-        for tmpl in new_items:
-            for slug in slugs:
-                if not await db.menu_items.find_one({"name": tmpl["name"], "location_slug": slug}):
-                    await db.menu_items.insert_one({**tmpl, "id": str(uuid.uuid4()), "location_slug": slug, "created_at": datetime.now(timezone.utc).isoformat()})
-                    added += 1
-        if added:
-            logging.info(f"Menu seed: added {added} new menu items")
-        return
-
-    # DB is empty or nearly empty — full seed from JSON
     seed_path = ROOT_DIR / "seed_menu.json"
     if not seed_path.exists():
         logging.warning("seed_menu.json not found, skipping menu seed")
@@ -153,10 +148,6 @@ async def ensure_menu_items():
     if not seed_items:
         return
 
-    # Get all location slugs
-    all_locs = await db.locations.find({}, {"_id": 0, "slug": 1}).to_list(100)
-    slugs = [None] + [l["slug"] for l in all_locs if l.get("slug")]
-
     docs = []
     for item in seed_items:
         for slug in slugs:
@@ -167,6 +158,23 @@ async def ensure_menu_items():
     if docs:
         await db.menu_items.insert_many(docs)
         logging.info(f"Menu seed: inserted {len(docs)} items ({len(seed_items)} items x {len(slugs)} locations)")
+
+
+async def ensure_menu_items():
+    """Ensure menu items exist in the database. Seeds from seed_menu.json if DB is empty."""
+    # First ensure locations exist (menu seed depends on them)
+    if await db.locations.count_documents({}) == 0:
+        await _seed_locations()
+
+    slugs = await _get_all_location_slugs()
+    existing_count = await db.menu_items.count_documents({})
+
+    if existing_count > 5:
+        added = await _seed_specific_items(slugs)
+        if added:
+            logging.info(f"Menu seed: added {added} new menu items")
+    else:
+        await _seed_full_menu(slugs)
 
 
 async def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):

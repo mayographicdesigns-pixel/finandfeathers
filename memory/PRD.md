@@ -80,7 +80,14 @@ routes/
 - [x] All regression tests passing (iteration_46, iteration_47)
 
 ### April 2026 Session
-- [x] Check-in Page Redesign (Client vs Staff flow) — Premium dark UI with unique colored icons per staff role (DJ/Headphones, Bartender/Wine, Server/Utensils, Cook/ChefHat, Manager/Shield), smooth step transitions, location auto-detection, mobile responsive
+- [x] Check-in Page Redesign (Client vs Staff flow)
+- [x] Sandwich toppings: Fried Egg $3, Sauteed Mushrooms $3, sorted high-to-low
+- [x] Guest mode for Social Wall (name-only entry, no signup required)
+- [x] Karaoke signup banner on Feed tab when DJ activates karaoke
+- [x] Fixed karaoke auto_activated flag bug in manual toggle
+- [x] Ground Turkey Burger image compressed (7.9MB → 566KB)
+- [x] Auto-seed: locations + full menu (187 items) on empty DB startup
+- [x] Code quality: XSS protection (DOMPurify), empty catch blocks fixed, test secrets removed, database.py refactored
 
 ## Backlog
 - [ ] Per-Location Weekly Specials management (P2)

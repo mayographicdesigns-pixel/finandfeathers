@@ -100,7 +100,7 @@ const CheckInPage = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ role, staff_title: role !== 'customer' ? role : undefined }),
         });
-      } catch { /* silent */ }
+      } catch (e) { console.error('Profile update failed:', e); }
     }
 
     try {
@@ -114,7 +114,7 @@ const CheckInPage = () => {
           user_profile_id: profileId
         }),
       });
-    } catch { /* silent */ }
+    } catch (e) { console.error('Check-in API failed:', e); }
 
     localStorage.setItem('ff_user_location', selectedLocation.slug);
     setSaving(false);
