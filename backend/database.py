@@ -165,13 +165,17 @@ async def ensure_menu_items():
         await _seed_locations()
 
     slugs = await _get_all_location_slugs()
-    existing_count = await db.menu_items.count_documents({})
 
-    if existing_count > 5:
+    # Check if DB has a properly seeded menu by counting unique categories
+    distinct_categories = await db.menu_items.distinct("category")
+    if len(distinct_categories) >= 10:
+        # DB has a full menu — just ensure specific new items exist
         added = await _seed_specific_items(slugs)
         if added:
             logging.info(f"Menu seed: added {added} new menu items")
     else:
+        # DB is empty or partially seeded — do full seed
+        logging.info(f"Menu seed: only {len(distinct_categories)} categories found, running full seed")
         await _seed_full_menu(slugs)
 
 
