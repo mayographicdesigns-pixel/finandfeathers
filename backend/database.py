@@ -169,23 +169,27 @@ async def _seed_full_menu(slugs: list):
 
 async def ensure_menu_items():
     """Ensure menu items exist in the database. Seeds from seed_menu.json if DB is empty."""
-    # First ensure locations exist (menu seed depends on them)
-    if await db.locations.count_documents({}) == 0:
-        await _seed_locations()
+    try:
+        # First ensure locations exist (menu seed depends on them)
+        if await db.locations.count_documents({}) == 0:
+            await _seed_locations()
 
-    slugs = await _get_all_location_slugs()
+        slugs = await _get_all_location_slugs()
 
-    # Check if DB has a properly seeded menu by counting unique categories
-    distinct_categories = await db.menu_items.distinct("category")
-    if len(distinct_categories) >= 10:
-        # DB has a full menu — just ensure specific new items exist
-        added = await _seed_specific_items(slugs)
-        if added:
-            logging.info(f"Menu seed: added {added} new menu items")
-    else:
-        # DB is empty or partially seeded — do full seed
-        logging.info(f"Menu seed: only {len(distinct_categories)} categories found, running full seed")
-        await _seed_full_menu(slugs)
+        # Check if DB has a properly seeded menu by counting unique categories
+        distinct_categories = await db.menu_items.distinct("category")
+        logging.info(f"Menu check: {len(distinct_categories)} categories found")
+        if len(distinct_categories) >= 10:
+            # DB has a full menu — just ensure specific new items exist
+            added = await _seed_specific_items(slugs)
+            if added:
+                logging.info(f"Menu seed: added {added} new menu items")
+        else:
+            # DB is empty or partially seeded — do full seed
+            logging.info(f"Menu seed: only {len(distinct_categories)} categories, running full seed")
+            await _seed_full_menu(slugs)
+    except Exception as e:
+        logging.error(f"Menu seed failed (non-fatal): {e}")
 
 
 async def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):

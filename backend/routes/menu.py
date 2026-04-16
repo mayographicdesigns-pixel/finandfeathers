@@ -14,6 +14,19 @@ import uuid
 router = APIRouter(prefix="/api")
 
 
+# ==================== FORCE MENU SEED ====================
+
+@router.post("/admin/menu/force-seed")
+async def force_seed_menu(admin: str = Depends(get_current_admin)):
+    """Force re-seed all menu items from seed_menu.json. Clears existing items first."""
+    from database import _get_all_location_slugs, _seed_full_menu
+    slugs = await _get_all_location_slugs()
+    await _seed_full_menu(slugs)
+    count = await db.menu_items.count_documents({})
+    cats = await db.menu_items.distinct("category")
+    return {"message": f"Seeded {count} menu items across {len(cats)} categories"}
+
+
 # ==================== PUBLIC MENU ====================
 
 @router.get("/menu/items")
