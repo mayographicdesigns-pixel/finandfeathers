@@ -2213,17 +2213,5 @@
     "image_url": "",
     "is_active": true,
     "created_at": "2026-04-15T20:33:15.192094+00:00"
-  },
-  {
-    "id": "6ac834d6-7dde-4dcc-a2d7-f6256664a138",
-    "name": "Add Sauteed Mushrooms to Any Sandwich*",
-    "description": "Add sauteed mushrooms to any sandwich",
-    "price": 3.0,
-    "category": "sandwiches",
-    "type": "food",
-    "image": "",
-    "image_url": "",
-    "is_active": true,
-    "created_at": "2026-04-15T20:33:15.199627+00:00"
   }
 ]

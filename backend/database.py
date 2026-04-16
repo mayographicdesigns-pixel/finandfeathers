@@ -122,8 +122,6 @@ async def _seed_specific_items(slugs: list) -> int:
          "image": "/images/menu/sandwiches/Ground Turkey Burger.jpg", "image_url": "/images/menu/sandwiches/Ground Turkey Burger.jpg", "is_active": True},
         {"name": "Add Fried Egg to Any Sandwich*", "price": 3.0, "category": "sandwiches", "type": "food",
          "description": "Add a fried egg to any sandwich", "image": "", "image_url": "", "is_active": True},
-        {"name": "Add Sauteed Mushrooms to Any Sandwich*", "price": 3.0, "category": "sandwiches", "type": "food",
-         "description": "Add sauteed mushrooms to any sandwich", "image": "", "image_url": "", "is_active": True},
     ]
     added = 0
     for tmpl in new_items:
