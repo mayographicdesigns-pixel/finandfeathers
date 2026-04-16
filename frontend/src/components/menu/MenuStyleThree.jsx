@@ -108,7 +108,7 @@ export const MenuStyleThree = ({ item, isExpanded, onToggleExpand, onImageClick 
         {/* Star rating */}
         <div className="flex items-center gap-1">
           {[...Array(5)].map((_, i) => (
-            <span key={i} className={`text-xs ${i < rating ? 'text-amber-400' : 'text-slate-600'}`}>★</span>
+            <span key={'star-' + i} className={`text-xs ${i < rating ? 'text-amber-400' : 'text-slate-600'}`}>★</span>
           ))}
         </div>
       </div>
@@ -118,8 +118,8 @@ export const MenuStyleThree = ({ item, isExpanded, onToggleExpand, onImageClick 
         <span className="hidden sm:block w-16 border-b border-dotted border-slate-600" />
         {item.variations && item.variations.length > 0 ? (
           <div className="text-right">
-            {item.variations.map((v, vi) => (
-              <div key={vi} className="flex items-center gap-1">
+            {item.variations.map((v) => (
+              <div key={v.name + '-' + v.price} className="flex items-center gap-1">
                 <span className="text-slate-500 text-[10px]">{v.name}</span>
                 <span className="text-amber-400 font-bold text-sm">${v.price}</span>
               </div>

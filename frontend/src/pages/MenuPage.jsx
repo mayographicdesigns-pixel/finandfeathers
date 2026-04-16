@@ -626,7 +626,7 @@ const MenuPage = () => {
                 {item.variations && item.variations.length > 0 ? (
                   <div className="text-right">
                     {item.variations.map((v, vi) => (
-                      <div key={vi} className="flex items-center gap-1.5">
+                      <div key={`${v.name}-${v.price}`} className="flex items-center gap-1.5">
                         <span className="text-slate-500 text-[10px]">{v.name}</span>
                         <span className="text-red-500 font-bold text-sm">${v.price}</span>
                       </div>

@@ -325,7 +325,7 @@ const VideosTab = () => {
                   >
                     <option value={-1}>All Days (Common)</option>
                     {dayNames.map((day, i) => (
-                      <option key={i} value={i}>{day}</option>
+                      <option key={day} value={i}>{day}</option>
                     ))}
                   </select>
                 </div>

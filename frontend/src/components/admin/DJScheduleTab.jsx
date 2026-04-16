@@ -603,7 +603,7 @@ const DJScheduleTab = () => {
                 {parsedEntries
                   .sort((a, b) => (DAYS_ORDER[a.day_of_week] ?? 7) - (DAYS_ORDER[b.day_of_week] ?? 7))
                   .map((entry, idx) => (
-                  <div key={idx} className="flex items-center justify-between bg-slate-700/50 rounded-lg p-3" data-testid={`parsed-entry-${idx}`}>
+                  <div key={`${entry.dj_name}-${entry.day_of_week}-${idx}`} className="flex items-center justify-between bg-slate-700/50 rounded-lg p-3" data-testid={`parsed-entry-${idx}`}>
                     <div className="flex items-center gap-3">
                       <span className="text-lg">🎧</span>
                       <div>

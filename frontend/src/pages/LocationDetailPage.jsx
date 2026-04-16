@@ -961,7 +961,7 @@ const LocationDetailPage = () => {
               
               <div className="space-y-3">
                 {(editingLocation.weekly_specials || []).map((special, index) => (
-                  <div key={index} className="flex gap-2 items-start">
+                  <div key={`${special.day}-${index}`} className="flex gap-2 items-start">
                     <div className="flex-1">
                       <select
                         value={special.day}

@@ -433,7 +433,7 @@ export async function registerUserWithPassword(email, password, name, username) 
 
     if (!response.ok) {
       let detail = 'Registration failed';
-      try { const err = await response.json(); detail = err.detail || detail; } catch (e) { /* parse error */ }
+      try { const err = await response.json(); detail = err.detail || detail; } catch (e) { console.error('Response parse error:', e); }
       throw new Error(detail);
     }
 
@@ -457,7 +457,7 @@ export async function loginUserWithPassword(identifier, password) {
 
     if (!response.ok) {
       let detail = 'Login failed';
-      try { const err = await response.json(); detail = err.detail || detail; } catch (e) { /* parse error */ }
+      try { const err = await response.json(); detail = err.detail || detail; } catch (e) { console.error('Response parse error:', e); }
       throw new Error(detail);
     }
 
