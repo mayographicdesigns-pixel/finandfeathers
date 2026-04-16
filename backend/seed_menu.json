@@ -1,0 +1,2229 @@
+[
+  {
+    "name": "F&F Signature Wings*",
+    "description": "Our signature tossed wings",
+    "price": 14.0,
+    "category": "starters",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6608.jpg",
+    "id": "dfa7f06a-3f25-44ac-b5b7-2a7708085f6b",
+    "image": "/images/menu/starters/F&F Signature Wings.jpg",
+    "type": "food",
+    "image_url": "/images/menu/starters/F&F Signature Wings.jpg"
+  },
+  {
+    "name": "Chicken Thigh Nuggets*",
+    "description": "Delicious deep-fried thigh nuggets cooked perfectly. Toss in lemon pepper, BBQ, mild, hot, or honey hot for $1",
+    "price": 12,
+    "category": "starters",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2023/05/d5a5b6d60bb345848208733aad759bad.jpeg",
+    "id": "00216236-a4cf-4bea-a662-11c6c51335d4",
+    "image": "/images/menu/starters/Chicken Thigh Nuggets.jpg",
+    "type": "food",
+    "image_url": "/images/menu/starters/Chicken Thigh Nuggets.jpg"
+  },
+  {
+    "name": "Fin's Tacos*",
+    "description": "Corn tortillas, pickled cabbage salad, house made peach & pineapple salsa, jack cheese, topped with herb sour cream. Saut\u00e9ed veggies, chicken, catfish, shrimp (+$4) or steak (+$4)",
+    "price": 14,
+    "category": "starters",
+    "badges": [
+      "Spicy"
+    ],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC05965_edited-1.jpg",
+    "id": "9bb1f528-1b65-40d6-92c5-7b9703a28d96",
+    "image": "/images/menu/starters/Fin's Tacos.jpg",
+    "type": "food",
+    "image_url": "/images/menu/starters/Fin's Tacos.jpg"
+  },
+  {
+    "name": "Catfish Nuggets*",
+    "description": "Golden fried catfish nuggets served with lemon and your choice of dipping sauce",
+    "price": 14.0,
+    "category": "starters",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/72c955de55dd4c3996e3fe0039742714-1.jpeg",
+    "id": "6575bae0-aeff-4bcd-b13e-edffa88d90f0",
+    "image": "/images/menu/starters/Catfish Nuggets.jpg",
+    "type": "food",
+    "image_url": "/images/menu/starters/Catfish Nuggets.jpg"
+  },
+  {
+    "name": "Jerk Chicken Egg Rolls*",
+    "description": "Jerk chicken egg rolls filled with jerk chicken, veggies, and deep-fried to crispy perfection. Served with a sweet chili pineapple sauce",
+    "price": 14.0,
+    "category": "starters",
+    "badges": [
+      "Sweet",
+      "Spicy"
+    ],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Jerk-Chicken-Egg-Roll-scaled.jpg",
+    "id": "eee5012b-bf96-4e52-8959-0e171f6e22f8",
+    "image": "/images/menu/starters/Jerk Chicken Egg Rolls.jpg",
+    "type": "food",
+    "image_url": "/images/menu/starters/Jerk Chicken Egg Rolls.jpg"
+  },
+  {
+    "name": "Dynamite Pepper Shrimp*",
+    "description": "Hand-battered deep-fried shrimp tossed in homemade sweet pepper sauce with jalape\u00f1o and tropical banana peppers. Served with chipotle ranch dipping sauce",
+    "price": 17,
+    "category": "starters",
+    "badges": [
+      "Spicy",
+      "Chef's Special"
+    ],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC05963_edited-1.jpg",
+    "id": "888357c7-55a8-4f4c-96ba-0fdd7df5dcda",
+    "image": "/images/menu/starters/Dynamite Pepper Shrimp.jpg",
+    "type": "food",
+    "image_url": "/images/menu/starters/Dynamite Pepper Shrimp.jpg"
+  },
+  {
+    "name": "Chicken Tenders & Fries*",
+    "description": "Chicken tenders battered in our in-house seasoning served with fries and your choice of ranch, honey mustard or BBQ sauce",
+    "price": 15.0,
+    "category": "starters",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/FinsAndFeathers-24_edited-1.jpg",
+    "id": "592d8fae-70c5-4d0c-9e26-7995b0e6d62a",
+    "image": "/images/menu/starters/Chicken Tenders & Fries.jpg",
+    "type": "food",
+    "image_url": "/images/menu/starters/Chicken Tenders & Fries.jpg"
+  },
+  {
+    "name": "Fried Pickles*",
+    "description": "Dill pickles, hand battered and deep fried served with chipotle ranch",
+    "price": 11,
+    "category": "starters",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6577.jpg",
+    "id": "4dda0f83-e3e1-4a3f-9c50-62721e84a4d5",
+    "image": "/images/menu/starters/Fried Pickles.jpg",
+    "type": "food",
+    "image_url": "/images/menu/starters/Fried Pickles.jpg"
+  },
+  {
+    "name": "Chicken Caesar Wrap (Starter)*",
+    "description": "Grilled chicken romaine lettuce, parmesan cheese, & Caesar dressing, wrapped in a flour tortilla",
+    "price": 15,
+    "category": "starters",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6590.jpg",
+    "id": "9797b7e7-e217-4f96-8d99-9ba3e8898101",
+    "image": "/images/menu/starters/Chicken Caesar Wrap (Starter).jpg",
+    "type": "food",
+    "image_url": "/images/menu/starters/Chicken Caesar Wrap (Starter).jpg"
+  },
+  {
+    "name": "New Zealand Lamb Chops*",
+    "description": "Four perfectly grilled chops, covered in our one-of-a-kind lamb sauce. Pick any two delicious side dishes",
+    "price": 43.0,
+    "category": "entrees",
+    "badges": [
+      "Chef's Special"
+    ],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/IMG_1574-e1666013652186.jpg",
+    "id": "3550c629-f96d-47f7-91d4-9c448140e107",
+    "image": "/images/menu/entrees/New Zealand Lamb Chops.png",
+    "type": "food",
+    "image_url": "/images/menu/entrees/New Zealand Lamb Chops.png"
+  },
+  {
+    "name": "Marinated Malibu Ribeye*",
+    "description": "10 oz hand-cut ribeye steak marinated in the essence of California, grilled to order and served with two sides",
+    "price": 41.0,
+    "category": "entrees",
+    "badges": [
+      "Chef's Special"
+    ],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Malibu-Ribeye-scaled.jpg",
+    "id": "f864b1f7-8ab7-4ffc-a6f1-e54ced859a1d",
+    "image": "/images/menu/entrees/Marinated Malibu Ribeye.jpg",
+    "type": "food",
+    "image_url": "/images/menu/entrees/Marinated Malibu Ribeye.jpg"
+  },
+  {
+    "name": "Deep Fried Catfish*",
+    "description": "Seasoned deep fried catfish, served with your choice of our homemade remoulade sauce, tartar sauce or hot sauce and served with two sides",
+    "price": 21.0,
+    "category": "entrees",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/8f476b4bb04a4bb0b30b75a0e8271189-e1665919417568.jpeg",
+    "id": "ffa2d235-090f-4748-9ce0-2f5648e87e77",
+    "image": "/images/menu/entrees/Deep Fried Catfish.png",
+    "type": "food",
+    "image_url": "/images/menu/entrees/Deep Fried Catfish.png"
+  },
+  {
+    "name": "Grilled Blackened Catfish*",
+    "description": "Fresh caught catfish, grilled and served with your choice of our homemade remoulade sauce, tartar sauce or hot sauce and served with two sides",
+    "price": 21.0,
+    "category": "entrees",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Grilled-Catfish-scaled.jpg",
+    "id": "d67f7999-439d-4328-8948-64275cf6fa15",
+    "image": "/images/menu/entrees/Grilled Blackened Catfish.jpg",
+    "type": "food",
+    "image_url": "/images/menu/entrees/Grilled Blackened Catfish.jpg"
+  },
+  {
+    "name": "Stuffed Chicken Breast*",
+    "description": "Boneless chicken breasts with herb-filled roasted vegetables, topped with a special cheese blend, homemade lemon cream sauce, and garnished with broccoli and diced tomatoes. Served with two sides",
+    "price": 25.0,
+    "category": "entrees",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/fin_and_feathers_fried_stuffed_chicken_breast_3-e1665919636508.jpg",
+    "id": "2796a6ff-af1a-4541-9c85-49d4a7abc1d8",
+    "image": "/images/menu/entrees/Stuffed Chicken Breast.png",
+    "type": "food",
+    "image_url": "/images/menu/entrees/Stuffed Chicken Breast.png"
+  },
+  {
+    "name": "Roasted Chicken Thighs*",
+    "description": "Juicy Roasted Chicken Thighs pan-seared to lock in natural flavors and drizzled with savory orange au jus sauce. Served with two sides",
+    "price": 21.0,
+    "category": "entrees",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Roasted-Chicken-Thighs-scaled.jpg",
+    "id": "66d72a82-215e-4a63-80f1-176fccd6ba54",
+    "image": "/images/menu/entrees/Roasted Chicken Thighs.jpg",
+    "type": "food",
+    "image_url": "/images/menu/entrees/Roasted Chicken Thighs.jpg"
+  },
+  {
+    "name": "Southern Fried Chicken*",
+    "description": "Three whole wings or one thigh prepared with our own seasoned battered and fried to perfection and served with two sides",
+    "price": 21.0,
+    "category": "entrees",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC06011_edited.jpg",
+    "id": "ed88e99f-d09b-4ded-98c7-b96542370bf4",
+    "image": "/images/menu/entrees/Southern Fried Chicken.jpg",
+    "type": "food",
+    "image_url": "/images/menu/entrees/Southern Fried Chicken.jpg"
+  },
+  {
+    "name": "Honey Bourbon Salmon*",
+    "description": "8 oz fresh Atlantic salmon glazed in a house made honey bourbon sauce served with choice of two sides",
+    "price": 30.0,
+    "category": "entrees",
+    "badges": [
+      "Chef's Special"
+    ],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Honey-Bourbon-Salmon-scaled.jpg",
+    "id": "6f27f760-1d63-4578-8af3-33f54e5af072",
+    "image": "/images/menu/entrees/Honey Bourbon Salmon.jpg",
+    "type": "food",
+    "image_url": "/images/menu/entrees/Honey Bourbon Salmon.jpg"
+  },
+  {
+    "name": "Lobster Tails*",
+    "description": "Two succulent Lobster Tails perfectly cooked to order with 2 sides of your choice",
+    "price": null,
+    "priceLabel": "MKT",
+    "category": "entrees",
+    "badges": [
+      "Chef's Special"
+    ],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6624.jpg",
+    "id": "8d9a033f-4573-432c-b442-572cae6a05ed",
+    "image": "/images/menu/entrees/Lobster Tails.jpg",
+    "type": "food",
+    "image_url": "/images/menu/entrees/Lobster Tails.jpg"
+  },
+  {
+    "name": "Chicken & Waffle*",
+    "description": "Golden-brown buttermilk waffle with your choice of crispy fried chicken: three juicy wings OR one tender thigh. Served with your favorite syrup (No sides included)",
+    "price": 18,
+    "category": "entrees",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/a3e08521f140462cbedf10dedd32f879.jpeg",
+    "id": "53c9b0ba-f8e9-465a-b64a-6a2697a8e1e8",
+    "image": "/images/menu/entrees/Chicken & Waffle.jpg",
+    "type": "food",
+    "image_url": "/images/menu/entrees/Chicken & Waffle.jpg"
+  },
+  {
+    "name": "Veggie Bowl",
+    "description": "Saut\u00e9ed vegetables with sweet chili glaze - tender broccoli, carrots, tomatoes, and spinach saut\u00e9ed in garlic butter, served over rice pilaf (No sides included)",
+    "price": 19.0,
+    "category": "entrees",
+    "badges": [
+      "Vegetarian"
+    ],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Veggie-Bowl-scaled.jpg",
+    "id": "32605d1c-f029-4177-a161-baf353684d58",
+    "image": "/images/menu/entrees/Veggie Bowl.jpg",
+    "type": "food",
+    "image_url": "/images/menu/entrees/Veggie Bowl.jpg"
+  },
+  {
+    "name": "Catfish & Grits*",
+    "description": "Fried Catfish & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce",
+    "price": 21,
+    "category": "seafood-grits",
+    "badges": [
+      "Chef's Special"
+    ],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/7-1.png",
+    "id": "be76e269-2b4f-45c7-a9fa-b8ee6f474b2d",
+    "image": "/images/menu/seafood-grits/Catfish & Grits.png",
+    "type": "food",
+    "image_url": "/images/menu/seafood-grits/Catfish & Grits.png"
+  },
+  {
+    "name": "Shrimp & Grits*",
+    "description": "Grilled Shrimp & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce",
+    "price": 25,
+    "category": "seafood-grits",
+    "badges": [
+      "Chef's Special"
+    ],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Shrimp-Grits-scaled.jpg",
+    "id": "a333c548-cc8f-4dff-b01a-b0643f7b453a",
+    "image": "/images/menu/seafood-grits/Shrimp & Grits.jpg",
+    "type": "food",
+    "image_url": "/images/menu/seafood-grits/Shrimp & Grits.jpg"
+  },
+  {
+    "name": "Salmon & Grits*",
+    "description": "Grilled Salmon & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce",
+    "price": 27.0,
+    "category": "seafood-grits",
+    "badges": [
+      "Chef's Special"
+    ],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/salmon-grits.png",
+    "id": "f2774b19-8364-40a9-9271-59729fa3360a",
+    "image": "/images/menu/seafood-grits/Salmon & Grits.jpg",
+    "type": "food",
+    "image_url": "/images/menu/seafood-grits/Salmon & Grits.jpg"
+  },
+  {
+    "name": "Lobster & Grits*",
+    "description": "Grilled Lobster & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce",
+    "price": null,
+    "priceLabel": "MKT",
+    "category": "seafood-grits",
+    "badges": [
+      "Chef's Special"
+    ],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/100_0223-scaled-e1696349523450.jpg",
+    "id": "a6a07823-e9a1-4941-ba8b-de2fd66c2653",
+    "image": "/images/menu/seafood-grits/Lobster & Grits.png",
+    "type": "food",
+    "image_url": "/images/menu/seafood-grits/Lobster & Grits.png"
+  },
+  {
+    "name": "F&F Jerk Turkey Burger*",
+    "description": "Our signature jerk patty with pickled cabbage, garlic aioli, Monterey jack cheese & topped with house made peach and pineapple salsa",
+    "price": 15,
+    "category": "sandwiches",
+    "badges": [
+      "Spicy"
+    ],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Jerk-Turkey-Burger-scaled.jpg",
+    "id": "9ac05cd5-ce16-4f45-9a9c-07334ca71349",
+    "image": "/images/menu/sandwiches/F&F Jerk Turkey Burger.jpg",
+    "type": "food",
+    "image_url": "/images/menu/sandwiches/F&F Jerk Turkey Burger.jpg"
+  },
+  {
+    "name": "Fire Chicken Sandwich*",
+    "description": "Grilled or deep-fried chicken breast, drizzled with our housemade fire sauce with melted jack cheese, saut\u00e9ed jalape\u00f1os and blue cheese",
+    "price": 15,
+    "category": "sandwiches",
+    "badges": [
+      "Spicy"
+    ],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Fire-Chicken-Sandwhich-scaled.jpg",
+    "id": "6ad9a81d-2f6e-4be9-8c29-dcb7ea41e801",
+    "image": "/images/menu/sandwiches/Fire Chicken Sandwich.jpg",
+    "type": "food",
+    "image_url": "/images/menu/sandwiches/Fire Chicken Sandwich.jpg"
+  },
+  {
+    "name": "BBQ Chicken Sandwich*",
+    "description": "Grilled or deep-fried chicken breast topped with BBQ sauce & melted jack cheese with romaine lettuce, tomatoes and pickles",
+    "price": 15,
+    "category": "sandwiches",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-BBQ-Chicken-Sandwich-1-scaled.jpg",
+    "id": "24b89eca-d819-4036-b53b-df54e38ebd38",
+    "image": "/images/menu/sandwiches/BBQ Chicken Sandwich.jpg",
+    "type": "food",
+    "image_url": "/images/menu/sandwiches/BBQ Chicken Sandwich.jpg"
+  },
+  {
+    "name": "Catfish Filet Sandwich*",
+    "description": "Deep-fried catfish topped with option of parmesan sauce, tartar or r\u00e9moulade sauce & romaine lettuce, tomatoes and pickles. Add cheese +$1",
+    "price": 16.0,
+    "category": "sandwiches",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/12/b810a1585baa482a8a40aa2fba4111e9-e1671233952540.jpeg",
+    "id": "af907a52-44b5-4b36-9980-560fd46997ad",
+    "image": "/images/menu/sandwiches/Catfish Filet Sandwich.jpg",
+    "type": "food",
+    "image_url": "/images/menu/sandwiches/Catfish Filet Sandwich.jpg"
+  },
+  {
+    "name": "Salmon Burger*",
+    "description": "Perfectly cooked 4oz salmon fillet, seasoned and garnished with your choice of parmesan, tartar, or r\u00e9moulade sauce. Served with romaine lettuce, tomatoes, and pickles. Add cheese +$1",
+    "price": 18.0,
+    "category": "sandwiches",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/Screenshot_7-e1666177138547.jpg",
+    "id": "aac80894-ecfd-4845-9549-945952bc1f64",
+    "image": "/images/menu/sandwiches/Salmon Burger.jpg",
+    "type": "food",
+    "image_url": "/images/menu/sandwiches/Salmon Burger.jpg"
+  },
+  {
+    "name": "Add Bacon to Any Sandwich*",
+    "description": "Crispy bacon strips",
+    "price": 4,
+    "category": "sandwiches",
+    "badges": [],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "ee41f8d0-e06d-432d-a974-4e975c2c012f",
+    "image": "/images/menu/sandwiches/Add Bacon to Any Sandwich.jpg",
+    "type": "food",
+    "image_url": "/images/menu/sandwiches/Add Bacon to Any Sandwich.jpg",
+    "is_addon": true
+  },
+  {
+    "name": "Add Cheese to Any Sandwich*",
+    "description": "Your choice of cheese",
+    "price": 1.0,
+    "category": "sandwiches",
+    "badges": [],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "d1df538c-af4f-4307-9be5-f6f899422806",
+    "image": "/images/menu/sandwiches/Add Cheese to Any Sandwich.jpg",
+    "type": "food",
+    "image_url": "/images/menu/sandwiches/Add Cheese to Any Sandwich.jpg",
+    "is_addon": true
+  },
+  {
+    "name": "Chef Salad*",
+    "description": "An all-American salad with lettuce, tomatoes, cucumbers, croutons, cheese and topped with dressing",
+    "price": 15,
+    "category": "salads",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Chef-Salad-1-scaled.jpg",
+    "id": "8e6b6127-e606-4e80-ac0d-cf9f8281f924",
+    "image": "/images/menu/salads/Chef Salad.jpg",
+    "type": "food",
+    "variations": [
+      {
+        "name": "Full Order",
+        "price": 15
+      },
+      {
+        "name": "Side Order",
+        "price": 8
+      }
+    ],
+    "image_url": "/images/menu/salads/Chef Salad.jpg"
+  },
+  {
+    "name": "Caesar Salad*",
+    "description": "A green salad of romaine lettuce and croutons dressed with Parmesan cheese, black pepper and Caesar salad dressing",
+    "price": 14,
+    "category": "salads",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Caesar-Salad-scaled.jpg",
+    "id": "9d39fdaa-36db-485e-8b02-1f7e4d92bc46",
+    "image": "/images/menu/salads/Caesar Salad.jpg",
+    "type": "food",
+    "variations": [
+      {
+        "name": "Full Order",
+        "price": 14
+      },
+      {
+        "name": "Side Order",
+        "price": 8
+      }
+    ],
+    "image_url": "/images/menu/salads/Caesar Salad.jpg"
+  },
+  {
+    "name": "Mac & Cheese*",
+    "description": "Creamy, rich macaroni and cheese",
+    "price": 8,
+    "category": "sides",
+    "badges": [],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "08d983a7-20df-44fa-83e3-c4b34b70b2e5",
+    "image": "/images/menu/sides/Mac & Cheese.jpg",
+    "type": "food",
+    "image_url": "/images/menu/sides/Mac & Cheese.jpg"
+  },
+  {
+    "name": "Whipped Potatoes*",
+    "description": "Creamy whipped potatoes",
+    "price": 7,
+    "category": "sides",
+    "badges": [],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "41b8f2e5-e069-42ac-8084-d5400da282f5",
+    "image": "/images/menu/sides/Whipped Potatoes.jpg",
+    "type": "food",
+    "image_url": "/images/menu/sides/Whipped Potatoes.jpg"
+  },
+  {
+    "name": "Saut\u00e9ed Garlic Spinach",
+    "description": "Fresh spinach saut\u00e9ed with garlic",
+    "price": 7,
+    "category": "sides",
+    "badges": [
+      "Vegetarian"
+    ],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "4f3b3668-6345-4934-bfc6-2fb1d70908d6",
+    "image": "/images/menu/sides/Saut\u00e9ed Garlic Spinach.jpg",
+    "type": "food",
+    "image_url": "/images/menu/sides/Saut\u00e9ed Garlic Spinach.jpg"
+  },
+  {
+    "name": "Lemon Butter Broccoli*",
+    "description": "Fresh broccoli with lemon butter",
+    "price": 7,
+    "category": "sides",
+    "badges": [
+      "Vegetarian"
+    ],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "25c86f24-f6b8-423d-98ff-dbc0a4fef902",
+    "image": "/images/menu/sides/Lemon Butter Broccoli.jpg",
+    "type": "food",
+    "image_url": "/images/menu/sides/Lemon Butter Broccoli.jpg"
+  },
+  {
+    "name": "Jalape\u00f1o Roasted Corn",
+    "description": "Roasted corn with jalape\u00f1os",
+    "price": 7,
+    "category": "sides",
+    "badges": [
+      "Vegetarian",
+      "Spicy"
+    ],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "eca4320e-98cf-4235-9b1f-78c81dae6c7f",
+    "image": "/images/menu/sides/Jalape\u00f1o Roasted Corn.jpg",
+    "type": "food",
+    "image_url": "/images/menu/sides/Jalape\u00f1o Roasted Corn.jpg"
+  },
+  {
+    "name": "Crispy Fries",
+    "description": "Golden crispy fries",
+    "price": 6,
+    "category": "sides",
+    "badges": [
+      "Vegetarian"
+    ],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "44e6b84d-e8ed-4eae-9fd9-26c5ed38b58c",
+    "image": "/images/menu/sides/Crispy Fries.jpg",
+    "type": "food",
+    "image_url": "/images/menu/sides/Crispy Fries.jpg"
+  },
+  {
+    "name": "Rice Pilaf",
+    "description": "Seasoned rice pilaf",
+    "price": 7,
+    "category": "sides",
+    "badges": [
+      "Vegetarian"
+    ],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "6465bb6f-f8a3-448b-b83b-910f2119c074",
+    "image": "/images/menu/sides/Rice Pilaf.jpg",
+    "type": "food",
+    "image_url": "/images/menu/sides/Rice Pilaf.jpg"
+  },
+  {
+    "name": "Cheese Grits*",
+    "description": "Creamy cheese grits",
+    "price": 6,
+    "category": "sides",
+    "badges": [
+      "Vegetarian"
+    ],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "8a7dcc17-c010-48b9-b11c-9ea92e102df8",
+    "image": "/images/menu/sides/Cheese Grits.jpg",
+    "type": "food",
+    "image_url": "/images/menu/sides/Cheese Grits.jpg"
+  },
+  {
+    "name": "Chicken & Waffle (Brunch)*",
+    "description": "Three whole wings or one thigh seasoned, battered & fried to perfection served with a buttermilk waffle topped with powder sugar, blueberries & strawberries",
+    "price": 18.0,
+    "category": "brunch",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/5.png",
+    "id": "36739b59-23ee-4a53-8371-9329288d7611",
+    "image": "/images/menu/brunch/Chicken & Waffle (Brunch).jpg",
+    "type": "food",
+    "image_url": "/images/menu/brunch/Chicken & Waffle (Brunch).jpg"
+  },
+  {
+    "name": "Breakfast Burrito*",
+    "description": "Flour tortilla filled with three eggs, green peppers, red peppers, mushrooms, spinach, tomatoes & cheese with bacon or chicken sausage",
+    "price": 16,
+    "category": "brunch",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Breakfast-Burrito-1-scaled.jpg",
+    "id": "e41d3e6b-6eb3-478d-b52e-a48da233ee44",
+    "image": "/images/menu/brunch/Breakfast Burrito.jpg",
+    "type": "food",
+    "image_url": "/images/menu/brunch/Breakfast Burrito.jpg"
+  },
+  {
+    "name": "Edgewood Breakfast*",
+    "description": "Two eggs (any style), choice of bacon or chicken sausage & pancakes or a waffle topped with powder sugar, blueberries & strawberries",
+    "price": 16,
+    "category": "brunch",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/1.png",
+    "id": "9576ac16-be37-4422-a762-4e3967e77eec",
+    "image": "/images/menu/brunch/Edgewood Breakfast.png",
+    "type": "food",
+    "image_url": "/images/menu/brunch/Edgewood Breakfast.png"
+  },
+  {
+    "name": "All Star Breakfast*",
+    "description": "Two eggs (any style), breakfast potatoes or cheese grits, choice of bacon or sausage and a biscuit",
+    "price": 14,
+    "category": "brunch",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/All-star-break.png",
+    "id": "e0fbeaa9-bd97-4faa-9e70-32ef38355fb2",
+    "image": "/images/menu/brunch/All Star Breakfast.png",
+    "type": "food",
+    "image_url": "/images/menu/brunch/All Star Breakfast.png"
+  },
+  {
+    "name": "French Toast*",
+    "description": "Fresh challah bread, drizzled with a triple sec sugar glaze topped with powdered sugar, blueberries & strawberries with your choice of bacon, chicken sausage or 3 whole wings (+$6)",
+    "price": 16,
+    "category": "brunch",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/3.png",
+    "id": "ee27fa67-b1e0-426b-b9b5-dde2faac9c6c",
+    "image": "/images/menu/brunch/French Toast.jpg",
+    "type": "food",
+    "image_url": "/images/menu/brunch/French Toast.jpg"
+  },
+  {
+    "name": "Steak & Eggs*",
+    "description": "Our Malibu ribeye, two eggs (any style) with your choice of breakfast potatoes or grits & a biscuit",
+    "price": 29,
+    "category": "brunch",
+    "badges": [
+      "Chef's Special"
+    ],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/steak-eggs.png",
+    "id": "e76f9afb-fa2f-4624-9570-f7ccf0ff064a",
+    "image": "/images/menu/brunch/Steak & Eggs.png",
+    "type": "food",
+    "image_url": "/images/menu/brunch/Steak & Eggs.png"
+  },
+  {
+    "name": "California Omelette*",
+    "description": "Three eggs, green peppers, red peppers, mushrooms, spinach, tomatoes & cheese with bacon or chicken sausage",
+    "price": 17,
+    "category": "brunch",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/Untitled-design-1.png",
+    "id": "fda4e5c5-ba3e-45d9-8b99-080f8b95252a",
+    "image": "/images/menu/brunch/California Omelette.png",
+    "type": "food",
+    "image_url": "/images/menu/brunch/California Omelette.png"
+  },
+  {
+    "name": "Ultimate French Toast Sandwich*",
+    "description": "Fluffy frosted French toast sandwich stuffed with cheesy eggs, bacon or chicken sausage, drizzled with a triple sec sugar glaze & topped with powder sugar",
+    "price": 19,
+    "category": "brunch",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-The-Ultimate-scaled.jpg",
+    "id": "5de5aa07-12cf-4976-a70d-69ddb357ac7d",
+    "image": "/images/menu/brunch/Ultimate French Toast Sandwich.jpg",
+    "type": "food",
+    "image_url": "/images/menu/brunch/Ultimate French Toast Sandwich.jpg"
+  },
+  {
+    "name": "Veggie Breakfast Bowl*",
+    "description": "Choose from spinach, mushroom, tomatoes, red peppers, green peppers & cheese scrambled in two eggs over your choice of grits or breakfast potatoes",
+    "price": 17,
+    "category": "brunch",
+    "badges": [
+      "Vegetarian"
+    ],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Breakfast-Bowl-1-scaled.jpg",
+    "id": "b6d7592b-7e6a-4530-893a-d684af89eeb0",
+    "image": "/images/menu/brunch/Veggie Breakfast Bowl.jpg",
+    "type": "food",
+    "image_url": "/images/menu/brunch/Veggie Breakfast Bowl.jpg"
+  },
+  {
+    "name": "Lamb Chops & Eggs*",
+    "description": "Three Lamb Chops with signature lamb sauce, paired with eggs cooked to your preference and choice of potatoes or grits. Served with a fluffy biscuit",
+    "price": 31.0,
+    "category": "brunch",
+    "badges": [
+      "Chef's Special"
+    ],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/IMG_1574.jpg",
+    "id": "b8ffb940-9be2-41f4-b7ae-d14e28811dd2",
+    "image": "/images/menu/brunch/Lamb Chops & Eggs.jpg",
+    "type": "food",
+    "image_url": "/images/menu/brunch/Lamb Chops & Eggs.jpg"
+  },
+  {
+    "name": "Catfish & Grits (Brunch)*",
+    "description": "Fried Catfish & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce. *No sides included",
+    "price": 21,
+    "category": "brunch",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/7-1.png",
+    "id": "ca201481-d4b6-4a1b-bd40-cb548133dc92",
+    "image": "/images/menu/brunch/Catfish & Grits (Brunch).png",
+    "type": "food",
+    "image_url": "/images/menu/brunch/Catfish & Grits (Brunch).png"
+  },
+  {
+    "name": "Shrimp & Grits (Brunch)*",
+    "description": "Grilled Shrimp & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce. *No sides included",
+    "price": 25,
+    "category": "brunch",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Shrimp-Grits-scaled.jpg",
+    "id": "81af97aa-14b1-47cc-9d87-040a3b908c17",
+    "image": "/images/menu/seafood-grits/Shrimp & Grits.jpg",
+    "type": "food",
+    "image_url": "/images/menu/seafood-grits/Shrimp & Grits.jpg"
+  },
+  {
+    "name": "Salmon & Grits (Brunch)*",
+    "description": "Grilled Salmon & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce. *No sides included",
+    "price": 27.0,
+    "category": "brunch",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Salmon-Grits-scaled.jpg",
+    "id": "02301e9f-3060-4966-b500-60fa5cb107ee",
+    "image": "/images/menu/seafood-grits/Salmon & Grits.jpg",
+    "type": "food",
+    "image_url": "/images/menu/seafood-grits/Salmon & Grits.jpg"
+  },
+  {
+    "name": "Lobster & Grits (Brunch)*",
+    "description": "Grilled Lobster & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce. *No sides included",
+    "price": null,
+    "priceLabel": "MKT",
+    "category": "brunch",
+    "badges": [],
+    "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/100_0223-scaled-e1696349523450.jpg",
+    "id": "ccc0c59d-ed79-4e10-84f1-ed60c66222c7",
+    "image": "/images/menu/seafood-grits/Lobster & Grits.png",
+    "type": "food",
+    "image_url": "/images/menu/seafood-grits/Lobster & Grits.png"
+  },
+  {
+    "name": "2 Eggs*",
+    "description": "Two eggs cooked any style",
+    "price": 6,
+    "category": "brunch-sides",
+    "badges": [],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "01f2fb9e-ad72-4cae-9d12-8064e9d8c314",
+    "image": "/images/menu/brunch-sides/2 Eggs.png",
+    "type": "food",
+    "image_url": "/images/menu/brunch-sides/2 Eggs.png"
+  },
+  {
+    "name": "Bacon*",
+    "description": "Crispy bacon strips",
+    "price": 6,
+    "category": "brunch-sides",
+    "badges": [],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "88f6ad3b-dedd-4d30-84cb-8a86e6fc6081",
+    "image": "/images/menu/brunch-sides/Bacon.png",
+    "type": "food",
+    "image_url": "/images/menu/brunch-sides/Bacon.png"
+  },
+  {
+    "name": "Biscuit",
+    "description": "Freshly baked biscuit",
+    "price": 4,
+    "category": "brunch-sides",
+    "badges": [],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "764433bb-c826-4728-a703-d2996b56036b",
+    "image": "/images/menu/brunch-sides/Biscuit.png",
+    "type": "food",
+    "image_url": "/images/menu/brunch-sides/Biscuit.png"
+  },
+  {
+    "name": "Pancakes*",
+    "description": "Fluffy pancakes",
+    "price": 8,
+    "category": "brunch-sides",
+    "badges": [],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "e78aa44c-16a1-4648-b05d-e48678efa94a",
+    "image": "/images/menu/brunch-sides/Pancakes.png",
+    "type": "food",
+    "image_url": "/images/menu/brunch-sides/Pancakes.png"
+  },
+  {
+    "name": "Breakfast Potatoes",
+    "description": "Seasoned breakfast potatoes",
+    "price": 6,
+    "category": "brunch-sides",
+    "badges": [],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "eca9cb1f-711d-4d5f-9c61-483579bc4928",
+    "image": "/images/menu/brunch-sides/Breakfast Potatoes.png",
+    "type": "food",
+    "image_url": "/images/menu/brunch-sides/Breakfast Potatoes.png"
+  },
+  {
+    "name": "Waffle*",
+    "description": "Golden buttermilk waffle",
+    "price": 8,
+    "category": "brunch-sides",
+    "badges": [],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "6114ca84-fb64-4874-99a9-e7dbb9488551",
+    "image": "/images/menu/brunch-sides/Waffle.png",
+    "type": "food",
+    "image_url": "/images/menu/brunch-sides/Waffle.png"
+  },
+  {
+    "name": "French Toast Only*",
+    "description": "Classic French toast with triple sec glaze",
+    "price": 12,
+    "category": "brunch-sides",
+    "badges": [],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "199113e6-b10f-4aeb-8faf-ddbbc2c91fee",
+    "image": "/images/menu/brunch/French Toast.jpg",
+    "type": "food",
+    "image_url": "/images/menu/brunch/French Toast.jpg"
+  },
+  {
+    "name": "Cheese Grits (Brunch)*",
+    "description": "Creamy cheese grits",
+    "price": 6,
+    "category": "brunch-sides",
+    "badges": [],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "1d1ab141-2154-4699-b58c-99eb4a2aa51a",
+    "image": "/images/menu/brunch-sides/Cheese Grits (Brunch).png",
+    "type": "food",
+    "image_url": "/images/menu/brunch-sides/Cheese Grits (Brunch).png"
+  },
+  {
+    "name": "Chicken Sausage*",
+    "description": "Savory chicken sausage links",
+    "price": 6,
+    "category": "brunch-sides",
+    "badges": [],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "719f133c-f018-4520-bb8b-84ffce61f450",
+    "image": "/images/menu/brunch-sides/Chicken Sausage.png",
+    "type": "food",
+    "image_url": "/images/menu/brunch-sides/Chicken Sausage.png"
+  },
+  {
+    "name": "3 Whole Wings*",
+    "description": "Three crispy fried wings",
+    "price": 13,
+    "category": "brunch-sides",
+    "badges": [],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "4f1c8a46-3967-4556-a7d2-0d336afc4c2f",
+    "image": "/images/menu/brunch-sides/3 Whole Wings.jpg",
+    "type": "food",
+    "image_url": "/images/menu/brunch-sides/3 Whole Wings.jpg"
+  },
+  {
+    "name": "Shrimp (Brunch Side)*",
+    "description": "Grilled shrimp",
+    "price": 15,
+    "category": "brunch-sides",
+    "badges": [],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "b51116ee-d7b5-449e-a87c-8549dd01069d",
+    "image": "/images/menu/brunch-sides/Shrimp (Brunch Side).jpg",
+    "type": "food",
+    "image_url": "/images/menu/brunch-sides/Shrimp (Brunch Side).jpg"
+  },
+  {
+    "name": "Lobster Tail (Brunch Side)*",
+    "description": "Grilled lobster tail",
+    "price": null,
+    "priceLabel": "MKT",
+    "category": "brunch-sides",
+    "badges": [],
+    "imageUrl": "",
+    "layout": "line",
+    "id": "72f98818-0fcd-4dd6-9bae-4760c7afd989",
+    "image": "/images/menu/brunch-sides/Lobster Tail (Brunch Side).jpg",
+    "type": "food",
+    "image_url": "/images/menu/brunch-sides/Lobster Tail (Brunch Side).jpg"
+  },
+  {
+    "name": "Margarita",
+    "description": "Tequila Blanco, fresh lime juice, agave nectar garnished with a lime wedge. Available with a sugar, salt or tajin rim.",
+    "price": 5.0,
+    "image": "",
+    "category": "daily-specials",
+    "badges": [],
+    "type": "drink",
+    "id": "47de76e9-377e-4548-8acd-8de128d43ba9"
+  },
+  {
+    "name": "Rum Punch",
+    "description": "White Rum, Pineapple Juice, Grenadine & a splash of Club Soda",
+    "price": 5.0,
+    "image": "",
+    "category": "daily-specials",
+    "badges": [],
+    "type": "drink",
+    "id": "74ef921f-62b4-48ec-81af-c48ea5e0961a"
+  },
+  {
+    "name": "Whiskey Sour",
+    "description": "Whiskey, lemon juice, and simple syrup served over ice with a cherry garnish",
+    "price": 5.0,
+    "image": "",
+    "category": "daily-specials",
+    "badges": [],
+    "type": "drink",
+    "id": "f5345f19-b481-4ce2-ba1c-9eafdd1f8c3d"
+  },
+  {
+    "name": "Long Island Iced Tea",
+    "description": "Vodka, rum, gin, tequila, triple sec, and sour mix over ice with a splash of cola",
+    "price": 5.0,
+    "image": "",
+    "category": "daily-specials",
+    "badges": [],
+    "type": "drink",
+    "id": "10cdf7f3-d997-4544-a0e8-f1579436f0f3"
+  },
+  {
+    "name": "White Wine",
+    "description": "Chardonnay, Moscato, Pinot Grigio",
+    "price": 5.0,
+    "image": "",
+    "category": "daily-specials",
+    "badges": [],
+    "type": "drink",
+    "id": "35a1228a-7c3d-4894-92bb-15a2e3da4f16"
+  },
+  {
+    "name": "Red Wine",
+    "description": "Cabernet, Merlot",
+    "price": 5.0,
+    "image": "",
+    "category": "daily-specials",
+    "badges": [],
+    "type": "drink",
+    "id": "882392a0-ffac-4748-8504-3c12f7125e7a"
+  },
+  {
+    "name": "Mimosa",
+    "description": "Champagne & Orange Juice Available in a Variety of Flavors. Peach, Strawberry, Pineapple, Cranberry or Mango",
+    "price": 10.0,
+    "image": "",
+    "category": "brunch-drinks",
+    "badges": [],
+    "type": "drink",
+    "id": "f3545699-eee5-4db0-bb75-3cec4d036059"
+  },
+  {
+    "name": "Bellini",
+    "description": "A Bellini is a Cocktail Made with Prosecco and Peach Pur\u00e9e.",
+    "price": 10.0,
+    "image": "",
+    "category": "brunch-drinks",
+    "badges": [],
+    "type": "drink",
+    "id": "1ce97785-1777-48f2-b32d-4bb2e99dad69"
+  },
+  {
+    "name": "Tequila Sunrise",
+    "description": "Coramino Blanco Tequila, Orange Juice, & a dash of Grenadine, in a glass with a Tajin' or salted rim.",
+    "price": 15.0,
+    "image": "",
+    "category": "brunch-drinks",
+    "badges": [],
+    "type": "drink",
+    "id": "a0121334-d725-41a0-8e35-3c6d3c9e0c48"
+  },
+  {
+    "name": "Vodka Sunrise",
+    "description": "Ciroc Vodka, Orange Juice, & a dash of Grenadine, in a glass with a Tajin' or salted rim.",
+    "price": 15.0,
+    "image": "",
+    "category": "brunch-drinks",
+    "badges": [],
+    "type": "drink",
+    "id": "147f71fd-6560-4ab9-90f8-bd9584fb1d8f"
+  },
+  {
+    "name": "French 75",
+    "description": "Tanqueray Gin, Champagne, Muddled Lemon & Simple Syrup.",
+    "price": 15.0,
+    "image": "",
+    "category": "brunch-drinks",
+    "badges": [],
+    "type": "drink",
+    "id": "ec5159d2-4948-46a8-82f0-0184ed1dad24"
+  },
+  {
+    "name": "Melrose Ave",
+    "description": "A fruity summer cocktail made with Peach Ciroc & pineapple.",
+    "price": 15.0,
+    "image": "",
+    "category": "brunch-drinks",
+    "badges": [],
+    "type": "drink",
+    "id": "c511883d-8424-4a5e-8968-5f8a51658810"
+  },
+  {
+    "name": "East LA",
+    "description": "A little sweet, a little tart and totally delicious! Made with Don Julio Blanco tequila, fresh lime & a red wine float.",
+    "price": 15.0,
+    "image": "",
+    "category": "brunch-drinks",
+    "badges": [],
+    "type": "drink",
+    "id": "cccd77ff-6353-43d7-b92a-1c2ba942d56a"
+  },
+  {
+    "name": "California Dreaming",
+    "description": "A colorful punch gives you island vibes. Made with coconut rum and tastes of pineapple, melon, and orange.",
+    "price": 15.0,
+    "image": "",
+    "category": "brunch-drinks",
+    "badges": [],
+    "type": "drink",
+    "id": "0fea524c-e2cc-40a9-af28-cce6484cb23f"
+  },
+  {
+    "name": "Pacific Coast Hwy",
+    "description": "A sophisticated Hennessy Margarita! The most popular cocktail here and a favorite of Atlanta\u2019s socialites!",
+    "price": 15.0,
+    "image": "",
+    "category": "brunch-drinks",
+    "badges": [],
+    "type": "drink",
+    "id": "034fdeb1-b475-4f1b-a064-3f6e4f0fe49a"
+  },
+  {
+    "name": "Strawberry Fields",
+    "description": "Strawberry puree, fresh lemon juice, and ginger ale. Garnished with a lime wheel.",
+    "price": 7.0,
+    "image": "",
+    "category": "mocktails",
+    "badges": [],
+    "type": "drink",
+    "id": "2dbcc8a2-5708-4194-8d84-e421dcc5c676"
+  },
+  {
+    "name": "Mango Tango",
+    "description": "Mango puree, orange juice, and a splash of Sprite for a tropical fizz.",
+    "price": 7.0,
+    "image": "",
+    "category": "mocktails",
+    "badges": [],
+    "type": "drink",
+    "id": "eb49562f-77bb-4a03-a0f6-28ffdcf41e41"
+  },
+  {
+    "name": "Peach Palmer",
+    "description": "Sweet tea and lemonade swirled with peach puree.",
+    "price": 7.0,
+    "image": "",
+    "category": "mocktails",
+    "badges": [],
+    "type": "drink",
+    "id": "08c723b2-597f-4614-b955-5998a0b0c76d"
+  },
+  {
+    "name": "Island Punch",
+    "description": "Pineapple juice, cranberry juice, and mango puree topped with a splash of tonic for a crisp finish.",
+    "price": 7.0,
+    "image": "",
+    "category": "mocktails",
+    "badges": [],
+    "type": "drink",
+    "id": "2dcc3b76-52b4-45eb-bcfd-d64c3f66525f"
+  },
+  {
+    "name": "Sparkling Peach Ginger",
+    "description": "Peach puree, fresh lemon juice, and ginger ale.",
+    "price": 7.0,
+    "image": "",
+    "category": "mocktails",
+    "badges": [],
+    "type": "drink",
+    "id": "ed15e874-4ff7-4811-b7c5-6ff3a366f3f7"
+  },
+  {
+    "name": "Cola",
+    "description": "",
+    "price": 3.0,
+    "image": "",
+    "category": "sodas-spritzers",
+    "badges": [],
+    "type": "drink",
+    "id": "324b9bb2-021f-49b8-803f-5f580b5e4af6"
+  },
+  {
+    "name": "Sprite",
+    "description": "",
+    "price": 3.0,
+    "image": "",
+    "category": "sodas-spritzers",
+    "badges": [],
+    "type": "drink",
+    "id": "e2054592-6601-4eff-b637-3fbd2914c9e9"
+  },
+  {
+    "name": "Ginger Ale",
+    "description": "",
+    "price": 3.0,
+    "image": "",
+    "category": "sodas-spritzers",
+    "badges": [],
+    "type": "drink",
+    "id": "735ab17b-b547-4db6-89f6-8652f0602fe8"
+  },
+  {
+    "name": "Tonic Water",
+    "description": "",
+    "price": 3.0,
+    "image": "",
+    "category": "sodas-spritzers",
+    "badges": [],
+    "type": "drink",
+    "id": "bb7cfe54-6b61-4e0c-be9a-9db33be87be9"
+  },
+  {
+    "name": "Southern Sweet Tea",
+    "description": "",
+    "price": 2.5,
+    "image": "",
+    "category": "teas-lemonades",
+    "badges": [],
+    "type": "drink",
+    "id": "9672b175-bae9-48d5-9a26-bf14c0f1785d"
+  },
+  {
+    "name": "Classic Lemonade",
+    "description": "",
+    "price": 2.5,
+    "image": "",
+    "category": "teas-lemonades",
+    "badges": [],
+    "type": "drink",
+    "id": "7216bb44-953d-4712-b005-d68dc084e019"
+  },
+  {
+    "name": "Strawberry Lemonade",
+    "description": "Add a burst of flavor to our classic lemonade with strawberry puree.",
+    "price": 4.0,
+    "image": "",
+    "category": "custom-lemonades",
+    "badges": [],
+    "type": "drink",
+    "id": "82081eaf-497b-4794-a381-e32380874b94"
+  },
+  {
+    "name": "Mango Lemonade",
+    "description": "Add a burst of flavor to our classic lemonade with mango puree.",
+    "price": 4.0,
+    "image": "",
+    "category": "custom-lemonades",
+    "badges": [],
+    "type": "drink",
+    "id": "ed8e50d3-7a82-466f-82b0-889a25b1adc6"
+  },
+  {
+    "name": "Peach Lemonade",
+    "description": "Add a burst of flavor to our classic lemonade with peach puree.",
+    "price": 4.0,
+    "image": "",
+    "category": "custom-lemonades",
+    "badges": [],
+    "type": "drink",
+    "id": "eaef0c3e-866c-474c-9b60-1c34ed972201"
+  },
+  {
+    "name": "Angry Orchard",
+    "description": "Hard cider",
+    "price": 5.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "825115ae-9f5a-4bce-8cd4-c2e4e09b114d"
+  },
+  {
+    "name": "Blue Moon",
+    "description": "Belgian-style wheat ale",
+    "price": 6.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "a1b6edcf-bdc1-429b-84fa-81a1ab62ebde"
+  },
+  {
+    "name": "Bud Light",
+    "description": "Light lager",
+    "price": 5.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "2c671065-3085-4acc-9ca5-7b521f4d033b"
+  },
+  {
+    "name": "Corona",
+    "description": "Mexican lager",
+    "price": 6.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "40389403-2d7c-41c5-b323-d6735a2ded1d"
+  },
+  {
+    "name": "Guinness",
+    "description": "Irish stout",
+    "price": 6.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "9f4853db-7cdc-4ebe-a3f4-749196283301"
+  },
+  {
+    "name": "Heineken",
+    "description": "Dutch lager",
+    "price": 6.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "52b8824f-16fe-49db-aee4-8a9aa4919078"
+  },
+  {
+    "name": "Mich Ultra",
+    "description": "Light lager",
+    "price": 5.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "42074d90-80f8-4226-abe0-3025b96c360e"
+  },
+  {
+    "name": "Modelo",
+    "description": "Mexican lager",
+    "price": 6.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "36c6fb4d-abbe-4d58-827b-38bf21930c1c"
+  },
+  {
+    "name": "Modelo Negro",
+    "description": "Munich dunkel-style lager",
+    "price": 6.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "c4ad276a-9a97-4910-aa8c-a1801ead2e31"
+  },
+  {
+    "name": "Stella",
+    "description": "Belgian pilsner",
+    "price": 6.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "77386f9b-a3df-4044-aadd-da5b54f2dd6e"
+  },
+  {
+    "name": "Yuengling",
+    "description": "Traditional lager",
+    "price": 5.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "8d5c7c20-0fd9-408f-89c4-7831e82e524d"
+  },
+  {
+    "name": "Belaire Bleu",
+    "description": "Bottle",
+    "price": 260.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "58f565f7-0853-4f54-86ed-e029f44c5b0d"
+  },
+  {
+    "name": "Belaire Rose",
+    "description": "Bottle",
+    "price": 195.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "ca3a5b91-6b81-4972-9031-1355e3758329"
+  },
+  {
+    "name": "House Champagne",
+    "description": "Bottle",
+    "price": 65.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "7541eff5-9f9e-4e38-ab74-c93df141c609"
+  },
+  {
+    "name": "Moet Rose",
+    "description": "Bottle",
+    "price": 325.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "c286ebf0-9d17-42eb-9498-c2c182348b70"
+  },
+  {
+    "name": "Red Bull (Flavored)",
+    "description": "Energy drink",
+    "price": 6.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "cc05e7a5-c257-4c98-b798-78494c0ad412"
+  },
+  {
+    "name": "Red Bull (Regular/Sugar-Free)",
+    "description": "Energy drink",
+    "price": 5.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "57c49fa6-c3eb-42df-ba73-a56cf1f40d42"
+  },
+  {
+    "name": "Cranberry Juice",
+    "description": "",
+    "price": 3.0,
+    "image": "",
+    "category": "chilled-juices",
+    "badges": [],
+    "type": null,
+    "id": "7f08b3b9-a17c-4690-90d0-471fca916412"
+  },
+  {
+    "name": "Orange Juice",
+    "description": "",
+    "price": 3.0,
+    "image": "",
+    "category": "chilled-juices",
+    "badges": [],
+    "type": null,
+    "id": "11d3bab6-53e6-4df7-ad59-3cc1657b9916"
+  },
+  {
+    "name": "Pineapple Juice",
+    "description": "",
+    "price": 3.0,
+    "image": "",
+    "category": "chilled-juices",
+    "badges": [],
+    "type": null,
+    "id": "2e5ae3cd-8faf-4733-a2d1-d960f7685928"
+  },
+  {
+    "name": "Amaretto",
+    "description": "Glass",
+    "price": 10.4,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "3041af03-266b-4895-97c2-f22b8759a8f7"
+  },
+  {
+    "name": "Grand Marnier",
+    "description": "Glass",
+    "price": 12.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "01204930-9270-4576-a843-64b68f640e90"
+  },
+  {
+    "name": "Jager",
+    "description": "Glass $11.70 / Bottle $195",
+    "price": 11.7,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "b1a2fb29-8177-4a93-ac94-fa7c62f8e30f"
+  },
+  {
+    "name": "Bottled Water",
+    "description": "",
+    "price": 4.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "146adc56-c426-4224-851c-6e40dad04268"
+  },
+  {
+    "name": "Bonanza Cabernet",
+    "description": "Glass $13 / Bottle $46.80",
+    "price": 13.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "09391540-a408-4119-b1be-c9732e0266c9"
+  },
+  {
+    "name": "Cardinale Sweet",
+    "description": "Glass $11.70 / Bottle $44.20",
+    "price": 11.7,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "e3364901-44e2-4e59-8041-0e860324d9fb"
+  },
+  {
+    "name": "J Lohr Merlot",
+    "description": "Glass $13 / Bottle $46.80",
+    "price": 13.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "a4917bc9-ce00-46f5-ba6e-6cda3c14b8a6"
+  },
+  {
+    "name": "Meiomi Pinot Noir",
+    "description": "Glass $15.60 / Bottle $52",
+    "price": 15.6,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "3e37a74f-35ad-4c68-980d-320110f5690f"
+  },
+  {
+    "name": "SG Cabernet",
+    "description": "Glass $9.10 / Bottle $33.80",
+    "price": 9.1,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "9dc27dae-248b-4e1a-b473-3e532f5695e7"
+  },
+  {
+    "name": "SG Merlot",
+    "description": "Glass $9.10 / Bottle $33.80",
+    "price": 9.1,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "772d73ae-932d-4f77-b6e0-d4935854f669"
+  },
+  {
+    "name": "Stella Rosa Black",
+    "description": "Glass $11.70 / Bottle $44.20",
+    "price": 11.7,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "c25ff0a2-8619-4a27-925f-01116749ee75"
+  },
+  {
+    "name": "Trapiche Malbec",
+    "description": "Glass $11.70 / Bottle $44.20",
+    "price": 11.7,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "83e2b650-eb9c-4108-9242-cc8b0378a478"
+  },
+  {
+    "name": "Justin Sauvignon Blanc",
+    "description": "Glass $13 / Bottle $46.80",
+    "price": 13.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "f5fab5ae-08f8-457c-9b0c-9bb66220fc78"
+  },
+  {
+    "name": "La Marca Prosecco",
+    "description": "Glass $10 / Bottle $36",
+    "price": 10.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "e8dc21d4-0dc7-4962-95d8-9cec0846d741"
+  },
+  {
+    "name": "Landmark Chardonnay",
+    "description": "Glass $13 / Bottle $46.80",
+    "price": 13.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "b84436b6-04c5-415a-a840-62c580af4cb2"
+  },
+  {
+    "name": "Lost Angel Moscato",
+    "description": "Bottle",
+    "price": 39.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "93fde7c9-7992-41f5-836c-4193edd93277"
+  },
+  {
+    "name": "Rosso Pinot Grigio",
+    "description": "Bottle",
+    "price": 39.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "322486fa-477c-4e4e-b835-951ba7015979"
+  },
+  {
+    "name": "SG Chardonnay",
+    "description": "Glass $9.10 / Bottle $33.80",
+    "price": 9.1,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "0106a982-ed47-4dce-8569-c59fbe815f44"
+  },
+  {
+    "name": "SG Moscato",
+    "description": "Glass $9.10 / Bottle $33.80",
+    "price": 9.1,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "68a2fa3b-4b69-4b72-b0d5-0721a0d8fc1d"
+  },
+  {
+    "name": "SG Pinot Grigio",
+    "description": "Glass $9.10 / Bottle $33.80",
+    "price": 9.1,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "cda9fac1-0c28-4cbb-9bbe-e499b3c075fe"
+  },
+  {
+    "name": "Washington Hills Riesling",
+    "description": "Price varies",
+    "price": 0.0,
+    "image": "",
+    "category": "beer-wine",
+    "badges": [],
+    "type": null,
+    "id": "47375c85-c7ee-4ee0-a1c4-a63395b1051f"
+  },
+  {
+    "name": "Mighty Freeze",
+    "description": "Tropical blend of pineapple, guava, strawberry & lime with an icy finish",
+    "price": 30.0,
+    "image": "/images/menu/hookah/Mighty Freeze.png",
+    "category": "hookah",
+    "badges": [
+      "Happy Hour $20 Mon-Fri 12pm-8pm"
+    ],
+    "type": null,
+    "id": "6a0fa34a-15d3-4328-a51a-1b731ed42f62",
+    "image_url": "/images/menu/hookah/Mighty Freeze.png"
+  },
+  {
+    "name": "Muholland Dr",
+    "description": "Citrus paradise with orange, mango, grapefruit & fresh mint",
+    "price": 30.0,
+    "image": "/images/menu/hookah/Muholland Dr.png",
+    "category": "hookah",
+    "badges": [
+      "Happy Hour $20 Mon-Fri 12pm-8pm"
+    ],
+    "type": null,
+    "id": "49cf7486-da30-4976-b4ec-89cc67811a58",
+    "image_url": "/images/menu/hookah/Muholland Dr.png"
+  },
+  {
+    "name": "Big Boy",
+    "description": "Fruity explosion with mango, peach, grapes, cherry & tropical fruits",
+    "price": 30.0,
+    "image": "/images/menu/hookah/Big Boy.png",
+    "category": "hookah",
+    "badges": [
+      "Happy Hour $20 Mon-Fri 12pm-8pm"
+    ],
+    "type": null,
+    "id": "288886c0-260f-4077-984d-5a135a316ca4",
+    "image_url": "/images/menu/hookah/Big Boy.png"
+  },
+  {
+    "name": "Crenshaw",
+    "description": "Sweet mix of mango, grapes, orange, cherry & mixed berries",
+    "price": 30.0,
+    "image": "/images/menu/hookah/Crenshaw.png",
+    "category": "hookah",
+    "badges": [
+      "Happy Hour $20 Mon-Fri 12pm-8pm"
+    ],
+    "type": null,
+    "id": "dc676726-1f1f-4db3-afc8-483ee5aaea1b",
+    "image_url": "/images/menu/hookah/Crenshaw.png"
+  },
+  {
+    "name": "East L.A.",
+    "description": "Blueberry guava lemon with pineapple undertones",
+    "price": 30.0,
+    "image": "/images/menu/hookah/East L.A..png",
+    "category": "hookah",
+    "badges": [
+      "Happy Hour $20 Mon-Fri 12pm-8pm"
+    ],
+    "type": null,
+    "id": "6d04617b-e9fa-493f-9cfc-caac06a8b206",
+    "image_url": "/images/menu/hookah/East L.A..png"
+  },
+  {
+    "name": "405",
+    "description": "Mango, peach & lemon tropical blend - PREMIUM",
+    "price": 35.0,
+    "image": "/images/menu/hookah-premium/405.png",
+    "category": "hookah-premium",
+    "badges": [
+      "PREMIUM +$5",
+      "Happy Hour $25 Mon-Fri 12pm-8pm"
+    ],
+    "type": null,
+    "id": "56aab64e-0d68-4bf3-b69c-a227a243f5cd",
+    "image_url": "/images/menu/hookah-premium/405.png"
+  },
+  {
+    "name": "LAX",
+    "description": "Watermelon, orange, mango & mint refresh - PREMIUM",
+    "price": 35.0,
+    "image": "/images/menu/hookah-premium/LAX.png",
+    "category": "hookah-premium",
+    "badges": [
+      "PREMIUM +$5",
+      "Happy Hour $25 Mon-Fri 12pm-8pm"
+    ],
+    "type": null,
+    "id": "f8ba65fe-ec3b-4827-a49f-ad1a5b5c8b64",
+    "image_url": "/images/menu/hookah-premium/LAX.png"
+  },
+  {
+    "name": "Pacific Coast Highway",
+    "description": "Pineapple, orange & lemon citrus cruise - PREMIUM",
+    "price": 35.0,
+    "image": "/images/menu/hookah-premium/Pacific Coast Highway.png",
+    "category": "hookah-premium",
+    "badges": [
+      "PREMIUM +$5",
+      "Happy Hour $25 Mon-Fri 12pm-8pm"
+    ],
+    "type": null,
+    "id": "eacdbbf1-d0f8-4b77-a4c6-bc6564e2341c",
+    "image_url": "/images/menu/hookah-premium/Pacific Coast Highway.png"
+  },
+  {
+    "name": "Melrose",
+    "description": "Watermelon, peach & pineapple summer vibes - PREMIUM",
+    "price": 35.0,
+    "image": "/images/menu/hookah-premium/Melrose.png",
+    "category": "hookah-premium",
+    "badges": [
+      "PREMIUM +$5",
+      "Happy Hour $25 Mon-Fri 12pm-8pm"
+    ],
+    "type": null,
+    "id": "e9d66e77-daf5-4818-8eb4-6752cae7c66a",
+    "image_url": "/images/menu/hookah-premium/Melrose.png"
+  },
+  {
+    "name": "Beverly Hills",
+    "description": "Strawberry, guava, lime & pineapple luxury - PREMIUM",
+    "price": 35.0,
+    "image": "/images/menu/hookah-premium/Beverly Hills.png",
+    "category": "hookah-premium",
+    "badges": [
+      "PREMIUM +$5",
+      "Happy Hour $25 Mon-Fri 12pm-8pm"
+    ],
+    "type": null,
+    "id": "c3b1e79f-ff4a-4337-9015-3bd6b866c4f1",
+    "image_url": "/images/menu/hookah-premium/Beverly Hills.png"
+  },
+  {
+    "name": "Sunset Blvd",
+    "description": "Skittles candy, lemon & pineapple party mix",
+    "price": 35.0,
+    "image": "/images/menu/hookah-premium/Sunset Blvd.png",
+    "category": "hookah-premium",
+    "badges": [
+      "PREMIUM +$5",
+      "Happy Hour $25 Mon-Fri 12pm-8pm"
+    ],
+    "type": null,
+    "id": "2b724c0f-f8fe-459b-b6d2-bcb7724d58f2",
+    "image_url": "/images/menu/hookah-premium/Sunset Blvd.png"
+  },
+  {
+    "name": "Cali Dreamin",
+    "description": "Kiwi, blueberry & pineapple tropical dream",
+    "price": 35.0,
+    "image": "/images/menu/hookah-premium/Cali Dreamin.png",
+    "category": "hookah-premium",
+    "badges": [
+      "PREMIUM +$5",
+      "Happy Hour $25 Mon-Fri 12pm-8pm"
+    ],
+    "type": null,
+    "id": "8ff64045-ae99-4daa-a070-ecd1061e4304",
+    "image_url": "/images/menu/hookah-premium/Cali Dreamin.png"
+  },
+  {
+    "id": "bd1",
+    "name": "Mimosa",
+    "description": "A bright and refreshing brunch staple. Chilled champagne topped with choice of premium fruit juice. Available in Mango, Peach, Pineapple, Strawberry, Cranberry, or traditional Orange. Garnished with a fresh fruit slice. Served in a Stemless Glass.",
+    "price": 10,
+    "category": "brunch",
+    "badges": [],
+    "layout": "line",
+    "is_active": true
+  },
+  {
+    "id": "bd2",
+    "name": "Bellini",
+    "description": "The quintessential brunch classic. A soft, opaque blend of sweet peach pur\u00e9e and chilled sparkling Prosecco, garnished with a fresh orange slice and a cherry. Served in a Stemless Glass.",
+    "price": 10,
+    "category": "brunch",
+    "badges": [],
+    "layout": "line",
+    "is_active": true
+  },
+  {
+    "id": "bd3",
+    "name": "French 75",
+    "description": "An elegant and effervescent classic. Premium Gin and fresh-squeezed lemon juice shaken with simple syrup, topped with chilled champagne for a crisp finish. Served in a Stemless Glass.",
+    "price": 15,
+    "category": "brunch",
+    "badges": [],
+    "layout": "line",
+    "is_active": true
+  },
+  {
+    "id": "bd4",
+    "name": "Sunrise",
+    "description": "A stunning visual gradient of red to orange. Casamigos Blanco Tequila, Triple Sec, and premium orange juice, finished with a slow pour of grenadine. Garnished with an orange slice and a cherry. Served in a Tall Glass.",
+    "price": 15,
+    "category": "brunch",
+    "badges": [],
+    "layout": "line",
+    "is_active": true
+  },
+  {
+    "id": "bd5",
+    "name": "Sunset",
+    "description": "A sophisticated twist on the sunrise. Casamigos Blanco Tequila, Triple Sec, and orange juice topped with Grand Marnier for a deeper, more atmospheric hue. Garnished with an orange slice and a cherry. Served in a Tall Glass.",
+    "price": 17,
+    "category": "brunch",
+    "badges": [
+      "Premium"
+    ],
+    "layout": "line",
+    "is_active": true
+  },
+  {
+    "id": "c1",
+    "name": "California Dreaming",
+    "description": "A tall, tropical escape featuring Malibu Rum, Captain Morgan, and melon liqueur, layered with a splash of Blue Curacao.",
+    "price": 15,
+    "category": "cocktails",
+    "badges": [
+      "Island Vibes"
+    ],
+    "layout": "card",
+    "is_active": true,
+    "image_url": "/images/cocktails/California Dreamin.jpg",
+    "image": "/images/cocktails/California Dreamin.jpg"
+  },
+  {
+    "id": "c2",
+    "name": "Marina Del Rey",
+    "description": "A breezy blend of Malibu Rum, pineapple and cranberry juices, and sweet peach puree.",
+    "price": 15,
+    "category": "cocktails",
+    "badges": [],
+    "layout": "card",
+    "is_active": true,
+    "image_url": "/images/cocktails/Marina Del Rey.jpg",
+    "image": "/images/cocktails/Marina Del Rey.jpg"
+  },
+  {
+    "id": "c3",
+    "name": "Melrose Ave",
+    "description": "A chic mix of Peach Ciroc and pineapple juice, topped with a splash of grenadine for a stunning sunset effect.",
+    "price": 15,
+    "category": "cocktails",
+    "badges": [],
+    "layout": "card",
+    "is_active": true,
+    "image_url": "/images/cocktails/Melrose Ave.jpg",
+    "image": "/images/cocktails/Melrose Ave.jpg"
+  },
+  {
+    "id": "c4",
+    "name": "Baldwin Hills",
+    "description": "Tropical and refreshing, this cocktail combines IslandJon Apple Guava with pineapple juice and a hint of strawberry puree.",
+    "price": 15,
+    "category": "cocktails",
+    "badges": [
+      "Exclusive"
+    ],
+    "layout": "card",
+    "is_active": true,
+    "image_url": "/images/cocktails/Bladwin Hills.png",
+    "image": "/images/cocktails/Bladwin Hills.png"
+  },
+  {
+    "id": "c5",
+    "name": "Sunset Blvd",
+    "description": "A vibrant blend of Hennessy and pineapple juice, sweetened with honey syrup and finished with a fresh lemon garnish.",
+    "price": 15,
+    "category": "cocktails",
+    "badges": [
+      "Best Seller"
+    ],
+    "layout": "card",
+    "is_active": true,
+    "image_url": "/images/cocktails/Sunset Blvd.jpg",
+    "image": "/images/cocktails/Sunset Blvd.jpg"
+  },
+  {
+    "id": "c6",
+    "name": "The 405",
+    "description": "A smooth, classic tribute featuring Uncle Nearest Whiskey balanced with fresh lemon juice and a touch of honey syrup.",
+    "price": 15,
+    "category": "cocktails",
+    "badges": [],
+    "layout": "card",
+    "is_active": true,
+    "image_url": "/images/cocktails/the 405.jpg",
+    "image": "/images/cocktails/the 405.jpg"
+  },
+  {
+    "id": "c7",
+    "name": "Pacific Coast Hwy",
+    "description": "A refreshing drive in a glass, combining Hennessy VS with triple sec, lime juice, and agave.",
+    "price": 17,
+    "category": "cocktails",
+    "badges": [
+      "Premium"
+    ],
+    "layout": "line",
+    "is_active": true
+  },
+  {
+    "id": "c8",
+    "name": "LAX Sidecar",
+    "description": "An elevated take on a favorite, featuring Remy VSOP and Grand Marnier shaken with muddled citrus and simple syrup.",
+    "price": 15,
+    "category": "cocktails",
+    "badges": [],
+    "layout": "card",
+    "is_active": true,
+    "image_url": "/images/cocktails/LAX Sidecar.png",
+    "image": "/images/cocktails/LAX Sidecar.png"
+  },
+  {
+    "id": "c9",
+    "name": "East LA",
+    "description": "A sophisticated martini-style drink with Grand Coramino Tequila, agave, and lime, finished with a dramatic red wine float.",
+    "price": 15,
+    "category": "cocktails",
+    "badges": [],
+    "layout": "card",
+    "is_active": true,
+    "image_url": "/images/cocktails/East LA.jpg",
+    "image": "/images/cocktails/East LA.jpg"
+  },
+  {
+    "id": "c10",
+    "name": "The Hollywood",
+    "description": "A star-studded martini featuring Grey Goose Le Citron and fresh lemon, served with a classic sugar rim.",
+    "price": 17,
+    "category": "cocktails",
+    "badges": [
+      "Premium"
+    ],
+    "layout": "card",
+    "is_active": true,
+    "image_url": "/images/cocktails/Hollywood.jpg",
+    "image": "/images/cocktails/Hollywood.jpg"
+  },
+  {
+    "id": "c11",
+    "name": "Fin-A-Rita",
+    "description": "The ultimate margarita, crafted with ultra-premium Patron Cristalino Anejo, Grand Marnier, lime, and agave.",
+    "price": 17,
+    "category": "cocktails",
+    "badges": [
+      "Premium"
+    ],
+    "layout": "card",
+    "is_active": true,
+    "image_url": "/images/cocktails/Fin-A-Rita.jpg",
+    "image": "/images/cocktails/Fin-A-Rita.jpg"
+  },
+  {
+    "id": "ds1",
+    "name": "4 Party Wings & Fries*",
+    "description": "Four wings in your choice of flavor: lemon pepper, BBQ, mild, hot, or honey hot. Served with fries",
+    "price": 5.0,
+    "category": "daily-specials",
+    "badges": [],
+    "type": "food",
+    "is_active": true,
+    "image": "/images/menu/daily-specials/4 Party Wings & Fries.jpg",
+    "image_url": "/images/menu/daily-specials/4 Party Wings & Fries.jpg",
+    "layout": "card"
+  },
+  {
+    "id": "ds2",
+    "name": "2 Chicken Tenders & Fries*",
+    "description": "Two crispy chicken tenders served with fries",
+    "price": 5.0,
+    "category": "daily-specials",
+    "badges": [],
+    "type": "food",
+    "is_active": true,
+    "image": "/images/menu/daily-specials/2 Chicken Tenders & Fries.jpg",
+    "image_url": "/images/menu/daily-specials/2 Chicken Tenders & Fries.jpg",
+    "layout": "card"
+  },
+  {
+    "id": "ds3",
+    "name": "Chicken Caesar Wrap*",
+    "description": "Grilled chicken, romaine lettuce, parmesan cheese, and Caesar dressing wrapped in a flour tortilla",
+    "price": 5.0,
+    "category": "daily-specials",
+    "badges": [],
+    "type": "food",
+    "is_active": true,
+    "image": "/images/menu/daily-specials/Chicken Caesar Wrap.jpg",
+    "image_url": "/images/menu/daily-specials/Chicken Caesar Wrap.jpg",
+    "layout": "card"
+  },
+  {
+    "id": "ds4",
+    "name": "Chicken Thigh Nuggets & Fries*",
+    "description": "Crispy chicken thigh nuggets served with fries",
+    "price": 5.0,
+    "category": "daily-specials",
+    "badges": [
+      "Tossed in Honey Hot !!"
+    ],
+    "type": "food",
+    "is_active": true,
+    "image": "/images/menu/daily-specials/Chicken Thigh Nuggets & Fries.jpg",
+    "image_url": "/images/menu/daily-specials/Chicken Thigh Nuggets & Fries.jpg",
+    "layout": "card"
+  },
+  {
+    "id": "ds5",
+    "name": "2 Tacos*",
+    "description": "Two tacos with your choice of chicken, fish, or veggie",
+    "price": 5,
+    "category": "daily-specials",
+    "badges": [],
+    "type": "food",
+    "is_active": true,
+    "image": "/images/menu/daily-specials/2 Tacos.jpg",
+    "image_url": "/images/menu/daily-specials/2 Tacos.jpg"
+  },
+  {
+    "id": "ds6",
+    "name": "Catfish Nuggets & Fries*",
+    "description": "Crispy catfish nuggets served with fries",
+    "price": 5,
+    "category": "daily-specials",
+    "badges": [],
+    "type": "food",
+    "is_active": true,
+    "image": "/images/menu/daily-specials/Catfish Nuggets & Fries.jpg",
+    "image_url": "/images/menu/daily-specials/Catfish Nuggets & Fries.jpg"
+  },
+  {
+    "name": "Arnold Palmer",
+    "description": "Classic half iced tea, half lemonade",
+    "price": 3.0,
+    "image": "",
+    "category": "teas-lemonades",
+    "badges": [],
+    "type": "drink",
+    "id": "642224ff-cf71-4c48-9f1c-ac9d8d009ed5"
+  },
+  {
+    "name": "Rodeo Drive",
+    "description": "Our top-tier margarita: Fin & Feathers Private Reserve Patron A\u00f1ejo, fresh lime, and agave. Topped with a Grand Marnier floater and a Tajin rim.",
+    "price": 20.0,
+    "image": "/images/cocktails/Rodeo Drive.jpg",
+    "category": "signature-cocktails",
+    "badges": [],
+    "type": "drink",
+    "id": "5766ff62-6bce-463a-b987-7425b84b446c",
+    "image_url": "/images/cocktails/Rodeo Drive.jpg",
+    "layout": "card"
+  },
+  {
+    "id": "0d032942-82e2-428d-a3cd-2033373afa9e",
+    "name": "Add Chicken*",
+    "description": "",
+    "price": 11,
+    "image": "",
+    "image_url": "",
+    "category": "salads",
+    "badges": [],
+    "type": "food",
+    "is_addon": true,
+    "sort_order": 2
+  },
+  {
+    "id": "62769d22-8728-40e5-a2d2-9251923cc433",
+    "name": "Add Shrimp*",
+    "description": "",
+    "price": 15,
+    "image": "",
+    "image_url": "",
+    "category": "salads",
+    "badges": [],
+    "type": "food",
+    "is_addon": true,
+    "sort_order": 3
+  },
+  {
+    "id": "b7522897-9dba-4ea4-a933-36dd4f323cf5",
+    "name": "Add Salmon*",
+    "description": "",
+    "price": 17,
+    "image": "",
+    "image_url": "",
+    "category": "salads",
+    "badges": [],
+    "type": "food",
+    "is_addon": true,
+    "sort_order": 4
+  },
+  {
+    "id": "5a66211d-80a5-4f87-8a85-ea31fcbad80c",
+    "name": "Add Steak*",
+    "description": "",
+    "price": 17,
+    "image": "",
+    "image_url": "",
+    "category": "salads",
+    "badges": [],
+    "type": "food",
+    "is_addon": true,
+    "sort_order": 5
+  },
+  {
+    "id": "85580650-ae0e-4b96-8b59-9c74808e87cb",
+    "name": "Add Lobster Tail*",
+    "description": "",
+    "price": 0,
+    "image": "",
+    "image_url": "",
+    "category": "salads",
+    "badges": [],
+    "type": "food",
+    "is_addon": true,
+    "sort_order": 6
+  },
+  {
+    "id": "204a9e72-abf7-43aa-bf3b-0888c951b41c",
+    "name": "Add Bacon*",
+    "description": "",
+    "price": 4,
+    "image": "",
+    "image_url": "",
+    "category": "salads",
+    "badges": [],
+    "type": "food",
+    "is_addon": true,
+    "sort_order": 1
+  },
+  {
+    "id": "a43eb2b7-ccc3-43a6-b4da-27d2a90d6abc",
+    "name": "Margarita",
+    "description": "Well tequila, agave, sour mix, and triple sec with a fresh lime garnish.",
+    "price": 10,
+    "category": "cocktails",
+    "image_url": null,
+    "is_active": true,
+    "display_order": 999,
+    "created_at": "2026-03-31T19:05:49.946019+00:00"
+  },
+  {
+    "id": "06778027-f9ab-46d1-a482-cc396c721d7c",
+    "name": "Rum Punch",
+    "description": "A tropical mix of well rum, pineapple, orange juice, and a splash of grenadine.",
+    "price": 10,
+    "category": "cocktails",
+    "image_url": null,
+    "is_active": true,
+    "display_order": 999,
+    "created_at": "2026-03-31T19:05:49.953674+00:00"
+  },
+  {
+    "id": "f917e1c5-7192-40e1-9cca-71389fac5ad0",
+    "name": "Whiskey Sour",
+    "description": "Smooth well whiskey balanced with tangy sour mix and a cherry garnish.",
+    "price": 10,
+    "category": "cocktails",
+    "image_url": null,
+    "is_active": true,
+    "display_order": 999,
+    "created_at": "2026-03-31T19:05:49.956879+00:00"
+  },
+  {
+    "id": "dd7567cc-2a1b-4ede-8291-f839088474f0",
+    "name": "Long Island",
+    "description": "A powerhouse blend of well gin, tequila, vodka, and rum, topped with sour mix and a splash of coke.",
+    "price": 10,
+    "category": "cocktails",
+    "image_url": null,
+    "is_active": true,
+    "display_order": 999,
+    "created_at": "2026-03-31T19:05:49.959562+00:00"
+  },
+  {
+    "id": "a719836a-3494-4a1d-bde4-7c41fbf46b66",
+    "name": "Wine Selection",
+    "description": "6oz select white wine (Chardonnay, Moscato, Pinot Grigio) or Red (Cabernet, Merlot).",
+    "price": 8,
+    "category": "beer-wine",
+    "image_url": null,
+    "is_active": true,
+    "display_order": 999,
+    "created_at": "2026-03-31T19:05:49.962156+00:00"
+  },
+  {
+    "id": "fd12ba45-91b9-4fbc-9d12-84024b30f171",
+    "name": "Ground Turkey Burger*",
+    "description": "A perfectly grilled, savory seasoned ground turkey patty on a toasted brioche bun, topped with crisp romaine lettuce, fresh sliced tomatoes, and zesty pickles, served with a generous side of seasoned fries",
+    "price": 15.0,
+    "category": "sandwiches",
+    "type": "food",
+    "image": "/images/menu/sandwiches/Ground Turkey Burger.jpg",
+    "image_url": "/images/menu/sandwiches/Ground Turkey Burger.jpg",
+    "is_active": true,
+    "created_at": "2026-04-15 01:35:32.189000"
+  },
+  {
+    "id": "ebb913f4-2f1c-4a7a-a9f7-d9e5d1c01253",
+    "name": "Add Fried Egg to Any Sandwich*",
+    "description": "Add a fried egg to any sandwich",
+    "price": 3.0,
+    "category": "sandwiches",
+    "type": "food",
+    "image": "",
+    "image_url": "",
+    "is_active": true,
+    "created_at": "2026-04-15T20:33:15.192094+00:00"
+  },
+  {
+    "id": "6ac834d6-7dde-4dcc-a2d7-f6256664a138",
+    "name": "Add Sauteed Mushrooms to Any Sandwich*",
+    "description": "Add sauteed mushrooms to any sandwich",
+    "price": 3.0,
+    "category": "sandwiches",
+    "type": "food",
+    "image": "",
+    "image_url": "",
+    "is_active": true,
+    "created_at": "2026-04-15T20:33:15.199627+00:00"
+  }
+]

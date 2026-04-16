@@ -67,64 +67,106 @@ async def ensure_default_admin_user():
     await db.admin_users.insert_one(new_admin)
 
 
-async def ensure_menu_items():
-    """Ensure required menu items exist in the database. Runs on startup to sync items across environments."""
-    required_items = [
-        {
-            "name": "Ground Turkey Burger*",
-            "description": "A perfectly grilled, savory seasoned ground turkey patty on a toasted brioche bun, topped with crisp romaine lettuce, fresh sliced tomatoes, and zesty pickles, served with a generous side of seasoned fries",
-            "price": 15.0,
-            "category": "sandwiches",
-            "type": "food",
-            "image": "/images/menu/sandwiches/Ground Turkey Burger.jpg",
-            "image_url": "/images/menu/sandwiches/Ground Turkey Burger.jpg",
-            "is_active": True,
-        },
-        {
-            "name": "Add Fried Egg to Any Sandwich*",
-            "description": "Add a fried egg to any sandwich",
-            "price": 3.0,
-            "category": "sandwiches",
-            "type": "food",
-            "image": "",
-            "image_url": "",
-            "is_active": True,
-        },
-        {
-            "name": "Add Sauteed Mushrooms to Any Sandwich*",
-            "description": "Add sauteed mushrooms to any sandwich",
-            "price": 3.0,
-            "category": "sandwiches",
-            "type": "food",
-            "image": "",
-            "image_url": "",
-            "is_active": True,
-        },
+async def _seed_locations():
+    """Seed locations from the locations router seed data."""
+    initial_locations = [
+        {"id": str(uuid.uuid4()), "slug": "edgewood-atlanta", "name": "Fin & Feathers - Edgewood (Atlanta)",
+         "address": "345 Edgewood Ave SE, Atlanta, GA 30312", "phone": "(404) 855-5524",
+         "coordinates": {"lat": 33.7547, "lng": -84.3733}, "latitude": 33.7547, "longitude": -84.3733,
+         "is_active": True, "display_order": 0, "created_at": datetime.now(timezone.utc)},
+        {"id": str(uuid.uuid4()), "slug": "midtown-atlanta", "name": "Fin & Feathers - Midtown (Atlanta)",
+         "address": "1136 Crescent Ave NE, Atlanta, GA 30309", "phone": "(404) 549-7555",
+         "coordinates": {"lat": 33.7812, "lng": -84.3838}, "latitude": 33.7812, "longitude": -84.3838,
+         "is_active": True, "display_order": 1, "created_at": datetime.now(timezone.utc)},
+        {"id": str(uuid.uuid4()), "slug": "douglasville", "name": "Fin & Feathers - Douglasville",
+         "address": "7430 Douglas Blvd, Douglasville, GA 30135", "phone": "(678) 653-9577",
+         "coordinates": {"lat": 33.7515, "lng": -84.7477}, "latitude": 33.7515, "longitude": -84.7477,
+         "is_active": True, "display_order": 2, "created_at": datetime.now(timezone.utc)},
+        {"id": str(uuid.uuid4()), "slug": "riverdale", "name": "Fin & Feathers - Riverdale",
+         "address": "6340 Hwy 85, Riverdale, GA 30274", "phone": "(770) 703-2282",
+         "coordinates": {"lat": 33.5726, "lng": -84.4132}, "latitude": 33.5726, "longitude": -84.4132,
+         "is_active": True, "display_order": 3, "created_at": datetime.now(timezone.utc)},
+        {"id": str(uuid.uuid4()), "slug": "valdosta", "name": "Fin & Feathers - Valdosta",
+         "address": "1700 Norman Dr, Valdosta, GA 31601", "phone": "(229) 474-4049",
+         "coordinates": {"lat": 30.8327, "lng": -83.2785}, "latitude": 30.8327, "longitude": -83.2785,
+         "is_active": True, "display_order": 4, "created_at": datetime.now(timezone.utc)},
+        {"id": str(uuid.uuid4()), "slug": "albany", "name": "Fin & Feathers - Albany",
+         "address": "2800 Old Dawson Rd Unit 5, Albany, GA 31707", "phone": "(229) 231-2101",
+         "coordinates": {"lat": 31.5785, "lng": -84.1558}, "latitude": 31.5785, "longitude": -84.1558,
+         "is_active": True, "display_order": 5, "created_at": datetime.now(timezone.utc)},
+        {"id": str(uuid.uuid4()), "slug": "stone-mountain", "name": "Fin & Feathers - Stone Mountain",
+         "address": "5370 Stone Mountain Hwy, Stone Mountain, GA 30087", "phone": "(470) 334-8255",
+         "coordinates": {"lat": 33.8081, "lng": -84.1458}, "latitude": 33.8081, "longitude": -84.1458,
+         "is_active": True, "display_order": 6, "created_at": datetime.now(timezone.utc)},
+        {"id": str(uuid.uuid4()), "slug": "las-vegas", "name": "Fin & Feathers - Las Vegas",
+         "address": "1229 S. Casino Center Blvd, Las Vegas, NV 89104", "phone": "(725) 204-9655",
+         "coordinates": {"lat": 36.1622, "lng": -115.1505}, "latitude": 36.1622, "longitude": -115.1505,
+         "is_active": True, "display_order": 7, "created_at": datetime.now(timezone.utc)},
     ]
+    await db.locations.insert_many(initial_locations)
+    logging.info(f"Location seed: inserted {len(initial_locations)} locations")
 
-    # Get all location slugs in the DB
-    all_locations = await db.locations.find({}, {"_id": 0, "slug": 1}).to_list(100)
-    slugs = [None] + [loc["slug"] for loc in all_locations if loc.get("slug")]
 
-    added = 0
-    for item_template in required_items:
+
+async def ensure_menu_items():
+    """Ensure menu items exist in the database. Seeds from seed_menu.json if DB is empty."""
+    import json as _json
+
+    # First ensure locations exist (menu seed depends on them)
+    loc_count = await db.locations.count_documents({})
+    if loc_count == 0:
+        await _seed_locations()
+
+    existing_count = await db.menu_items.count_documents({})
+    if existing_count > 5:
+        # DB already has menu items — just ensure specific new items exist
+        new_items = [
+            {"name": "Ground Turkey Burger*", "price": 15.0, "category": "sandwiches", "type": "food",
+             "description": "A perfectly grilled, savory seasoned ground turkey patty on a toasted brioche bun, topped with crisp romaine lettuce, fresh sliced tomatoes, and zesty pickles, served with a generous side of seasoned fries",
+             "image": "/images/menu/sandwiches/Ground Turkey Burger.jpg", "image_url": "/images/menu/sandwiches/Ground Turkey Burger.jpg", "is_active": True},
+            {"name": "Add Fried Egg to Any Sandwich*", "price": 3.0, "category": "sandwiches", "type": "food",
+             "description": "Add a fried egg to any sandwich", "image": "", "image_url": "", "is_active": True},
+            {"name": "Add Sauteed Mushrooms to Any Sandwich*", "price": 3.0, "category": "sandwiches", "type": "food",
+             "description": "Add sauteed mushrooms to any sandwich", "image": "", "image_url": "", "is_active": True},
+        ]
+        all_locs = await db.locations.find({}, {"_id": 0, "slug": 1}).to_list(100)
+        slugs = [None] + [l["slug"] for l in all_locs if l.get("slug")]
+        added = 0
+        for tmpl in new_items:
+            for slug in slugs:
+                if not await db.menu_items.find_one({"name": tmpl["name"], "location_slug": slug}):
+                    await db.menu_items.insert_one({**tmpl, "id": str(uuid.uuid4()), "location_slug": slug, "created_at": datetime.now(timezone.utc).isoformat()})
+                    added += 1
+        if added:
+            logging.info(f"Menu seed: added {added} new menu items")
+        return
+
+    # DB is empty or nearly empty — full seed from JSON
+    seed_path = ROOT_DIR / "seed_menu.json"
+    if not seed_path.exists():
+        logging.warning("seed_menu.json not found, skipping menu seed")
+        return
+
+    with open(seed_path, "r") as f:
+        seed_items = _json.load(f)
+
+    if not seed_items:
+        return
+
+    # Get all location slugs
+    all_locs = await db.locations.find({}, {"_id": 0, "slug": 1}).to_list(100)
+    slugs = [None] + [l["slug"] for l in all_locs if l.get("slug")]
+
+    docs = []
+    for item in seed_items:
         for slug in slugs:
-            exists = await db.menu_items.find_one({
-                "name": item_template["name"],
-                "location_slug": slug
-            })
-            if not exists:
-                doc = {
-                    **item_template,
-                    "id": str(uuid.uuid4()),
-                    "location_slug": slug,
-                    "created_at": datetime.now(timezone.utc).isoformat(),
-                }
-                await db.menu_items.insert_one(doc)
-                added += 1
+            doc = {**item, "id": str(uuid.uuid4()), "location_slug": slug}
+            doc.pop("_id", None)
+            docs.append(doc)
 
-    if added > 0:
-        logging.info(f"Menu seed: added {added} missing menu items across locations")
+    if docs:
+        await db.menu_items.insert_many(docs)
+        logging.info(f"Menu seed: inserted {len(docs)} items ({len(seed_items)} items x {len(slugs)} locations)")
 
 
 async def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):
