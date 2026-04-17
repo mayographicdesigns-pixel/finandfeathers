@@ -118,7 +118,7 @@ async def _seed_specific_items(slugs: list) -> int:
     """Ensure specific new menu items exist across all locations. Returns count added."""
     new_items = [
         {"name": "Ground Turkey Burger*", "price": 15.0, "category": "sandwiches", "type": "food",
-         "description": "A perfectly grilled, savory seasoned ground turkey patty on a toasted brioche bun, topped with crisp romaine lettuce, fresh sliced tomatoes, and zesty pickles, served with a generous side of seasoned fries",
+         "description": "A perfectly grilled, savory seasoned ground turkey patty on a toasted brioche bun, topped with crisp lettuce, fresh sliced tomatoes, and zesty pickles, served with a generous side of seasoned fries",
          "image": "/images/menu/sandwiches/Ground Turkey Burger.jpg", "image_url": "/images/menu/sandwiches/Ground Turkey Burger.jpg", "is_active": True},
         {"name": "Add Fried Egg to Any Sandwich*", "price": 3.0, "category": "sandwiches", "type": "food",
          "description": "Add a fried egg to any sandwich", "image": "", "image_url": "", "is_active": True},
