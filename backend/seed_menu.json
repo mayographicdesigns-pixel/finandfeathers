@@ -105,7 +105,7 @@
   },
   {
     "name": "Chicken Caesar Wrap (Starter)*",
-    "description": "Grilled chicken romaine lettuce, parmesan cheese, & Caesar dressing, wrapped in a flour tortilla",
+    "description": "Grilled chicken lettuce, parmesan cheese, & Caesar dressing, wrapped in a flour tortilla",
     "price": 15,
     "category": "starters",
     "badges": [],
@@ -345,7 +345,7 @@
   },
   {
     "name": "BBQ Chicken Sandwich*",
-    "description": "Grilled or deep-fried chicken breast topped with BBQ sauce & melted jack cheese with romaine lettuce, tomatoes and pickles",
+    "description": "Grilled or deep-fried chicken breast topped with BBQ sauce & melted jack cheese with lettuce, tomatoes and pickles",
     "price": 15,
     "category": "sandwiches",
     "badges": [],
@@ -357,7 +357,7 @@
   },
   {
     "name": "Catfish Filet Sandwich*",
-    "description": "Deep-fried catfish topped with option of parmesan sauce, tartar or r\u00e9moulade sauce & romaine lettuce, tomatoes and pickles. Add cheese +$1",
+    "description": "Deep-fried catfish topped with option of parmesan sauce, tartar or r\u00e9moulade sauce & lettuce, tomatoes and pickles. Add cheese +$1",
     "price": 16.0,
     "category": "sandwiches",
     "badges": [],
@@ -369,7 +369,7 @@
   },
   {
     "name": "Salmon Burger*",
-    "description": "Perfectly cooked 4oz salmon fillet, seasoned and garnished with your choice of parmesan, tartar, or r\u00e9moulade sauce. Served with romaine lettuce, tomatoes, and pickles. Add cheese +$1",
+    "description": "Perfectly cooked 4oz salmon fillet, seasoned and garnished with your choice of parmesan, tartar, or r\u00e9moulade sauce. Served with lettuce, tomatoes, and pickles. Add cheese +$1",
     "price": 18.0,
     "category": "sandwiches",
     "badges": [],
@@ -431,7 +431,7 @@
   },
   {
     "name": "Caesar Salad*",
-    "description": "A green salad of romaine lettuce and croutons dressed with Parmesan cheese, black pepper and Caesar salad dressing",
+    "description": "A green salad of lettuce and croutons dressed with Parmesan cheese, black pepper and Caesar salad dressing",
     "price": 14,
     "category": "salads",
     "badges": [],
@@ -1986,7 +1986,7 @@
   {
     "id": "ds3",
     "name": "Chicken Caesar Wrap*",
-    "description": "Grilled chicken, romaine lettuce, parmesan cheese, and Caesar dressing wrapped in a flour tortilla",
+    "description": "Grilled chicken, lettuce, parmesan cheese, and Caesar dressing wrapped in a flour tortilla",
     "price": 5.0,
     "category": "daily-specials",
     "badges": [],
