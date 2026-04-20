@@ -27,6 +27,18 @@ async def force_seed_menu(admin: str = Depends(get_current_admin)):
     return {"message": f"Seeded {count} menu items across {len(cats)} categories"}
 
 
+@router.post("/admin/menu/generate-pdf")
+async def generate_menu_pdf_endpoint(admin: str = Depends(get_current_admin)):
+    """Regenerate the printable menu PDF."""
+    import subprocess
+    result = subprocess.run(["python3", "generate_menu_pdf.py"], capture_output=True, text=True, cwd=ROOT_DIR)
+    if result.returncode != 0:
+        return {"error": result.stderr}
+    return {"message": "PDF generated", "url": "/menu/Fin-and-Feathers-Menu.pdf"}
+
+
+
+
 # ==================== PUBLIC MENU ====================
 
 @router.get("/menu/items")
