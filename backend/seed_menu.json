@@ -925,11 +925,12 @@
     "name": "Whiskey Sour",
     "description": "Whiskey, lemon juice, and simple syrup served over ice with a cherry garnish",
     "price": 5.0,
-    "image": "",
+    "image": "/images/menu/cocktails/Whiskey Sour.jpg",
     "category": "daily-specials",
     "badges": [],
     "type": "drink",
-    "id": "f5345f19-b481-4ce2-ba1c-9eafdd1f8c3d"
+    "id": "f5345f19-b481-4ce2-ba1c-9eafdd1f8c3d",
+    "image_url": "/images/menu/cocktails/Whiskey Sour.jpg"
   },
   {
     "name": "Long Island Iced Tea",
@@ -2167,10 +2168,11 @@
     "description": "Smooth well whiskey balanced with tangy sour mix and a cherry garnish.",
     "price": 10,
     "category": "cocktails",
-    "image_url": null,
+    "image_url": "/images/menu/cocktails/Whiskey Sour.jpg",
     "is_active": true,
     "display_order": 999,
-    "created_at": "2026-03-31T19:05:49.956879+00:00"
+    "created_at": "2026-03-31T19:05:49.956879+00:00",
+    "image": "/images/menu/cocktails/Whiskey Sour.jpg"
   },
   {
     "id": "dd7567cc-2a1b-4ede-8291-f839088474f0",
