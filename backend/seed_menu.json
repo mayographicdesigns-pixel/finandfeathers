@@ -1047,11 +1047,12 @@
     "name": "Pacific Coast Hwy",
     "description": "A sophisticated Hennessy Margarita! The most popular cocktail here and a favorite of Atlanta\u2019s socialites!",
     "price": 15.0,
-    "image": "",
+    "image": "/images/cocktails/Pacific Coast Hwy.jpg",
     "category": "brunch-drinks",
     "badges": [],
     "type": "drink",
-    "id": "034fdeb1-b475-4f1b-a064-3f6e4f0fe49a"
+    "id": "034fdeb1-b475-4f1b-a064-3f6e4f0fe49a",
+    "image_url": "/images/cocktails/Pacific Coast Hwy.jpg"
   },
   {
     "name": "Strawberry Fields",
@@ -1906,7 +1907,9 @@
       "Premium"
     ],
     "layout": "line",
-    "is_active": true
+    "is_active": true,
+    "image": "/images/cocktails/Pacific Coast Hwy.jpg",
+    "image_url": "/images/cocktails/Pacific Coast Hwy.jpg"
   },
   {
     "id": "c8",
@@ -1917,8 +1920,8 @@
     "badges": [],
     "layout": "card",
     "is_active": true,
-    "image_url": "/images/cocktails/LAX Sidecar.png",
-    "image": "/images/cocktails/LAX Sidecar.png"
+    "image_url": "/images/cocktails/LAX Sidecar.jpg",
+    "image": "/images/cocktails/LAX Sidecar.jpg"
   },
   {
     "id": "c9",
