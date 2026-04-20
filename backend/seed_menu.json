@@ -1014,11 +1014,12 @@
     "name": "Melrose Ave",
     "description": "A fruity summer cocktail made with Peach Ciroc & pineapple.",
     "price": 15.0,
-    "image": "",
+    "image": "/images/menu/cocktails/Melrose Ave.jpg",
     "category": "brunch-drinks",
     "badges": [],
     "type": "drink",
-    "id": "c511883d-8424-4a5e-8968-5f8a51658810"
+    "id": "c511883d-8424-4a5e-8968-5f8a51658810",
+    "image_url": "/images/menu/cocktails/Melrose Ave.jpg"
   },
   {
     "name": "East LA",
@@ -1850,8 +1851,8 @@
     "badges": [],
     "layout": "card",
     "is_active": true,
-    "image_url": "/images/cocktails/Melrose Ave.jpg",
-    "image": "/images/cocktails/Melrose Ave.jpg"
+    "image_url": "/images/menu/cocktails/Melrose Ave.jpg",
+    "image": "/images/menu/cocktails/Melrose Ave.jpg"
   },
   {
     "id": "c4",
@@ -1864,8 +1865,8 @@
     ],
     "layout": "card",
     "is_active": true,
-    "image_url": "/images/cocktails/Bladwin Hills.png",
-    "image": "/images/cocktails/Bladwin Hills.png"
+    "image_url": "/images/menu/cocktails/Baldwin Hills.jpg",
+    "image": "/images/menu/cocktails/Baldwin Hills.jpg"
   },
   {
     "id": "c5",
