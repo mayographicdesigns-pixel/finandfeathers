@@ -1035,7 +1035,7 @@
   },
   {
     "name": "California Dreaming",
-    "description": "A colorful punch gives you island vibes. Made with coconut rum and tastes of pineapple, melon, and orange.",
+    "description": "A tall, tropical escape featuring Malibu Rum, Captain Morgan, sour mix, and melon liqueur, layered with a splash of Blue Curacao.",
     "price": 15.0,
     "image": "",
     "category": "brunch-drinks",
@@ -1821,7 +1821,7 @@
   {
     "id": "c1",
     "name": "California Dreaming",
-    "description": "A tall, tropical escape featuring Malibu Rum, Captain Morgan, and melon liqueur, layered with a splash of Blue Curacao.",
+    "description": "A tall, tropical escape featuring Malibu Rum, Captain Morgan, sour mix, and melon liqueur, layered with a splash of Blue Curacao.",
     "price": 15,
     "category": "cocktails",
     "badges": [
