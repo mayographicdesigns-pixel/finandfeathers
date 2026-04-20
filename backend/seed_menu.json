@@ -904,11 +904,12 @@
     "name": "Margarita",
     "description": "Tequila Blanco, fresh lime juice, agave nectar garnished with a lime wedge. Available with a sugar, salt or tajin rim.",
     "price": 5.0,
-    "image": "",
+    "image": "/images/menu/cocktails/Margarita.jpg",
     "category": "daily-specials",
     "badges": [],
     "type": "drink",
-    "id": "47de76e9-377e-4548-8acd-8de128d43ba9"
+    "id": "47de76e9-377e-4548-8acd-8de128d43ba9",
+    "image_url": "/images/menu/cocktails/Margarita.jpg"
   },
   {
     "name": "Rum Punch",
@@ -1740,7 +1741,7 @@
     "name": "Sunset Blvd",
     "description": "Skittles candy, lemon & pineapple party mix",
     "price": 35.0,
-    "image": "/images/menu/hookah-premium/Sunset Blvd.png",
+    "image": "/images/menu/cocktails/Sunset Blvd.jpg",
     "category": "hookah-premium",
     "badges": [
       "PREMIUM +$5",
@@ -1748,7 +1749,7 @@
     ],
     "type": null,
     "id": "2b724c0f-f8fe-459b-b6d2-bcb7724d58f2",
-    "image_url": "/images/menu/hookah-premium/Sunset Blvd.png"
+    "image_url": "/images/menu/cocktails/Sunset Blvd.jpg"
   },
   {
     "name": "Cali Dreamin",
@@ -1879,8 +1880,8 @@
     ],
     "layout": "card",
     "is_active": true,
-    "image_url": "/images/cocktails/Sunset Blvd.jpg",
-    "image": "/images/cocktails/Sunset Blvd.jpg"
+    "image_url": "/images/menu/cocktails/Sunset Blvd.jpg",
+    "image": "/images/menu/cocktails/Sunset Blvd.jpg"
   },
   {
     "id": "c6",
@@ -2143,10 +2144,11 @@
     "description": "Well tequila, agave, sour mix, and triple sec with a fresh lime garnish.",
     "price": 10,
     "category": "cocktails",
-    "image_url": null,
+    "image_url": "/images/menu/cocktails/Margarita.jpg",
     "is_active": true,
     "display_order": 999,
-    "created_at": "2026-03-31T19:05:49.946019+00:00"
+    "created_at": "2026-03-31T19:05:49.946019+00:00",
+    "image": "/images/menu/cocktails/Margarita.jpg"
   },
   {
     "id": "06778027-f9ab-46d1-a482-cc396c721d7c",
@@ -2176,10 +2178,11 @@
     "description": "A powerhouse blend of well gin, tequila, vodka, and rum, topped with sour mix and a splash of coke.",
     "price": 10,
     "category": "cocktails",
-    "image_url": null,
+    "image_url": "/images/menu/cocktails/Long Island.jpg",
     "is_active": true,
     "display_order": 999,
-    "created_at": "2026-03-31T19:05:49.959562+00:00"
+    "created_at": "2026-03-31T19:05:49.959562+00:00",
+    "image": "/images/menu/cocktails/Long Island.jpg"
   },
   {
     "id": "a719836a-3494-4a1d-bde4-7c41fbf46b66",
