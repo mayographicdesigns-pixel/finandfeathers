@@ -904,12 +904,12 @@
     "name": "Margarita",
     "description": "Tequila Blanco, fresh lime juice, agave nectar garnished with a lime wedge. Available with a sugar, salt or tajin rim.",
     "price": 5.0,
-    "image": "/images/menu/cocktails/Margarita.jpg",
+    "image": "/images/cocktails/Margarita.jpg",
     "category": "daily-specials",
     "badges": [],
     "type": "drink",
     "id": "47de76e9-377e-4548-8acd-8de128d43ba9",
-    "image_url": "/images/menu/cocktails/Margarita.jpg"
+    "image_url": "/images/cocktails/Margarita.jpg"
   },
   {
     "name": "Rum Punch",
@@ -925,12 +925,12 @@
     "name": "Whiskey Sour",
     "description": "Whiskey, lemon juice, and simple syrup served over ice with a cherry garnish",
     "price": 5.0,
-    "image": "/images/menu/cocktails/Whiskey Sour.jpg",
+    "image": "/images/cocktails/Whiskey Sour.jpg",
     "category": "daily-specials",
     "badges": [],
     "type": "drink",
     "id": "f5345f19-b481-4ce2-ba1c-9eafdd1f8c3d",
-    "image_url": "/images/menu/cocktails/Whiskey Sour.jpg"
+    "image_url": "/images/cocktails/Whiskey Sour.jpg"
   },
   {
     "name": "Long Island Iced Tea",
@@ -1016,12 +1016,12 @@
     "name": "Melrose Ave",
     "description": "A fruity summer cocktail made with Peach Ciroc & pineapple.",
     "price": 15.0,
-    "image": "/images/menu/cocktails/Melrose Ave.jpg",
+    "image": "/images/cocktails/Melrose Ave.jpg",
     "category": "brunch-drinks",
     "badges": [],
     "type": "drink",
     "id": "c511883d-8424-4a5e-8968-5f8a51658810",
-    "image_url": "/images/menu/cocktails/Melrose Ave.jpg"
+    "image_url": "/images/cocktails/Melrose Ave.jpg"
   },
   {
     "name": "East LA",
@@ -1742,7 +1742,7 @@
     "name": "Sunset Blvd",
     "description": "Skittles candy, lemon & pineapple party mix",
     "price": 35.0,
-    "image": "/images/menu/cocktails/Sunset Blvd.jpg",
+    "image": "/images/cocktails/Sunset Blvd.jpg",
     "category": "hookah-premium",
     "badges": [
       "PREMIUM +$5",
@@ -1750,7 +1750,7 @@
     ],
     "type": null,
     "id": "2b724c0f-f8fe-459b-b6d2-bcb7724d58f2",
-    "image_url": "/images/menu/cocktails/Sunset Blvd.jpg"
+    "image_url": "/images/cocktails/Sunset Blvd.jpg"
   },
   {
     "name": "Cali Dreamin",
@@ -1853,8 +1853,8 @@
     "badges": [],
     "layout": "card",
     "is_active": true,
-    "image_url": "/images/menu/cocktails/Melrose Ave.jpg",
-    "image": "/images/menu/cocktails/Melrose Ave.jpg"
+    "image_url": "/images/cocktails/Melrose Ave.jpg",
+    "image": "/images/cocktails/Melrose Ave.jpg"
   },
   {
     "id": "c4",
@@ -1867,8 +1867,8 @@
     ],
     "layout": "card",
     "is_active": true,
-    "image_url": "/images/menu/cocktails/Baldwin Hills.jpg",
-    "image": "/images/menu/cocktails/Baldwin Hills.jpg"
+    "image_url": "/images/cocktails/Baldwin Hills.jpg",
+    "image": "/images/cocktails/Baldwin Hills.jpg"
   },
   {
     "id": "c5",
@@ -1881,8 +1881,8 @@
     ],
     "layout": "card",
     "is_active": true,
-    "image_url": "/images/menu/cocktails/Sunset Blvd.jpg",
-    "image": "/images/menu/cocktails/Sunset Blvd.jpg"
+    "image_url": "/images/cocktails/Sunset Blvd.jpg",
+    "image": "/images/cocktails/Sunset Blvd.jpg"
   },
   {
     "id": "c6",
@@ -2145,11 +2145,11 @@
     "description": "Well tequila, agave, sour mix, and triple sec with a fresh lime garnish.",
     "price": 10,
     "category": "cocktails",
-    "image_url": "/images/menu/cocktails/Margarita.jpg",
+    "image_url": "/images/cocktails/Margarita.jpg",
     "is_active": true,
     "display_order": 999,
     "created_at": "2026-03-31T19:05:49.946019+00:00",
-    "image": "/images/menu/cocktails/Margarita.jpg"
+    "image": "/images/cocktails/Margarita.jpg"
   },
   {
     "id": "06778027-f9ab-46d1-a482-cc396c721d7c",
@@ -2168,11 +2168,11 @@
     "description": "Smooth well whiskey balanced with tangy sour mix and a cherry garnish.",
     "price": 10,
     "category": "cocktails",
-    "image_url": "/images/menu/cocktails/Whiskey Sour.jpg",
+    "image_url": "/images/cocktails/Whiskey Sour.jpg",
     "is_active": true,
     "display_order": 999,
     "created_at": "2026-03-31T19:05:49.956879+00:00",
-    "image": "/images/menu/cocktails/Whiskey Sour.jpg"
+    "image": "/images/cocktails/Whiskey Sour.jpg"
   },
   {
     "id": "dd7567cc-2a1b-4ede-8291-f839088474f0",
@@ -2180,11 +2180,11 @@
     "description": "A powerhouse blend of well gin, tequila, vodka, and rum, topped with sour mix and a splash of coke.",
     "price": 10,
     "category": "cocktails",
-    "image_url": "/images/menu/cocktails/Long Island.jpg",
+    "image_url": "/images/cocktails/Long Island.jpg",
     "is_active": true,
     "display_order": 999,
     "created_at": "2026-03-31T19:05:49.959562+00:00",
-    "image": "/images/menu/cocktails/Long Island.jpg"
+    "image": "/images/cocktails/Long Island.jpg"
   },
   {
     "id": "a719836a-3494-4a1d-bde4-7c41fbf46b66",
