@@ -35,10 +35,11 @@ async def get_public_menu_items(location_slug: str = None):
     When location_slug is provided, returns location-specific items first,
     falling back to global items (no slug) for items not overridden per-location.
     """
+    active_filter = {"is_active": {"$ne": False}}
     if location_slug:
         # Get location-specific items
         loc_items = await db.menu_items.find(
-            {"location_slug": location_slug}, {"_id": 0}
+            {"location_slug": location_slug, **active_filter}, {"_id": 0}
         ).to_list(2000)
 
         if loc_items:
@@ -46,12 +47,12 @@ async def get_public_menu_items(location_slug: str = None):
 
         # No location-specific items — return global items
         global_items = await db.menu_items.find(
-            {"$or": [{"location_slug": None}, {"location_slug": {"$exists": False}}]},
+            {"$or": [{"location_slug": None}, {"location_slug": {"$exists": False}}], **active_filter},
             {"_id": 0}
         ).to_list(2000)
         return global_items
 
-    items = await db.menu_items.find({}, {"_id": 0}).to_list(2000)
+    items = await db.menu_items.find(active_filter, {"_id": 0}).to_list(2000)
     return items
 
 

@@ -2055,7 +2055,8 @@
     "type": "drink",
     "id": "5766ff62-6bce-463a-b987-7425b84b446c",
     "image_url": "/images/cocktails/Rodeo Drive.jpg",
-    "layout": "card"
+    "layout": "card",
+    "is_active": false
   },
   {
     "id": "0d032942-82e2-428d-a3cd-2033373afa9e",
