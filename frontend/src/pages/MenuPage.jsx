@@ -1253,6 +1253,7 @@ const MenuPage = () => {
                 <h2 className="text-3xl font-bold text-white">Cocktails & Drinks</h2>
               </div>
               
+              {renderBeerWineSections()}
               {renderSection('Signature Cocktails', [...(itemsByCategory['cocktails'] || []), ...(itemsByCategory['signature-cocktails'] || [])], 'compact', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'cocktails')}
               {renderSection('Brunch Drinks', itemsByCategory['brunch-drinks'], 'compact', 'grid-cols-1', false, 'brunch-drinks')}
               {renderSection('Handcrafted Mocktails ($7)', itemsByCategory['mocktails'], 'compact', 'grid-cols-1', false, 'mocktails')}
