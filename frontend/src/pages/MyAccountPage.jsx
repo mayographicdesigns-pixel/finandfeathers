@@ -634,8 +634,28 @@ const MyAccountPage = () => {
         setProfile(newProfile);
         setEditedProfile(newProfile);
         loadAdditionalData(newProfile.id, newProfile.role);
-        // After signup/login, prompt check-in
-        navigate('/checkin');
+        // Auto check-in at saved location and go to social wall
+        const savedLocation = localStorage.getItem('ff_user_location');
+        localStorage.setItem('ff_user_name', newProfile.name || '');
+        localStorage.setItem('ff_user_avatar', newProfile.avatar_emoji || '');
+        // Clear guest session since they now have a real profile
+        localStorage.removeItem('ff_guest_id');
+        localStorage.removeItem('ff_guest_name');
+        if (savedLocation) {
+          fetch(`${window.location.origin}/api/checkin`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              location_slug: savedLocation,
+              display_name: newProfile.name,
+              avatar_emoji: newProfile.avatar_emoji || '',
+              user_profile_id: newProfile.id
+            })
+          }).catch(() => {});
+          navigate(`/social/${savedLocation}`);
+        } else {
+          navigate('/checkin');
+        }
       }}
       authError={authError}
     />;
