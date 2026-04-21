@@ -167,6 +167,47 @@ async def _seed_full_menu(slugs: list):
         logging.info(f"Menu seed: inserted {len(docs)} items ({len(seed_items)} items x {len(slugs)} locations)")
 
 
+async def _sync_wine_list(slugs: list):
+    """Ensure wine list matches Silver Gate lineup. Removes old wines, adds missing new ones."""
+    old_wines = [
+        'Bonanza Cabernet', 'Cardinale Sweet', 'J Lohr Merlot', 'Meiomi Pinot Noir',
+        'SG Cabernet', 'SG Merlot', 'Stella Rosa Black', 'Trapiche Malbec',
+        'Justin Sauvignon Blanc', 'Landmark Chardonnay', 'Lost Angel Moscato',
+        'Rosso Pinot Grigio', 'SG Chardonnay', 'SG Moscato', 'SG Pinot Grigio',
+        'Washington Hills Riesling', 'Wine Selection', 'Silver Gate Rosé'
+    ]
+    deleted = await db.menu_items.delete_many({'name': {'$in': old_wines}})
+    if deleted.deleted_count:
+        logging.info(f"Wine sync: removed {deleted.deleted_count} old wine items")
+
+    new_wines = [
+        {'name': 'Silver Gate Cabernet Sauvignon', 'subcategory': 'Red Wine', 'description': 'Bold and expressive California red with intense aromas of dark fruit and oak', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
+        {'name': 'Silver Gate Pinot Noir', 'subcategory': 'Red Wine', 'description': 'Elegant and refined California red with inviting aromas of cherry and earth', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
+        {'name': 'Silver Gate Merlot', 'subcategory': 'Red Wine', 'description': 'Smooth and approachable California red with aromas of blackberry, plum, and spice', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
+        {'name': 'Silver Gate Chardonnay', 'subcategory': 'White Wine', 'description': 'Classic California white capturing warmth and freshness of the vineyards', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
+        {'name': 'Silver Gate Sauvignon Blanc', 'subcategory': 'White Wine', 'description': 'Fresh and vibrant California Sauvignon Blanc with crisp citrus notes', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
+        {'name': 'Silver Gate Pinot Grigio', 'subcategory': 'White Wine', 'description': 'Lively California white that celebrates vibrant fruit and mineral notes', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
+        {'name': 'Silver Gate Moscato', 'subcategory': 'White Wine', 'description': 'Refreshing and approachable sweet white wine crafted in California', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
+        {'name': 'Silver Gate Brut', 'subcategory': 'Sparkling', 'description': 'Refined sparkling wine crafted in Spain with elegant effervescence', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
+        {'name': 'Washington Hills Chardonnay', 'subcategory': 'White Wine', 'description': 'Crisp and refreshing Washington State Chardonnay with notes of apple and pear', 'price': 13, 'variations': [{'name': 'Glass', 'price': 13}, {'name': 'Bottle', 'price': 46}]},
+        {'name': 'La Marca Prosecco', 'subcategory': 'Sparkling', 'description': 'Italian sparkling wine with bright citrus and green apple notes', 'price': 10, 'variations': [{'name': 'Glass', 'price': 10}, {'name': 'Bottle', 'price': 36}]},
+    ]
+
+    added = 0
+    for wine in new_wines:
+        for slug in slugs:
+            if not await db.menu_items.find_one({'name': wine['name'], 'location_slug': slug}):
+                await db.menu_items.insert_one({
+                    **wine, 'id': str(uuid.uuid4()), 'category': 'beer-wine',
+                    'type': 'drink', 'image': '', 'image_url': '',
+                    'location_slug': slug, 'is_active': True,
+                    'created_at': datetime.now(timezone.utc).isoformat()
+                })
+                added += 1
+    if added:
+        logging.info(f"Wine sync: added {added} new wine items")
+
+
 async def ensure_menu_items():
     """Ensure menu items exist in the database. Seeds from seed_menu.json if DB is empty."""
     try:
@@ -180,10 +221,11 @@ async def ensure_menu_items():
         distinct_categories = await db.menu_items.distinct("category")
         logging.info(f"Menu check: {len(distinct_categories)} categories found")
         if len(distinct_categories) >= 10:
-            # DB has a full menu — just ensure specific new items exist
+            # DB has a full menu — ensure specific items + sync wine list
             added = await _seed_specific_items(slugs)
             if added:
                 logging.info(f"Menu seed: added {added} new menu items")
+            await _sync_wine_list(slugs)
         else:
             # DB is empty or partially seeded — do full seed
             logging.info(f"Menu seed: only {len(distinct_categories)} categories, running full seed")
