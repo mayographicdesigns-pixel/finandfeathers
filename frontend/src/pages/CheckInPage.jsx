@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Users, ArrowLeft, X, MapPin, Loader2, ChevronDown,
   Music, Wine, UtensilsCrossed, Shield, Headphones, ChefHat, UserCheck
@@ -20,7 +20,8 @@ const STAFF_POSITIONS = [
 
 const CheckInPage = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState('choose'); // 'choose' | 'guest-name' | 'staff-role'
+  const { slug: urlSlug } = useParams();
+  const [step, setStep] = useState('choose'); // 'choose' | 'guest-name' | 'staff-role' | 'pick-location'
   const [saving, setSaving] = useState(false);
   const [locations, setLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -40,6 +41,16 @@ const CheckInPage = () => {
         const locs = await getLocations();
         const nonHibachi = (locs || []).filter(l => l.slug !== 'hibachi-food-truck');
         setLocations(nonHibachi);
+
+        // If URL has a slug, use that location directly
+        if (urlSlug) {
+          const match = nonHibachi.find(l => l.slug === urlSlug);
+          if (match) {
+            setSelectedLocation(match);
+            setFindingLocation(false);
+            return;
+          }
+        }
 
         const saved = localStorage.getItem('ff_user_location');
         if (saved && nonHibachi.find(l => l.slug === saved)) {
@@ -78,9 +89,8 @@ const CheckInPage = () => {
       }
     };
     detectLocation();
-  }, []);
+  }, [urlSlug]);
 
-  // Pre-fill name from existing profile or guest session
   useEffect(() => {
     const name = localStorage.getItem('ff_user_name') || localStorage.getItem('ff_guest_name') || '';
     if (name) setGuestName(name);
@@ -100,7 +110,6 @@ const CheckInPage = () => {
     const profileId = localStorage.getItem('ff_user_profile_id');
     const name = displayName || guestName.trim() || 'Guest';
 
-    // Ensure guest session exists if no profile
     let userId = profileId;
     if (!profileId) {
       let guestId = localStorage.getItem('ff_guest_id');
@@ -112,7 +121,6 @@ const CheckInPage = () => {
       userId = guestId;
     }
 
-    // Update staff role if has profile
     if (profileId && role !== 'guest') {
       try {
         await fetch(`${API_URL}/api/user/profile/${profileId}`, {
@@ -123,7 +131,6 @@ const CheckInPage = () => {
       } catch (e) { console.error('Profile update failed:', e); }
     }
 
-    // Check in
     try {
       await fetch(`${API_URL}/api/checkin`, {
         method: 'POST',
@@ -148,13 +155,11 @@ const CheckInPage = () => {
     }
   };
 
-  const handleGuestCheckIn = () => {
+  const handleGuestClick = () => {
     const profileId = localStorage.getItem('ff_user_profile_id');
     if (profileId) {
-      // Already has profile — skip name entry, go straight in
       doCheckIn('guest', localStorage.getItem('ff_user_name') || 'Guest');
     } else {
-      // Need name — show name input
       switchStep('guest-name');
     }
   };
@@ -164,40 +169,28 @@ const CheckInPage = () => {
     doCheckIn('guest', guestName.trim());
   };
 
+  const handleLocationSelect = (loc) => {
+    setSelectedLocation(loc);
+    switchStep('choose');
+  };
+
   return (
     <div className="min-h-screen bg-black relative overflow-hidden flex items-center justify-center p-4">
-      {/* Ambient background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-[-40%] left-[-20%] w-[70vw] h-[70vw] rounded-full bg-red-900/10 blur-[120px]" />
         <div className="absolute bottom-[-30%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-red-800/8 blur-[100px]" />
       </div>
 
-      {/* Main card */}
-      <div
-        className={`relative w-full max-w-md transition-all duration-700 ease-out ${
-          animateIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-        }`}
-      >
-        {/* Top nav */}
+      <div className={`relative w-full max-w-md transition-all duration-700 ease-out ${animateIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
         <div className="flex justify-between items-center mb-5 px-1">
-          <button
-            onClick={() => navigate('/')}
-            className="flex items-center gap-1.5 text-slate-500 hover:text-white text-sm transition-colors"
-            data-testid="checkin-back-home"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Home</span>
+          <button onClick={() => navigate('/')} className="flex items-center gap-1.5 text-slate-500 hover:text-white text-sm transition-colors" data-testid="checkin-back-home">
+            <ArrowLeft className="w-4 h-4" /><span>Home</span>
           </button>
-          <button
-            onClick={() => navigate('/account')}
-            className="text-red-400/80 hover:text-red-300 text-sm font-medium transition-colors"
-            data-testid="checkin-my-account"
-          >
+          <button onClick={() => navigate('/account')} className="text-red-400/80 hover:text-red-300 text-sm font-medium transition-colors" data-testid="checkin-my-account">
             My Account
           </button>
         </div>
 
-        {/* Card container */}
         <div className="bg-slate-950/80 backdrop-blur-xl border border-slate-800/60 rounded-2xl overflow-hidden shadow-2xl shadow-black/40">
           {/* Header */}
           <div className="px-8 pt-8 pb-5 text-center">
@@ -212,48 +205,63 @@ const CheckInPage = () => {
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 <span>Finding your location...</span>
               </div>
-            ) : selectedLocation && (
-              <div className="inline-flex items-center gap-2 bg-slate-900/70 border border-slate-700/40 rounded-full px-4 py-2">
+            ) : selectedLocation && step !== 'pick-location' && (
+              <button
+                onClick={() => switchStep('pick-location')}
+                className="inline-flex items-center gap-2 bg-slate-900/70 border border-slate-700/40 rounded-full px-4 py-2 hover:border-red-500/40 transition-colors"
+                data-testid="checkin-location-btn"
+              >
                 <MapPin className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
-                <select
-                  value={selectedLocation.slug}
-                  onChange={(e) => {
-                    const loc = locations.find(l => l.slug === e.target.value);
-                    if (loc) setSelectedLocation(loc);
-                  }}
-                  className="bg-transparent text-white text-sm font-medium border-none outline-none cursor-pointer appearance-none pr-1"
-                  data-testid="checkin-location-select"
-                >
-                  {locations.map(loc => (
-                    <option key={loc.slug} value={loc.slug} className="bg-slate-900 text-white">
-                      {loc.name?.replace('Fin & Feathers - ', '')}
-                    </option>
-                  ))}
-                </select>
+                <span className="text-white text-sm font-medium">{selectedLocation.name?.replace('Fin & Feathers - ', '')}</span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
-              </div>
+              </button>
             )}
           </div>
 
-          {/* Divider */}
           <div className="mx-6 h-px bg-gradient-to-r from-transparent via-slate-700/50 to-transparent" />
 
           {/* Step content */}
-          <div
-            className={`px-8 py-6 transition-all duration-200 ${
-              stepTransition ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
-            }`}
-          >
+          <div className={`px-8 py-6 transition-all duration-200 ${stepTransition ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
+
+            {/* PICK LOCATION */}
+            {step === 'pick-location' && (
+              <>
+                <h1 className="text-xl font-semibold text-white mb-1 tracking-tight" data-testid="pick-location-title">Select Location</h1>
+                <p className="text-slate-500 text-sm mb-5">Which Fin & Feathers are you at?</p>
+                <div className="space-y-2 max-h-[50vh] overflow-y-auto">
+                  {locations.map(loc => (
+                    <button
+                      key={loc.slug}
+                      onClick={() => handleLocationSelect(loc)}
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 active:scale-[0.98] ${
+                        selectedLocation?.slug === loc.slug
+                          ? 'bg-red-600/20 border border-red-500/40'
+                          : 'bg-slate-800/50 border border-slate-700/40 hover:border-slate-600'
+                      }`}
+                      data-testid={`location-${loc.slug}`}
+                    >
+                      <MapPin className={`w-4 h-4 flex-shrink-0 ${selectedLocation?.slug === loc.slug ? 'text-red-500' : 'text-slate-500'}`} />
+                      <div className="text-left flex-1">
+                        <p className="text-white text-sm font-medium">{loc.name?.replace('Fin & Feathers - ', '')}</p>
+                        {loc.address && <p className="text-slate-500 text-xs truncate">{loc.address}</p>}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+                <button onClick={() => switchStep('choose')} className="mt-4 w-full py-2 text-slate-600 hover:text-slate-400 text-sm transition-colors flex items-center justify-center gap-1.5" data-testid="back-from-location">
+                  <ArrowLeft className="w-3.5 h-3.5" /><span>Back</span>
+                </button>
+              </>
+            )}
+
+            {/* CHOOSE: Guest or Staff */}
             {step === 'choose' && (
               <>
-                <h1 className="text-xl font-semibold text-white mb-1 tracking-tight" data-testid="checkin-title">
-                  Check In
-                </h1>
+                <h1 className="text-xl font-semibold text-white mb-1 tracking-tight" data-testid="checkin-title">Check In</h1>
                 <p className="text-slate-500 text-sm mb-6">How are you joining us today?</p>
-
                 <div className="grid grid-cols-2 gap-3">
                   <button
-                    onClick={handleGuestCheckIn}
+                    onClick={handleGuestClick}
                     disabled={saving || !selectedLocation}
                     className="group relative flex flex-col items-center justify-center gap-3 h-32 rounded-xl bg-red-600 hover:bg-red-500 transition-all duration-300 active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none"
                     data-testid="checkin-guest-btn"
@@ -267,7 +275,6 @@ const CheckInPage = () => {
                     )}
                     <span className="text-white font-semibold text-base">Guest</span>
                   </button>
-
                   <button
                     onClick={() => switchStep('staff-role')}
                     disabled={!selectedLocation}
@@ -280,25 +287,17 @@ const CheckInPage = () => {
                     <span className="text-white font-semibold text-base">Staff</span>
                   </button>
                 </div>
-
-                <button
-                  onClick={() => navigate('/')}
-                  className="mt-5 w-full py-2.5 text-slate-600 hover:text-slate-400 text-sm transition-colors flex items-center justify-center gap-1.5"
-                  data-testid="checkin-close-btn"
-                >
-                  <X className="w-3.5 h-3.5" />
-                  <span>Close</span>
+                <button onClick={() => navigate('/')} className="mt-5 w-full py-2.5 text-slate-600 hover:text-slate-400 text-sm transition-colors flex items-center justify-center gap-1.5" data-testid="checkin-close-btn">
+                  <X className="w-3.5 h-3.5" /><span>Close</span>
                 </button>
               </>
             )}
 
+            {/* GUEST NAME */}
             {step === 'guest-name' && (
               <>
-                <h1 className="text-xl font-semibold text-white mb-1 tracking-tight" data-testid="guest-name-title">
-                  What's your name?
-                </h1>
+                <h1 className="text-xl font-semibold text-white mb-1 tracking-tight" data-testid="guest-name-title">What's your name?</h1>
                 <p className="text-slate-500 text-sm mb-5">So others can see who's here</p>
-
                 <Input
                   value={guestName}
                   onChange={(e) => setGuestName(e.target.value)}
@@ -308,38 +307,22 @@ const CheckInPage = () => {
                   autoFocus
                   data-testid="checkin-name-input"
                 />
-
-                <Button
-                  onClick={handleGuestSubmit}
-                  disabled={!guestName.trim() || saving}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold h-12"
-                  data-testid="checkin-go-btn"
-                >
-                  {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : (
-                    <><UserCheck className="w-4 h-4 mr-2" />Check In</>
-                  )}
+                <Button onClick={handleGuestSubmit} disabled={!guestName.trim() || saving} className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold h-12" data-testid="checkin-go-btn">
+                  {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <><UserCheck className="w-4 h-4 mr-2" />Check In</>}
                 </Button>
-
-                <button
-                  onClick={() => switchStep('choose')}
-                  className="mt-4 w-full py-2 text-slate-600 hover:text-slate-400 text-sm transition-colors flex items-center justify-center gap-1.5"
-                  data-testid="back-to-choose-btn"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Back</span>
+                <button onClick={() => switchStep('choose')} className="mt-4 w-full py-2 text-slate-600 hover:text-slate-400 text-sm transition-colors flex items-center justify-center gap-1.5" data-testid="back-to-choose-btn">
+                  <ArrowLeft className="w-3.5 h-3.5" /><span>Back</span>
                 </button>
               </>
             )}
 
+            {/* STAFF ROLE */}
             {step === 'staff-role' && (
               <>
-                <h1 className="text-xl font-semibold text-white mb-1 tracking-tight" data-testid="staff-role-title">
-                  Select Your Role
-                </h1>
+                <h1 className="text-xl font-semibold text-white mb-1 tracking-tight" data-testid="staff-role-title">Select Your Role</h1>
                 <p className="text-slate-500 text-sm mb-6">Tap your position to check in</p>
-
                 <div className="space-y-2.5">
-                  {STAFF_POSITIONS.map((pos, idx) => {
+                  {STAFF_POSITIONS.map((pos) => {
                     const Icon = pos.icon;
                     return (
                       <button
@@ -349,15 +332,8 @@ const CheckInPage = () => {
                         className="group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl bg-slate-800/50 border border-slate-700/40 hover:border-slate-600 transition-all duration-300 active:scale-[0.98] disabled:opacity-40"
                         data-testid={`staff-position-${pos.id}`}
                       >
-                        <div
-                          className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-110"
-                          style={{ backgroundColor: `${pos.color}20`, border: `1px solid ${pos.color}30` }}
-                        >
-                          {saving ? (
-                            <Loader2 className="w-5 h-5 animate-spin" style={{ color: pos.color }} />
-                          ) : (
-                            <Icon className="w-5 h-5" style={{ color: pos.color }} />
-                          )}
+                        <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-110" style={{ backgroundColor: `${pos.color}20`, border: `1px solid ${pos.color}30` }}>
+                          {saving ? <Loader2 className="w-5 h-5 animate-spin" style={{ color: pos.color }} /> : <Icon className="w-5 h-5" style={{ color: pos.color }} />}
                         </div>
                         <span className="text-white font-medium text-sm">{pos.label}</span>
                         <ArrowLeft className="w-4 h-4 text-slate-600 ml-auto rotate-180 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -365,14 +341,8 @@ const CheckInPage = () => {
                     );
                   })}
                 </div>
-
-                <button
-                  onClick={() => switchStep('choose')}
-                  className="mt-5 w-full py-2.5 text-slate-600 hover:text-slate-400 text-sm transition-colors flex items-center justify-center gap-1.5"
-                  data-testid="back-to-type-btn"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Back</span>
+                <button onClick={() => switchStep('choose')} className="mt-5 w-full py-2.5 text-slate-600 hover:text-slate-400 text-sm transition-colors flex items-center justify-center gap-1.5" data-testid="back-to-type-btn">
+                  <ArrowLeft className="w-3.5 h-3.5" /><span>Back</span>
                 </button>
               </>
             )}

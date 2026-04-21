@@ -40,6 +40,7 @@ function AppRouter() {
       <Route path="/events" element={<EventsPage />} />
       <Route path="/dashboard" element={<AdminPage />} />
       <Route path="/checkin" element={<CheckInPage />} />
+      <Route path="/checkin/:slug" element={<CheckInPage />} />
       <Route path="/gallery" element={<GalleryPage />} />
       <Route path="/account" element={<MyAccountPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
