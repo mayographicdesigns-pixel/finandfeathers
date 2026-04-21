@@ -964,8 +964,8 @@
   },
   {
     "name": "Mimosa",
-    "description": "Champagne & Orange Juice Available in a Variety of Flavors. Peach, Strawberry, Pineapple, Cranberry or Mango",
-    "price": 10.0,
+    "description": "A bright and refreshing brunch staple. Chilled champagne topped with choice of premium fruit juice. Available in Mango, Peach, Pineapple, Strawberry, Cranberry, or traditional Orange. Garnished with a fresh fruit slice. Served in a Stemless Glass.",
+    "price": 10,
     "image": "",
     "category": "brunch-drinks",
     "badges": [],
@@ -974,8 +974,8 @@
   },
   {
     "name": "Bellini",
-    "description": "A Bellini is a Cocktail Made with Prosecco and Peach Pur\u00e9e.",
-    "price": 10.0,
+    "description": "The quintessential brunch classic. A soft, opaque blend of sweet peach pur\u00e9e and chilled sparkling Prosecco, garnished with a fresh orange slice and a cherry. Served in a Stemless Glass.",
+    "price": 10,
     "image": "",
     "category": "brunch-drinks",
     "badges": [],
@@ -983,29 +983,9 @@
     "id": "1ce97785-1777-48f2-b32d-4bb2e99dad69"
   },
   {
-    "name": "Tequila Sunrise",
-    "description": "Coramino Blanco Tequila, Orange Juice, & a dash of Grenadine, in a glass with a Tajin' or salted rim.",
-    "price": 15.0,
-    "image": "",
-    "category": "brunch-drinks",
-    "badges": [],
-    "type": "drink",
-    "id": "a0121334-d725-41a0-8e35-3c6d3c9e0c48"
-  },
-  {
-    "name": "Vodka Sunrise",
-    "description": "Ciroc Vodka, Orange Juice, & a dash of Grenadine, in a glass with a Tajin' or salted rim.",
-    "price": 15.0,
-    "image": "",
-    "category": "brunch-drinks",
-    "badges": [],
-    "type": "drink",
-    "id": "147f71fd-6560-4ab9-90f8-bd9584fb1d8f"
-  },
-  {
     "name": "French 75",
-    "description": "Tanqueray Gin, Champagne, Muddled Lemon & Simple Syrup.",
-    "price": 15.0,
+    "description": "An elegant and effervescent classic. Premium Gin and fresh-squeezed lemon juice shaken with simple syrup, topped with chilled champagne for a crisp finish. Served in a Stemless Glass.",
+    "price": 15,
     "image": "",
     "category": "brunch-drinks",
     "badges": [],
@@ -2251,6 +2231,29 @@
         "name": "Bottle",
         "price": 46
       }
+    ]
+  },
+  {
+    "name": "Sunrise",
+    "category": "brunch-drinks",
+    "description": "A stunning visual gradient of red to orange. Casamigos Blanco Tequila, Triple Sec, and premium orange juice, finished with a slow pour of grenadine. Garnished with an orange slice and a cherry. Served in a Tall Glass.",
+    "type": "drink",
+    "price": 15,
+    "image": "",
+    "image_url": "",
+    "is_active": true
+  },
+  {
+    "name": "Sunset",
+    "category": "brunch-drinks",
+    "description": "Premium. A sophisticated twist on the sunrise. Casamigos Blanco Tequila, Triple Sec, and orange juice topped with Grand Marnier for a deeper, more atmospheric hue. Garnished with an orange slice and a cherry. Served in a Tall Glass.",
+    "type": "drink",
+    "price": 17,
+    "image": "",
+    "image_url": "",
+    "is_active": true,
+    "badges": [
+      "Premium"
     ]
   }
 ]
