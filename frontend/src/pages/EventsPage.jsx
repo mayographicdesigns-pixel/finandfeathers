@@ -280,11 +280,20 @@ const EventsPage = () => {
           <Card className="overflow-hidden bg-gradient-to-r from-red-900/30 to-slate-900 border-red-600/30">
             <div className="md:flex">
               <div className="md:w-1/2 cursor-pointer" onClick={() => setViewingImage(event)} data-testid={`featured-image-${event.id}`}>
-                <img 
-                  src={event.image} 
-                  alt={event.name}
-                  className="w-full h-64 md:h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
+                {event.media_type === 'video' || (event.image && event.image.endsWith('.mp4')) ? (
+                  <video 
+                    src={event.image}
+                    poster={event.image.replace('.mp4', '-poster.jpg')}
+                    className="w-full h-64 md:h-full object-cover hover:scale-105 transition-transform duration-300"
+                    autoPlay muted loop playsInline
+                  />
+                ) : (
+                  <img 
+                    src={event.image} 
+                    alt={event.name}
+                    className="w-full h-64 md:h-full object-cover hover:scale-105 transition-transform duration-300"
+                  />
+                )}
               </div>
               <CardContent className="md:w-1/2 p-8 flex flex-col justify-center">
                 <div className="flex items-center gap-2 mb-3">
@@ -349,11 +358,20 @@ const EventsPage = () => {
                 onClick={() => setViewingImage(event)}
                 data-testid={`event-image-click-${event.id}`}
               >
-                <img 
-                  src={event.image} 
-                  alt={event.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
+                {event.media_type === 'video' || (event.image && event.image.endsWith('.mp4')) ? (
+                  <video 
+                    src={event.image}
+                    poster={event.image.replace('.mp4', '-poster.jpg')}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    autoPlay muted loop playsInline
+                  />
+                ) : (
+                  <img 
+                    src={event.image} 
+                    alt={event.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                )}
                 {event.featured && (
                   <div className="absolute top-3 left-3 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold flex items-center gap-1">
                     <Star className="w-3 h-3 fill-current" />
