@@ -2049,10 +2049,20 @@
     "subcategory": "Red Wine",
     "description": "Bold and expressive California red with intense aromas of dark fruit and oak",
     "type": "drink",
-    "price": null,
+    "price": 9,
     "image": "",
     "image_url": "",
-    "is_active": true
+    "is_active": true,
+    "variations": [
+      {
+        "name": "Glass",
+        "price": 9
+      },
+      {
+        "name": "Bottle",
+        "price": 34
+      }
+    ]
   },
   {
     "name": "Silver Gate Pinot Noir",
@@ -2060,10 +2070,20 @@
     "subcategory": "Red Wine",
     "description": "Elegant and refined California red with inviting aromas of cherry and earth",
     "type": "drink",
-    "price": null,
+    "price": 9,
     "image": "",
     "image_url": "",
-    "is_active": true
+    "is_active": true,
+    "variations": [
+      {
+        "name": "Glass",
+        "price": 9
+      },
+      {
+        "name": "Bottle",
+        "price": 34
+      }
+    ]
   },
   {
     "name": "Silver Gate Merlot",
@@ -2071,10 +2091,20 @@
     "subcategory": "Red Wine",
     "description": "Smooth and approachable California red with aromas of blackberry, plum, and spice",
     "type": "drink",
-    "price": null,
+    "price": 9,
     "image": "",
     "image_url": "",
-    "is_active": true
+    "is_active": true,
+    "variations": [
+      {
+        "name": "Glass",
+        "price": 9
+      },
+      {
+        "name": "Bottle",
+        "price": 34
+      }
+    ]
   },
   {
     "name": "Silver Gate Chardonnay",
@@ -2082,10 +2112,20 @@
     "subcategory": "White Wine",
     "description": "Classic California white capturing warmth and freshness of the vineyards",
     "type": "drink",
-    "price": null,
+    "price": 9,
     "image": "",
     "image_url": "",
-    "is_active": true
+    "is_active": true,
+    "variations": [
+      {
+        "name": "Glass",
+        "price": 9
+      },
+      {
+        "name": "Bottle",
+        "price": 34
+      }
+    ]
   },
   {
     "name": "Silver Gate Sauvignon Blanc",
@@ -2093,10 +2133,20 @@
     "subcategory": "White Wine",
     "description": "Fresh and vibrant California Sauvignon Blanc with crisp citrus notes",
     "type": "drink",
-    "price": null,
+    "price": 9,
     "image": "",
     "image_url": "",
-    "is_active": true
+    "is_active": true,
+    "variations": [
+      {
+        "name": "Glass",
+        "price": 9
+      },
+      {
+        "name": "Bottle",
+        "price": 34
+      }
+    ]
   },
   {
     "name": "Silver Gate Pinot Grigio",
@@ -2104,10 +2154,20 @@
     "subcategory": "White Wine",
     "description": "Lively California white that celebrates vibrant fruit and mineral notes",
     "type": "drink",
-    "price": null,
+    "price": 9,
     "image": "",
     "image_url": "",
-    "is_active": true
+    "is_active": true,
+    "variations": [
+      {
+        "name": "Glass",
+        "price": 9
+      },
+      {
+        "name": "Bottle",
+        "price": 34
+      }
+    ]
   },
   {
     "name": "Silver Gate Moscato",
@@ -2115,10 +2175,20 @@
     "subcategory": "White Wine",
     "description": "Refreshing and approachable sweet white wine crafted in California",
     "type": "drink",
-    "price": null,
+    "price": 9,
     "image": "",
     "image_url": "",
-    "is_active": true
+    "is_active": true,
+    "variations": [
+      {
+        "name": "Glass",
+        "price": 9
+      },
+      {
+        "name": "Bottle",
+        "price": 34
+      }
+    ]
   },
   {
     "name": "Silver Gate Brut",
@@ -2126,10 +2196,20 @@
     "subcategory": "Sparkling",
     "description": "Refined sparkling wine crafted in Spain with elegant effervescence",
     "type": "drink",
-    "price": null,
+    "price": 9,
     "image": "",
     "image_url": "",
-    "is_active": true
+    "is_active": true,
+    "variations": [
+      {
+        "name": "Glass",
+        "price": 9
+      },
+      {
+        "name": "Bottle",
+        "price": 34
+      }
+    ]
   },
   {
     "name": "La Marca Prosecco",
@@ -2137,10 +2217,20 @@
     "subcategory": "Sparkling",
     "description": "Italian sparkling wine with bright citrus and green apple notes",
     "type": "drink",
-    "price": null,
+    "price": 10,
     "image": "",
     "image_url": "",
-    "is_active": true
+    "is_active": true,
+    "variations": [
+      {
+        "name": "Glass",
+        "price": 10
+      },
+      {
+        "name": "Bottle",
+        "price": 36
+      }
+    ]
   },
   {
     "name": "Washington Hills Chardonnay",
@@ -2148,9 +2238,19 @@
     "subcategory": "White Wine",
     "description": "Crisp and refreshing Washington State Chardonnay with notes of apple and pear",
     "type": "drink",
-    "price": null,
+    "price": 13,
     "image": "",
     "image_url": "",
-    "is_active": true
+    "is_active": true,
+    "variations": [
+      {
+        "name": "Glass",
+        "price": 13
+      },
+      {
+        "name": "Bottle",
+        "price": 46
+      }
+    ]
   }
 ]
