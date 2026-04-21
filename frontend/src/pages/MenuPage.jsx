@@ -651,8 +651,6 @@ const MenuPage = () => {
     
     const beerNames = ['Angry Orchard', 'Blue Moon', 'Bud Light', 'Corona', 'Guinness', 'Heineken', 'Mich Ultra', 'Modelo', 'Modelo Negro', 'Stella Artois', 'Yuengling'];
     const champagneNames = ['Belaire', 'House Champagne', 'Moet'];
-    const redWineNames = ['Cabernet', 'Merlot', 'Pinot Noir', 'Malbec', 'Stella Rosa', 'Cardinale'];
-    const whiteWineNames = ['Sauvignon Blanc', 'Prosecco', 'Chardonnay', 'Moscato', 'Pinot Grigio', 'Riesling'];
     const liqueurNames = ['Amaretto', 'Grand Marnier', 'Jager'];
     const energyNames = ['Red Bull'];
     
@@ -661,6 +659,8 @@ const MenuPage = () => {
       champagne: [],
       redWine: [],
       whiteWine: [],
+      rose: [],
+      sparkling: [],
       liqueur: [],
       energy: [],
       juice: [],
@@ -671,18 +671,26 @@ const MenuPage = () => {
     items.forEach(item => {
       const name = item.name.toLowerCase();
       const desc = (item.description || '').toLowerCase();
+      const sub = (item.subcategory || '').toLowerCase();
       
-      // Check for specific wine types first (before generic "Stella" beer match)
-      if (name.includes('stella rosa')) {
-        categories.redWine.push(item);
-      } else if (beerNames.some(b => name.includes(b.toLowerCase())) || (name === 'stella' && !name.includes('rosa'))) {
+      // Use subcategory field first if present
+      if (sub === 'red wine') { categories.redWine.push(item); return; }
+      if (sub === 'white wine') { categories.whiteWine.push(item); return; }
+      if (sub === 'rosé' || sub === 'rose') { categories.rose.push(item); return; }
+      if (sub === 'sparkling') { categories.sparkling.push(item); return; }
+
+      if (beerNames.some(b => name.includes(b.toLowerCase())) || (name === 'stella' && !name.includes('rosa'))) {
         categories.beer.push(item);
       } else if (champagneNames.some(c => name.includes(c.toLowerCase()))) {
         categories.champagne.push(item);
-      } else if (redWineNames.some(r => name.includes(r.toLowerCase())) || desc.includes('red wine')) {
+      } else if (name.includes('cabernet') || name.includes('merlot') || name.includes('pinot noir') || name.includes('malbec') || desc.includes('red wine')) {
         categories.redWine.push(item);
-      } else if (whiteWineNames.some(w => name.includes(w.toLowerCase())) || desc.includes('white wine')) {
+      } else if (name.includes('chardonnay') || name.includes('sauvignon blanc') || name.includes('pinot grigio') || name.includes('moscato') || name.includes('riesling') || desc.includes('white wine')) {
         categories.whiteWine.push(item);
+      } else if (name.includes('rosé') || name.includes('rose wine') || desc.includes('rosé')) {
+        categories.rose.push(item);
+      } else if (name.includes('brut') || name.includes('prosecco') || desc.includes('sparkling')) {
+        categories.sparkling.push(item);
       } else if (liqueurNames.some(l => name.includes(l.toLowerCase()))) {
         categories.liqueur.push(item);
       } else if (energyNames.some(e => name.includes(e.toLowerCase())) || desc.includes('energy')) {
@@ -709,6 +717,8 @@ const MenuPage = () => {
         {renderCompactDrinkSection('🍾 Champagne', categories.champagne)}
         {renderCompactDrinkSection('🍷 Red Wine', categories.redWine)}
         {renderCompactDrinkSection('🥂 White Wine', categories.whiteWine)}
+        {renderCompactDrinkSection('🌹 Rosé', categories.rose)}
+        {renderCompactDrinkSection('✨ Sparkling', categories.sparkling)}
         {renderCompactDrinkSection('🥃 Liqueur', categories.liqueur)}
         {renderCompactDrinkSection('⚡ Energy Drinks', categories.energy)}
         {renderCompactDrinkSection('💧 Water', categories.water)}

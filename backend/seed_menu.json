@@ -1435,176 +1435,6 @@
     "id": "146adc56-c426-4224-851c-6e40dad04268"
   },
   {
-    "name": "Bonanza Cabernet",
-    "description": "Glass $13 / Bottle $46.80",
-    "price": 13.0,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "09391540-a408-4119-b1be-c9732e0266c9"
-  },
-  {
-    "name": "Cardinale Sweet",
-    "description": "Glass $11.70 / Bottle $44.20",
-    "price": 11.7,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "e3364901-44e2-4e59-8041-0e860324d9fb"
-  },
-  {
-    "name": "J Lohr Merlot",
-    "description": "Glass $13 / Bottle $46.80",
-    "price": 13.0,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "a4917bc9-ce00-46f5-ba6e-6cda3c14b8a6"
-  },
-  {
-    "name": "Meiomi Pinot Noir",
-    "description": "Glass $15.60 / Bottle $52",
-    "price": 15.6,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "3e37a74f-35ad-4c68-980d-320110f5690f"
-  },
-  {
-    "name": "SG Cabernet",
-    "description": "Glass $9.10 / Bottle $33.80",
-    "price": 9.1,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "9dc27dae-248b-4e1a-b473-3e532f5695e7"
-  },
-  {
-    "name": "SG Merlot",
-    "description": "Glass $9.10 / Bottle $33.80",
-    "price": 9.1,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "772d73ae-932d-4f77-b6e0-d4935854f669"
-  },
-  {
-    "name": "Stella Rosa Black",
-    "description": "Glass $11.70 / Bottle $44.20",
-    "price": 11.7,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "c25ff0a2-8619-4a27-925f-01116749ee75"
-  },
-  {
-    "name": "Trapiche Malbec",
-    "description": "Glass $11.70 / Bottle $44.20",
-    "price": 11.7,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "83e2b650-eb9c-4108-9242-cc8b0378a478"
-  },
-  {
-    "name": "Justin Sauvignon Blanc",
-    "description": "Glass $13 / Bottle $46.80",
-    "price": 13.0,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "f5fab5ae-08f8-457c-9b0c-9bb66220fc78"
-  },
-  {
-    "name": "La Marca Prosecco",
-    "description": "Glass $10 / Bottle $36",
-    "price": 10.0,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "e8dc21d4-0dc7-4962-95d8-9cec0846d741"
-  },
-  {
-    "name": "Landmark Chardonnay",
-    "description": "Glass $13 / Bottle $46.80",
-    "price": 13.0,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "b84436b6-04c5-415a-a840-62c580af4cb2"
-  },
-  {
-    "name": "Lost Angel Moscato",
-    "description": "Bottle",
-    "price": 39.0,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "93fde7c9-7992-41f5-836c-4193edd93277"
-  },
-  {
-    "name": "Rosso Pinot Grigio",
-    "description": "Bottle",
-    "price": 39.0,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "322486fa-477c-4e4e-b835-951ba7015979"
-  },
-  {
-    "name": "SG Chardonnay",
-    "description": "Glass $9.10 / Bottle $33.80",
-    "price": 9.1,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "0106a982-ed47-4dce-8569-c59fbe815f44"
-  },
-  {
-    "name": "SG Moscato",
-    "description": "Glass $9.10 / Bottle $33.80",
-    "price": 9.1,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "68a2fa3b-4b69-4b72-b0d5-0721a0d8fc1d"
-  },
-  {
-    "name": "SG Pinot Grigio",
-    "description": "Glass $9.10 / Bottle $33.80",
-    "price": 9.1,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "cda9fac1-0c28-4cbb-9bbe-e499b3c075fe"
-  },
-  {
-    "name": "Washington Hills Riesling",
-    "description": "Price varies",
-    "price": 0.0,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "47375c85-c7ee-4ee0-a1c4-a63395b1051f"
-  },
-  {
     "name": "Mighty Freeze",
     "description": "Tropical blend of pineapple, guava, strawberry & lime with an icy finish",
     "price": 30.0,
@@ -2190,17 +2020,6 @@
     "image": "/images/cocktails/Long Island.jpg"
   },
   {
-    "id": "a719836a-3494-4a1d-bde4-7c41fbf46b66",
-    "name": "Wine Selection",
-    "description": "6oz select white wine (Chardonnay, Moscato, Pinot Grigio) or Red (Cabernet, Merlot).",
-    "price": 8,
-    "category": "beer-wine",
-    "image_url": null,
-    "is_active": true,
-    "display_order": 999,
-    "created_at": "2026-03-31T19:05:49.962156+00:00"
-  },
-  {
     "id": "fd12ba45-91b9-4fbc-9d12-84024b30f171",
     "name": "Ground Turkey Burger*",
     "description": "A perfectly grilled, savory seasoned ground turkey patty on a toasted brioche bun, topped with crisp lettuce, fresh sliced tomatoes, and zesty pickles, served with a generous side of seasoned fries",
@@ -2223,5 +2042,104 @@
     "image_url": "",
     "is_active": true,
     "created_at": "2026-04-15T20:33:15.192094+00:00"
+  },
+  {
+    "name": "Silver Gate Cabernet Sauvignon",
+    "category": "beer-wine",
+    "subcategory": "Red Wine",
+    "description": "Bold and expressive California red with intense aromas of dark fruit and oak",
+    "type": "drink",
+    "price": null,
+    "image": "",
+    "image_url": "",
+    "is_active": true
+  },
+  {
+    "name": "Silver Gate Pinot Noir",
+    "category": "beer-wine",
+    "subcategory": "Red Wine",
+    "description": "Elegant and refined California red with inviting aromas of cherry and earth",
+    "type": "drink",
+    "price": null,
+    "image": "",
+    "image_url": "",
+    "is_active": true
+  },
+  {
+    "name": "Silver Gate Merlot",
+    "category": "beer-wine",
+    "subcategory": "Red Wine",
+    "description": "Smooth and approachable California red with aromas of blackberry, plum, and spice",
+    "type": "drink",
+    "price": null,
+    "image": "",
+    "image_url": "",
+    "is_active": true
+  },
+  {
+    "name": "Silver Gate Chardonnay",
+    "category": "beer-wine",
+    "subcategory": "White Wine",
+    "description": "Classic California white capturing warmth and freshness of the vineyards",
+    "type": "drink",
+    "price": null,
+    "image": "",
+    "image_url": "",
+    "is_active": true
+  },
+  {
+    "name": "Silver Gate Sauvignon Blanc",
+    "category": "beer-wine",
+    "subcategory": "White Wine",
+    "description": "Fresh and vibrant California Sauvignon Blanc with crisp citrus notes",
+    "type": "drink",
+    "price": null,
+    "image": "",
+    "image_url": "",
+    "is_active": true
+  },
+  {
+    "name": "Silver Gate Pinot Grigio",
+    "category": "beer-wine",
+    "subcategory": "White Wine",
+    "description": "Lively California white that celebrates vibrant fruit and mineral notes",
+    "type": "drink",
+    "price": null,
+    "image": "",
+    "image_url": "",
+    "is_active": true
+  },
+  {
+    "name": "Silver Gate Moscato",
+    "category": "beer-wine",
+    "subcategory": "White Wine",
+    "description": "Refreshing and approachable sweet white wine crafted in California",
+    "type": "drink",
+    "price": null,
+    "image": "",
+    "image_url": "",
+    "is_active": true
+  },
+  {
+    "name": "Silver Gate Ros\u00e9",
+    "category": "beer-wine",
+    "subcategory": "Ros\u00e9",
+    "description": "Vibrant and refreshing California ros\u00e9 with aromas of ripe strawberry and melon",
+    "type": "drink",
+    "price": null,
+    "image": "",
+    "image_url": "",
+    "is_active": true
+  },
+  {
+    "name": "Silver Gate Brut",
+    "category": "beer-wine",
+    "subcategory": "Sparkling",
+    "description": "Refined sparkling wine crafted in Spain with elegant effervescence",
+    "type": "drink",
+    "price": null,
+    "image": "",
+    "image_url": "",
+    "is_active": true
   }
 ]
