@@ -717,7 +717,6 @@ const MenuPage = () => {
         {renderCompactDrinkSection('🍾 Champagne', categories.champagne)}
         {renderCompactDrinkSection('🍷 Red Wine', categories.redWine)}
         {renderCompactDrinkSection('🥂 White Wine', categories.whiteWine)}
-        {renderCompactDrinkSection('🌹 Rosé', categories.rose)}
         {renderCompactDrinkSection('✨ Sparkling', categories.sparkling)}
         {renderCompactDrinkSection('🥃 Liqueur', categories.liqueur)}
         {renderCompactDrinkSection('⚡ Energy Drinks', categories.energy)}

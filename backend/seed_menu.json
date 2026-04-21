@@ -2121,10 +2121,10 @@
     "is_active": true
   },
   {
-    "name": "Silver Gate Ros\u00e9",
+    "name": "Silver Gate Brut",
     "category": "beer-wine",
-    "subcategory": "Ros\u00e9",
-    "description": "Vibrant and refreshing California ros\u00e9 with aromas of ripe strawberry and melon",
+    "subcategory": "Sparkling",
+    "description": "Refined sparkling wine crafted in Spain with elegant effervescence",
     "type": "drink",
     "price": null,
     "image": "",
@@ -2132,10 +2132,21 @@
     "is_active": true
   },
   {
-    "name": "Silver Gate Brut",
+    "name": "La Marca Prosecco",
     "category": "beer-wine",
     "subcategory": "Sparkling",
-    "description": "Refined sparkling wine crafted in Spain with elegant effervescence",
+    "description": "Italian sparkling wine with bright citrus and green apple notes",
+    "type": "drink",
+    "price": null,
+    "image": "",
+    "image_url": "",
+    "is_active": true
+  },
+  {
+    "name": "Washington Hills Chardonnay",
+    "category": "beer-wine",
+    "subcategory": "White Wine",
+    "description": "Crisp and refreshing Washington State Chardonnay with notes of apple and pear",
     "type": "drink",
     "price": null,
     "image": "",
