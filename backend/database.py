@@ -171,7 +171,7 @@ async def _sync_wine_list(slugs: list):
     """Ensure wine list matches Silver Gate lineup. Removes old wines, adds missing new ones."""
     old_wines = [
         'Bonanza Cabernet', 'Cardinale Sweet', 'J Lohr Merlot', 'Meiomi Pinot Noir',
-        'SG Cabernet', 'SG Merlot', 'Stella Rosa Black', 'Trapiche Malbec',
+        'SG Cabernet', 'SG Merlot', 'Trapiche Malbec',
         'Justin Sauvignon Blanc', 'Landmark Chardonnay', 'Lost Angel Moscato',
         'Rosso Pinot Grigio', 'SG Chardonnay', 'SG Moscato', 'SG Pinot Grigio',
         'Washington Hills Riesling', 'Wine Selection', 'Silver Gate Rosé'
@@ -184,6 +184,7 @@ async def _sync_wine_list(slugs: list):
         {'name': 'Silver Gate Cabernet Sauvignon', 'subcategory': 'Red Wine', 'description': 'Bold and expressive California red with intense aromas of dark fruit and oak', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
         {'name': 'Silver Gate Pinot Noir', 'subcategory': 'Red Wine', 'description': 'Elegant and refined California red with inviting aromas of cherry and earth', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
         {'name': 'Silver Gate Merlot', 'subcategory': 'Red Wine', 'description': 'Smooth and approachable California red with aromas of blackberry, plum, and spice', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
+        {'name': 'Stella Rosa Black', 'subcategory': 'Red Wine', 'description': 'Semi-sweet Italian red wine with notes of wild berries and a smooth finish', 'price': 12, 'variations': [{'name': 'Glass', 'price': 12}, {'name': 'Bottle', 'price': 45}]},
         {'name': 'Silver Gate Chardonnay', 'subcategory': 'White Wine', 'description': 'Classic California white capturing warmth and freshness of the vineyards', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
         {'name': 'Silver Gate Sauvignon Blanc', 'subcategory': 'White Wine', 'description': 'Fresh and vibrant California Sauvignon Blanc with crisp citrus notes', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
         {'name': 'Silver Gate Pinot Grigio', 'subcategory': 'White Wine', 'description': 'Lively California white that celebrates vibrant fruit and mineral notes', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},

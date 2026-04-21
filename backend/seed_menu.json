@@ -2255,5 +2255,26 @@
     "badges": [
       "Premium"
     ]
+  },
+  {
+    "name": "Stella Rosa Black",
+    "category": "beer-wine",
+    "subcategory": "Red Wine",
+    "description": "Semi-sweet Italian red wine with notes of wild berries and a smooth finish",
+    "type": "drink",
+    "price": 12,
+    "variations": [
+      {
+        "name": "Glass",
+        "price": 12
+      },
+      {
+        "name": "Bottle",
+        "price": 45
+      }
+    ],
+    "image": "",
+    "image_url": "",
+    "is_active": true
   }
 ]
