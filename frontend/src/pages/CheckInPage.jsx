@@ -89,11 +89,20 @@ const CheckInPage = () => {
   const checkInAndNavigate = async (role) => {
     if (!selectedLocation) return;
     setSaving(true);
-    const profileId = localStorage.getItem('ff_user_profile_id');
-    const userName = localStorage.getItem('ff_user_name') || 'Guest';
-    const userAvatar = localStorage.getItem('ff_user_avatar') || '';
+    let profileId = localStorage.getItem('ff_user_profile_id');
+    let userName = localStorage.getItem('ff_user_name') || 'Guest';
+    let userAvatar = localStorage.getItem('ff_user_avatar') || '';
 
-    if (profileId) {
+    // If no profile, create a guest session so the social wall recognizes them
+    if (!profileId && !localStorage.getItem('ff_guest_id')) {
+      const guestId = `guest-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      localStorage.setItem('ff_guest_id', guestId);
+      localStorage.setItem('ff_guest_name', userName);
+      profileId = guestId;
+      userAvatar = '👤';
+    }
+
+    if (profileId && !profileId.startsWith('guest-')) {
       try {
         await fetch(`${API_URL}/api/user/profile/${profileId}`, {
           method: 'PUT',
@@ -111,7 +120,7 @@ const CheckInPage = () => {
           location_slug: selectedLocation.slug,
           display_name: userName,
           avatar_emoji: userAvatar,
-          user_profile_id: profileId
+          user_profile_id: profileId || localStorage.getItem('ff_guest_id')
         }),
       });
     } catch (e) { console.error('Check-in API failed:', e); }
