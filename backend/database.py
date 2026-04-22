@@ -261,31 +261,34 @@ async def ensure_merchandise():
 
 
 async def ensure_events():
-    """Seed featured events if collection is empty."""
-    if await db.events.count_documents({}) > 0:
-        return
-    events = [
+    """Seed featured events — adds missing ones even if DB already has events."""
+    required_events = [
         {
-            "id": str(uuid.uuid4()),
             "name": "Cinco De Mayo Turn Up",
             "description": "Doe Nation Hospitality Inc Presents... Cinco De Mayo Taco Tuesday! $5 Tacos (2) and $5 Margaritas at all locations.",
             "date": "2026-05-05", "time": "All Day", "location": "All Locations", "location_slug": None,
             "image": "/images/events/cinco-de-mayo.mp4", "media_type": "video",
             "featured": True, "packages": ["general"], "package_prices": {"general": 0},
-            "is_active": True, "display_order": 0, "created_at": datetime.now(timezone.utc).isoformat()
+            "is_active": True, "display_order": -2,
         },
         {
-            "id": str(uuid.uuid4()),
             "name": "Mom Brunch - Mother's Day",
             "description": "Celebrate Mother's Day with us! $20 Bottomless Mimosas (one per person). All locations.",
             "date": "2026-05-10", "time": "10AM - 4PM", "location": "All Locations", "location_slug": None,
             "image": "/images/events/mom-brunch.jpg", "media_type": "image",
             "featured": True, "packages": ["general"], "package_prices": {"general": 0},
-            "is_active": True, "display_order": 1, "created_at": datetime.now(timezone.utc).isoformat()
+            "is_active": True, "display_order": -1,
         },
     ]
-    await db.events.insert_many(events)
-    logging.info(f"Events seed: inserted {len(events)} events")
+    added = 0
+    for event in required_events:
+        if not await db.events.find_one({"name": event["name"]}):
+            event["id"] = str(uuid.uuid4())
+            event["created_at"] = datetime.now(timezone.utc).isoformat()
+            await db.events.insert_one(event)
+            added += 1
+    if added:
+        logging.info(f"Events seed: added {added} featured events")
 
 
 
