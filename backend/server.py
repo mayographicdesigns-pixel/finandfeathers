@@ -111,6 +111,17 @@ logger = logging.getLogger(__name__)
 scheduler = AsyncIOScheduler()
 
 
+async def checkout_all_at_location(tz_name: str, location_slugs: list):
+    """Check out everyone at locations in a specific timezone (runs at 4am local)."""
+    try:
+        result = await db.checkins.delete_many({
+            "location_slug": {"$in": location_slugs}
+        })
+        logging.info(f"4am checkout ({tz_name}): Cleared {result.deleted_count} check-ins at {', '.join(location_slugs)}")
+    except Exception as e:
+        logging.error(f"4am checkout error ({tz_name}): {e}")
+
+
 async def scheduled_cleanup_old_posts():
     """Scheduled task to clean up old posts without images (runs at 4am EST daily)"""
     try:
@@ -125,11 +136,7 @@ async def scheduled_cleanup_old_posts():
             ]
         })
 
-        checkin_result = await db.checkins.delete_many({
-            "checked_in_at": {"$lt": cutoff}
-        })
-
-        logging.info(f"Scheduled cleanup: Deleted {result.deleted_count} old posts, {checkin_result.deleted_count} expired check-ins")
+        logging.info(f"Scheduled cleanup: Deleted {result.deleted_count} old posts")
     except Exception as e:
         logging.error(f"Scheduled cleanup error: {e}")
 
@@ -181,16 +188,35 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_scheduler():
     """Start the background scheduler on app startup"""
+    from timezone_utils import LOCATION_TIMEZONES
+
+    # Post cleanup at 4am EST
     scheduler.add_job(
         scheduled_cleanup_old_posts,
         CronTrigger(hour=9, minute=0, timezone='UTC'),
         id='cleanup_old_posts',
         replace_existing=True
     )
+
+    # Group locations by timezone for 4am local checkout
+    tz_groups = {}
+    for slug, tz_name in LOCATION_TIMEZONES.items():
+        tz_groups.setdefault(tz_name, []).append(slug)
+
+    for tz_name, slugs in tz_groups.items():
+        scheduler.add_job(
+            checkout_all_at_location,
+            CronTrigger(hour=4, minute=0, timezone=tz_name),
+            args=[tz_name, slugs],
+            id=f'checkout_{tz_name.replace("/", "_")}',
+            replace_existing=True
+        )
+        logging.info(f"Scheduled 4am checkout for {tz_name}: {', '.join(slugs)}")
+
     scheduler.start()
     await ensure_default_admin_user()
     await ensure_menu_items()
-    logging.info("Scheduler started: Post cleanup scheduled for 4am EST (9am UTC) daily")
+    logging.info("Scheduler started")
 
 
 @app.on_event("shutdown")
