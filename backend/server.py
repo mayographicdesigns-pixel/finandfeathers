@@ -123,22 +123,8 @@ async def checkout_all_at_location(tz_name: str, location_slugs: list):
 
 
 async def scheduled_cleanup_old_posts():
-    """Scheduled task to clean up old posts without images (runs at 4am EST daily)"""
-    try:
-        cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
-
-        result = await db.social_posts.delete_many({
-            "created_at": {"$lt": cutoff},
-            "$or": [
-                {"image_url": None},
-                {"image_url": ""},
-                {"image_url": {"$exists": False}}
-            ]
-        })
-
-        logging.info(f"Scheduled cleanup: Deleted {result.deleted_count} old posts")
-    except Exception as e:
-        logging.error(f"Scheduled cleanup error: {e}")
+    """Scheduled task — posts are now kept permanently (Facebook-style feed)."""
+    pass
 
 
 # ==================== FEATURE ROUTERS ====================
