@@ -93,7 +93,7 @@ const EventsPage = () => {
         fetch(`${API_URL}/api/locations`).then(r => r.json()).catch(() => [])
       ]);
       setPackages(packagesData);
-      setEvents(eventsData.length > 0 ? eventsData : FALLBACK_EVENTS);
+      setEvents(eventsData || []);
       setLocations(locsData);
       const map = {};
       (contentData || []).forEach((entry) => {
@@ -102,7 +102,7 @@ const EventsPage = () => {
       setPageContent(map);
     } catch (error) {
       console.error('Error fetching data:', error);
-      setEvents(FALLBACK_EVENTS);
+      setEvents([]);
     } finally {
       setLoading(false);
     }

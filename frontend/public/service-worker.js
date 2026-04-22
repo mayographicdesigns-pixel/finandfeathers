@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-globals */
 
 // Version number - INCREMENT THIS ON EACH DEPLOY
-const APP_VERSION = '2.6.0';
+const APP_VERSION = '2.7.0';
 const CACHE_NAME = `fin-feathers-v${APP_VERSION}`;
 
 // Critical update flag - set to true to force refresh

@@ -260,6 +260,35 @@ async def ensure_merchandise():
     logging.info(f"Merchandise seed: inserted {len(products)} products")
 
 
+async def ensure_events():
+    """Seed featured events if collection is empty."""
+    if await db.events.count_documents({}) > 0:
+        return
+    events = [
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Cinco De Mayo Turn Up",
+            "description": "Doe Nation Hospitality Inc Presents... Cinco De Mayo Taco Tuesday! $5 Tacos (2) and $5 Margaritas at all locations.",
+            "date": "2026-05-05", "time": "All Day", "location": "All Locations", "location_slug": None,
+            "image": "/images/events/cinco-de-mayo.mp4", "media_type": "video",
+            "featured": True, "packages": ["general"], "package_prices": {"general": 0},
+            "is_active": True, "display_order": 0, "created_at": datetime.now(timezone.utc).isoformat()
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Mom Brunch - Mother's Day",
+            "description": "Celebrate Mother's Day with us! $20 Bottomless Mimosas (one per person). All locations.",
+            "date": "2026-05-10", "time": "10AM - 4PM", "location": "All Locations", "location_slug": None,
+            "image": "/images/events/mom-brunch.jpg", "media_type": "image",
+            "featured": True, "packages": ["general"], "package_prices": {"general": 0},
+            "is_active": True, "display_order": 1, "created_at": datetime.now(timezone.utc).isoformat()
+        },
+    ]
+    await db.events.insert_many(events)
+    logging.info(f"Events seed: inserted {len(events)} events")
+
+
+
 
 async def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Grant admin access - no authentication required"""

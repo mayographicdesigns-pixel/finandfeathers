@@ -116,9 +116,6 @@ async def resolve_event_reservation_link(event: dict):
 async def get_public_events():
     """Get all active events for public display"""
     events = await db.events.find({"is_active": True}, {"_id": 0}).sort("display_order", 1).to_list(100)
-    if not events:
-        events = DEFAULT_EVENTS
-    # Add timezone to each event
     for event in events:
         slug = event.get("location_slug", "")
         if slug:
@@ -184,13 +181,6 @@ async def free_reserve_event(reservation: FreeEventReservationRequest):
 async def admin_get_events(username: str = Depends(get_current_admin)):
     """Get all events including inactive (admin only)"""
     events = await db.events.find({}, {"_id": 0}).sort("display_order", 1).to_list(100)
-    if not events:
-        for event in DEFAULT_EVENTS:
-            event_copy = event.copy()
-            event_copy["created_at"] = datetime.now(timezone.utc)
-            event_copy["updated_at"] = datetime.now(timezone.utc)
-            await db.events.insert_one(event_copy)
-        events = await db.events.find({}, {"_id": 0}).sort("display_order", 1).to_list(100)
     return events
 
 
