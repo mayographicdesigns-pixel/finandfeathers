@@ -45,8 +45,8 @@ const SignupForm = ({ onProfileCreated, authError }) => {
       return;
     }
     
-    if (!formData.email.trim() || !formData.password) {
-      toast({ title: 'Error', description: 'Email and password are required', variant: 'destructive' });
+    if (!formData.password) {
+      toast({ title: 'Error', description: 'Password is required', variant: 'destructive' });
       return;
     }
     
@@ -62,7 +62,7 @@ const SignupForm = ({ onProfileCreated, authError }) => {
 
     setIsSubmitting(true);
     try {
-      const result = await registerUserWithPassword(formData.email, formData.password, formData.name, formData.username);
+      const result = await registerUserWithPassword(formData.email, formData.password, formData.name, formData.username, formData.phone);
       
       if (result.success && result.user) {
         localStorage.setItem('ff_user_profile_id', result.user.id);
@@ -238,14 +238,14 @@ const SignupForm = ({ onProfileCreated, authError }) => {
                   </div>
                 </div>
 
-                {/* Email Sign Up Button */}
+                {/* Sign Up Button */}
                 <Button
                   type="button"
                   onClick={() => setAuthMode('signup')}
                   className="w-full bg-red-600 hover:bg-red-700 text-white h-12 text-base"
                   data-testid="email-signup-btn"
                 >
-                  Sign up with Email
+                  Sign Up
                 </Button>
 
                 <p className="text-center text-slate-400 text-sm mt-4">
@@ -258,24 +258,32 @@ const SignupForm = ({ onProfileCreated, authError }) => {
                     Sign In
                   </button>
                 </p>
+
+                <div className="relative my-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-slate-700"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-4 bg-slate-900 text-slate-500">or</span>
+                  </div>
+                </div>
+
+                {/* Continue as Guest */}
+                <Button
+                  type="button"
+                  onClick={() => navigate('/checkin')}
+                  variant="ghost"
+                  className="w-full text-slate-400 hover:text-white text-sm h-10"
+                  data-testid="continue-guest-btn"
+                >
+                  Continue as Guest
+                </Button>
               </div>
             )}
 
             {/* Email Signup Form */}
             {authMode === 'signup' && (
               <form onSubmit={handleEmailSignup} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Name</label>
-                  <Input
-                    type="text"
-                    placeholder="Your full name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="bg-slate-800 border-slate-700 text-white"
-                    data-testid="signup-name-input"
-                  />
-                </div>
-
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">Username *</label>
                   <Input
@@ -288,19 +296,6 @@ const SignupForm = ({ onProfileCreated, authError }) => {
                     data-testid="signup-username-input"
                   />
                   <p className="text-slate-500 text-xs mt-1">Letters, numbers, and underscores only</p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Email *</label>
-                  <Input
-                    type="email"
-                    placeholder="you@example.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="bg-slate-800 border-slate-700 text-white"
-                    required
-                    data-testid="signup-email-input"
-                  />
                 </div>
 
                 <div>
@@ -326,6 +321,42 @@ const SignupForm = ({ onProfileCreated, authError }) => {
                     className="bg-slate-800 border-slate-700 text-white"
                     required
                     data-testid="signup-confirm-password-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Display Name</label>
+                  <Input
+                    type="text"
+                    placeholder="Your name (optional)"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    data-testid="signup-name-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
+                  <Input
+                    type="email"
+                    placeholder="you@example.com (optional)"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    data-testid="signup-email-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Phone Number</label>
+                  <Input
+                    type="tel"
+                    placeholder="(555) 555-5555 (optional)"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="bg-slate-800 border-slate-700 text-white"
+                    data-testid="signup-phone-input"
                   />
                 </div>
 
@@ -367,10 +398,10 @@ const SignupForm = ({ onProfileCreated, authError }) => {
             {authMode === 'login' && (
               <form onSubmit={handleEmailLogin} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Username or Email</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Username, Email, or Phone</label>
                   <Input
                     type="text"
-                    placeholder="Username or email address"
+                    placeholder="Username, email, or phone number"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="bg-slate-800 border-slate-700 text-white"

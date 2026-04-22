@@ -433,13 +433,14 @@ async def register_user_quick(request: Request):
 
 @router.post("/auth/user/register")
 async def register_user_with_password(request: Request):
-    """Register a new user with username, email and password."""
+    """Register a new user with username and password. Email and phone optional."""
     try:
         body = await request.json()
         email = body.get("email", "").strip().lower()
         password = body.get("password", "")
         name = body.get("name", "").strip()
         username = body.get("username", "").strip().lower()
+        phone = body.get("phone", "").strip()
 
         if not username:
             raise HTTPException(status_code=400, detail="Username is required")
@@ -447,23 +448,28 @@ async def register_user_with_password(request: Request):
             raise HTTPException(status_code=400, detail="Username must be at least 3 characters")
         if not re.match(r'^[a-z0-9_]+$', username):
             raise HTTPException(status_code=400, detail="Username can only contain letters, numbers, and underscores")
-        if not email or not password:
-            raise HTTPException(status_code=400, detail="Email and password are required")
+        if not password:
+            raise HTTPException(status_code=400, detail="Password is required")
         if len(password) < 6:
             raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
 
         existing_username = await db.user_profiles.find_one({"username": username}, {"_id": 0})
         if existing_username:
             raise HTTPException(status_code=400, detail="Username already taken")
-        existing_email = await db.user_profiles.find_one({"email": email}, {"_id": 0})
-        if existing_email:
-            raise HTTPException(status_code=400, detail="Email already registered")
+        if email:
+            existing_email = await db.user_profiles.find_one({"email": email}, {"_id": 0})
+            if existing_email:
+                raise HTTPException(status_code=400, detail="Email already registered")
+        if phone:
+            existing_phone = await db.user_profiles.find_one({"phone": phone}, {"_id": 0})
+            if existing_phone:
+                raise HTTPException(status_code=400, detail="Phone number already registered")
 
         password_hash = get_password_hash(password)
         user_id = f"user_{uuid.uuid4().hex[:12]}"
         new_profile = {
             "id": user_id, "username": username, "name": name or username,
-            "email": email, "password_hash": password_hash, "phone": None,
+            "email": email or None, "password_hash": password_hash, "phone": phone or None,
             "avatar_emoji": "\U0001f60a", "google_picture": None,
             "profile_photo_url": None, "token_balance": 0, "total_visits": 0,
             "total_posts": 0, "total_photos": 0, "special_dates": [],
@@ -503,7 +509,7 @@ async def register_user_with_password(request: Request):
 
 @router.post("/auth/user/login")
 async def login_user_with_password(request: Request):
-    """Login user with username or email and password."""
+    """Login user with username, email, or phone and password."""
     try:
         body = await request.json()
         identifier = body.get("identifier", "").strip().lower()
@@ -511,10 +517,12 @@ async def login_user_with_password(request: Request):
             identifier = body.get("email", "").strip().lower()
         password = body.get("password", "")
         if not identifier or not password:
-            raise HTTPException(status_code=400, detail="Username/email and password are required")
+            raise HTTPException(status_code=400, detail="Username/email/phone and password are required")
 
         if "@" in identifier:
             user_profile = await db.user_profiles.find_one({"email": identifier})
+        elif identifier.replace("+", "").replace("-", "").replace("(", "").replace(")", "").replace(" ", "").isdigit():
+            user_profile = await db.user_profiles.find_one({"phone": {"$regex": identifier.replace("-", "").replace("(", "").replace(")", "").replace(" ", ""), "$options": "i"}})
         else:
             user_profile = await db.user_profiles.find_one({"username": identifier})
             if not user_profile:

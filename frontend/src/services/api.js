@@ -420,7 +420,7 @@ export async function userLogout() {
 }
 
 // Register user with email and password
-export async function registerUserWithPassword(email, password, name, username) {
+export async function registerUserWithPassword(email, password, name, username, phone) {
   try {
     const response = await fetch(`${API_URL}/auth/user/register`, {
       method: 'POST',
@@ -428,7 +428,7 @@ export async function registerUserWithPassword(email, password, name, username) 
         'Content-Type': 'application/json',
       },
       credentials: 'include',
-      body: JSON.stringify({ email, password, name, username })
+      body: JSON.stringify({ email: email || '', password, name, username, phone: phone || '' })
     });
 
     if (!response.ok) {
