@@ -235,6 +235,32 @@ async def ensure_menu_items():
         logging.error(f"Menu seed failed (non-fatal): {e}")
 
 
+
+async def ensure_merchandise():
+    """Seed sample merchandise if collection is empty."""
+    if await db.merchandise.count_documents({}) > 0:
+        return
+    products = [
+        {"id": str(uuid.uuid4()), "name": "Fin & Feathers Logo Tee - Black", "price": "29.99",
+         "description": "Classic black tee with the Fin & Feathers logo. 100% cotton. S-3XL.",
+         "image": "https://images.pexels.com/photos/18186105/pexels-photo-18186105.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+         "categories": ["Apparel", "T-Shirts"], "in_stock": True, "is_active": True, "display_order": 0, "created_at": datetime.now(timezone.utc).isoformat()},
+        {"id": str(uuid.uuid4()), "name": "Fin & Feathers Logo Tee - White", "price": "29.99",
+         "description": "Classic white tee with the Fin & Feathers logo. 100% cotton. S-3XL.",
+         "image": "https://images.pexels.com/photos/18186105/pexels-photo-18186105.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+         "categories": ["Apparel", "T-Shirts"], "in_stock": True, "is_active": True, "display_order": 1, "created_at": datetime.now(timezone.utc).isoformat()},
+        {"id": str(uuid.uuid4()), "name": "F&F Snapback Hat", "price": "24.99",
+         "description": "Adjustable snapback cap with embroidered Fin & Feathers logo.",
+         "image": "", "categories": ["Accessories", "Hats"], "in_stock": True, "is_active": True, "display_order": 2, "created_at": datetime.now(timezone.utc).isoformat()},
+        {"id": str(uuid.uuid4()), "name": "F&F Hot Sauce", "price": "12.99",
+         "description": "Our signature hot sauce — the same one served on every table. 8oz bottle.",
+         "image": "", "categories": ["Food & Drink"], "in_stock": True, "is_active": True, "display_order": 3, "created_at": datetime.now(timezone.utc).isoformat()},
+    ]
+    await db.merchandise.insert_many(products)
+    logging.info(f"Merchandise seed: inserted {len(products)} products")
+
+
+
 async def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Grant admin access - no authentication required"""
     return "admin"

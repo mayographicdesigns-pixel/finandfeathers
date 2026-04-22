@@ -21,7 +21,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from datetime import datetime, timezone, timedelta
 
-from database import db, UPLOAD_DIR, ensure_default_admin_user, ensure_menu_items
+from database import db, UPLOAD_DIR, ensure_default_admin_user, ensure_menu_items, ensure_merchandise
 
 # Create the main app
 app = FastAPI()
@@ -202,6 +202,7 @@ async def startup_scheduler():
     scheduler.start()
     await ensure_default_admin_user()
     await ensure_menu_items()
+    await ensure_merchandise()
     logging.info("Scheduler started")
 
 

@@ -1,9 +1,11 @@
-"""Merchandise router — WooCommerce product listing, cart checkout."""
-from fastapi import APIRouter, HTTPException
+"""Merchandise router — WooCommerce + local product listing, cart checkout."""
+from fastapi import APIRouter, HTTPException, UploadFile, File, Depends
 from pydantic import BaseModel
-from database import db, create_woocommerce_order
+from database import db, create_woocommerce_order, UPLOAD_DIR
+from routes.auth import get_current_admin
 from typing import List, Optional
 from datetime import datetime, timezone
+from pathlib import Path
 import aiohttp
 import os
 import logging
@@ -31,13 +33,19 @@ class CartCheckoutRequest(BaseModel):
 
 @router.get("/merchandise")
 async def get_merchandise():
-    """Fetch products from WooCommerce store"""
+    """Fetch products — tries WooCommerce first, falls back to local DB products."""
+    # Try local DB products first (admin-managed)
+    local_products = await db.merchandise.find({"is_active": True}, {"_id": 0}).sort("display_order", 1).to_list(100)
+    if local_products:
+        return local_products
+
+    # Fall back to WooCommerce
     woo_url = os.environ.get("WOOCOMMERCE_URL")
     woo_key = os.environ.get("WOOCOMMERCE_KEY")
     woo_secret = os.environ.get("WOOCOMMERCE_SECRET")
 
     if not all([woo_url, woo_key, woo_secret]):
-        raise HTTPException(status_code=500, detail="WooCommerce not configured")
+        return []
 
     api_url = f"{woo_url}/wp-json/wc/v3/products"
     params = {
@@ -49,15 +57,14 @@ async def get_merchandise():
 
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(api_url, params=params) as response:
+            async with session.get(api_url, params=params, timeout=aiohttp.ClientTimeout(total=10)) as response:
                 if response.status != 200:
-                    raise HTTPException(status_code=response.status, detail="Failed to fetch products")
+                    return []
                 products = await response.json()
 
                 simplified = []
                 for p in products:
                     image = p.get("images", [{}])[0].get("src", "") if p.get("images") else ""
-
                     simplified.append({
                         "id": p.get("id"),
                         "name": p.get("name"),
@@ -70,11 +77,10 @@ async def get_merchandise():
                         "in_stock": p.get("in_stock", True),
                         "categories": [c.get("name") for c in p.get("categories", [])]
                     })
-
                 return simplified
-    except aiohttp.ClientError as e:
+    except Exception as e:
         logging.error(f"WooCommerce API error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to connect to store")
+        return []
 
 
 @router.get("/merchandise/{product_id}")
@@ -224,3 +230,66 @@ async def get_cart_order_status(order_id: str):
             logging.error(f"Error checking order status: {e}")
 
     return cart_order
+
+
+# ==================== LOCAL MERCHANDISE ADMIN ====================
+
+@router.get("/admin/merchandise")
+async def admin_get_merchandise(admin: str = Depends(get_current_admin)):
+    """Get all local merchandise products for admin."""
+    items = await db.merchandise.find({}, {"_id": 0}).sort("display_order", 1).to_list(200)
+    return items
+
+
+@router.post("/admin/merchandise")
+async def admin_create_product(admin: str = Depends(get_current_admin)):
+    """Create a new local merchandise product."""
+    # Placeholder — use /admin/merchandise/{id} PUT to update
+    product = {
+        "id": str(uuid.uuid4()),
+        "name": "New Product",
+        "price": "0",
+        "description": "",
+        "image": "",
+        "categories": [],
+        "in_stock": True,
+        "is_active": True,
+        "display_order": 999,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    await db.merchandise.insert_one(product)
+    product.pop("_id", None)
+    return product
+
+
+@router.put("/admin/merchandise/{product_id}")
+async def admin_update_product(product_id: str, body: dict, admin: str = Depends(get_current_admin)):
+    """Update a local merchandise product."""
+    body.pop("_id", None)
+    body.pop("id", None)
+    body["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.merchandise.update_one({"id": product_id}, {"$set": body})
+    product = await db.merchandise.find_one({"id": product_id}, {"_id": 0})
+    return product
+
+
+@router.delete("/admin/merchandise/{product_id}")
+async def admin_delete_product(product_id: str, admin: str = Depends(get_current_admin)):
+    """Delete a local merchandise product."""
+    await db.merchandise.delete_one({"id": product_id})
+    return {"status": "deleted"}
+
+
+@router.post("/admin/merchandise/upload-image")
+async def admin_upload_product_image(file: UploadFile = File(...), admin: str = Depends(get_current_admin)):
+    """Upload a product image."""
+    if not file.content_type or not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="File must be an image")
+    contents = await file.read()
+    if len(contents) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Image must be under 5MB")
+    filename = f"merch_{uuid.uuid4().hex[:8]}_{file.filename}"
+    filepath = UPLOAD_DIR / filename
+    with open(filepath, "wb") as f:
+        f.write(contents)
+    return {"image_url": f"/api/uploads/{filename}"}
