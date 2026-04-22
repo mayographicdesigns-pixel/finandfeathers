@@ -33,13 +33,56 @@ class CartCheckoutRequest(BaseModel):
 
 @router.get("/merchandise")
 async def get_merchandise():
-    """Fetch products — tries WooCommerce first, falls back to local DB products."""
-    # Try local DB products first (admin-managed)
+    """Fetch products — tries Printful sync → WooCommerce → local DB fallback."""
+    # 1. Try Printful sync products
+    printful_token = os.environ.get("PRINTFUL_API_TOKEN")
+    printful_store = os.environ.get("PRINTFUL_STORE_ID")
+    if printful_token:
+        try:
+            headers = {"Authorization": f"Bearer {printful_token}"}
+            if printful_store:
+                headers["X-PF-Store-Id"] = printful_store
+            async with aiohttp.ClientSession() as session:
+                async with session.get("https://api.printful.com/sync/products?limit=100", headers=headers, timeout=aiohttp.ClientTimeout(total=10)) as resp:
+                    if resp.status == 200:
+                        data = await resp.json()
+                        products = data.get("result", [])
+                        if products:
+                            simplified = []
+                            for p in products:
+                                simplified.append({
+                                    "id": p.get("id"),
+                                    "name": p.get("name"),
+                                    "price": None,
+                                    "description": "",
+                                    "image": p.get("thumbnail_url", ""),
+                                    "in_stock": True,
+                                    "categories": [],
+                                    "source": "printful"
+                                })
+                            # Fetch variant details for prices
+                            for item in simplified[:20]:
+                                try:
+                                    async with session.get(f"https://api.printful.com/sync/products/{item['id']}", headers=headers, timeout=aiohttp.ClientTimeout(total=5)) as detail_resp:
+                                        if detail_resp.status == 200:
+                                            detail = await detail_resp.json()
+                                            variants = detail.get("result", {}).get("sync_variants", [])
+                                            if variants:
+                                                item["price"] = variants[0].get("retail_price") or variants[0].get("price")
+                                                item["variants"] = [{"name": v.get("name"), "price": v.get("retail_price") or v.get("price")} for v in variants]
+                                except Exception:
+                                    pass
+                            if simplified:
+                                return simplified
+        except Exception as e:
+            logging.error(f"Printful API error: {e}")
+
+    # 2. Try local DB products
     local_products = await db.merchandise.find({"is_active": True}, {"_id": 0}).sort("display_order", 1).to_list(100)
     if local_products:
         return local_products
 
-    # Fall back to WooCommerce
+    # 3. Fall back to WooCommerce
     woo_url = os.environ.get("WOOCOMMERCE_URL")
     woo_key = os.environ.get("WOOCOMMERCE_KEY")
     woo_secret = os.environ.get("WOOCOMMERCE_SECRET")
