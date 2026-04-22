@@ -10,11 +10,12 @@ import {
 } from 'lucide-react';
 import { locations } from '../mockData';
 import { formatTimeInTz, formatScheduleDate, timeAgoInTz, getTzAbbreviation, getCurrentLocalTime } from '../utils/timezone';
+import { UserAvatar } from '../components/UserAvatar';
 
 const API_URL = window.location.origin;
 
 // ========== FEED TAB ==========
-const FeedTab = ({ locationSlug, userId, userName, userAvatar, djStatus }) => {
+const FeedTab = ({ locationSlug, userId, userName, userAvatar, userPhoto, djStatus }) => {
   const [posts, setPosts] = useState([]);
   const [newContent, setNewContent] = useState('');
   const [postType, setPostType] = useState('text');
@@ -251,9 +252,7 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar, djStatus }) => {
             <Card key={post.id} className="bg-slate-900/80 border-slate-800" data-testid={`post-${post.id}`}>
               <CardContent className="p-3">
                 <div className="flex items-start gap-2">
-                  <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-sm shrink-0">
-                    {post.user_avatar || '👤'}
-                  </div>
+                  <UserAvatar photoUrl={post.user_photo} emoji={post.user_avatar} name={post.user_name} size="md" />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-white text-sm font-medium truncate">{post.user_name}</span>
@@ -290,7 +289,7 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar, djStatus }) => {
                       <div className="mt-2 space-y-1 border-t border-slate-800 pt-2">
                         {(post.comments || []).slice(-3).map(c => (
                           <div key={c.id} className="flex items-start gap-1.5">
-                            <span className="text-xs">{c.user_avatar || '👤'}</span>
+                            <UserAvatar photoUrl={c.user_photo} emoji={c.user_avatar} name={c.user_name} size="sm" />
                             <div>
                               <span className="text-slate-400 text-xs font-medium">{c.user_name}</span>
                               <span className="text-slate-400 text-xs ml-1">{c.content}</span>
@@ -358,9 +357,7 @@ const ChatTab = ({ locationSlug, userId, userName, userAvatar }) => {
             <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
               <div className={`flex items-end gap-1.5 max-w-[80%] ${isMe ? 'flex-row-reverse' : ''}`}>
                 {showAvatar ? (
-                  <div className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-xs shrink-0">
-                    {msg.user_avatar || '👤'}
-                  </div>
+                  <UserAvatar photoUrl={msg.user_photo} emoji={msg.user_avatar} name={msg.user_name} size="sm" />
                 ) : <div className="w-6 shrink-0" />}
                 <div>
                   {showAvatar && !isMe && (
@@ -527,7 +524,7 @@ const DMsTab = ({ userId, userName, userAvatar, locationSlug }) => {
               {locationUsers.map(u => (
                 <button key={u.user_id} onClick={() => startNewDM(u)}
                   className="flex items-center gap-2 w-full p-2 rounded-lg hover:bg-slate-700 transition-colors" data-testid={`dm-user-${u.user_id}`}>
-                  <span className="text-sm">{u.user_avatar || '👤'}</span>
+                  <UserAvatar photoUrl={u.user_photo} emoji={u.user_avatar} name={u.user_name} size="sm" />
                   <span className="text-white text-sm">{u.user_name}</span>
                 </button>
               ))}
@@ -549,9 +546,7 @@ const DMsTab = ({ userId, userName, userAvatar, locationSlug }) => {
           <button key={conv.partner_id} onClick={() => openThread(conv.partner_id, conv.partner_name)}
             className="flex items-center gap-3 w-full p-3 border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors text-left"
             data-testid={`conv-${conv.partner_id}`}>
-            <div className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-sm shrink-0">
-              {conv.partner_avatar || '👤'}
-            </div>
+            <UserAvatar photoUrl={conv.partner_photo} emoji={conv.partner_avatar} name={conv.partner_name} size="lg" />
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
                 <span className="text-white text-sm font-medium truncate">{conv.partner_name}</span>
@@ -822,9 +817,7 @@ const LiveChat = ({ locationSlug, userId, userName, userAvatar }) => {
           const isMe = msg.user_id === userId;
           return (
             <div key={msg.id} className={`flex items-start gap-1.5 ${isMe ? 'flex-row-reverse' : ''}`}>
-              <div className="w-5 h-5 rounded-full bg-slate-800 flex items-center justify-center text-[10px] shrink-0">
-                {msg.user_avatar || '?'}
-              </div>
+              <UserAvatar photoUrl={msg.user_photo} emoji={msg.user_avatar} name={msg.user_name} size="sm" className="w-5 h-5 text-[10px]" />
               <div className={`px-2.5 py-1 rounded-xl text-xs max-w-[75%] ${isMe ? 'bg-red-600/80 text-white' : 'bg-slate-800 text-slate-200'}`}>
                 {!isMe && <span className="text-slate-500 text-[10px] font-medium block">{msg.user_name}</span>}
                 {msg.content}
@@ -1267,6 +1260,7 @@ const SocialWallPage = () => {
   const userId = userProfile?.id;
   const userName = userProfile?.name || 'Anonymous';
   const userAvatar = userProfile?.avatar_emoji || '👤';
+  const userPhoto = userProfile?.profile_photo_url || '';
 
   const tabs = [
     ...(isStreaming ? [{ id: 'live', label: 'Live', icon: Video }] : []),
@@ -1363,11 +1357,11 @@ const SocialWallPage = () => {
 
       {/* Content */}
       <div className="flex-1 max-w-lg mx-auto w-full flex flex-col overflow-hidden">
-        {activeTab === 'live' && isStreaming && <LiveTab djStatus={djStatus} locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} />}
-        {activeTab === 'here' && <WhosHereTab locationSlug={slug} userId={userId} userName={userName} djStatus={djStatus} />}
-        {activeTab === 'feed' && <FeedTab locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} djStatus={djStatus} />}
-        {activeTab === 'chat' && <ChatTab locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} />}
-        {activeTab === 'dms' && <DMsTab userId={userId} userName={userName} userAvatar={userAvatar} locationSlug={slug} />}
+        {activeTab === 'live' && isStreaming && <LiveTab djStatus={djStatus} locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} userPhoto={userPhoto} />}
+        {activeTab === 'here' && <WhosHereTab locationSlug={slug} userId={userId} userName={userName} djStatus={djStatus} userPhoto={userPhoto} />}
+        {activeTab === 'feed' && <FeedTab locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} userPhoto={userPhoto} djStatus={djStatus} />}
+        {activeTab === 'chat' && <ChatTab locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} userPhoto={userPhoto} />}
+        {activeTab === 'dms' && <DMsTab userId={userId} userName={userName} userAvatar={userAvatar} userPhoto={userPhoto} locationSlug={slug} />}
       </div>
     </div>
   );

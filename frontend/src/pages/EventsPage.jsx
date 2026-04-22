@@ -624,12 +624,22 @@ const EventsPage = () => {
             <X className="w-6 h-6" />
           </button>
           <div className="max-w-4xl max-h-[90vh] relative">
-            <img
-              src={viewingImage.image}
-              alt={viewingImage.name}
-              className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
-              data-testid="event-lightbox-image"
-            />
+            {(viewingImage.media_type === 'video' || (viewingImage.image && viewingImage.image.endsWith('.mp4'))) ? (
+              <video
+                src={viewingImage.image}
+                poster={viewingImage.image.replace('.mp4', '-poster.jpg')}
+                className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+                controls autoPlay playsInline
+                data-testid="event-lightbox-video"
+              />
+            ) : (
+              <img
+                src={viewingImage.image}
+                alt={viewingImage.name}
+                className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+                data-testid="event-lightbox-image"
+              />
+            )}
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-5 rounded-b-lg">
               <h3 className="text-white text-xl font-bold">{viewingImage.name}</h3>
               {viewingImage.description && (

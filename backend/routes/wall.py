@@ -19,12 +19,20 @@ async def create_wall_post(body: dict):
     if not user_id or not location_slug:
         raise HTTPException(status_code=400, detail="user_id and location_slug required")
 
+    # Look up profile photo
+    user_photo = body.get("user_photo", "")
+    if not user_photo and user_id and not user_id.startswith("guest-"):
+        profile = await db.user_profiles.find_one({"id": user_id}, {"_id": 0, "profile_photo_url": 1})
+        if profile:
+            user_photo = profile.get("profile_photo_url", "") or ""
+
     post = {
         "id": str(uuid.uuid4()),
         "location_slug": location_slug,
         "user_id": user_id,
         "user_name": body.get("user_name", "Anonymous"),
         "user_avatar": body.get("user_avatar", ""),
+        "user_photo": user_photo,
         "post_type": body.get("post_type", "text"),
         "content": body.get("content", ""),
         "image_url": body.get("image_url"),
@@ -293,7 +301,7 @@ async def get_wall_users(location_slug: str):
         uid = u.get("user_id")
         if uid and uid not in seen:
             seen.add(uid)
-            users.append({"user_id": uid, "user_name": u.get("user_name", "Anonymous"), "user_avatar": u.get("user_avatar", "")})
+            users.append({"user_id": uid, "user_name": u.get("user_name", "Anonymous"), "user_avatar": u.get("user_avatar", ""), "user_photo": u.get("user_photo", "")})
     return users
 
 
