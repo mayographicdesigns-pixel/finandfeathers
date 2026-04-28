@@ -88,6 +88,7 @@ routes/
 - [x] Ground Turkey Burger image compressed (7.9MB → 566KB)
 - [x] Auto-seed: locations + full menu (187 items) on empty DB startup
 - [x] Code quality: XSS protection (DOMPurify), empty catch blocks fixed, test secrets removed, database.py refactored
+- [x] Renamed cocktail "Fin-A-Rita" → "Rodeo Drive" (seed_menu.json, mockData.js, MongoDB, image swap to /images/cocktails/Rodeo-Drive.jpg)
 
 ## Backlog
 - [ ] Per-Location Weekly Specials management (P2)

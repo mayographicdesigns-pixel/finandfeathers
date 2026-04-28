@@ -228,7 +228,19 @@ async def dj_checkin(dj_id: str, location_slug: str):
 
 @router.post("/dj/checkout/{dj_id}")
 async def dj_checkout(dj_id: str):
+    # Get DJ's current location before checkout
+    dj = await db.dj_profiles.find_one({"id": dj_id}, {"_id": 0, "current_location": 1})
+    location_slug = dj.get("current_location") if dj else None
+
     await db.dj_profiles.update_one({"id": dj_id}, {"$set": {"current_location": None, "checked_in_at": None, "live_stream_url": None}})
+
+    # Auto-turn off karaoke when DJ checks out
+    if location_slug:
+        await db.karaoke_sessions.update_one(
+            {"location_slug": location_slug, "active": True},
+            {"$set": {"active": False, "ended_at": datetime.now(timezone.utc).isoformat()}}
+        )
+
     return {"message": "DJ checked out"}
 
 

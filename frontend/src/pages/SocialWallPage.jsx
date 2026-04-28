@@ -1116,7 +1116,8 @@ const SocialWallPage = () => {
         if (!savedGuestName) localStorage.setItem('ff_guest_name', name);
 
         setGuestMode(true);
-        setUserProfile({ id: guestId, name, avatar_emoji: '👤', role: 'guest' });
+        const djSession = localStorage.getItem('ff_dj_profile');
+        setUserProfile({ id: guestId, name, avatar_emoji: '👤', role: 'guest', is_dj: !!djSession });
         try {
           await fetch(`${API_URL}/api/checkin`, {
             method: 'POST',
@@ -1148,6 +1149,13 @@ const SocialWallPage = () => {
           return;
         }
         const data = await res.json();
+
+        // Check if user is a DJ (from user profile role, or DJ panel session)
+        const djSession = localStorage.getItem('ff_dj_profile');
+        if (data.role === 'dj' || data.staff_title === 'dj' || djSession) {
+          data.is_dj = true;
+        }
+
         setUserProfile(data);
 
         // Auto check-in at this location
@@ -1304,6 +1312,38 @@ const SocialWallPage = () => {
           </div>
         </div>
       </div>
+
+      {/* DJ Karaoke Toggle (visible only to DJs) */}
+      {(userProfile?.role === 'dj' || userProfile?.is_dj) && (
+        <div className="bg-purple-900/20 border-b border-purple-500/20 px-4 py-2">
+          <div className="max-w-lg mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Mic2 className="w-4 h-4 text-purple-400" />
+              <span className="text-purple-300 text-sm font-medium">Karaoke Mode</span>
+              {djStatus?.karaoke_active && <span className="text-[10px] bg-purple-500 text-white px-1.5 py-0.5 rounded-full font-bold">LIVE</span>}
+            </div>
+            <button
+              onClick={async () => {
+                try {
+                  const res = await fetch(`${API_URL}/api/karaoke/toggle/${slug}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ active: !djStatus?.karaoke_active, dj_id: userProfile.id })
+                  });
+                  if (res.ok) {
+                    const data = await res.json();
+                    setDjStatus(prev => ({ ...prev, karaoke_active: data.active }));
+                  }
+                } catch (e) { console.error(e); }
+              }}
+              className={`relative w-10 h-5 rounded-full transition-colors ${djStatus?.karaoke_active ? 'bg-purple-600' : 'bg-slate-700'}`}
+              data-testid="wall-karaoke-toggle"
+            >
+              <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${djStatus?.karaoke_active ? 'translate-x-5' : 'translate-x-0.5'}`} />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Notifications Panel */}
       {showNotifs && (

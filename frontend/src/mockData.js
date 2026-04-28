@@ -641,7 +641,7 @@ export const menuItems = [
   },
   {
     id: 'c11',
-    name: 'Fin-A-Rita',
+    name: 'Rodeo Drive',
     description: 'Our premium margarita crafted with Patrón Cristalino Añejo.',
     price: 17,
     category: 'cocktails',

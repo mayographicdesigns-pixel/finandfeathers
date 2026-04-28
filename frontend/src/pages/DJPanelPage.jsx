@@ -341,6 +341,15 @@ const DJPanelPage = () => {
         setLiveStreamUrl('');
       }
       await fetch(`${API_URL}/api/dj/checkout/${djProfile.id}`, { method: 'POST' });
+      // Auto-turn off karaoke when DJ checks out
+      if (karaokeActive) {
+        await fetch(`${API_URL}/api/karaoke/toggle/${checkedInLocation}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ active: false, dj_id: djProfile.id })
+        });
+        setKaraokeActive(false);
+      }
       setCheckedInLocation(null);
       setQueue([]);
       setPlayed([]);

@@ -1761,7 +1761,7 @@
   },
   {
     "id": "c11",
-    "name": "Fin-A-Rita",
+    "name": "Rodeo Drive",
     "description": "The ultimate margarita, crafted with ultra-premium Patron Cristalino Anejo, Grand Marnier, lime, and agave.",
     "price": 17,
     "category": "cocktails",
@@ -1770,8 +1770,8 @@
     ],
     "layout": "card",
     "is_active": true,
-    "image_url": "/images/cocktails/Fin-A-Rita.jpg",
-    "image": "/images/cocktails/Fin-A-Rita.jpg"
+    "image_url": "/images/cocktails/Rodeo-Drive.jpg",
+    "image": "/images/cocktails/Rodeo-Drive.jpg"
   },
   {
     "id": "ds1",
