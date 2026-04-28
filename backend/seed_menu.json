@@ -1774,6 +1774,21 @@
     "image": "/images/cocktails/Rodeo-Drive.jpg"
   },
   {
+    "id": "c12",
+    "name": "Old Atlanta",
+    "description": "A peach state twist on a traditional old fashioned. Uncle Nearest, peach purée, simple syrup, garnished with an orange slice and cherry.",
+    "price": 17,
+    "category": "cocktails",
+    "badges": [
+      "Premium",
+      "Chef's Special"
+    ],
+    "layout": "card",
+    "is_active": true,
+    "image_url": "/images/cocktails/Old-Atlanta.jpg",
+    "image": "/images/cocktails/Old-Atlanta.jpg"
+  },
+  {
     "id": "ds1",
     "name": "4 Party Wings & Fries*",
     "description": "Four wings in your choice of flavor: lemon pepper, BBQ, mild, hot, or honey hot. Served with fries",
