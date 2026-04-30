@@ -1157,7 +1157,8 @@ const MenuPage = () => {
                 <h3 className="text-2xl font-bold text-white mb-2 border-b border-slate-700 pb-3">
                   $5 Daily Specials
                 </h3>
-                <p className="text-slate-400 text-sm mb-4">MON-FRI 12PM-8PM • SATURDAY 5PM-8PM • SUNDAY 6PM-CLOSE</p>
+                <p className="text-slate-400 text-sm mb-2">MON-FRI 12PM-8PM • SATURDAY 5PM-8PM • SUNDAY 6PM-CLOSE</p>
+                <p className="text-amber-400 text-xs mb-4 italic" data-testid="daily-specials-togo-surcharge-all">Please note: a $2.00 surcharge applies to all to-go orders.</p>
                 
                 {/* Today's Special Highlight */}
                 <div className="bg-gradient-to-r from-red-600/20 to-orange-600/20 border border-red-500/30 rounded-xl p-4 mb-6" data-testid="todays-special-highlight">
@@ -1266,7 +1267,8 @@ const MenuPage = () => {
         {/* DAILY SPECIALS VIEW */}
         {activeCategory === 'daily-specials' && (
           <div>
-            <p className="text-slate-400 text-sm mb-4">MON-FRI 12PM-8PM • SATURDAY 5PM-8PM • SUNDAY 6PM-CLOSE</p>
+            <p className="text-slate-400 text-sm mb-2">MON-FRI 12PM-8PM • SATURDAY 5PM-8PM • SUNDAY 6PM-CLOSE</p>
+            <p className="text-amber-400 text-xs mb-4 italic" data-testid="daily-specials-togo-surcharge">Please note: a $2.00 surcharge applies to all to-go orders.</p>
             
             {/* Today's Special Highlight */}
             <div className="bg-gradient-to-r from-red-600/20 to-orange-600/20 border border-red-500/30 rounded-xl p-4 mb-6" data-testid="todays-special-highlight">
@@ -1393,10 +1395,13 @@ const MenuPage = () => {
             {renderSection('Handcrafted Mocktails ($7)', itemsByCategory['mocktails'], 'compact', 'grid-cols-1', true)}
             {renderClassicRefreshments()}
             {renderSection('Custom Fruit Lemonades ($4)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true)}
-            {/* Responsible Drinking Notice */}
-            <div className="mt-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl">
+            {/* Responsible Drinking & Takeout Notice */}
+            <div className="mt-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl space-y-2" data-testid="drinks-policy-notice">
               <p className="text-red-400 text-sm text-center font-medium">
                 Please drink responsibly—never drink and drive. We encourage the use of rideshare services for a safe trip home. We reserve the right to refuse service to any guest who appears intoxicated.
+              </p>
+              <p className="text-amber-300 text-xs text-center" data-testid="takeout-beverages-policy">
+                <span className="font-semibold">Beverages:</span> We do not offer takeout alcoholic beverages. To-go drinks are limited to bottled water, Red Bull, and canned (unopened) Ginger Beer.
               </p>
             </div>
           </div>
@@ -1418,10 +1423,13 @@ const MenuPage = () => {
             {activeSubCategory === 'beer-wine' && (
               <>
                 {renderBeerWineSections()}
-                {/* Responsible Drinking Notice */}
-                <div className="mt-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl">
+                {/* Responsible Drinking & Takeout Notice */}
+                <div className="mt-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl space-y-2">
                   <p className="text-red-400 text-sm text-center font-medium">
                     Please drink responsibly—never drink and drive. We encourage the use of rideshare services for a safe trip home. We reserve the right to refuse service to any guest who appears intoxicated.
+                  </p>
+                  <p className="text-amber-300 text-xs text-center">
+                    <span className="font-semibold">Beverages:</span> We do not offer takeout alcoholic beverages. To-go drinks are limited to bottled water, Red Bull, and canned (unopened) Ginger Beer.
                   </p>
                 </div>
               </>
@@ -1432,10 +1440,13 @@ const MenuPage = () => {
               <>
                 {renderSection('Signature Cocktails', [...(itemsByCategory['cocktails'] || []), ...(itemsByCategory['signature-cocktails'] || [])], 'compact', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'cocktails')}
                 {renderSection('Brunch Drinks', itemsByCategory['brunch-drinks'], 'compact', 'grid-cols-1', true)}
-                {/* Responsible Drinking Notice */}
-                <div className="mt-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl">
+                {/* Responsible Drinking & Takeout Notice */}
+                <div className="mt-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl space-y-2">
                   <p className="text-red-400 text-sm text-center font-medium">
                     Please drink responsibly—never drink and drive. We encourage the use of rideshare services for a safe trip home. We reserve the right to refuse service to any guest who appears intoxicated.
+                  </p>
+                  <p className="text-amber-300 text-xs text-center">
+                    <span className="font-semibold">Beverages:</span> We do not offer takeout alcoholic beverages. To-go drinks are limited to bottled water, Red Bull, and canned (unopened) Ginger Beer.
                   </p>
                 </div>
               </>
@@ -1459,10 +1470,13 @@ const MenuPage = () => {
                 {renderSection('Handcrafted Mocktails ($7)', itemsByCategory['mocktails'], 'compact', 'grid-cols-1', true)}
                 {renderClassicRefreshments()}
                 {renderSection('Custom Fruit Lemonades ($4)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true)}
-                {/* Responsible Drinking Notice */}
-                <div className="mt-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl">
+                {/* Responsible Drinking & Takeout Notice */}
+                <div className="mt-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl space-y-2">
                   <p className="text-red-400 text-sm text-center font-medium">
                     Please drink responsibly—never drink and drive. We encourage the use of rideshare services for a safe trip home. We reserve the right to refuse service to any guest who appears intoxicated.
+                  </p>
+                  <p className="text-amber-300 text-xs text-center">
+                    <span className="font-semibold">Beverages:</span> We do not offer takeout alcoholic beverages. To-go drinks are limited to bottled water, Red Bull, and canned (unopened) Ginger Beer.
                   </p>
                 </div>
               </>
