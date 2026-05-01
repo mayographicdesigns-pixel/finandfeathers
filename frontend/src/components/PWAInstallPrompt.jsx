@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Download, Share, Smartphone, RefreshCw } from 'lucide-react';
 import { Button } from './ui/button';
+import { APP_VERSION } from '../config/changelog';
 
 const PWAInstallPrompt = () => {
   const [showPrompt, setShowPrompt] = useState(false);
@@ -21,8 +22,11 @@ const PWAInstallPrompt = () => {
     setIsStandalone(standalone);
     
     if (standalone) {
-      // App is installed — show refresh button after short delay
-      setTimeout(() => setShowPrompt(true), 1000);
+      // Only show Refresh button if there's a NEW app version since user last refreshed
+      const lastRefreshedVersion = localStorage.getItem('ff_pwa_last_refreshed_version');
+      if (lastRefreshedVersion !== APP_VERSION) {
+        setTimeout(() => setShowPrompt(true), 1000);
+      }
       return;
     }
 
@@ -68,6 +72,8 @@ const PWAInstallPrompt = () => {
   const handleRefresh = async () => {
     setRefreshing(true);
     try {
+      // Remember the version the user just refreshed to — hide button until a new version is released
+      localStorage.setItem('ff_pwa_last_refreshed_version', APP_VERSION);
       // Clear service worker caches
       if ('serviceWorker' in navigator) {
         const registration = await navigator.serviceWorker.getRegistration();
