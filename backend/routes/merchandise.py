@@ -285,19 +285,19 @@ async def admin_get_merchandise(admin: str = Depends(get_current_admin)):
 
 
 @router.post("/admin/merchandise")
-async def admin_create_product(admin: str = Depends(get_current_admin)):
+async def admin_create_product(body: dict = None, admin: str = Depends(get_current_admin)):
     """Create a new local merchandise product."""
-    # Placeholder — use /admin/merchandise/{id} PUT to update
+    body = body or {}
     product = {
         "id": str(uuid.uuid4()),
-        "name": "New Product",
-        "price": "0",
-        "description": "",
-        "image": "",
-        "categories": [],
-        "in_stock": True,
-        "is_active": True,
-        "display_order": 999,
+        "name": body.get("name") or "New Product",
+        "price": body.get("price") if body.get("price") not in (None, "") else "0",
+        "description": body.get("description") or "",
+        "image": body.get("image") or "",
+        "categories": body.get("categories") or [],
+        "in_stock": body.get("in_stock", True),
+        "is_active": body.get("is_active", True),
+        "display_order": body.get("display_order", 999),
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     await db.merchandise.insert_one(product)

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Home, BarChart3, Megaphone, Ticket, Grid3X3, ImageUp, MessageSquare,
-  MapPin, Video, Share2, UtensilsCrossed, Coins, Users, Mail, Bell, Shield, FileText, Briefcase, UserCheck, Save
+  MapPin, Video, Share2, UtensilsCrossed, Coins, Users, Mail, Bell, Shield, FileText, Briefcase, UserCheck, Save, ShoppingBag
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
@@ -13,6 +13,7 @@ import {
   LoyaltyMembersTab,
   ContactsTab,
   MenuItemsTab,
+  MerchandiseTab,
   AdminAccountsTab,
   NotificationsTab,
   SpecialsTab,
@@ -64,6 +65,7 @@ const AdminPage = () => {
     { id: 'videos', label: 'Videos', icon: Video },
     { id: 'social', label: 'Social Links', icon: Share2 },
     { id: 'menu', label: 'Menu Items', icon: UtensilsCrossed },
+    { id: 'merchandise', label: 'Merchandise', icon: ShoppingBag },
     { id: 'page-content', label: 'Page Content', icon: FileText },
     { id: 'users', label: 'Users', icon: Coins },
     { id: 'people', label: 'People', icon: UserCheck },
@@ -168,6 +170,7 @@ const AdminPage = () => {
         {activeTab === 'users' && <UsersTab />}
         {activeTab === 'people' && <PeopleTab />}
         {activeTab === 'menu' && <MenuItemsTab />}
+        {activeTab === 'merchandise' && <MerchandiseTab />}
         {activeTab === 'page-content' && <PageContentTab />}
         {activeTab === 'notifications' && <NotificationsTab />}
         {activeTab === 'admins' && <AdminAccountsTab />}

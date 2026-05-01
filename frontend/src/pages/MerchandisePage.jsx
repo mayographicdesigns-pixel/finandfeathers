@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Home, ShoppingBag, ExternalLink, Tag, Loader2, MapPin, ShoppingCart, Plus, Minus, X, Trash2, CheckCircle, CreditCard, Store } from 'lucide-react';
+import { Home, ShoppingBag, ExternalLink, Tag, Loader2, MapPin, ShoppingCart, Plus, Minus, X, Trash2, CheckCircle, CreditCard } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { toast } from '../hooks/use-toast';
-import { createCartCheckout, getCartOrderStatus, createStripeMerchCheckout, getStripeCheckoutStatus, pollStripePaymentStatus, getPageContent } from '../services/api';
+import { getCartOrderStatus, createStripeMerchCheckout, pollStripePaymentStatus, getPageContent } from '../services/api';
 import { safeHtml } from '../utils/sanitize';
 
 const API_URL = window.location.origin;
@@ -22,7 +22,6 @@ const MerchandisePage = () => {
   const [checkingOut, setCheckingOut] = useState(false);
   const [customerEmail, setCustomerEmail] = useState('');
   const [orderSuccess, setOrderSuccess] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('stripe'); // 'stripe' or 'woocommerce'
   const [pageContent, setPageContent] = useState({});
   const heroHtml = pageContent.hero || 'Official Fin & Feathers merchandise. Fresh drops and limited-edition favorites.';
 
@@ -164,21 +163,14 @@ const MerchandisePage = () => {
 
     setCheckingOut(true);
     try {
-      if (paymentMethod === 'stripe') {
-        // Format cart items for Stripe
-        const stripeItems = cart.map(item => ({
-          product_id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity
-        }));
-        const result = await createStripeMerchCheckout(stripeItems, customerEmail || null);
-        window.location.href = result.checkout_url;
-      } else {
-        // WooCommerce checkout
-        const result = await createCartCheckout(cart, customerEmail || null);
-        window.location.href = result.checkout_url;
-      }
+      const stripeItems = cart.map(item => ({
+        product_id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+      }));
+      const result = await createStripeMerchCheckout(stripeItems, customerEmail || null);
+      window.location.href = result.checkout_url;
     } catch (error) {
       toast({ title: 'Checkout Error', description: error.message, variant: 'destructive' });
       setCheckingOut(false);
@@ -437,43 +429,10 @@ const MerchandisePage = () => {
                       />
                     </div>
 
-                    {/* Payment Method Selection */}
-                    <div>
-                      <label className="text-sm text-slate-400 block mb-2">Payment Method</label>
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          onClick={() => setPaymentMethod('stripe')}
-                          className={`p-3 rounded-lg border transition-all flex items-center justify-center gap-2 ${
-                            paymentMethod === 'stripe'
-                              ? 'border-red-500 bg-red-500/10 text-white'
-                              : 'border-slate-700 text-slate-400 hover:border-slate-600'
-                          }`}
-                        >
-                          <CreditCard className="w-4 h-4" />
-                          <span className="text-sm">Card</span>
-                        </button>
-                        <button
-                          onClick={() => setPaymentMethod('woocommerce')}
-                          className={`p-3 rounded-lg border transition-all flex items-center justify-center gap-2 ${
-                            paymentMethod === 'woocommerce'
-                              ? 'border-amber-500 bg-amber-500/10 text-white'
-                              : 'border-slate-700 text-slate-400 hover:border-slate-600'
-                          }`}
-                        >
-                          <Store className="w-4 h-4" />
-                          <span className="text-sm">F&F Store</span>
-                        </button>
-                      </div>
-                    </div>
-
                     <Button
                       onClick={handleCheckout}
                       disabled={checkingOut || cart.length === 0}
-                      className={`w-full h-12 text-lg ${
-                        paymentMethod === 'stripe' 
-                          ? 'bg-red-600 hover:bg-red-700' 
-                          : 'bg-amber-600 hover:bg-amber-700'
-                      }`}
+                      className="w-full h-12 text-lg bg-red-600 hover:bg-red-700"
                       data-testid="checkout-btn"
                     >
                       {checkingOut ? (
@@ -483,20 +442,14 @@ const MerchandisePage = () => {
                         </>
                       ) : (
                         <>
-                          {paymentMethod === 'stripe' ? (
-                            <CreditCard className="w-5 h-5 mr-2" />
-                          ) : (
-                            <ShoppingBag className="w-5 h-5 mr-2" />
-                          )}
+                          <CreditCard className="w-5 h-5 mr-2" />
                           Pay ${cartTotal.toFixed(2)}
                         </>
                       )}
                     </Button>
-                    
-                    <p className="text-xs text-slate-500 text-center">
-                      {paymentMethod === 'stripe' 
-                        ? 'Secure payment via Stripe' 
-                        : 'Payment via Fin & Feathers store'}
+
+                    <p className="text-xs text-slate-500 text-center flex items-center justify-center gap-1.5">
+                      <CreditCard className="w-3 h-3" /> Secure payment via Stripe
                     </p>
                   </div>
                 </>

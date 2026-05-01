@@ -1,5 +1,5 @@
 """Payments router — Stripe checkout, webhooks, payment methods."""
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Body
 from database import db
 from routes.events import EVENT_PACKAGES, fetch_event_by_id
 from emergentintegrations.payments.stripe.checkout import (
@@ -143,8 +143,13 @@ async def create_stripe_event_checkout(
 
 
 @router.post("/stripe/merch/checkout")
-async def create_stripe_merch_checkout(request: Request, items: list, customer_email: str = None, origin_url: str = None):
-    """Create Stripe checkout session for merchandise purchase"""
+async def create_stripe_merch_checkout(
+    request: Request,
+    items: list = Body(..., embed=False),
+    customer_email: str = None,
+    origin_url: str = None,
+):
+    """Create Stripe checkout session for merchandise purchase. Body is raw JSON list of cart items."""
     if not items:
         raise HTTPException(status_code=400, detail="No items in cart")
 

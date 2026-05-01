@@ -16,6 +16,7 @@ export { default as GalleryTab } from './GalleryTab';
 export { default as LocationsTab } from './LocationsTab';
 export { default as LoyaltyMembersTab } from './LoyaltyMembersTab';
 export { default as MenuItemsTab } from './MenuItemsTab';
+export { default as MerchandiseTab } from './MerchandiseTab';
 export { default as NotificationsTab } from './NotificationsTab';
 export { default as PeopleTab } from './PeopleTab';
 export { default as SettingsTab } from './SettingsTab';
