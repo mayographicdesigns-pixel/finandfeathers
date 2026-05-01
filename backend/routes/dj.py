@@ -77,22 +77,57 @@ async def submit_song_request(request: SongRequestCreate):
     request_dict["created_at"] = datetime.now(timezone.utc)
     await db.song_requests.insert_one(request_dict)
 
-    # Auto-post karaoke signups to the wall feed
+    # Auto-post karaoke signups to the wall feed + DM the DJ
     if request_dict.get("request_type") == "karaoke":
+        location_slug = request_dict.get("location_slug", "")
+        singer_name = request_dict.get("name", "Someone")
+        song = request_dict.get("song", "a song")
+
         wall_post = {
             "id": str(uuid.uuid4()),
-            "location_slug": request_dict.get("location_slug", ""),
-            "user_id": request_dict.get("name", "Guest"),
-            "user_name": request_dict.get("name", "Someone"),
+            "location_slug": location_slug,
+            "user_id": singer_name,
+            "user_name": singer_name,
             "user_avatar": "🎤",
             "post_type": "karaoke_signup",
-            "content": f"🎤 {request_dict.get('name', 'Someone')} signed up for karaoke: \"{request_dict.get('song', 'a song')}\"",
+            "content": f"🎤 {singer_name} signed up for karaoke: \"{song}\"",
             "image_url": None,
             "likes": [],
             "comments": [],
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         await db.wall_posts.insert_one(wall_post)
+
+        # DM the active DJ at this location
+        try:
+            session = await db.karaoke_sessions.find_one(
+                {"location_slug": location_slug, "active": True}, {"_id": 0}
+            )
+            dj_id = session.get("dj_id") if session else None
+            if dj_id:
+                dj_profile = await db.dj_profiles.find_one({"id": dj_id}, {"_id": 0})
+                dj_name = (dj_profile or {}).get("stage_name") or (dj_profile or {}).get("name") or "DJ"
+                dm_msg = {
+                    "id": str(uuid.uuid4()),
+                    "from_user_id": singer_name,
+                    "from_user_name": singer_name,
+                    "from_user_avatar": "🎤",
+                    "to_user_id": dj_id,
+                    "to_user_name": dj_name,
+                    "content": f"🎤 New karaoke signup: \"{song}\"",
+                    "read": False,
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                }
+                await db.wall_dm_messages.insert_one(dm_msg)
+
+                # Notify DJ (in-app + push)
+                try:
+                    from routes.wall import _notify_user
+                    await _notify_user(dj_id, f"🎤 Karaoke signup from {singer_name}", song)
+                except Exception as e:
+                    logging.debug(f"DJ notify failed: {e}")
+        except Exception as e:
+            logging.error(f"Karaoke DJ DM error: {e}")
 
     return SongRequestResponse(**request_dict)
 

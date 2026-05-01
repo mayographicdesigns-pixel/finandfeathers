@@ -76,7 +76,7 @@ def draw_footer(c):
     c.setFillColor(GOLD)
     c.setFont("Helvetica-Bold", 6.5)
     c.drawCentredString(PAGE_W / 2, MARGIN - 0.1 * inch,
-                        "* Contains dairy and/or undercooked meat  |  Please inform your server of any allergies  |  A 20% automatic gratuity is added to all checks  |  finandfeathers.live")
+                        "* Contains dairy and/or undercooked meat  |  Please inform your server of any allergies  |  A 20% service charge is added to all checks  |  finandfeathers.live")
 
 
 def draw_cat_header(c, x, y, label, col_w):
@@ -331,7 +331,7 @@ async def generate_menu_pdf(output_path: str):
     c.setFillColor(TEXT_MUTED)
     c.setFont("Helvetica", 7)
     c.drawCentredString(PAGE_W / 2, MARGIN - 0.1 * inch,
-                        "21+ Establishment  |  A 20% automatic gratuity is added to all checks  |  finandfeathers.live")
+                        "21+ Establishment  |  A 20% service charge is added to all checks  |  finandfeathers.live")
 
     c.save()
     size_kb = os.path.getsize(output_path) // 1024

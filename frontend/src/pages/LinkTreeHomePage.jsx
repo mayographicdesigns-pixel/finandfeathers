@@ -1262,7 +1262,7 @@ const LinkTreeHomePage = () => {
               <span className="font-semibold">Age Requirement:</span> We are a 21+ establishment. Please ensure all guests have a valid government-issued ID ready upon arrival.
             </p>
             <p className="text-red-300/90 text-sm text-center">
-              <span className="font-semibold">Service Policy:</span> To support our dedicated team, a 20% automatic gratuity is added to all checks.
+              <span className="font-semibold">Service Policy:</span> To support our dedicated team, a 20% service charge is added to all checks.
             </p>
           </div>
         </div>

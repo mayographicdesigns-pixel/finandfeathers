@@ -370,6 +370,10 @@ const DJPanelPage = () => {
       const data = await res.json();
       setKaraokeActive(data.active);
       if (!data.active) setQueue([]);
+      // When DJ starts karaoke, navigate to the wall to manage queue + signups
+      if (data.active && checkedInLocation) {
+        navigate(`/social/${checkedInLocation}`);
+      }
     } catch (e) { console.error(e); }
   };
 
