@@ -32,6 +32,7 @@ import {
 } from '../components/admin';
 import { PageContentTab } from '../components/admin';
 import WeeklyVideosCard from '../components/admin/WeeklyVideosCard';
+import KaraokeControlCard from '../components/admin/KaraokeControlCard';
 import { Settings, Music } from 'lucide-react';
 // Main Admin Page Component
 const AdminPage = () => {
@@ -154,6 +155,7 @@ const AdminPage = () => {
                 </div>
               </CardContent>
             </Card>
+            <KaraokeControlCard />
           </div>
         )}
 
