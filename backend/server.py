@@ -122,6 +122,26 @@ async def checkout_all_at_location(tz_name: str, location_slugs: list):
         logging.error(f"4am checkout error ({tz_name}): {e}")
 
 
+async def auto_disable_karaoke(tz_name: str, location_slugs: list):
+    """Auto-disable karaoke mode at 3am local time for all locations in this timezone."""
+    try:
+        now_iso = datetime.now(timezone.utc).isoformat()
+        # Turn off any active karaoke sessions
+        result = await db.karaoke_sessions.update_many(
+            {"location_slug": {"$in": location_slugs}, "active": True},
+            {"$set": {"active": False, "ended_at": now_iso, "auto_disabled": True}}
+        )
+        # Mark all pending karaoke signups as skipped
+        await db.song_requests.update_many(
+            {"location_slug": {"$in": location_slugs}, "status": "pending", "request_type": "karaoke"},
+            {"$set": {"status": "skipped"}}
+        )
+        if result.modified_count:
+            logging.info(f"3am karaoke auto-off ({tz_name}): Disabled {result.modified_count} session(s) at {', '.join(location_slugs)}")
+    except Exception as e:
+        logging.error(f"3am karaoke auto-off error ({tz_name}): {e}")
+
+
 async def scheduled_cleanup_old_posts():
     """Scheduled task — posts are now kept permanently (Facebook-style feed)."""
     pass
@@ -197,7 +217,14 @@ async def startup_scheduler():
             id=f'checkout_{tz_name.replace("/", "_")}',
             replace_existing=True
         )
-        logging.info(f"Scheduled 4am checkout for {tz_name}: {', '.join(slugs)}")
+        scheduler.add_job(
+            auto_disable_karaoke,
+            CronTrigger(hour=3, minute=0, timezone=tz_name),
+            args=[tz_name, slugs],
+            id=f'karaoke_off_{tz_name.replace("/", "_")}',
+            replace_existing=True
+        )
+        logging.info(f"Scheduled 4am checkout + 3am karaoke-off for {tz_name}: {', '.join(slugs)}")
 
     scheduler.start()
     await ensure_default_admin_user()
