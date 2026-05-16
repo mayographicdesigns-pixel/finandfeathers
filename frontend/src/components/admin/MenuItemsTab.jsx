@@ -222,23 +222,35 @@ const MenuItemsTab = () => {
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
 
+  const downloadAsBlob = async (path, filename, label) => {
+    const res = await fetch(`${window.location.origin}${path}`, {
+      method: 'POST',
+      headers: adminHeaders(),
+    });
+    if (!res.ok) {
+      let msg = `${label} failed (${res.status})`;
+      try {
+        const j = await res.json();
+        if (j.detail) msg = j.detail;
+      } catch { /* ignore */ }
+      throw new Error(msg);
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  };
+
   const generateLetterPdf = async () => {
     setLetterPdfBusy(true);
     try {
-      const res = await fetch(`${window.location.origin}/api/admin/menu/generate-letter-pdf`, {
-        method: 'POST',
-        headers: adminHeaders(),
-      });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      toast({ title: 'Letter PDF ready', description: 'Downloading 8.5×11 double-sided menu' });
-      // Force download
-      const link = document.createElement('a');
-      link.href = `${data.url}?t=${Date.now()}`;
-      link.download = 'Fin-and-Feathers-Menu-Letter.pdf';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      await downloadAsBlob('/api/admin/menu/generate-letter-pdf', 'Fin-and-Feathers-Menu-Letter.pdf', 'Letter PDF');
+      toast({ title: 'Letter PDF downloaded', description: '8.5×11 double-sided menu' });
     } catch (e) {
       toast({ title: 'Error', description: e.message, variant: 'destructive' });
     } finally {
@@ -249,19 +261,8 @@ const MenuItemsTab = () => {
   const generateLargePdf = async () => {
     setPdfBusy(true);
     try {
-      const res = await fetch(`${window.location.origin}/api/admin/menu/generate-pdf`, {
-        method: 'POST',
-        headers: adminHeaders(),
-      });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      toast({ title: 'Large PDF ready', description: 'Downloading 11×17 printable menu' });
-      const link = document.createElement('a');
-      link.href = `${data.url}?t=${Date.now()}`;
-      link.download = 'Fin-and-Feathers-Menu.pdf';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      await downloadAsBlob('/api/admin/menu/generate-pdf', 'Fin-and-Feathers-Menu.pdf', 'Large PDF');
+      toast({ title: 'Large PDF downloaded', description: '11×17 printable menu' });
     } catch (e) {
       toast({ title: 'Error', description: e.message, variant: 'destructive' });
     } finally {

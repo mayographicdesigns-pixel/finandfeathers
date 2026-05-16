@@ -1,9 +1,25 @@
 // Version Changelog Data
 // Update this with each release
 
-export const APP_VERSION = '2.3.0';
+export const APP_VERSION = '2.4.0';
 
 export const CHANGELOG = {
+  '2.4.0': {
+    date: '2026-05-16',
+    title: 'Menu PDFs, CSV Export & Karaoke Auto-Off',
+    isCritical: true,
+    changes: [
+      { type: 'feature', text: 'Admin: Download 8.5×11 double-sided menu PDF' },
+      { type: 'feature', text: 'Admin: Download 11×17 large printable menu PDF' },
+      { type: 'feature', text: 'Admin: Export menu items as CSV (with image links)' },
+      { type: 'feature', text: 'Admin: Karaoke Mode Control card on dashboard' },
+      { type: 'feature', text: 'Karaoke auto-disables nightly at 3am local time' },
+      { type: 'improvement', text: 'Merchandise: add/edit/delete products with Stripe checkout (bypasses WooCommerce)' },
+      { type: 'improvement', text: 'House rules: 20% gratuity → 20% service charge' },
+      { type: 'improvement', text: 'Karaoke signups now DM the active DJ' },
+      { type: 'bugfix', text: 'Fixed PDF download flow that previously showed raw JSON' }
+    ]
+  },
   '2.3.0': {
     date: '2026-03-25',
     title: 'Weekly Specials, Live Streaming & Timezone Support',

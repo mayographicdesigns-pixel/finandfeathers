@@ -29,25 +29,43 @@ async def force_seed_menu(admin: str = Depends(get_current_admin)):
 
 
 @router.post("/admin/menu/generate-pdf")
+@router.get("/admin/menu/generate-pdf")
 async def generate_menu_pdf_endpoint(admin: str = Depends(get_current_admin)):
-    """Regenerate the printable 11x17 menu PDF."""
+    """Regenerate the printable 11x17 menu PDF and stream it back as a download."""
+    from fastapi.responses import FileResponse
     import subprocess
     import sys
     result = subprocess.run([sys.executable, "generate_menu_pdf.py"], capture_output=True, text=True, cwd=ROOT_DIR)
     if result.returncode != 0:
-        return {"error": result.stderr}
-    return {"message": "PDF generated", "url": "/menu/Fin-and-Feathers-Menu.pdf"}
+        raise HTTPException(status_code=500, detail=result.stderr)
+    pdf_path = ROOT_DIR.parent / "frontend" / "public" / "menu" / "Fin-and-Feathers-Menu.pdf"
+    if not pdf_path.exists():
+        raise HTTPException(status_code=500, detail="PDF was not created")
+    return FileResponse(
+        path=str(pdf_path),
+        media_type="application/pdf",
+        filename="Fin-and-Feathers-Menu.pdf",
+    )
 
 
 @router.post("/admin/menu/generate-letter-pdf")
+@router.get("/admin/menu/generate-letter-pdf")
 async def generate_letter_menu_pdf_endpoint(admin: str = Depends(get_current_admin)):
-    """Regenerate the double-sided 8.5x11 letter menu PDF."""
+    """Regenerate the double-sided 8.5x11 letter menu PDF and stream it back as a download."""
+    from fastapi.responses import FileResponse
     import subprocess
     import sys
     result = subprocess.run([sys.executable, "generate_menu_pdf_letter.py"], capture_output=True, text=True, cwd=ROOT_DIR)
     if result.returncode != 0:
-        return {"error": result.stderr}
-    return {"message": "Letter PDF generated", "url": "/menu/Fin-and-Feathers-Menu-Letter.pdf"}
+        raise HTTPException(status_code=500, detail=result.stderr)
+    pdf_path = ROOT_DIR.parent / "frontend" / "public" / "menu" / "Fin-and-Feathers-Menu-Letter.pdf"
+    if not pdf_path.exists():
+        raise HTTPException(status_code=500, detail="PDF was not created")
+    return FileResponse(
+        path=str(pdf_path),
+        media_type="application/pdf",
+        filename="Fin-and-Feathers-Menu-Letter.pdf",
+    )
 
 
 @router.get("/admin/menu/export-csv")
