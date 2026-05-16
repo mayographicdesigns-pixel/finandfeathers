@@ -1146,6 +1146,9 @@ const MenuPage = () => {
           <p className="text-red-300/90 text-sm text-center">
             <span className="font-semibold">Service Policy:</span> To support our dedicated team, a 20% service charge is added to all checks.
           </p>
+          <p className="text-red-300/90 text-sm text-center" data-testid="house-rules-togo-surcharge">
+            <span className="font-semibold">To-Go Orders:</span> A $2.00 surcharge applies to each to-go item.
+          </p>
         </div>
 
         {/* ALL VIEW - Show everything organized with drinks at the bottom */}
