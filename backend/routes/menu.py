@@ -1,7 +1,7 @@
 """Menu router — public menu, admin menu CRUD, category styles, bulk operations, file uploads."""
 from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Request
 from database import (
-    db, get_current_admin, UPLOAD_DIR,
+    db, get_current_admin, UPLOAD_DIR, ROOT_DIR,
     ALLOWED_EXTENSIONS, ALLOWED_VIDEO_EXTENSIONS, MAX_FILE_SIZE, MAX_VIDEO_SIZE,
     download_image_to_uploads
 )
@@ -9,6 +9,7 @@ from models import MenuItemCreate, MenuItemUpdate
 from pathlib import Path
 from datetime import datetime, timezone
 import base64
+import os
 import uuid
 
 router = APIRouter(prefix="/api")
@@ -29,12 +30,76 @@ async def force_seed_menu(admin: str = Depends(get_current_admin)):
 
 @router.post("/admin/menu/generate-pdf")
 async def generate_menu_pdf_endpoint(admin: str = Depends(get_current_admin)):
-    """Regenerate the printable menu PDF."""
+    """Regenerate the printable 11x17 menu PDF."""
     import subprocess
-    result = subprocess.run(["python3", "generate_menu_pdf.py"], capture_output=True, text=True, cwd=ROOT_DIR)
+    import sys
+    result = subprocess.run([sys.executable, "generate_menu_pdf.py"], capture_output=True, text=True, cwd=ROOT_DIR)
     if result.returncode != 0:
         return {"error": result.stderr}
     return {"message": "PDF generated", "url": "/menu/Fin-and-Feathers-Menu.pdf"}
+
+
+@router.post("/admin/menu/generate-letter-pdf")
+async def generate_letter_menu_pdf_endpoint(admin: str = Depends(get_current_admin)):
+    """Regenerate the double-sided 8.5x11 letter menu PDF."""
+    import subprocess
+    import sys
+    result = subprocess.run([sys.executable, "generate_menu_pdf_letter.py"], capture_output=True, text=True, cwd=ROOT_DIR)
+    if result.returncode != 0:
+        return {"error": result.stderr}
+    return {"message": "Letter PDF generated", "url": "/menu/Fin-and-Feathers-Menu-Letter.pdf"}
+
+
+@router.get("/admin/menu/export-csv")
+async def export_menu_csv(admin: str = Depends(get_current_admin), location_slug: str = None):
+    """Export menu items as CSV with photo links."""
+    from fastapi.responses import StreamingResponse
+    import csv
+    import io
+
+    query = {}
+    if location_slug:
+        query["location_slug"] = location_slug
+
+    items = await db.menu_items.find(query, {"_id": 0}).to_list(5000)
+
+    output = io.StringIO()
+    fieldnames = [
+        "id", "name", "category", "price", "description",
+        "image_url", "image_full_url", "badges", "is_active",
+        "location_slug", "display_order"
+    ]
+    writer = csv.DictWriter(output, fieldnames=fieldnames, extrasaction="ignore")
+    writer.writeheader()
+
+    base_url = os.environ.get("PUBLIC_BASE_URL", "https://finandfeathers.live").rstrip("/")
+    for item in items:
+        img = item.get("image_url") or item.get("image") or ""
+        full_img = img
+        if img and img.startswith("/"):
+            full_img = f"{base_url}{img}"
+        row = {
+            "id": item.get("id", ""),
+            "name": item.get("name", ""),
+            "category": item.get("category", ""),
+            "price": item.get("price", ""),
+            "description": item.get("description", ""),
+            "image_url": img,
+            "image_full_url": full_img,
+            "badges": ", ".join(item.get("badges") or []),
+            "is_active": item.get("is_active", True),
+            "location_slug": item.get("location_slug") or "",
+            "display_order": item.get("display_order", ""),
+        }
+        writer.writerow(row)
+
+    output.seek(0)
+    filename = f"menu-items-{location_slug or 'all'}.csv"
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 

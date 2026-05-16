@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, Edit2, Trash2, Upload, RefreshCw, Image, Grid3X3, MapPin, Globe } from 'lucide-react';
+import { Plus, Edit2, Trash2, Upload, RefreshCw, Image, Grid3X3, MapPin, Globe, FileDown, FileSpreadsheet, Loader2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
@@ -45,6 +45,9 @@ const MenuItemsTab = () => {
   const [showStyleEditor, setShowStyleEditor] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [converting, setConverting] = useState(false);
+  const [pdfBusy, setPdfBusy] = useState(false);
+  const [letterPdfBusy, setLetterPdfBusy] = useState(false);
+  const [csvBusy, setCsvBusy] = useState(false);
   const fileInputRef = useRef(null);
   const quickFileRef = useRef(null);
   const [quickUploadItemId, setQuickUploadItemId] = useState(null);
@@ -214,6 +217,83 @@ const MenuItemsTab = () => {
     setConverting(false);
   };
 
+  const adminHeaders = () => {
+    const token = localStorage.getItem('adminToken');
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  };
+
+  const generateLetterPdf = async () => {
+    setLetterPdfBusy(true);
+    try {
+      const res = await fetch(`${window.location.origin}/api/admin/menu/generate-letter-pdf`, {
+        method: 'POST',
+        headers: adminHeaders(),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      toast({ title: 'Letter PDF ready', description: 'Downloading 8.5×11 double-sided menu' });
+      // Force download
+      const link = document.createElement('a');
+      link.href = `${data.url}?t=${Date.now()}`;
+      link.download = 'Fin-and-Feathers-Menu-Letter.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (e) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+    } finally {
+      setLetterPdfBusy(false);
+    }
+  };
+
+  const generateLargePdf = async () => {
+    setPdfBusy(true);
+    try {
+      const res = await fetch(`${window.location.origin}/api/admin/menu/generate-pdf`, {
+        method: 'POST',
+        headers: adminHeaders(),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      toast({ title: 'Large PDF ready', description: 'Downloading 11×17 printable menu' });
+      const link = document.createElement('a');
+      link.href = `${data.url}?t=${Date.now()}`;
+      link.download = 'Fin-and-Feathers-Menu.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (e) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+    } finally {
+      setPdfBusy(false);
+    }
+  };
+
+  const exportCsv = async () => {
+    setCsvBusy(true);
+    try {
+      const qs = filterLocation ? `?location_slug=${encodeURIComponent(filterLocation)}` : '';
+      const res = await fetch(`${window.location.origin}/api/admin/menu/export-csv${qs}`, {
+        headers: adminHeaders(),
+      });
+      if (!res.ok) throw new Error('CSV export failed');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `menu-items-${filterLocation || 'all'}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast({ title: 'CSV exported' });
+    } catch (e) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+    } finally {
+      setCsvBusy(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -324,6 +404,36 @@ const MenuItemsTab = () => {
             data-testid="display-styles-btn"
           >
             <Grid3X3 className="w-4 h-4 mr-2" /> Display Styles
+          </Button>
+          <Button
+            onClick={generateLetterPdf}
+            disabled={letterPdfBusy}
+            variant="outline"
+            className="border-purple-600 text-purple-400 hover:bg-purple-900/30 text-xs"
+            data-testid="generate-letter-pdf-btn"
+          >
+            {letterPdfBusy ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <FileDown className="w-3.5 h-3.5 mr-1.5" />}
+            {letterPdfBusy ? 'Generating...' : 'Download Letter PDF (8.5×11)'}
+          </Button>
+          <Button
+            onClick={generateLargePdf}
+            disabled={pdfBusy}
+            variant="outline"
+            className="border-pink-600 text-pink-400 hover:bg-pink-900/30 text-xs"
+            data-testid="generate-large-pdf-btn"
+          >
+            {pdfBusy ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <FileDown className="w-3.5 h-3.5 mr-1.5" />}
+            {pdfBusy ? 'Generating...' : 'Download Large PDF (11×17)'}
+          </Button>
+          <Button
+            onClick={exportCsv}
+            disabled={csvBusy}
+            variant="outline"
+            className="border-emerald-600 text-emerald-400 hover:bg-emerald-900/30 text-xs"
+            data-testid="export-csv-btn"
+          >
+            {csvBusy ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5" />}
+            {csvBusy ? 'Exporting...' : 'Export CSV'}
           </Button>
           <Button onClick={() => setShowForm(true)} className="bg-red-600 hover:bg-red-700">
             <Plus className="w-4 h-4 mr-2" /> Add Item
