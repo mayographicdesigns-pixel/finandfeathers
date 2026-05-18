@@ -14,7 +14,7 @@
   {
     "name": "Chicken Thigh Nuggets*",
     "description": "Delicious deep-fried thigh nuggets cooked perfectly. Toss in lemon pepper, BBQ, mild, hot, or honey hot for $1",
-    "price": 12,
+    "price": 14,
     "category": "starters",
     "badges": [],
     "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2023/05/d5a5b6d60bb345848208733aad759bad.jpeg",
@@ -94,7 +94,7 @@
   {
     "name": "Fried Pickles*",
     "description": "Dill pickles, hand battered and deep fried served with chipotle ranch",
-    "price": 11,
+    "price": 12,
     "category": "starters",
     "badges": [],
     "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC6577.jpg",
@@ -118,7 +118,7 @@
   {
     "name": "New Zealand Lamb Chops*",
     "description": "Four perfectly grilled chops, covered in our one-of-a-kind lamb sauce. Pick any two delicious side dishes",
-    "price": 43.0,
+    "price": 44,
     "category": "entrees",
     "badges": [
       "Chef's Special"
@@ -132,7 +132,7 @@
   {
     "name": "Marinated Malibu Ribeye*",
     "description": "10 oz hand-cut ribeye steak marinated in the essence of California, grilled to order and served with two sides",
-    "price": 41.0,
+    "price": 42,
     "category": "entrees",
     "badges": [
       "Chef's Special"
@@ -146,7 +146,7 @@
   {
     "name": "Deep Fried Catfish*",
     "description": "Seasoned deep fried catfish, served with your choice of our homemade remoulade sauce, tartar sauce or hot sauce and served with two sides",
-    "price": 21.0,
+    "price": 22,
     "category": "entrees",
     "badges": [],
     "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/8f476b4bb04a4bb0b30b75a0e8271189-e1665919417568.jpeg",
@@ -158,7 +158,7 @@
   {
     "name": "Grilled Blackened Catfish*",
     "description": "Fresh caught catfish, grilled and served with your choice of our homemade remoulade sauce, tartar sauce or hot sauce and served with two sides",
-    "price": 21.0,
+    "price": 22,
     "category": "entrees",
     "badges": [],
     "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Grilled-Catfish-scaled.jpg",
@@ -170,7 +170,7 @@
   {
     "name": "Stuffed Chicken Breast*",
     "description": "Boneless chicken breasts with herb-filled roasted vegetables, topped with a special cheese blend, homemade lemon cream sauce, and garnished with broccoli and diced tomatoes. Served with two sides",
-    "price": 25.0,
+    "price": 26,
     "category": "entrees",
     "badges": [],
     "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/fin_and_feathers_fried_stuffed_chicken_breast_3-e1665919636508.jpg",
@@ -182,7 +182,7 @@
   {
     "name": "Roasted Chicken Thighs*",
     "description": "Juicy Roasted Chicken Thighs pan-seared to lock in natural flavors and drizzled with savory orange au jus sauce. Served with two sides",
-    "price": 21.0,
+    "price": 23,
     "category": "entrees",
     "badges": [],
     "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Roasted-Chicken-Thighs-scaled.jpg",
@@ -194,7 +194,7 @@
   {
     "name": "Southern Fried Chicken*",
     "description": "Three whole wings or one thigh prepared with our own seasoned battered and fried to perfection and served with two sides",
-    "price": 21.0,
+    "price": 22,
     "category": "entrees",
     "badges": [],
     "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/DSC06011_edited.jpg",
@@ -206,7 +206,7 @@
   {
     "name": "Honey Bourbon Salmon*",
     "description": "8 oz fresh Atlantic salmon glazed in a house made honey bourbon sauce served with choice of two sides",
-    "price": 30.0,
+    "price": 32,
     "category": "entrees",
     "badges": [
       "Chef's Special"
@@ -247,7 +247,7 @@
   {
     "name": "Veggie Bowl",
     "description": "Saut\u00e9ed vegetables with sweet chili glaze - tender broccoli, carrots, tomatoes, and spinach saut\u00e9ed in garlic butter, served over rice pilaf (No sides included)",
-    "price": 19.0,
+    "price": 20,
     "category": "entrees",
     "badges": [
       "Vegetarian"
@@ -261,7 +261,7 @@
   {
     "name": "Catfish & Grits*",
     "description": "Fried Catfish & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce",
-    "price": 21,
+    "price": 22,
     "category": "seafood-grits",
     "badges": [
       "Chef's Special"
@@ -275,7 +275,7 @@
   {
     "name": "Shrimp & Grits*",
     "description": "Grilled Shrimp & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce",
-    "price": 25,
+    "price": 26,
     "category": "seafood-grits",
     "badges": [
       "Chef's Special"
@@ -289,7 +289,7 @@
   {
     "name": "Salmon & Grits*",
     "description": "Grilled Salmon & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce",
-    "price": 27.0,
+    "price": 28,
     "category": "seafood-grits",
     "badges": [
       "Chef's Special"
@@ -318,7 +318,7 @@
   {
     "name": "F&F Jerk Turkey Burger*",
     "description": "Our signature jerk patty with pickled cabbage, garlic aioli, Monterey jack cheese & topped with house made peach and pineapple salsa",
-    "price": 15,
+    "price": 16,
     "category": "sandwiches",
     "badges": [
       "Spicy"
@@ -332,7 +332,7 @@
   {
     "name": "Fire Chicken Sandwich*",
     "description": "Grilled or deep-fried chicken breast, drizzled with our housemade fire sauce with melted jack cheese, saut\u00e9ed jalape\u00f1os and blue cheese",
-    "price": 15,
+    "price": 16,
     "category": "sandwiches",
     "badges": [
       "Spicy"
@@ -346,7 +346,7 @@
   {
     "name": "BBQ Chicken Sandwich*",
     "description": "Grilled or deep-fried chicken breast topped with BBQ sauce & melted jack cheese with lettuce, tomatoes and pickles",
-    "price": 15,
+    "price": 16,
     "category": "sandwiches",
     "badges": [],
     "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-BBQ-Chicken-Sandwich-1-scaled.jpg",
@@ -358,7 +358,7 @@
   {
     "name": "Catfish Filet Sandwich*",
     "description": "Deep-fried catfish topped with option of parmesan sauce, tartar or r\u00e9moulade sauce & lettuce, tomatoes and pickles. Add cheese +$1",
-    "price": 16.0,
+    "price": 17,
     "category": "sandwiches",
     "badges": [],
     "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/12/b810a1585baa482a8a40aa2fba4111e9-e1671233952540.jpeg",
@@ -370,7 +370,7 @@
   {
     "name": "Salmon Burger*",
     "description": "Perfectly cooked 4oz salmon fillet, seasoned and garnished with your choice of parmesan, tartar, or r\u00e9moulade sauce. Served with lettuce, tomatoes, and pickles. Add cheese +$1",
-    "price": 18.0,
+    "price": 19,
     "category": "sandwiches",
     "badges": [],
     "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2022/10/Screenshot_7-e1666177138547.jpg",
@@ -631,7 +631,7 @@
   {
     "name": "Steak & Eggs*",
     "description": "Our Malibu ribeye, two eggs (any style) with your choice of breakfast potatoes or grits & a biscuit",
-    "price": 29,
+    "price": 31,
     "category": "brunch",
     "badges": [
       "Chef's Special"
@@ -683,7 +683,7 @@
   {
     "name": "Lamb Chops & Eggs*",
     "description": "Three Lamb Chops with signature lamb sauce, paired with eggs cooked to your preference and choice of potatoes or grits. Served with a fluffy biscuit",
-    "price": 31.0,
+    "price": 33,
     "category": "brunch",
     "badges": [
       "Chef's Special"
@@ -697,7 +697,7 @@
   {
     "name": "Catfish & Grits (Brunch)*",
     "description": "Fried Catfish & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce. *No sides included",
-    "price": 21,
+    "price": 22,
     "category": "brunch",
     "badges": [],
     "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2023/09/7-1.png",
@@ -709,7 +709,7 @@
   {
     "name": "Shrimp & Grits (Brunch)*",
     "description": "Grilled Shrimp & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce. *No sides included",
-    "price": 25,
+    "price": 26,
     "category": "brunch",
     "badges": [],
     "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Shrimp-Grits-scaled.jpg",
@@ -721,7 +721,7 @@
   {
     "name": "Salmon & Grits (Brunch)*",
     "description": "Grilled Salmon & roasted peppers served over cheesy grits drizzled with a spicy parmesan cheese sauce. *No sides included",
-    "price": 27.0,
+    "price": 28,
     "category": "brunch",
     "badges": [],
     "imageUrl": "https://finandfeathersrestaurants.com/wp-content/uploads/2024/07/FIN_AND_FEATHER-Salmon-Grits-scaled.jpg",
@@ -1127,7 +1127,7 @@
   {
     "name": "Southern Sweet Tea",
     "description": "",
-    "price": 2.5,
+    "price": 3,
     "image": "",
     "category": "teas-lemonades",
     "badges": [],
@@ -1137,7 +1137,7 @@
   {
     "name": "Classic Lemonade",
     "description": "",
-    "price": 2.5,
+    "price": 3,
     "image": "",
     "category": "teas-lemonades",
     "badges": [],
@@ -1147,7 +1147,7 @@
   {
     "name": "Strawberry Lemonade",
     "description": "Add a burst of flavor to our classic lemonade with strawberry puree.",
-    "price": 4.0,
+    "price": 5,
     "image": "",
     "category": "custom-lemonades",
     "badges": [],
@@ -1157,7 +1157,7 @@
   {
     "name": "Mango Lemonade",
     "description": "Add a burst of flavor to our classic lemonade with mango puree.",
-    "price": 4.0,
+    "price": 5,
     "image": "",
     "category": "custom-lemonades",
     "badges": [],
@@ -1167,7 +1167,7 @@
   {
     "name": "Peach Lemonade",
     "description": "Add a burst of flavor to our classic lemonade with peach puree.",
-    "price": 4.0,
+    "price": 5,
     "image": "",
     "category": "custom-lemonades",
     "badges": [],
@@ -1306,13 +1306,19 @@
   },
   {
     "name": "House Champagne",
-    "description": "Bottle",
-    "price": 65.0,
+    "description": "House Champagne (Bottle Only)",
+    "price": 20,
     "image": "",
     "category": "beer-wine",
     "badges": [],
     "type": null,
-    "id": "7541eff5-9f9e-4e38-ab74-c93df141c609"
+    "id": "7541eff5-9f9e-4e38-ab74-c93df141c609",
+    "variations": [
+      {
+        "name": "Bottle",
+        "price": 20
+      }
+    ]
   },
   {
     "name": "Moet Rose",
@@ -1347,7 +1353,7 @@
   {
     "name": "Cranberry Juice",
     "description": "",
-    "price": 3.0,
+    "price": 4,
     "image": "",
     "category": "chilled-juices",
     "badges": [],
@@ -1357,7 +1363,7 @@
   {
     "name": "Orange Juice",
     "description": "",
-    "price": 3.0,
+    "price": 4,
     "image": "",
     "category": "chilled-juices",
     "badges": [],
@@ -1367,7 +1373,7 @@
   {
     "name": "Pineapple Juice",
     "description": "",
-    "price": 3.0,
+    "price": 4,
     "image": "",
     "category": "chilled-juices",
     "badges": [],
@@ -1776,7 +1782,7 @@
   {
     "id": "c12",
     "name": "Old Atlanta",
-    "description": "A peach state twist on a traditional old fashioned. Uncle Nearest, peach purée, simple syrup, garnished with an orange slice and cherry.",
+    "description": "A peach state twist on a traditional old fashioned. Uncle Nearest, peach pur\u00e9e, simple syrup, garnished with an orange slice and cherry.",
     "price": 17,
     "category": "cocktails",
     "badges": [
@@ -2018,7 +2024,7 @@
     "id": "fd12ba45-91b9-4fbc-9d12-84024b30f171",
     "name": "Ground Turkey Burger*",
     "description": "A perfectly grilled, savory seasoned ground turkey patty on a toasted brioche bun, topped with crisp lettuce, fresh sliced tomatoes, and zesty pickles, served with a generous side of seasoned fries",
-    "price": 15.0,
+    "price": 16,
     "category": "sandwiches",
     "type": "food",
     "image": "/images/menu/sandwiches/Ground Turkey Burger.jpg",
@@ -2223,7 +2229,7 @@
       },
       {
         "name": "Bottle",
-        "price": 36
+        "price": 38
       }
     ]
   },
@@ -2247,6 +2253,28 @@
         "price": 46
       }
     ]
+  },
+  {
+    "id": "24a563e7-d5c1-4238-88af-755c5f519b4b",
+    "name": "Washington Hills Riesling",
+    "category": "beer-wine",
+    "subcategory": "White Wine",
+    "description": "Off-dry Washington State Riesling with notes of green apple and citrus",
+    "type": "drink",
+    "price": 10,
+    "variations": [
+      {
+        "name": "Glass",
+        "price": 10
+      },
+      {
+        "name": "Bottle",
+        "price": 38
+      }
+    ],
+    "image": "",
+    "image_url": "",
+    "is_active": true
   },
   {
     "name": "Sunrise",
@@ -2277,15 +2305,15 @@
     "subcategory": "Red Wine",
     "description": "Semi-sweet Italian red wine with notes of wild berries and a smooth finish",
     "type": "drink",
-    "price": 12,
+    "price": 10,
     "variations": [
       {
         "name": "Glass",
-        "price": 12
+        "price": 10
       },
       {
         "name": "Bottle",
-        "price": 45
+        "price": 38
       }
     ],
     "image": "",
