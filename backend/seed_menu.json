@@ -1559,7 +1559,7 @@
     "name": "Sunset Blvd",
     "description": "Skittles candy, lemon & pineapple party mix",
     "price": 35.0,
-    "image": "/images/cocktails/Sunset Blvd.jpg",
+    "image": "/images/cocktails/Sunset-Blvd.jpg",
     "category": "hookah-premium",
     "badges": [
       "PREMIUM +$5",
@@ -1567,7 +1567,7 @@
     ],
     "type": null,
     "id": "2b724c0f-f8fe-459b-b6d2-bcb7724d58f2",
-    "image_url": "/images/cocktails/Sunset Blvd.jpg"
+    "image_url": "/images/cocktails/Sunset-Blvd.jpg"
   },
   {
     "name": "Cali Dreamin",
@@ -1698,7 +1698,7 @@
     ],
     "layout": "card",
     "is_active": true,
-    "image_url": "/images/cocktails/Sunset Blvd.jpg",
+    "image_url": "/images/cocktails/Sunset-Blvd.jpg",
     "image": "/images/cocktails/Sunset Blvd.jpg"
   },
   {
