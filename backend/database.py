@@ -167,6 +167,57 @@ async def _seed_full_menu(slugs: list):
         logging.info(f"Menu seed: inserted {len(docs)} items ({len(seed_items)} items x {len(slugs)} locations)")
 
 
+async def _sync_menu_prices_and_images(slugs: list):
+    """On every startup, sync prices, images, and descriptions from seed_menu.json
+    to all existing menu items (matched by name + category).
+    This ensures price/image changes in seed_menu.json reach production without a full re-seed."""
+    import json as _json
+    seed_path = ROOT_DIR / "seed_menu.json"
+    if not seed_path.exists():
+        return
+
+    with open(seed_path, "r") as f:
+        seed_items = _json.load(f)
+
+    updated_count = 0
+    inserted_count = 0
+    for item in seed_items:
+        name = item.get("name")
+        category = item.get("category")
+        if not name or not category:
+            continue
+
+        update_fields = {}
+        for field in ("price", "description", "image", "image_url", "badges", "variations"):
+            if field in item:
+                update_fields[field] = item[field]
+
+        if not update_fields:
+            continue
+
+        # Update existing items across all locations
+        result = await db.menu_items.update_many(
+            {"name": name, "category": category},
+            {"$set": update_fields},
+        )
+        updated_count += result.modified_count
+
+        # Insert into any location that doesn't have this item yet
+        for slug in slugs:
+            exists = await db.menu_items.find_one(
+                {"name": name, "category": category, "location_slug": slug},
+                {"_id": 1},
+            )
+            if not exists:
+                new_doc = {**item, "id": str(uuid.uuid4()), "location_slug": slug, "is_active": item.get("is_active", True)}
+                new_doc.pop("_id", None)
+                await db.menu_items.insert_one(new_doc)
+                inserted_count += 1
+
+    if updated_count or inserted_count:
+        logging.info(f"Menu sync: updated {updated_count} existing items, inserted {inserted_count} missing items from seed")
+
+
 async def _sync_wine_list(slugs: list):
     """Ensure wine list matches Silver Gate lineup. Removes old wines, adds missing new ones."""
     old_wines = [
@@ -222,11 +273,12 @@ async def ensure_menu_items():
         distinct_categories = await db.menu_items.distinct("category")
         logging.info(f"Menu check: {len(distinct_categories)} categories found")
         if len(distinct_categories) >= 10:
-            # DB has a full menu — ensure specific items + sync wine list
+            # DB has a full menu — ensure specific items + sync wine list + sync prices/images
             added = await _seed_specific_items(slugs)
             if added:
                 logging.info(f"Menu seed: added {added} new menu items")
             await _sync_wine_list(slugs)
+            await _sync_menu_prices_and_images(slugs)
         else:
             # DB is empty or partially seeded — do full seed
             logging.info(f"Menu seed: only {len(distinct_categories)} categories, running full seed")
