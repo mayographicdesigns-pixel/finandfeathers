@@ -404,7 +404,7 @@ const LocationsTab = () => {
                   </Button>
                 </div>
                 {formData.weekly_specials.map((special, index) => (
-                  <div key={index} className="flex gap-2 mb-2">
+                  <div key={`special-${special.day || 'new'}-${index}`} className="flex gap-2 mb-2">
                     <select
                       value={special.day}
                       onChange={(e) => updateSpecial(index, 'day', e.target.value)}

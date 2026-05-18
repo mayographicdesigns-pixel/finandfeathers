@@ -108,7 +108,7 @@ const HibachiMenu = ({ onlineOrderLink }) => {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3" data-testid="hibachi-gallery">
         {galleryImages.map((image, index) => (
           <div 
-            key={index} 
+            key={image.url || `hibachi-img-${index}`} 
             className={`relative overflow-hidden rounded-xl ${index === 0 ? 'col-span-2 row-span-2 md:col-span-2 md:row-span-2' : ''}`}
           >
             <img 

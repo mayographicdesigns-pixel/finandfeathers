@@ -1539,7 +1539,7 @@ const LinkTreeHomePage = () => {
                   onClick={() => navigate('/gallery')}
                 >
                   {displayContent.social_feed_images.map((image, index) => (
-                    <div key={index} className="relative group">
+                    <div key={image?.url || image?.id || `gallery-${index}`} className="relative group">
                       <div
                         className="aspect-square rounded-lg overflow-hidden block w-full"
                         data-testid={`gallery-preview-image-${index}`}
@@ -1729,7 +1729,7 @@ const LinkTreeHomePage = () => {
             const Icon = getSocialIcon(link.platform);
             return (
               <a
-                key={index}
+                key={link.platform || link.url || `social-${index}`}
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"

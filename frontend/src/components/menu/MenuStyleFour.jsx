@@ -103,8 +103,8 @@ export const MenuStyleFour = ({ item, isExpanded, onToggleExpand, onImageClick }
         
         {item.variations && item.variations.length > 0 ? (
           <div className="flex items-center gap-2">
-            {item.variations.map((v, vi) => (
-              <span key={vi} className="text-slate-800 font-bold text-sm">
+            {item.variations.map((v) => (
+              <span key={`${item.id}-${v.name}`} className="text-slate-800 font-bold text-sm">
                 <span className="text-slate-500 text-[10px] font-normal mr-0.5">{v.name}</span>
                 ${v.price}
               </span>

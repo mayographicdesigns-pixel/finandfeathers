@@ -79,7 +79,7 @@ const WeeklyVideosCard = () => {
       </CardHeader>
       <CardContent className="space-y-3">
         {dayLabels.map((day, dayIndex) => (
-          <div key={dayIndex} className="rounded-lg border border-slate-700/50 bg-slate-900/40 overflow-hidden">
+          <div key={day} className="rounded-lg border border-slate-700/50 bg-slate-900/40 overflow-hidden">
             <div className="flex items-center justify-between px-4 py-2 bg-slate-800/50 border-b border-slate-700/50">
               <span className="text-slate-300 font-semibold text-sm uppercase tracking-wider">{day}</span>
               <Button
@@ -97,7 +97,7 @@ const WeeklyVideosCard = () => {
                 <p className="text-slate-500 text-xs italic">Using default videos</p>
               )}
               {(weeklyVideos[dayIndex] || []).map((url, vi) => (
-                <div key={vi} className="flex items-center gap-2">
+                <div key={`${day}-vid-${vi}`} className="flex items-center gap-2">
                   <Input
                     value={url}
                     onChange={(e) => updateVideoUrl(dayIndex, vi, e.target.value)}

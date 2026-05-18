@@ -85,9 +85,9 @@ const MenuCard = ({ item, variant = 'default', editMode = false, onEdit, onImage
           <div className="flex items-center gap-2 flex-wrap">
             {editMode && <Edit2 className="w-3 h-3 text-red-400" />}
             <h3 className="text-base font-medium text-white">{item.name}</h3>
-            {item.badges && item.badges.map((badge, index) => (
+            {item.badges && item.badges.map((badge) => (
               <Badge
-                key={index}
+                key={`${item.id}-${badge}`}
                 variant="outline"
                 className={`${
                   badge === "Chef's Special"
@@ -110,8 +110,8 @@ const MenuCard = ({ item, variant = 'default', editMode = false, onEdit, onImage
         <div className="ml-4 flex-shrink-0">
           {item.variations && item.variations.length > 0 ? (
             <div className="text-right">
-              {item.variations.map((v, vi) => (
-                <div key={vi} className="flex items-center gap-1.5">
+              {item.variations.map((v) => (
+                <div key={`${item.id}-${v.name}`} className="flex items-center gap-1.5">
                   <span className="text-slate-500 text-[10px]">{v.name}</span>
                   <span className="text-red-500 font-bold text-sm">${v.price}</span>
                 </div>

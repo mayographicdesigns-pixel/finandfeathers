@@ -12,9 +12,9 @@ const MenuLineItem = ({ item, isExpanded = false, onToggleExpand }) => {
       <div className="flex-1">
         <div className="flex items-center gap-2 flex-wrap">
           <h3 className="text-base font-medium text-white">{item.name}</h3>
-          {item.badges && item.badges.map((badge, index) => (
+          {item.badges && item.badges.map((badge) => (
             <Badge
-              key={index}
+              key={`${item.id}-${badge}`}
               variant="outline"
               className={`${
                 badge === "Chef's Special"

@@ -130,7 +130,7 @@ const DailyVideoCarousel = () => {
       <div ref={dayScrollRef} className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide">
         {dayNames.map((day, index) => (
           <button
-            key={index}
+            key={day}
             onClick={() => changeDay(index)}
             data-day={index}
             data-testid={`day-btn-${day.toLowerCase()}`}
@@ -217,9 +217,9 @@ const DailyVideoCarousel = () => {
       {/* Video Dots Indicator */}
       {videos.length > 1 && (
         <div className="flex justify-center gap-2">
-          {videos.map((_, index) => (
+          {videos.map((v, index) => (
             <button
-              key={index}
+              key={v?.id || v?.url || `vid-dot-${index}`}
               onClick={() => setCurrentVideoIndex(index)}
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
                 index === currentVideoIndex

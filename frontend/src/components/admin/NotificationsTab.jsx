@@ -101,7 +101,7 @@ const NotificationsTab = () => {
         ) : (
           <div className="space-y-2">
             {history.slice(0, 10).map((notif, index) => (
-              <Card key={index} className="bg-slate-800/30 border-slate-700/50">
+              <Card key={notif.id || notif.sent_at || `notif-${index}`} className="bg-slate-800/30 border-slate-700/50">
                 <CardContent className="p-3">
                   <p className="text-white font-medium text-sm">{notif.title}</p>
                   <p className="text-slate-400 text-xs">{notif.body}</p>
