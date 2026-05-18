@@ -1795,6 +1795,20 @@
     "image": "/images/cocktails/Old-Atlanta.jpg"
   },
   {
+    "id": "c13",
+    "name": "Fin-A-Rita",
+    "description": "Same recipe as our Rodeo Drive — Patron Cristalino Anejo, Grand Marnier, lime, and agave — finished with a Tajin rim and topped with an extra float of Grand Marnier.",
+    "price": 17,
+    "category": "cocktails",
+    "badges": [
+      "Premium"
+    ],
+    "layout": "card",
+    "is_active": true,
+    "image_url": "/images/cocktails/Fin-A-Rita.jpg",
+    "image": "/images/cocktails/Fin-A-Rita.jpg"
+  },
+  {
     "id": "ds1",
     "name": "4 Party Wings & Fries*",
     "description": "Four wings in your choice of flavor: lemon pepper, BBQ, mild, hot, or honey hot. Served with fries",
