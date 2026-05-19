@@ -1321,6 +1321,24 @@
     ]
   },
   {
+    "id": "a483bfa6-b944-418f-8513-e9d16234a3c3",
+    "name": "House Brut",
+    "category": "beer-wine",
+    "subcategory": "Sparkling",
+    "description": "House Brut sparkling wine (Bottle Only)",
+    "type": "drink",
+    "price": 20,
+    "variations": [
+      {
+        "name": "Bottle",
+        "price": 20
+      }
+    ],
+    "image": "",
+    "image_url": "",
+    "is_active": true
+  },
+  {
     "name": "Moet Rose",
     "description": "Bottle",
     "price": 325.0,
@@ -1797,7 +1815,7 @@
   {
     "id": "c13",
     "name": "Fin-A-Rita",
-    "description": "Same recipe as our Rodeo Drive — Patron Cristalino Anejo, Grand Marnier, lime, and agave — finished with a Tajin rim and topped with an extra float of Grand Marnier.",
+    "description": "Same recipe as our Rodeo Drive \u2014 Patron Cristalino Anejo, Grand Marnier, lime, and agave \u2014 finished with a Tajin rim and topped with an extra float of Grand Marnier.",
     "price": 17,
     "category": "cocktails",
     "badges": [
