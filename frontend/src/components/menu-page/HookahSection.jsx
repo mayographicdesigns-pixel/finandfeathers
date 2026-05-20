@@ -1,6 +1,35 @@
 import React from 'react';
 import OptimizedImage from '../OptimizedImage';
 
+// Snoop Dogg x Al Fakher — Premium flavors (+$10)
+const snoopDoggFlavors = [
+  {
+    name: "Dogg's Delight",
+    description: "Breezy island vibes with a frosty twist. Ripe mango and vibrant passionfruit burst through with island energy, then an icy pop slides through to keep it balanced. Tropical heat and chilled finesse all in one.",
+    image: '/images/hookah/Doggs-Delight.jpg',
+  },
+  {
+    name: 'Cloud 92',
+    description: 'Whisks you straight into the tropics. A blend of exotic fruits hits the palate upfront—sweet and a little wild—then the cooling finish glides in like a breeze.',
+    image: '/images/hookah/Cloud-92.jpg',
+  },
+  {
+    name: 'Midnight Blues',
+    description: 'Brings the berry. Think wild blueberries and ripe blackberries layered with an icy backdrop that keeps it crisp with a brisk finish. Bold and built for late into the night.',
+    image: '/images/hookah/Midnight-Blues.jpg',
+  },
+  {
+    name: "Tha G'z Mix",
+    description: "A straight-up crowd-pleaser. Bold pear lays the foundation, sharp citrus keeps it bright, and the ice finish ties it all together. A mix that's just right.",
+    image: '/images/hookah/Doggs-Delight.jpg', // no image provided — reuse Dogg's Delight as placeholder
+  },
+  {
+    name: 'Money Honey',
+    description: 'Light and fresh with flavor that stacks up. Honeydew melon comes first—mellow and gentle—then that icy touch pumps the whole vibe up. A flavor worth its weight.',
+    image: '/images/hookah/Money-Honey.jpg',
+  },
+];
+
 // Signature Mixes - House blends at base price $30
 const signatureMixes = [
   {
@@ -111,6 +140,10 @@ const HookahSection = ({ locationSlug }) => {
             <span className="text-purple-300">Premium Flavors:</span>
             <span className="text-white font-bold ml-2">+$5</span>
           </div>
+          <div className="bg-yellow-700/60 rounded-lg px-4 py-2">
+            <span className="text-yellow-300">Snoop Dogg Flavors:</span>
+            <span className="text-white font-bold ml-2">+$10</span>
+          </div>
           <div className="bg-amber-800/60 rounded-lg px-4 py-2">
             <span className="text-amber-300">Happy Hour:</span>
             <span className="text-white font-bold ml-2">$20</span>
@@ -119,6 +152,36 @@ const HookahSection = ({ locationSlug }) => {
         </div>
       </div>
       )}
+
+      {/* Snoop Dogg x Al Fakher — Premium flavors (+$10), top placement */}
+      <div className="bg-gradient-to-br from-yellow-900/30 to-purple-900/30 border-2 border-yellow-500/40 rounded-xl p-6" data-testid="hookah-snoop-section">
+        <div className="flex items-center gap-2 mb-2 flex-wrap">
+          <span className="text-2xl">👑</span>
+          <h4 className="text-xl font-bold text-yellow-300">SNOOP DOGG x AL FAKHER</h4>
+          <span className="bg-yellow-600 text-white text-xs px-2 py-1 rounded-full font-bold">+$10</span>
+          <span className="bg-red-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold animate-pulse">NEW</span>
+        </div>
+        <p className="text-yellow-200/80 text-sm mb-4 italic">Limited-edition premium collab flavors — straight from Tha Dogg himself.</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4" data-testid="hookah-snoop-grid">
+          {snoopDoggFlavors.map((flavor) => (
+            <div key={flavor.name} className="bg-slate-900/70 border border-yellow-500/30 rounded-xl overflow-hidden hover:border-yellow-400/70 transition-all" data-testid={`hookah-snoop-card-${flavor.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
+              <OptimizedImage
+                src={flavor.image}
+                alt={flavor.name}
+                className="h-40"
+                quality={75}
+              />
+              <div className="p-3">
+                <div className="flex justify-between items-start mb-1">
+                  <h5 className="text-yellow-300 font-bold">{flavor.name}</h5>
+                  <span className="text-yellow-400 font-bold text-xs">+$10</span>
+                </div>
+                <p className="text-slate-400 text-xs line-clamp-3">{flavor.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Signature Mixes - Base price $30 */}
       <div className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-6" data-testid="hookah-signature-section">
