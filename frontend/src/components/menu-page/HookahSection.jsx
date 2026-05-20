@@ -21,7 +21,7 @@ const snoopDoggFlavors = [
   {
     name: "Tha G'z Mix",
     description: "A straight-up crowd-pleaser. Bold pear lays the foundation, sharp citrus keeps it bright, and the ice finish ties it all together. A mix that's just right.",
-    image: '/images/hookah/Doggs-Delight.jpg', // no image provided — reuse Dogg's Delight as placeholder
+    image: '/images/hookah/Gz-Mix.jpg',
   },
   {
     name: 'Money Honey',
