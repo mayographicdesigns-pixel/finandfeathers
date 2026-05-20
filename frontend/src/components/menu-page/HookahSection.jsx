@@ -116,6 +116,16 @@ const premiumFlavors = [
 const HookahSection = ({ locationSlug }) => {
   return (
     <div className="space-y-6" data-testid="hookah-section">
+      {/* Snoop Dogg x Al Fakher promo banner */}
+      <div className="rounded-xl overflow-hidden border border-yellow-500/40 shadow-lg shadow-yellow-500/10" data-testid="hookah-snoop-banner">
+        <img
+          src="/images/hookah/SnoopDogg-Banner.jpg"
+          alt="Snoop Dogg x Al Fakher — Available Now at Fin & Feathers"
+          className="w-full h-auto block"
+          loading="eager"
+        />
+      </div>
+
       {/* Safety & Policies - At the top */}
       <div className="bg-slate-800/40 border border-red-900/30 rounded-xl p-6" data-testid="hookah-policies">
         <h4 className="text-lg font-semibold text-white mb-3">Safety & Policies</h4>
