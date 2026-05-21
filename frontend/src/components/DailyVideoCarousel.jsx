@@ -180,9 +180,9 @@ const DailyVideoCarousel = () => {
               key={currentVideo}
               className="w-full h-full object-contain"
               muted
-              loop
               playsInline
               preload="auto"
+              onEnded={nextVideo}
               data-testid="promo-video"
             >
               <source src={currentVideo} type="video/mp4" />
