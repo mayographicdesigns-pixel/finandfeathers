@@ -1797,6 +1797,21 @@
     "image": "/images/cocktails/Fin-A-Rita.jpg"
   },
   {
+    "id": "c14",
+    "name": "Crenshaw Blvd",
+    "description": "Tito's Vodka, Blue Curacao, and lemonade with a splash of sprite. Served up with a sugar rim and a lime wedge.",
+    "price": 17,
+    "category": "cocktails",
+    "badges": [
+      "Premium",
+      "New"
+    ],
+    "layout": "card",
+    "is_active": true,
+    "image_url": "/images/cocktails/Crenshaw-Blvd.jpg",
+    "image": "/images/cocktails/Crenshaw-Blvd.jpg"
+  },
+  {
     "id": "ds1",
     "name": "4 Party Wings & Fries*",
     "description": "Four wings in your choice of flavor: lemon pepper, BBQ, mild, hot, or honey hot. Served with fries",
