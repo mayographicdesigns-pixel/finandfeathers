@@ -1262,7 +1262,7 @@ const MenuPage = () => {
               {renderSection('Brunch Drinks', itemsByCategory['brunch-drinks'], 'compact', 'grid-cols-1', false, 'brunch-drinks')}
               {renderSection('Handcrafted Mocktails ($7)', itemsByCategory['mocktails'], 'compact', 'grid-cols-1', false, 'mocktails')}
               {renderClassicRefreshments()}
-              {renderSection('Custom Fruit Lemonades ($4)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true, 'custom-lemonades')}
+              {renderSection('Custom Fruit Lemonades ($5)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true, 'custom-lemonades')}
             </div>
           </div>
         )}
@@ -1397,7 +1397,7 @@ const MenuPage = () => {
             {renderSection('Brunch Drinks', itemsByCategory['brunch-drinks'], 'compact', 'grid-cols-1', true)}
             {renderSection('Handcrafted Mocktails ($7)', itemsByCategory['mocktails'], 'compact', 'grid-cols-1', true)}
             {renderClassicRefreshments()}
-            {renderSection('Custom Fruit Lemonades ($4)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true)}
+            {renderSection('Custom Fruit Lemonades ($5)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true)}
             {/* Responsible Drinking & Takeout Notice */}
             <div className="mt-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl space-y-2" data-testid="drinks-policy-notice">
               <p className="text-red-400 text-sm text-center font-medium">
@@ -1415,7 +1415,7 @@ const MenuPage = () => {
           <div className="space-y-10">
             {renderSection('Handcrafted Mocktails ($7)', itemsByCategory['mocktails'], 'compact', 'grid-cols-1', true)}
             {renderClassicRefreshments()}
-            {renderSection('Custom Fruit Lemonades ($4)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true)}
+            {renderSection('Custom Fruit Lemonades ($5)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true)}
           </div>
         )}
 
@@ -1460,7 +1460,7 @@ const MenuPage = () => {
               <>
                 {renderSection('Handcrafted Mocktails ($7)', itemsByCategory['mocktails'], 'compact', 'grid-cols-1', true)}
                 {renderClassicRefreshments()}
-                {renderSection('Custom Fruit Lemonades ($4)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true)}
+                {renderSection('Custom Fruit Lemonades ($5)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true)}
               </>
             )}
             
@@ -1472,7 +1472,7 @@ const MenuPage = () => {
                 {renderSection('Brunch Drinks', itemsByCategory['brunch-drinks'], 'compact', 'grid-cols-1', true)}
                 {renderSection('Handcrafted Mocktails ($7)', itemsByCategory['mocktails'], 'compact', 'grid-cols-1', true)}
                 {renderClassicRefreshments()}
-                {renderSection('Custom Fruit Lemonades ($4)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true)}
+                {renderSection('Custom Fruit Lemonades ($5)', itemsByCategory['custom-lemonades'], 'compact', 'grid-cols-1', true)}
                 {/* Responsible Drinking & Takeout Notice */}
                 <div className="mt-8 p-4 bg-red-900/20 border border-red-600/50 rounded-xl space-y-2">
                   <p className="text-red-400 text-sm text-center font-medium">

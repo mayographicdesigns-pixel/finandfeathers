@@ -170,6 +170,7 @@ async def _seed_full_menu(slugs: list):
 async def _sync_menu_prices_and_images(slugs: list):
     """On every startup, sync prices, images, and descriptions from seed_menu.json
     to all existing menu items (matched by name + category).
+    Also removes items explicitly listed in REMOVED_MENU_ITEMS.
     This ensures price/image changes in seed_menu.json reach production without a full re-seed."""
     import json as _json
     seed_path = ROOT_DIR / "seed_menu.json"
@@ -178,6 +179,27 @@ async def _sync_menu_prices_and_images(slugs: list):
 
     with open(seed_path, "r") as f:
         seed_items = _json.load(f)
+
+    # Items that have been intentionally removed from the menu —
+    # delete them on every startup even if they exist in the DB
+    REMOVED_MENU_ITEMS = [
+        # (name, category-or-None to match any)
+        ("Washington Hills Riesling", None),
+        ("Silver Gate Brut", None),
+        ("Jager", None),
+        ("Grand Marnier", None),
+        ("Amaretto", None),
+        # Duplicate Rodeo Drive — keep only the $17 cocktails-category one
+        ("Rodeo Drive", "signature-cocktails"),
+    ]
+
+    removed_count = 0
+    for name, cat in REMOVED_MENU_ITEMS:
+        query = {"name": name}
+        if cat:
+            query["category"] = cat
+        result = await db.menu_items.delete_many(query)
+        removed_count += result.deleted_count
 
     updated_count = 0
     inserted_count = 0
@@ -214,8 +236,8 @@ async def _sync_menu_prices_and_images(slugs: list):
                 await db.menu_items.insert_one(new_doc)
                 inserted_count += 1
 
-    if updated_count or inserted_count:
-        logging.info(f"Menu sync: updated {updated_count} existing items, inserted {inserted_count} missing items from seed")
+    if updated_count or inserted_count or removed_count:
+        logging.info(f"Menu sync: removed {removed_count}, updated {updated_count}, inserted {inserted_count} items from seed")
 
 
 async def _sync_wine_list(slugs: list):

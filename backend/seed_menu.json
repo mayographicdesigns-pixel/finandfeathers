@@ -1399,36 +1399,6 @@
     "id": "2e5ae3cd-8faf-4733-a2d1-d960f7685928"
   },
   {
-    "name": "Amaretto",
-    "description": "Glass",
-    "price": 10.4,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "3041af03-266b-4895-97c2-f22b8759a8f7"
-  },
-  {
-    "name": "Grand Marnier",
-    "description": "Glass",
-    "price": 12.0,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "01204930-9270-4576-a843-64b68f640e90"
-  },
-  {
-    "name": "Jager",
-    "description": "Glass $11.70 / Bottle $195",
-    "price": 11.7,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "b1a2fb29-8177-4a93-ac94-fa7c62f8e30f"
-  },
-  {
     "name": "Bottled Water",
     "description": "",
     "price": 4.0,
@@ -1915,19 +1885,6 @@
     "id": "642224ff-cf71-4c48-9f1c-ac9d8d009ed5"
   },
   {
-    "name": "Rodeo Drive",
-    "description": "Our top-tier margarita: Fin & Feathers Private Reserve Patron A\u00f1ejo, fresh lime, and agave. Topped with a Grand Marnier floater and a Tajin rim.",
-    "price": 20.0,
-    "image": "/images/cocktails/Rodeo Drive.jpg",
-    "category": "signature-cocktails",
-    "badges": [],
-    "type": "drink",
-    "id": "5766ff62-6bce-463a-b987-7425b84b446c",
-    "image_url": "/images/cocktails/Rodeo Drive.jpg",
-    "layout": "card",
-    "is_active": false
-  },
-  {
     "id": "0d032942-82e2-428d-a3cd-2033373afa9e",
     "name": "Add Chicken*",
     "description": "",
@@ -2224,27 +2181,6 @@
     ]
   },
   {
-    "name": "Silver Gate Brut",
-    "category": "beer-wine",
-    "subcategory": "Sparkling",
-    "description": "Refined sparkling wine crafted in Spain with elegant effervescence",
-    "type": "drink",
-    "price": 9,
-    "image": "",
-    "image_url": "",
-    "is_active": true,
-    "variations": [
-      {
-        "name": "Glass",
-        "price": 9
-      },
-      {
-        "name": "Bottle",
-        "price": 34
-      }
-    ]
-  },
-  {
     "name": "La Marca Prosecco",
     "category": "beer-wine",
     "subcategory": "Sparkling",
@@ -2285,28 +2221,6 @@
         "price": 46
       }
     ]
-  },
-  {
-    "id": "24a563e7-d5c1-4238-88af-755c5f519b4b",
-    "name": "Washington Hills Riesling",
-    "category": "beer-wine",
-    "subcategory": "White Wine",
-    "description": "Off-dry Washington State Riesling with notes of green apple and citrus",
-    "type": "drink",
-    "price": 10,
-    "variations": [
-      {
-        "name": "Glass",
-        "price": 10
-      },
-      {
-        "name": "Bottle",
-        "price": 38
-      }
-    ],
-    "image": "",
-    "image_url": "",
-    "is_active": true
   },
   {
     "name": "Sunrise",
