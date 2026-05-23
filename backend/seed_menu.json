@@ -1285,26 +1285,6 @@
     "id": "8d5c7c20-0fd9-408f-89c4-7831e82e524d"
   },
   {
-    "name": "Belaire Bleu",
-    "description": "Bottle",
-    "price": 260.0,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "58f565f7-0853-4f54-86ed-e029f44c5b0d"
-  },
-  {
-    "name": "Belaire Rose",
-    "description": "Bottle",
-    "price": 195.0,
-    "image": "",
-    "category": "beer-wine",
-    "badges": [],
-    "type": null,
-    "id": "ca3a5b91-6b81-4972-9031-1355e3758329"
-  },
-  {
     "name": "House Champagne",
     "description": "House Champagne (Bottle Only)",
     "price": 20,
@@ -1704,7 +1684,7 @@
   {
     "id": "c7",
     "name": "Pacific Coast Hwy",
-    "description": "A refreshing drive in a glass, combining Hennessy VS with triple sec, lime juice, and agave.",
+    "description": "A Hennessy Margarita \u2014 Hennessy VS, triple sec, sour mix, lime juice, and agave. Served in a tall glass.",
     "price": 17,
     "category": "cocktails",
     "badges": [
@@ -1713,7 +1693,8 @@
     "layout": "line",
     "is_active": true,
     "image": "/images/cocktails/Pacific Coast Hwy.jpg",
-    "image_url": "/images/cocktails/Pacific Coast Hwy.jpg"
+    "image_url": "/images/cocktails/Pacific Coast Hwy.jpg",
+    "display_order": 100
   },
   {
     "id": "c8",
@@ -1742,7 +1723,7 @@
   {
     "id": "c10",
     "name": "The Hollywood",
-    "description": "A star-studded martini featuring Grey Goose Le Citron and fresh lemon, served with a classic sugar rim.",
+    "description": "A classic Lemon Drop Martini featuring Grey Goose Le Citron, fresh lemon juice, simple syrup, and a classic sugar rim.",
     "price": 17,
     "category": "cocktails",
     "badges": [
@@ -1751,13 +1732,14 @@
     "layout": "card",
     "is_active": true,
     "image_url": "/images/cocktails/Hollywood.jpg",
-    "image": "/images/cocktails/Hollywood.jpg"
+    "image": "/images/cocktails/Hollywood.jpg",
+    "display_order": 3
   },
   {
     "id": "c11",
     "name": "Rodeo Drive",
     "description": "The ultimate margarita, crafted with ultra-premium Patron Cristalino Anejo, Grand Marnier, lime, and agave.",
-    "price": 17,
+    "price": 20,
     "category": "cocktails",
     "badges": [
       "Premium"
@@ -1765,7 +1747,8 @@
     "layout": "card",
     "is_active": true,
     "image_url": "/images/cocktails/Rodeo-Drive.jpg",
-    "image": "/images/cocktails/Rodeo-Drive.jpg"
+    "image": "/images/cocktails/Rodeo-Drive.jpg",
+    "display_order": 1
   },
   {
     "id": "c12",
@@ -1783,20 +1766,6 @@
     "image": "/images/cocktails/Old-Atlanta.jpg"
   },
   {
-    "id": "c13",
-    "name": "Fin-A-Rita",
-    "description": "Patron Cristalino Anejo, Grand Marnier, lime, and agave \u2014 finished with a Tajin rim and topped with an extra float of Grand Marnier.",
-    "price": 17,
-    "category": "cocktails",
-    "badges": [
-      "Premium"
-    ],
-    "layout": "card",
-    "is_active": true,
-    "image_url": "/images/cocktails/Fin-A-Rita.jpg",
-    "image": "/images/cocktails/Fin-A-Rita.jpg"
-  },
-  {
     "id": "c14",
     "name": "Crenshaw Blvd",
     "description": "Tito's Vodka, Blue Curacao, and lemonade with a splash of sprite. Served up with a sugar rim and a lime wedge.",
@@ -1809,7 +1778,8 @@
     "layout": "card",
     "is_active": true,
     "image_url": "/images/cocktails/Crenshaw-Blvd.jpg",
-    "image": "/images/cocktails/Crenshaw-Blvd.jpg"
+    "image": "/images/cocktails/Crenshaw-Blvd.jpg",
+    "display_order": 2
   },
   {
     "id": "ds1",
@@ -1976,53 +1946,6 @@
     "type": "food",
     "is_addon": true,
     "sort_order": 1
-  },
-  {
-    "id": "a43eb2b7-ccc3-43a6-b4da-27d2a90d6abc",
-    "name": "Margarita",
-    "description": "Well tequila, agave, sour mix, and triple sec with a fresh lime garnish.",
-    "price": 10,
-    "category": "cocktails",
-    "image_url": "/images/cocktails/Margarita.jpg",
-    "is_active": true,
-    "display_order": 999,
-    "created_at": "2026-03-31T19:05:49.946019+00:00",
-    "image": "/images/cocktails/Margarita.jpg"
-  },
-  {
-    "id": "06778027-f9ab-46d1-a482-cc396c721d7c",
-    "name": "Rum Punch",
-    "description": "A tropical mix of well rum, pineapple, orange juice, and a splash of grenadine.",
-    "price": 10,
-    "category": "cocktails",
-    "image_url": null,
-    "is_active": true,
-    "display_order": 999,
-    "created_at": "2026-03-31T19:05:49.953674+00:00"
-  },
-  {
-    "id": "f917e1c5-7192-40e1-9cca-71389fac5ad0",
-    "name": "Whiskey Sour",
-    "description": "Smooth well whiskey balanced with tangy sour mix and a cherry garnish.",
-    "price": 10,
-    "category": "cocktails",
-    "image_url": "/images/cocktails/Whiskey Sour.jpg",
-    "is_active": true,
-    "display_order": 999,
-    "created_at": "2026-03-31T19:05:49.956879+00:00",
-    "image": "/images/cocktails/Whiskey Sour.jpg"
-  },
-  {
-    "id": "dd7567cc-2a1b-4ede-8291-f839088474f0",
-    "name": "Long Island",
-    "description": "A powerhouse blend of well gin, tequila, vodka, and rum, topped with sour mix and a splash of coke.",
-    "price": 10,
-    "category": "cocktails",
-    "image_url": "/images/cocktails/Long Island.jpg",
-    "is_active": true,
-    "display_order": 999,
-    "created_at": "2026-03-31T19:05:49.959562+00:00",
-    "image": "/images/cocktails/Long Island.jpg"
   },
   {
     "id": "fd12ba45-91b9-4fbc-9d12-84024b30f171",
@@ -2217,27 +2140,6 @@
     ]
   },
   {
-    "name": "Washington Hills Chardonnay",
-    "category": "beer-wine",
-    "subcategory": "White Wine",
-    "description": "Crisp and refreshing Washington State Chardonnay with notes of apple and pear",
-    "type": "drink",
-    "price": 13,
-    "image": "",
-    "image_url": "",
-    "is_active": true,
-    "variations": [
-      {
-        "name": "Glass",
-        "price": 13
-      },
-      {
-        "name": "Bottle",
-        "price": 46
-      }
-    ]
-  },
-  {
     "name": "Sunrise",
     "category": "brunch-drinks",
     "description": "A stunning visual gradient of red to orange. Casamigos Blanco Tequila, Triple Sec, and premium orange juice, finished with a slow pour of grenadine. Garnished with an orange slice and a cherry. Served in a Tall Glass.",
@@ -2275,6 +2177,29 @@
       {
         "name": "Bottle",
         "price": 38
+      }
+    ],
+    "image": "",
+    "image_url": "",
+    "is_active": true,
+    "display_order": 9999
+  },
+  {
+    "id": "8e7ce1bd-ad0c-42d6-9fab-bc865bd0237c",
+    "name": "Washington Hills Riesling",
+    "category": "beer-wine",
+    "subcategory": "White Wine",
+    "description": "Off-dry Washington State Riesling with notes of green apple, peach, and citrus",
+    "type": "drink",
+    "price": 13,
+    "variations": [
+      {
+        "name": "Glass",
+        "price": 13
+      },
+      {
+        "name": "Bottle",
+        "price": 46
       }
     ],
     "image": "",

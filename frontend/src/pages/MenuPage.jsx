@@ -97,10 +97,10 @@ const MenuPage = () => {
     { id: 'brunch-sides', name: 'Brunch Sides', icon: '🥓' }
   ];
 
-  // Drinks sub-categories (Beer & Wine, Cocktails, Non-Alcoholic)
+  // Drinks sub-categories (Cocktails first, then Beer & Wine, Non-Alcoholic)
   const drinksSubCategories = [
-    { id: 'beer-wine', name: 'Beer & Wine', icon: '🍺' },
     { id: 'cocktails', name: 'Cocktails', icon: '🍸' },
+    { id: 'beer-wine', name: 'Beer & Wine', icon: '🍺' },
     { id: 'non-alcoholic', name: 'Non-Alcoholic', icon: '🥤' }
   ];
 
@@ -539,6 +539,9 @@ const MenuPage = () => {
   // Render a section of items with dynamic style support
   const renderSection = (title, items, variant = 'compact', gridCols = 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', isLineItem = false, categoryId = null) => {
     if (!items || items.length === 0) return null;
+
+    // Sort by display_order so admins can pin specific items to the top
+    items = [...items].sort((a, b) => (a.display_order ?? 999) - (b.display_order ?? 999));
     
     // Determine style from category settings — DB style OVERRIDES hardcoded params
     const style = categoryId ? (categoryStyles[categoryId] || DEFAULT_CATEGORY_STYLES[categoryId] || 'default') : null;
@@ -603,6 +606,9 @@ const MenuPage = () => {
   // Render compact 3-column drink items (for beers, wines with short descriptions)
   const renderCompactDrinkSection = (title, items) => {
     if (!items || items.length === 0) return null;
+
+    // Sort by display_order so admins can pin specific items to the top/bottom
+    items = [...items].sort((a, b) => (a.display_order ?? 999) - (b.display_order ?? 999));
     
     return (
       <div className="mb-8">
@@ -1257,8 +1263,8 @@ const MenuPage = () => {
                 <h2 className="text-3xl font-bold text-white">Cocktails & Drinks</h2>
               </div>
               
-              {renderBeerWineSections()}
               {renderSection('Signature Cocktails', [...(itemsByCategory['cocktails'] || []), ...(itemsByCategory['signature-cocktails'] || [])], 'compact', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'cocktails')}
+              {renderBeerWineSections()}
               {renderSection('Brunch Drinks', itemsByCategory['brunch-drinks'], 'compact', 'grid-cols-1', false, 'brunch-drinks')}
               {renderSection('Handcrafted Mocktails ($7)', itemsByCategory['mocktails'], 'compact', 'grid-cols-1', false, 'mocktails')}
               {renderClassicRefreshments()}

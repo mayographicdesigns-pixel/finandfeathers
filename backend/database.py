@@ -184,13 +184,21 @@ async def _sync_menu_prices_and_images(slugs: list):
     # delete them on every startup even if they exist in the DB
     REMOVED_MENU_ITEMS = [
         # (name, category-or-None to match any)
-        ("Washington Hills Riesling", None),
         ("Silver Gate Brut", None),
         ("Jager", None),
         ("Grand Marnier", None),
         ("Amaretto", None),
-        # Duplicate Rodeo Drive — keep only the $17 cocktails-category one
+        ("Belaire Bleu", None),
+        ("Belaire Rose", None),
+        ("Rum Punch", "cocktails"),
+        ("Whiskey Sour", "cocktails"),
+        ("Long Island", "cocktails"),
+        ("Margarita", "cocktails"),
+        ("Fin-A-Rita", "cocktails"),
+        # Duplicate Rodeo Drive — keep only the cocktails-category one
         ("Rodeo Drive", "signature-cocktails"),
+        # Replaced by Washington Hills Riesling
+        ("Washington Hills Chardonnay", None),
     ]
 
     removed_count = 0
