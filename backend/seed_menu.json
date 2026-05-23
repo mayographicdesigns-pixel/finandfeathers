@@ -1647,7 +1647,7 @@
   {
     "id": "c5",
     "name": "Sunset Blvd",
-    "description": "A vibrant blend of Hennessy and pineapple juice, sweetened with honey syrup and finished with a fresh lemon garnish.",
+    "description": "A vibrant blend of Hennessy VS and pineapple juice, sweetened with honey syrup and finished with a fresh lemon garnish.",
     "price": 15,
     "category": "cocktails",
     "badges": [
@@ -1700,7 +1700,7 @@
   {
     "id": "c9",
     "name": "East LA",
-    "description": "A sophisticated martini-style drink with Grand Coramino Tequila, agave, and lime, finished with a dramatic red wine float.",
+    "description": "A sophisticated martini-style drink with Gran Coramino Reposado Tequila, agave, and lime, finished with a dramatic red wine float.",
     "price": 15,
     "category": "cocktails",
     "badges": [],
@@ -1727,7 +1727,7 @@
   {
     "id": "c11",
     "name": "Rodeo Drive",
-    "description": "The ultimate margarita, crafted with ultra-premium Patron Cristalino Anejo, Grand Marnier, lime, and agave.",
+    "description": "The ultimate margarita, crafted with exclusive Patr\u00f3n Fin & Feathers Barrel Select Premium A\u00f1ejo, Grand Marnier, lime, agave, sour mix, and a Taj\u00edn rim.",
     "price": 20,
     "category": "cocktails",
     "badges": [
