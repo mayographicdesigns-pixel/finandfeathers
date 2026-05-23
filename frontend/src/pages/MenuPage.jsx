@@ -540,8 +540,22 @@ const MenuPage = () => {
   const renderSection = (title, items, variant = 'compact', gridCols = 'grid-cols-1 md:grid-cols-3 lg:grid-cols-4', isLineItem = false, categoryId = null) => {
     if (!items || items.length === 0) return null;
 
-    // Sort by display_order so admins can pin specific items to the top
-    items = [...items].sort((a, b) => (a.display_order ?? 999) - (b.display_order ?? 999));
+    // Drinks sort: Signature Cocktails high→low, all other drinks low→high.
+    // display_order is used as a tie-breaker so admins can pin specific items.
+    const drinkCategories = ['cocktails', 'signature-cocktails', 'brunch-drinks', 'beer-wine', 'teas-lemonades', 'chilled-juices', 'custom-lemonades', 'non-alcoholic'];
+    if (categoryId && drinkCategories.includes(categoryId)) {
+      const sortDesc = categoryId === 'cocktails' || categoryId === 'signature-cocktails';
+      items = [...items].sort((a, b) => {
+        const pA = a.price || 0;
+        const pB = b.price || 0;
+        const priceDiff = sortDesc ? pB - pA : pA - pB;
+        if (priceDiff !== 0) return priceDiff;
+        return (a.display_order ?? 999) - (b.display_order ?? 999);
+      });
+    } else {
+      // Non-drinks: keep existing display_order behavior
+      items = [...items].sort((a, b) => (a.display_order ?? 999) - (b.display_order ?? 999));
+    }
     
     // Determine style from category settings — DB style OVERRIDES hardcoded params
     const style = categoryId ? (categoryStyles[categoryId] || DEFAULT_CATEGORY_STYLES[categoryId] || 'default') : null;
@@ -607,8 +621,13 @@ const MenuPage = () => {
   const renderCompactDrinkSection = (title, items) => {
     if (!items || items.length === 0) return null;
 
-    // Sort by display_order so admins can pin specific items to the top/bottom
-    items = [...items].sort((a, b) => (a.display_order ?? 999) - (b.display_order ?? 999));
+    // Sort by price ASC (low → high), then display_order as tie-breaker
+    items = [...items].sort((a, b) => {
+      const pA = a.price || 0;
+      const pB = b.price || 0;
+      if (pA !== pB) return pA - pB;
+      return (a.display_order ?? 999) - (b.display_order ?? 999);
+    });
     
     return (
       <div className="mb-8">

@@ -2191,15 +2191,15 @@
     "subcategory": "White Wine",
     "description": "Off-dry Washington State Riesling with notes of green apple, peach, and citrus",
     "type": "drink",
-    "price": 13,
+    "price": 10,
     "variations": [
       {
         "name": "Glass",
-        "price": 13
+        "price": 10
       },
       {
         "name": "Bottle",
-        "price": 46
+        "price": 38
       }
     ],
     "image": "",
