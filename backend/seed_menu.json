@@ -2151,5 +2151,16 @@
     "image": "",
     "image_url": "",
     "is_active": true
+  },
+  {
+    "id": "3c069333-5213-4be0-9aec-9370c0111799",
+    "name": "Pinot Noir",
+    "category": "daily-specials",
+    "description": "Glass of Pinot Noir red wine",
+    "type": "drink",
+    "price": 5,
+    "image": "",
+    "image_url": "",
+    "is_active": true
   }
 ]
