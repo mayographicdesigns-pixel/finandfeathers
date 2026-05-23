@@ -200,6 +200,13 @@ async def _sync_menu_prices_and_images(slugs: list):
         ("Rodeo Drive", "signature-cocktails"),
         # Replaced by Washington Hills Riesling
         ("Washington Hills Chardonnay", None),
+        # Duplicate signature cocktails that were mistakenly placed in brunch-drinks
+        ("California Dreaming", "brunch-drinks"),
+        ("East LA", "brunch-drinks"),
+        ("Melrose Ave", "brunch-drinks"),
+        ("Pacific Coast Hwy", "brunch-drinks"),
+        ("Sunrise", "brunch-drinks"),
+        ("Sunset", "brunch-drinks"),
     ]
 
     removed_count = 0

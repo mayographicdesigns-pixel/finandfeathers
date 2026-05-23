@@ -974,7 +974,7 @@
   },
   {
     "name": "Bellini",
-    "description": "The quintessential brunch classic. A soft, opaque blend of sweet peach pur\u00e9e and chilled sparkling Prosecco, garnished with a fresh orange slice and a cherry. Served in a Stemless Glass.",
+    "description": "The quintessential brunch classic. A soft, opaque blend of sweet peach pur\u00e9e and La Marca sparkling Prosecco, garnished with a fresh orange slice and a cherry. Served in a Stemless Glass.",
     "price": 10,
     "image": "",
     "category": "brunch-drinks",
@@ -984,55 +984,13 @@
   },
   {
     "name": "French 75",
-    "description": "An elegant and effervescent classic. Premium Gin and fresh-squeezed lemon juice shaken with simple syrup, topped with chilled champagne for a crisp finish. Served in a Stemless Glass.",
-    "price": 15,
+    "description": "An elegant and effervescent classic. Premium Gin and fresh-squeezed lemon juice shaken with simple syrup, topped with chilled champagne for a crisp finish. Served in a Stemless Glass. Add premium Gin for a $5 upcharge.",
+    "price": 12,
     "image": "",
     "category": "brunch-drinks",
     "badges": [],
     "type": "drink",
     "id": "ec5159d2-4948-46a8-82f0-0184ed1dad24"
-  },
-  {
-    "name": "Melrose Ave",
-    "description": "A fruity summer cocktail made with Peach Ciroc & pineapple.",
-    "price": 15.0,
-    "image": "/images/cocktails/Melrose Ave.jpg",
-    "category": "brunch-drinks",
-    "badges": [],
-    "type": "drink",
-    "id": "c511883d-8424-4a5e-8968-5f8a51658810",
-    "image_url": "/images/cocktails/Melrose Ave.jpg"
-  },
-  {
-    "name": "East LA",
-    "description": "A little sweet, a little tart and totally delicious! Made with Don Julio Blanco tequila, fresh lime & a red wine float.",
-    "price": 15.0,
-    "image": "",
-    "category": "brunch-drinks",
-    "badges": [],
-    "type": "drink",
-    "id": "cccd77ff-6353-43d7-b92a-1c2ba942d56a"
-  },
-  {
-    "name": "California Dreaming",
-    "description": "A tall, tropical escape featuring Malibu Rum, Captain Morgan, sour mix, and melon liqueur, layered with a splash of Blue Curacao.",
-    "price": 15.0,
-    "image": "",
-    "category": "brunch-drinks",
-    "badges": [],
-    "type": "drink",
-    "id": "0fea524c-e2cc-40a9-af28-cce6484cb23f"
-  },
-  {
-    "name": "Pacific Coast Hwy",
-    "description": "A sophisticated Hennessy Margarita! The most popular cocktail here and a favorite of Atlanta\u2019s socialites!",
-    "price": 15.0,
-    "image": "/images/cocktails/Pacific-Coast-Hwy.jpg",
-    "category": "brunch-drinks",
-    "badges": [],
-    "type": "drink",
-    "id": "034fdeb1-b475-4f1b-a064-3f6e4f0fe49a",
-    "image_url": "/images/cocktails/Pacific-Coast-Hwy.jpg"
   },
   {
     "name": "Strawberry Fields",
@@ -2129,29 +2087,6 @@
     ]
   },
   {
-    "name": "Sunrise",
-    "category": "brunch-drinks",
-    "description": "A stunning visual gradient of red to orange. Casamigos Blanco Tequila, Triple Sec, and premium orange juice, finished with a slow pour of grenadine. Garnished with an orange slice and a cherry. Served in a Tall Glass.",
-    "type": "drink",
-    "price": 15,
-    "image": "",
-    "image_url": "",
-    "is_active": true
-  },
-  {
-    "name": "Sunset",
-    "category": "brunch-drinks",
-    "description": "Premium. A sophisticated twist on the sunrise. Casamigos Blanco Tequila, Triple Sec, and orange juice topped with Grand Marnier for a deeper, more atmospheric hue. Garnished with an orange slice and a cherry. Served in a Tall Glass.",
-    "type": "drink",
-    "price": 17,
-    "image": "",
-    "image_url": "",
-    "is_active": true,
-    "badges": [
-      "Premium"
-    ]
-  },
-  {
     "name": "Stella Rosa Black",
     "category": "beer-wine",
     "subcategory": "Red Wine",
@@ -2191,6 +2126,28 @@
         "price": 38
       }
     ],
+    "image": "",
+    "image_url": "",
+    "is_active": true
+  },
+  {
+    "id": "14fe775b-9dd9-4dc9-931b-2d5a289a3715",
+    "name": "Tequila Sunrise",
+    "category": "brunch-drinks",
+    "description": "Blanco Tequila, Orange Juice, and a dash of Grenadine. Add premium Tequila for a $5 upcharge.",
+    "type": "drink",
+    "price": 10,
+    "image": "",
+    "image_url": "",
+    "is_active": true
+  },
+  {
+    "id": "27b04b29-942f-4848-ae66-a7b9c1dd5f4b",
+    "name": "Vodka Sunrise",
+    "category": "brunch-drinks",
+    "description": "Vodka, Orange Juice, and a dash of Grenadine. Add premium Vodka for a $5 upcharge.",
+    "type": "drink",
+    "price": 12,
     "image": "",
     "image_url": "",
     "is_active": true
