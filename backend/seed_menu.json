@@ -1301,32 +1301,21 @@
     ]
   },
   {
-    "id": "a483bfa6-b944-418f-8513-e9d16234a3c3",
-    "name": "House Brut",
-    "category": "beer-wine",
-    "subcategory": "Sparkling",
-    "description": "House Brut sparkling wine (Bottle Only)",
-    "type": "drink",
-    "price": 20,
-    "variations": [
-      {
-        "name": "Bottle",
-        "price": 20
-      }
-    ],
-    "image": "",
-    "image_url": "",
-    "is_active": true
-  },
-  {
     "name": "Moet Rose",
-    "description": "Bottle",
-    "price": 325.0,
+    "description": "Moet & Chandon Rose Imperial \u2014 Bottle Only",
+    "price": 325,
     "image": "",
     "category": "beer-wine",
     "badges": [],
     "type": null,
-    "id": "c286ebf0-9d17-42eb-9498-c2c182348b70"
+    "id": "c286ebf0-9d17-42eb-9498-c2c182348b70",
+    "subcategory": "Sparkling",
+    "variations": [
+      {
+        "name": "Bottle",
+        "price": 325
+      }
+    ]
   },
   {
     "name": "Red Bull (Flavored)",
@@ -2124,18 +2113,18 @@
     "subcategory": "Sparkling",
     "description": "Italian sparkling wine with bright citrus and green apple notes",
     "type": "drink",
-    "price": 10,
+    "price": 11,
     "image": "",
     "image_url": "",
     "is_active": true,
     "variations": [
       {
         "name": "Glass",
-        "price": 10
+        "price": 11
       },
       {
         "name": "Bottle",
-        "price": 38
+        "price": 40
       }
     ]
   },

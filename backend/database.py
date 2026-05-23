@@ -185,6 +185,7 @@ async def _sync_menu_prices_and_images(slugs: list):
     REMOVED_MENU_ITEMS = [
         # (name, category-or-None to match any)
         ("Silver Gate Brut", None),
+        ("House Brut", None),
         ("Jager", None),
         ("Grand Marnier", None),
         ("Amaretto", None),

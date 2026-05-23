@@ -1492,8 +1492,8 @@ const MenuPage = () => {
             {/* No subcategory - show all drinks */}
             {!activeSubCategory && (
               <>
-                {renderBeerWineSections()}
                 {renderSection('Signature Cocktails', [...(itemsByCategory['cocktails'] || []), ...(itemsByCategory['signature-cocktails'] || [])], 'compact', 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3', false, 'cocktails')}
+                {renderBeerWineSections()}
                 {renderSection('Brunch Drinks', itemsByCategory['brunch-drinks'], 'compact', 'grid-cols-1', true)}
                 {renderSection('Handcrafted Mocktails ($7)', itemsByCategory['mocktails'], 'compact', 'grid-cols-1', true)}
                 {renderClassicRefreshments()}
