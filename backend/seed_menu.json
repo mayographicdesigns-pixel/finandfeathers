@@ -1499,58 +1499,6 @@
     "image_url": "/images/menu/hookah-premium/Cali Dreamin.png"
   },
   {
-    "id": "bd1",
-    "name": "Mimosa",
-    "description": "A bright and refreshing brunch staple. Chilled champagne topped with choice of premium fruit juice. Available in Mango, Peach, Pineapple, Strawberry, Cranberry, or traditional Orange. Garnished with a fresh fruit slice. Served in a Stemless Glass.",
-    "price": 10,
-    "category": "brunch",
-    "badges": [],
-    "layout": "line",
-    "is_active": true
-  },
-  {
-    "id": "bd2",
-    "name": "Bellini",
-    "description": "The quintessential brunch classic. A soft, opaque blend of sweet peach pur\u00e9e and chilled sparkling Prosecco, garnished with a fresh orange slice and a cherry. Served in a Stemless Glass.",
-    "price": 10,
-    "category": "brunch",
-    "badges": [],
-    "layout": "line",
-    "is_active": true
-  },
-  {
-    "id": "bd3",
-    "name": "French 75",
-    "description": "An elegant and effervescent classic. Premium Gin and fresh-squeezed lemon juice shaken with simple syrup, topped with chilled champagne for a crisp finish. Served in a Stemless Glass.",
-    "price": 15,
-    "category": "brunch",
-    "badges": [],
-    "layout": "line",
-    "is_active": true
-  },
-  {
-    "id": "bd4",
-    "name": "Sunrise",
-    "description": "A stunning visual gradient of red to orange. Casamigos Blanco Tequila, Triple Sec, and premium orange juice, finished with a slow pour of grenadine. Garnished with an orange slice and a cherry. Served in a Tall Glass.",
-    "price": 15,
-    "category": "brunch",
-    "badges": [],
-    "layout": "line",
-    "is_active": true
-  },
-  {
-    "id": "bd5",
-    "name": "Sunset",
-    "description": "A sophisticated twist on the sunrise. Casamigos Blanco Tequila, Triple Sec, and orange juice topped with Grand Marnier for a deeper, more atmospheric hue. Garnished with an orange slice and a cherry. Served in a Tall Glass.",
-    "price": 17,
-    "category": "brunch",
-    "badges": [
-      "Premium"
-    ],
-    "layout": "line",
-    "is_active": true
-  },
-  {
     "id": "c1",
     "name": "California Dreaming",
     "description": "A tall, tropical escape featuring Malibu Rum, Captain Morgan, sour mix, and melon liqueur, layered with a splash of Blue Curacao.",

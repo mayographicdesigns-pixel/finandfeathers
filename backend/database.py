@@ -207,6 +207,12 @@ async def _sync_menu_prices_and_images(slugs: list):
         ("Pacific Coast Hwy", "brunch-drinks"),
         ("Sunrise", "brunch-drinks"),
         ("Sunset", "brunch-drinks"),
+        # Drinks mistakenly categorized as brunch food — keep them only in brunch-drinks
+        ("Bellini", "brunch"),
+        ("French 75", "brunch"),
+        ("Mimosa", "brunch"),
+        ("Sunrise", "brunch"),
+        ("Sunset", "brunch"),
     ]
 
     removed_count = 0
