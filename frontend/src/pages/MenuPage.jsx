@@ -676,7 +676,6 @@ const MenuPage = () => {
     
     const beerNames = ['Angry Orchard', 'Blue Moon', 'Bud Light', 'Corona', 'Guinness', 'Heineken', 'Mich Ultra', 'Modelo', 'Modelo Negro', 'Stella Artois', 'Yuengling'];
     const champagneNames = ['Belaire', 'House Champagne', 'Moet'];
-    const liqueurNames = ['Amaretto', 'Grand Marnier', 'Jager'];
     const energyNames = ['Red Bull'];
     
     const categories = {
@@ -686,7 +685,6 @@ const MenuPage = () => {
       whiteWine: [],
       rose: [],
       sparkling: [],
-      liqueur: [],
       energy: [],
       juice: [],
       water: [],
@@ -716,8 +714,6 @@ const MenuPage = () => {
         categories.rose.push(item);
       } else if (name.includes('brut') || name.includes('prosecco') || desc.includes('sparkling')) {
         categories.sparkling.push(item);
-      } else if (liqueurNames.some(l => name.includes(l.toLowerCase()))) {
-        categories.liqueur.push(item);
       } else if (energyNames.some(e => name.includes(e.toLowerCase())) || desc.includes('energy')) {
         categories.energy.push(item);
       } else if (name.includes('juice') || desc.includes('juice')) {
@@ -743,7 +739,6 @@ const MenuPage = () => {
         {renderCompactDrinkSection('🍷 Red Wine', categories.redWine)}
         {renderCompactDrinkSection('🥂 White Wine', categories.whiteWine)}
         {renderCompactDrinkSection('✨ Sparkling', categories.sparkling)}
-        {renderCompactDrinkSection('🥃 Liqueur', categories.liqueur)}
         {renderCompactDrinkSection('⚡ Energy Drinks', categories.energy)}
         {renderCompactDrinkSection('💧 Water', categories.water)}
         {categories.other.length > 0 && renderCompactDrinkSection('Other', categories.other)}
