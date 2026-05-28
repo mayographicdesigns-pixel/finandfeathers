@@ -142,6 +142,70 @@ async def auto_disable_karaoke(tz_name: str, location_slugs: list):
         logging.error(f"3am karaoke auto-off error ({tz_name}): {e}")
 
 
+async def auto_logout_djs_after_close():
+    """Every 15 minutes, log out any DJ whose location closed 30+ mins ago in local time.
+    Clears current_location, checked_in_at, and live_stream_url on dj_profiles so the
+    location shows no live DJ until a new one checks in.
+
+    Decision rule:
+      logout if  (now_local >= last_close + 30 min)
+             AND (dj.checked_in_at < last_close)
+
+    This guarantees we never log out a DJ that checked in for the *current* business day
+    (e.g. a private daytime event), while still clearing any stale session from a prior
+    night — even if the scheduler missed a window due to downtime.
+    """
+    from timezone_utils import get_location_tz, get_most_recent_past_close
+    from datetime import timezone as _tz
+    try:
+        live_djs = await db.dj_profiles.find(
+            {"current_location": {"$ne": None}, "is_active": True},
+            {"_id": 0, "id": 1, "name": 1, "stage_name": 1, "current_location": 1, "checked_in_at": 1}
+        ).to_list(200)
+        if not live_djs:
+            return
+        for dj in live_djs:
+            slug = dj.get("current_location")
+            if not slug:
+                continue
+            loc = await db.locations.find_one({"slug": slug}, {"_id": 0, "hours": 1})
+            if not loc or not loc.get("hours"):
+                continue
+            tz = get_location_tz(slug)
+            now_local = datetime.now(tz)
+            last_close = get_most_recent_past_close(loc["hours"], now_local)
+            if last_close is None:
+                continue
+            minutes_since_close = (now_local - last_close).total_seconds() / 60.0
+            if minutes_since_close < 30:
+                continue
+            # Only logout if DJ checked in BEFORE the most recent close
+            checked_in_at = dj.get("checked_in_at")
+            if checked_in_at:
+                # Normalize tz: stored as UTC datetime in mongo
+                if checked_in_at.tzinfo is None:
+                    checked_in_at = checked_in_at.replace(tzinfo=_tz.utc)
+                if checked_in_at >= last_close.astimezone(_tz.utc):
+                    # DJ checked in after the last close — they're working today's shift,
+                    # don't auto-logout yet.
+                    continue
+            await db.dj_profiles.update_one(
+                {"id": dj["id"]},
+                {"$set": {"current_location": None, "checked_in_at": None, "live_stream_url": None}}
+            )
+            # Also auto-turn off karaoke at that location if still active
+            await db.karaoke_sessions.update_many(
+                {"location_slug": slug, "active": True},
+                {"$set": {"active": False, "ended_at": datetime.now(timezone.utc).isoformat(), "auto_disabled": True}}
+            )
+            stage = dj.get("stage_name") or dj.get("name") or "DJ"
+            logging.info(
+                f"Auto DJ logout: {stage} cleared from {slug} ({minutes_since_close:.0f} min after close)"
+            )
+    except Exception as e:
+        logging.error(f"auto_logout_djs_after_close error: {e}")
+
+
 async def scheduled_cleanup_old_posts():
     """Scheduled task — posts are now kept permanently (Facebook-style feed)."""
     pass
@@ -225,6 +289,17 @@ async def startup_scheduler():
             replace_existing=True
         )
         logging.info(f"Scheduled 4am checkout + 3am karaoke-off for {tz_name}: {', '.join(slugs)}")
+
+    # Auto-logout DJs 30 mins after each location's local closing time.
+    # Runs every 15 minutes — each run inspects all live DJs and checks against their
+    # location's hours individually, so it handles every timezone and every close time.
+    scheduler.add_job(
+        auto_logout_djs_after_close,
+        CronTrigger(minute="*/15", timezone='UTC'),
+        id='auto_logout_djs_after_close',
+        replace_existing=True
+    )
+    logging.info("Scheduled DJ auto-logout (every 15 min, 30 min post-close per location)")
 
     scheduler.start()
     await ensure_default_admin_user()
