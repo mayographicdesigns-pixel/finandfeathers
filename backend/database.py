@@ -108,6 +108,76 @@ async def _seed_locations():
 
 
 
+async def _sync_location_hours():
+    """Sync each location's hours to the official/Google-verified values on every startup.
+    This ensures hour edits in code reach production without requiring manual admin edits."""
+    LOCATION_HOURS = {
+        'edgewood-atlanta': {
+            'monday': '11am-11pm', 'tuesday': '11am-11pm', 'wednesday': '11am-11pm',
+            'thursday': '11am-11pm', 'friday': '11am-2am', 'saturday': '11am-2am',
+            'sunday': '10am-11:30pm',
+        },
+        'midtown-atlanta': {
+            'monday': '11am-12am', 'tuesday': '11am-12am', 'wednesday': '11am-12am',
+            'thursday': '11am-12am', 'friday': '11am-12am', 'saturday': '11am-12am',
+            'sunday': '11am-12am',
+        },
+        'douglasville': {
+            'monday': '11am-1am', 'tuesday': '11am-1am', 'wednesday': '11am-1am',
+            'thursday': '11am-1am', 'friday': '11am-1am', 'saturday': '11am-1am',
+            'sunday': '11am-1am',
+        },
+        'riverdale': {
+            'monday': '11am-11pm', 'tuesday': '11am-11pm', 'wednesday': '11am-11pm',
+            'thursday': '11am-11pm', 'friday': '11am-1am', 'saturday': '10am-1am',
+            'sunday': '10am-11pm',
+        },
+        'valdosta': {
+            'monday': '11am-10pm', 'tuesday': '11am-10pm', 'wednesday': '11am-10pm',
+            'thursday': '11am-10pm', 'friday': '11am-11pm', 'saturday': '10am-11pm',
+            'sunday': '10am-10pm',
+        },
+        'albany': {
+            'monday': '11am-11pm', 'tuesday': '11am-11pm', 'wednesday': '11am-11pm',
+            'thursday': '11am-11pm', 'friday': '11am-12am', 'saturday': '11am-12am',
+            'sunday': 'Closed',
+        },
+        'stone-mountain': {
+            'monday': '11am-12am', 'tuesday': '11am-12am', 'wednesday': '11am-12am',
+            'thursday': '11am-3am', 'friday': '11am-3am', 'saturday': '10am-3am',
+            'sunday': '10am-12am',
+        },
+        'las-vegas': {
+            'monday': '11am-11pm', 'tuesday': '11am-11pm', 'wednesday': '11am-11pm',
+            'thursday': '11am-11pm', 'friday': '11am-12am', 'saturday': '11am-12am',
+            'sunday': '11am-11pm',
+        },
+    }
+    synced = 0
+    for slug, hours in LOCATION_HOURS.items():
+        result = await db.locations.update_one(
+            {'slug': slug},
+            {'$set': {'hours': hours}},
+        )
+        if result.modified_count:
+            synced += 1
+
+    # Also remove any Wednesday "wing" specials across all locations
+    wing_removed = 0
+    async for loc in db.locations.find({}, {'_id': 1, 'weekly_specials': 1, 'name': 1}):
+        specials = loc.get('weekly_specials') or []
+        filtered = [
+            sp for sp in specials
+            if not (sp.get('day', '').lower() == 'wednesday' and 'wing' in (sp.get('special', '') or '').lower())
+        ]
+        if len(filtered) != len(specials):
+            await db.locations.update_one({'_id': loc['_id']}, {'$set': {'weekly_specials': filtered}})
+            wing_removed += 1
+
+    if synced or wing_removed:
+        logging.info(f"Location sync: updated hours for {synced} locations, removed Wed-wing specials from {wing_removed} locations")
+
+
 async def _get_all_location_slugs() -> list:
     """Get all location slugs including None for global items."""
     all_locs = await db.locations.find({}, {"_id": 0, "slug": 1}).to_list(100)
@@ -216,12 +286,15 @@ async def _sync_menu_prices_and_images(slugs: list):
     ]
 
     removed_count = 0
+    removed_keys = set()
     for name, cat in REMOVED_MENU_ITEMS:
         query = {"name": name}
         if cat:
             query["category"] = cat
         result = await db.menu_items.delete_many(query)
         removed_count += result.deleted_count
+        # Track (name, category) keys so we don't re-insert them from seed
+        removed_keys.add((name, cat))
 
     updated_count = 0
     inserted_count = 0
@@ -229,6 +302,9 @@ async def _sync_menu_prices_and_images(slugs: list):
         name = item.get("name")
         category = item.get("category")
         if not name or not category:
+            continue
+        # Skip items that have been explicitly removed
+        if (name, category) in removed_keys or (name, None) in removed_keys:
             continue
 
         update_fields = {}
@@ -269,7 +345,15 @@ async def _sync_wine_list(slugs: list):
         'SG Cabernet', 'SG Merlot', 'Trapiche Malbec',
         'Justin Sauvignon Blanc', 'Landmark Chardonnay', 'Lost Angel Moscato',
         'Rosso Pinot Grigio', 'SG Chardonnay', 'SG Moscato', 'SG Pinot Grigio',
-        'Washington Hills Riesling', 'Wine Selection', 'Silver Gate Rosé'
+        'Wine Selection', 'Silver Gate Rosé',
+        # Replaced by Riesling
+        'Washington Hills Chardonnay',
+        # Brut discontinued
+        'Silver Gate Brut',
+        # House Brut removed too
+        'House Brut',
+        # Belaire discontinued
+        'Belaire Bleu', 'Belaire Rose',
     ]
     deleted = await db.menu_items.delete_many({'name': {'$in': old_wines}})
     if deleted.deleted_count:
@@ -279,14 +363,14 @@ async def _sync_wine_list(slugs: list):
         {'name': 'Silver Gate Cabernet Sauvignon', 'subcategory': 'Red Wine', 'description': 'Bold and expressive California red with intense aromas of dark fruit and oak', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
         {'name': 'Silver Gate Pinot Noir', 'subcategory': 'Red Wine', 'description': 'Elegant and refined California red with inviting aromas of cherry and earth', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
         {'name': 'Silver Gate Merlot', 'subcategory': 'Red Wine', 'description': 'Smooth and approachable California red with aromas of blackberry, plum, and spice', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
-        {'name': 'Stella Rosa Black', 'subcategory': 'Red Wine', 'description': 'Semi-sweet Italian red wine with notes of wild berries and a smooth finish', 'price': 12, 'variations': [{'name': 'Glass', 'price': 12}, {'name': 'Bottle', 'price': 45}]},
+        {'name': 'Stella Rosa Black', 'subcategory': 'Red Wine', 'description': 'Semi-sweet Italian red wine with notes of wild berries and a smooth finish', 'price': 10, 'variations': [{'name': 'Glass', 'price': 10}, {'name': 'Bottle', 'price': 38}], 'display_order': 9999},
         {'name': 'Silver Gate Chardonnay', 'subcategory': 'White Wine', 'description': 'Classic California white capturing warmth and freshness of the vineyards', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
         {'name': 'Silver Gate Sauvignon Blanc', 'subcategory': 'White Wine', 'description': 'Fresh and vibrant California Sauvignon Blanc with crisp citrus notes', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
         {'name': 'Silver Gate Pinot Grigio', 'subcategory': 'White Wine', 'description': 'Lively California white that celebrates vibrant fruit and mineral notes', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
         {'name': 'Silver Gate Moscato', 'subcategory': 'White Wine', 'description': 'Refreshing and approachable sweet white wine crafted in California', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
-        {'name': 'Silver Gate Brut', 'subcategory': 'Sparkling', 'description': 'Refined sparkling wine crafted in Spain with elegant effervescence', 'price': 9, 'variations': [{'name': 'Glass', 'price': 9}, {'name': 'Bottle', 'price': 34}]},
-        {'name': 'Washington Hills Chardonnay', 'subcategory': 'White Wine', 'description': 'Crisp and refreshing Washington State Chardonnay with notes of apple and pear', 'price': 13, 'variations': [{'name': 'Glass', 'price': 13}, {'name': 'Bottle', 'price': 46}]},
-        {'name': 'La Marca Prosecco', 'subcategory': 'Sparkling', 'description': 'Italian sparkling wine with bright citrus and green apple notes', 'price': 10, 'variations': [{'name': 'Glass', 'price': 10}, {'name': 'Bottle', 'price': 36}]},
+        {'name': 'Washington Hills Riesling', 'subcategory': 'White Wine', 'description': 'Off-dry Washington State Riesling with notes of green apple, peach, and citrus', 'price': 10, 'variations': [{'name': 'Glass', 'price': 10}, {'name': 'Bottle', 'price': 38}]},
+        {'name': 'La Marca Prosecco', 'subcategory': 'Sparkling', 'description': 'Italian sparkling wine with bright citrus and green apple notes', 'price': 11, 'variations': [{'name': 'Glass', 'price': 11}, {'name': 'Bottle', 'price': 40}]},
+        {'name': 'Moet Rose', 'subcategory': 'Sparkling', 'description': 'Moet & Chandon Rose Imperial — Bottle Only', 'price': 325, 'variations': [{'name': 'Bottle', 'price': 325}]},
     ]
 
     added = 0
@@ -310,6 +394,9 @@ async def ensure_menu_items():
         # First ensure locations exist (menu seed depends on them)
         if await db.locations.count_documents({}) == 0:
             await _seed_locations()
+
+        # Sync location hours + remove Wed-wing specials on every startup
+        await _sync_location_hours()
 
         slugs = await _get_all_location_slugs()
 
