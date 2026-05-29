@@ -47,6 +47,7 @@ const MenuItemsTab = () => {
   const [converting, setConverting] = useState(false);
   const [pdfBusy, setPdfBusy] = useState(false);
   const [letterPdfBusy, setLetterPdfBusy] = useState(false);
+  const [cocktailsPdfBusy, setCocktailsPdfBusy] = useState(false);
   const [csvBusy, setCsvBusy] = useState(false);
   const fileInputRef = useRef(null);
   const quickFileRef = useRef(null);
@@ -270,6 +271,18 @@ const MenuItemsTab = () => {
     }
   };
 
+  const generateCocktailsPdf = async () => {
+    setCocktailsPdfBusy(true);
+    try {
+      await downloadAsBlob('/api/admin/menu/generate-cocktails-pdf', 'Fin-and-Feathers-Signature-Cocktails.pdf', 'Cocktails PDF');
+      toast({ title: 'Signature Cocktails PDF downloaded', description: '8.5×11 — 9 image cards per page' });
+    } catch (e) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+    } finally {
+      setCocktailsPdfBusy(false);
+    }
+  };
+
   const exportCsv = async () => {
     setCsvBusy(true);
     try {
@@ -425,6 +438,16 @@ const MenuItemsTab = () => {
           >
             {pdfBusy ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <FileDown className="w-3.5 h-3.5 mr-1.5" />}
             {pdfBusy ? 'Generating...' : 'Download Large PDF (11×17)'}
+          </Button>
+          <Button
+            onClick={generateCocktailsPdf}
+            disabled={cocktailsPdfBusy}
+            variant="outline"
+            className="border-rose-600 text-rose-400 hover:bg-rose-900/30 text-xs"
+            data-testid="generate-cocktails-pdf-btn"
+          >
+            {cocktailsPdfBusy ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <FileDown className="w-3.5 h-3.5 mr-1.5" />}
+            {cocktailsPdfBusy ? 'Generating...' : 'Signature Cocktails PDF (8.5×11)'}
           </Button>
           <Button
             onClick={exportCsv}

@@ -68,6 +68,26 @@ async def generate_letter_menu_pdf_endpoint(admin: str = Depends(get_current_adm
     )
 
 
+@router.post("/admin/menu/generate-cocktails-pdf")
+@router.get("/admin/menu/generate-cocktails-pdf")
+async def generate_cocktails_pdf_endpoint(admin: str = Depends(get_current_admin)):
+    """Generate the Signature Cocktails 8.5x11 PDF (3x3 image-card grid, 9 per page)."""
+    from fastapi.responses import FileResponse
+    import subprocess
+    import sys
+    result = subprocess.run([sys.executable, "generate_cocktails_pdf.py"], capture_output=True, text=True, cwd=ROOT_DIR)
+    if result.returncode != 0:
+        raise HTTPException(status_code=500, detail=result.stderr or result.stdout)
+    pdf_path = ROOT_DIR.parent / "frontend" / "public" / "menu" / "Fin-and-Feathers-Signature-Cocktails.pdf"
+    if not pdf_path.exists():
+        raise HTTPException(status_code=500, detail="PDF was not created")
+    return FileResponse(
+        path=str(pdf_path),
+        media_type="application/pdf",
+        filename="Fin-and-Feathers-Signature-Cocktails.pdf",
+    )
+
+
 @router.get("/admin/menu/export-csv")
 async def export_menu_csv(admin: str = Depends(get_current_admin), location_slug: str = None):
     """Export menu items as CSV with photo links."""
