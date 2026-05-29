@@ -1,6 +1,7 @@
 """Generate a Signature Cocktails PDF on 8.5×11 — 3 columns × 3 rows = 9 image cards per page.
 
-Each card shows a square cocktail photo with the cocktail name, price, and description.
+Each card shows a square cocktail photo with the cocktail name, price, description,
+and a QR code (top-right of the photo) that deep-links to the drink on the live menu.
 Run as a script or from the FastAPI route handler.
 """
 import asyncio
@@ -14,6 +15,7 @@ from reportlab.lib.colors import HexColor
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
 from motor.motor_asyncio import AsyncIOMotorClient
+import qrcode
 
 PAGE_W, PAGE_H = LETTER  # 8.5 x 11 inches in points
 MARGIN = 0.45 * inch
@@ -28,6 +30,26 @@ TEXT_WHITE = HexColor("#f1f5f9")
 TEXT_MUTED = HexColor("#94a3b8")
 CARD_BG = HexColor("#171923")
 CARD_BORDER = HexColor("#334155")
+
+# Public deep-link target for QR codes. Patrons scan -> land on /menu with the drink hash.
+MENU_BASE_URL = os.environ.get("PUBLIC_MENU_URL", "https://finandfeathers.live/menu")
+
+
+def _make_qr_image(payload: str):
+    """Build a small QR code as an ImageReader-ready in-memory PNG."""
+    qr = qrcode.QRCode(
+        version=None,
+        error_correction=qrcode.constants.ERROR_CORRECT_M,
+        box_size=10,
+        border=1,
+    )
+    qr.add_data(payload)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white").convert("RGB")
+    buf = io.BytesIO()
+    img.save(buf, format="PNG", optimize=True)
+    buf.seek(0)
+    return ImageReader(buf)
 
 
 def _img_reader(path: str):
@@ -155,6 +177,26 @@ def _draw_card(c, x, y_top, w, h, item):
                 mask="auto",
             )
 
+    # QR code overlay in top-right corner of the image
+    item_id = item.get("id") or ""
+    if item_id:
+        qr_size = 0.45 * inch
+        qr_pad = 0.04 * inch
+        qr_x = x + w - pad - qr_size
+        qr_y = y_top - pad - qr_size
+        # White rounded pad behind the QR so it stays scannable over any image
+        c.setFillColor(HexColor("#ffffff"))
+        c.setStrokeColor(HexColor("#ffffff"))
+        c.roundRect(qr_x - qr_pad / 2, qr_y - qr_pad / 2,
+                    qr_size + qr_pad, qr_size + qr_pad, 2, fill=1, stroke=0)
+        try:
+            payload = f"{MENU_BASE_URL}?drink={item_id}"
+            qr_reader = _make_qr_image(payload)
+            c.drawImage(qr_reader, qr_x, qr_y, width=qr_size, height=qr_size,
+                        preserveAspectRatio=True, mask="auto")
+        except Exception:
+            pass  # QR is decorative; never block PDF generation
+
     # Text block beneath the image
     text_x = x + pad
     text_top = y_top - pad - img_h - 0.10 * inch
@@ -182,12 +224,16 @@ def _draw_card(c, x, y_top, w, h, item):
         c.setFillColor(TEXT_MUTED)
         c.setFont("Helvetica", 5.8)
         # Estimate characters that fit in the card width.
-        # ~card_w in points / ~2.6pt avg per char at 5.8pt Helvetica.
         max_chars = int((w - 2 * pad) / 2.6)
         lines = _wrap_text(desc, max_chars=max_chars, max_lines=4)
         line_h = 0.105 * inch
         for i, ln in enumerate(lines):
             c.drawString(text_x, text_top - 0.13 * inch - i * line_h, ln)
+
+    # Subtle "Scan to order" hint along the bottom of the card
+    c.setFillColor(HexColor("#475569"))
+    c.setFont("Helvetica-Oblique", 4.6)
+    c.drawRightString(x + w - pad, y_top - h + 0.05 * inch, "Scan to view on menu")
 
 
 # ---------- main ----------

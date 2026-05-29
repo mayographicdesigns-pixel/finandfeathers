@@ -459,6 +459,43 @@ const MenuPage = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [lightboxItem]);
 
+  // Deep-link from printed/QR cocktails PDF: /menu?drink=<menu_item_id>
+  // After menu items load, switch to the right category, scroll to the card,
+  // and briefly highlight it so the patron sees the drink they scanned.
+  useEffect(() => {
+    if (loading || !menuItems || menuItems.length === 0) return;
+    const params = new URLSearchParams(window.location.search);
+    const targetId = params.get('drink');
+    if (!targetId) return;
+    const target = menuItems.find((m) => m.id === targetId);
+    if (!target) return;
+    // Auto-select the category that contains this item so the card is rendered.
+    if (target.category === 'cocktails' || target.category === 'signature-cocktails') {
+      setActiveCategory('cocktails');
+    } else if (drinksCategoryIds.includes(target.category)) {
+      setActiveCategory('drinks');
+    } else if (foodCategoryIds.includes(target.category)) {
+      setActiveCategory('food');
+    } else if (target.category === 'hookah' || target.category === 'hookah-premium') {
+      setActiveCategory('hookah');
+    } else if (target.category === 'daily-specials') {
+      setActiveCategory('daily-specials');
+    }
+    // Wait for the layout to render, then scroll + highlight.
+    const t = setTimeout(() => {
+      const el = document.querySelector(`[data-testid="menu-card-${targetId}"], [data-testid="menu-line-card-${targetId}"], [data-testid="compact-drink-${targetId}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('ring-4', 'ring-red-500', 'ring-offset-2', 'ring-offset-slate-900', 'rounded-lg', 'transition-all', 'duration-500');
+        setTimeout(() => {
+          el.classList.remove('ring-4', 'ring-red-500', 'ring-offset-2', 'ring-offset-slate-900');
+        }, 4000);
+      }
+    }, 500);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, menuItems]);
+
   const handleImageClick = (item) => {
     if (!editMode) {
       setLightboxItem(item);
