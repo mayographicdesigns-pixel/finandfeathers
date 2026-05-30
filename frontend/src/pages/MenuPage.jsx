@@ -199,6 +199,57 @@ const MenuPage = () => {
   const todaysSpecial = getTodaysSpecial();
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const todayName = dayNames[new Date().getDay()];
+
+  // Parse a single hour token like "12pm", "6pm", "11:30pm", "Close" into minutes-from-midnight.
+  // "Close" returns 4 * 60 + 24 * 60 = 1680 (i.e. 4:00 AM next day) so a "6pm – Close" window
+  // stays active until early morning hours.
+  const parseHourToken = (token) => {
+    if (!token) return null;
+    const t = String(token).trim().toLowerCase().replace(/\s+/g, '');
+    if (t === 'close') return 24 * 60 + 4 * 60; // 4:00 AM next day
+    const m = t.match(/^(\d{1,2})(?::(\d{2}))?(am|pm)$/);
+    if (!m) return null;
+    let h = parseInt(m[1], 10);
+    const mm = m[2] ? parseInt(m[2], 10) : 0;
+    const ampm = m[3];
+    if (ampm === 'am') {
+      if (h === 12) h = 0;
+    } else if (h !== 12) {
+      h += 12;
+    }
+    return h * 60 + mm;
+  };
+
+  // Check whether the current local clock falls inside the day's special window.
+  // Returns true/false. Accepts hour strings like "12pm – 8pm", "6pm – Close", "5pm-8pm".
+  const isSpecialActiveNow = (hoursStr) => {
+    if (!hoursStr) return false;
+    const parts = String(hoursStr).split(/\s*[-–]\s*/);
+    if (parts.length !== 2) return false;
+    const startMin = parseHourToken(parts[0]);
+    const endMin = parseHourToken(parts[1]);
+    if (startMin == null || endMin == null) return false;
+    const now = new Date();
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    // Same-day window
+    if (endMin <= 24 * 60) {
+      return nowMin >= startMin && nowMin < endMin;
+    }
+    // Window wraps past midnight (e.g. 6pm – Close => 6pm Sun to 4am Mon).
+    // Active if we're past start today OR before the wrapped end early next morning.
+    return nowMin >= startMin || nowMin < (endMin - 24 * 60);
+  };
+
+  const specialActiveNow = isSpecialActiveNow(todaysSpecial?.hours);
+
+  // If the user is sitting on the Daily Specials view when the window expires,
+  // bounce them back to the full menu so they don't see an empty section.
+  useEffect(() => {
+    if (!specialActiveNow && activeCategory === 'daily-specials') {
+      setActiveCategory('all');
+    }
+  }, [specialActiveNow, activeCategory]);
+
   const heroHtml = pageContent.hero || 'ELEVATED DINING MEETS SOUTHERN SOUL. EVERY DISH CRAFTED WITH FRESH INGREDIENTS AND GENUINE HOSPITALITY.';
 
 
@@ -1118,7 +1169,9 @@ const MenuPage = () => {
       {/* Main Category Filter - 4 buttons */}
       <div className="container mx-auto px-4 mb-4">
         <div className="flex flex-wrap gap-3 justify-center">
-          {mainCategories.map((cat) => (
+          {mainCategories
+            .filter((cat) => cat.id !== 'daily-specials' || specialActiveNow)
+            .map((cat) => (
             <button
               key={cat.id}
               onClick={() => handleCategoryChange(cat.id)}
@@ -1211,8 +1264,8 @@ const MenuPage = () => {
         {/* ALL VIEW - Show everything organized with drinks at the bottom */}
         {activeCategory === 'all' && (
           <div className="space-y-10">
-            {/* $5 Daily Specials */}
-            {itemsByCategory['daily-specials']?.length > 0 && (
+            {/* $5 Daily Specials — hidden when outside today's special hours */}
+            {specialActiveNow && itemsByCategory['daily-specials']?.length > 0 && (
               <div>
                 <h3 className="text-2xl font-bold text-white mb-2 border-b border-slate-700 pb-3">
                   $5 Daily Specials
@@ -1324,8 +1377,8 @@ const MenuPage = () => {
           </div>
         )}
 
-        {/* DAILY SPECIALS VIEW */}
-        {activeCategory === 'daily-specials' && (
+        {/* DAILY SPECIALS VIEW — only when the special is currently active */}
+        {activeCategory === 'daily-specials' && specialActiveNow && (
           <div>
             <p className="text-slate-400 text-sm mb-2">MON-FRI 12PM-8PM • SATURDAY 5PM-8PM • SUNDAY 6PM-CLOSE</p>
             <p className="text-amber-400 text-xs mb-4 italic" data-testid="daily-specials-togo-surcharge">Please note: a $2.00 surcharge applies to all to-go orders.</p>
