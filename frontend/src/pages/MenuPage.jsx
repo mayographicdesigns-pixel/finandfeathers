@@ -242,6 +242,68 @@ const MenuPage = () => {
 
   const specialActiveNow = isSpecialActiveNow(todaysSpecial?.hours);
 
+  // Compute the next time a $5 daily special starts, by walking forward day-by-day.
+  // Returns { special, startDateTime, dayIdx } or null.
+  const getNextSpecialInfo = useCallback((now = new Date()) => {
+    const map = Object.keys(dailySpecialsMap).length > 0 ? dailySpecialsMap : DEFAULT_DAILY_SPECIALS;
+    for (let offset = 0; offset < 8; offset++) {
+      const probe = new Date(now);
+      probe.setDate(probe.getDate() + offset);
+      const dayIdx = probe.getDay();
+      const spec = map[dayIdx];
+      if (!spec || !spec.hours) continue;
+      const parts = String(spec.hours).split(/\s*[-–]\s*/);
+      if (parts.length !== 2) continue;
+      const startMin = parseHourToken(parts[0]);
+      if (startMin == null) continue;
+      const startDt = new Date(probe);
+      startDt.setHours(Math.floor(startMin / 60), startMin % 60, 0, 0);
+      if (startDt > now) return { special: spec, startDateTime: startDt, dayIdx };
+    }
+    return null;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dailySpecialsMap]);
+
+  // Live ticker — re-renders every 30s so the countdown stays current.
+  const [nowTick, setNowTick] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNowTick(Date.now()), 30 * 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Build the "starts in …" label for the upcoming special chip.
+  const nextSpecialChip = useMemo(() => {
+    if (specialActiveNow) return null;
+    const now = new Date(nowTick);
+    const info = getNextSpecialInfo(now);
+    if (!info) return null;
+    const diffMs = info.startDateTime - now;
+    const diffMin = Math.max(0, Math.round(diffMs / 60000));
+    let when;
+    if (diffMin < 60) {
+      when = diffMin <= 1 ? 'in 1 min' : `in ${diffMin} min`;
+    } else if (diffMin < 24 * 60) {
+      const h = Math.floor(diffMin / 60);
+      const m = diffMin % 60;
+      when = m === 0 ? `in ${h}h` : `in ${h}h ${m}m`;
+    } else {
+      const dayLabel = dayNames[info.dayIdx];
+      const t = info.startDateTime;
+      const hour12 = t.getHours() % 12 || 12;
+      const ampm = t.getHours() >= 12 ? 'PM' : 'AM';
+      const minStr = t.getMinutes() ? `:${String(t.getMinutes()).padStart(2, '0')}` : '';
+      // "starts Sunday 6 PM" / "starts Tomorrow 12 PM"
+      const isTomorrow = info.startDateTime.toDateString() ===
+        new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toDateString();
+      when = `${isTomorrow ? 'Tomorrow' : dayLabel} ${hour12}${minStr} ${ampm}`;
+    }
+    return {
+      label: `$5 ${info.special.name} • ${when.startsWith('in ') ? `starts ${when}` : `starts ${when}`}`,
+      emoji: info.special.emoji || '⭐',
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [specialActiveNow, nowTick, getNextSpecialInfo]);
+
   // If the user is sitting on the Daily Specials view when the window expires,
   // bounce them back to the full menu so they don't see an empty section.
   useEffect(() => {
@@ -1168,7 +1230,7 @@ const MenuPage = () => {
 
       {/* Main Category Filter - 4 buttons */}
       <div className="container mx-auto px-4 mb-4">
-        <div className="flex flex-wrap gap-3 justify-center">
+        <div className="flex flex-wrap gap-3 justify-center items-center">
           {mainCategories
             .filter((cat) => cat.id !== 'daily-specials' || specialActiveNow)
             .map((cat) => (
@@ -1186,6 +1248,19 @@ const MenuPage = () => {
               <span>{cat.name}</span>
             </button>
           ))}
+
+          {/* Upcoming special countdown chip — only when no special is running */}
+          {nextSpecialChip && (
+            <div
+              className="px-4 py-2 rounded-full bg-gradient-to-r from-amber-500/10 to-red-500/10 border border-amber-500/40 text-amber-300 text-xs font-semibold uppercase tracking-wide flex items-center gap-1.5 shadow-inner shadow-amber-500/5"
+              data-testid="next-special-chip"
+              title={`Upcoming: ${nextSpecialChip.label}`}
+            >
+              <span className="text-sm" aria-hidden="true">{nextSpecialChip.emoji}</span>
+              <span className="hidden sm:inline">{nextSpecialChip.label}</span>
+              <span className="sm:hidden">{nextSpecialChip.label.replace(' • ', ' ')}</span>
+            </div>
+          )}
         </div>
       </div>
 
