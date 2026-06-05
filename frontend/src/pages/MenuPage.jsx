@@ -161,9 +161,9 @@ const MenuPage = () => {
       emoji: "🍸"
     },
     5: { // Friday
-      name: "The Premium Power Hour",
-      description: "$6 Select Premium cocktails and shots",
-      hours: "6pm – 8pm",
+      name: "Premium Power Hour",
+      description: "$5 Daily Specials menu 12pm – 8pm · $6 Premium Shots 6pm – 8pm",
+      hours: "12pm – 8pm",
       emoji: "⚡"
     },
     6: { // Saturday
