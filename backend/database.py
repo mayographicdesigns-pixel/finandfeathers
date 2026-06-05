@@ -474,6 +474,48 @@ async def ensure_events():
         logging.info(f"Events seed: added {added} featured events")
 
 
+async def fix_daily_specials_hours():
+    """One-time, idempotent migration: correct historical $5 daily special hours.
+
+    Only touches a record if its `hours` field still matches the broken
+    legacy value — admin edits made via /admin/daily-specials are preserved.
+
+    Migrations applied:
+      • Friday (day_index=5): "6pm – 8pm" -> "12pm – 8pm" so the $5 specials
+        UI doesn't hide all afternoon. Description updated to call out the
+        $6 Premium Shots 6pm-8pm add-on.
+      • Saturday (day_index=6): "6pm – 8pm" -> "5pm – 8pm" (user requested
+        update that landed in preview but never reached production DB).
+    """
+    try:
+        fri = await db.daily_specials.find_one({"day_index": 5}, {"_id": 0, "hours": 1})
+        if fri and fri.get("hours") == "6pm – 8pm":
+            await db.daily_specials.update_one(
+                {"day_index": 5},
+                {"$set": {
+                    "name": "Premium Power Hour",
+                    "hours": "12pm – 8pm",
+                    "description": "$5 Daily Specials menu 12pm – 8pm · $6 Premium Shots 6pm – 8pm",
+                    "emoji": "⚡",
+                    "updated_at": datetime.now(timezone.utc),
+                }},
+            )
+            logging.info("Daily specials migration: Friday hours fixed (6pm-8pm -> 12pm-8pm)")
+
+        sat = await db.daily_specials.find_one({"day_index": 6}, {"_id": 0, "hours": 1})
+        if sat and sat.get("hours") == "6pm – 8pm":
+            await db.daily_specials.update_one(
+                {"day_index": 6},
+                {"$set": {
+                    "hours": "5pm – 8pm",
+                    "updated_at": datetime.now(timezone.utc),
+                }},
+            )
+            logging.info("Daily specials migration: Saturday hours fixed (6pm-8pm -> 5pm-8pm)")
+    except Exception as e:
+        logging.error(f"Daily specials migration error: {e}")
+
+
 
 
 async def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):
