@@ -30,6 +30,39 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* =========================================================================
+   Global text-centering — applies to every page.
+   Form inputs, textareas, code blocks and a few specific contexts stay
+   left-aligned so editing/forms/data layouts remain usable.
+   ========================================================================= */
+body {
+    text-align: center;
+}
+
+/* Restore left alignment for elements where centered text breaks UX */
+input,
+textarea,
+select,
+[contenteditable="true"],
+pre,
+code,
+kbd,
+samp,
+table,
+th,
+td,
+.text-left-force,
+[data-text-align="left"] {
+    text-align: left;
+}
+
+/* Tailwind explicit alignment utilities always win over the global default */
+.text-left { text-align: left !important; }
+.text-right { text-align: right !important; }
+.text-justify { text-align: justify !important; }
+.text-start { text-align: start !important; }
+.text-end { text-align: end !important; }
+
 code {
     font-family:
         source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
