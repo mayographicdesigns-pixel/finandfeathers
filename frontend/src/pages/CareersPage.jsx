@@ -20,6 +20,8 @@ const LOCATIONS = [
 const FOH_POSITIONS = ['Floor Manager', 'Bartender', 'Server', 'Hookah', 'Service Assistant/Dish Washer'];
 const BOH_POSITIONS = ['Line Cook', 'Utility/Dishwasher', 'Kitchen Manager'];
 const PHOTO_REQUIRED_POSITIONS = ['Floor Manager', 'Bartender', 'Server', 'Hookah'];
+// GA & NV both require alcohol servers/handlers to be 21+
+const AGE_GATED_POSITIONS = ['Floor Manager', 'Bartender', 'Server', 'Hookah'];
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const SHIFTS = ['Morning', 'Evening', 'Late Night'];
@@ -40,6 +42,7 @@ const CareersPage = () => {
     location: '',
     position_category: '',
     position: '',
+    is_21_or_over: '',
     availability: {},
     resume: null,
     headshot: null
@@ -48,6 +51,7 @@ const CareersPage = () => {
   const [errors, setErrors] = useState({});
 
   const needsPhoto = PHOTO_REQUIRED_POSITIONS.includes(form.position);
+  const requiresAgeCheck = AGE_GATED_POSITIONS.includes(form.position);
 
   const updateForm = (field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -75,6 +79,13 @@ const CareersPage = () => {
     if (s === 2) {
       if (!form.location) errs.location = 'Select a location';
       if (!form.position) errs.position = 'Select a position';
+      if (AGE_GATED_POSITIONS.includes(form.position)) {
+        if (!form.is_21_or_over) {
+          errs.is_21_or_over = 'This position requires you to confirm you are 21 or over';
+        } else if (form.is_21_or_over === 'no') {
+          errs.is_21_or_over = 'You must be 21 or over to apply for this position';
+        }
+      }
     }
     if (s === 3) {
       // Resume and headshot are optional
@@ -112,6 +123,7 @@ const CareersPage = () => {
       formData.append('location', form.location);
       formData.append('position_category', form.position_category);
       formData.append('position', form.position);
+      formData.append('is_21_or_over', form.is_21_or_over || '');
       formData.append('availability', JSON.stringify(form.availability));
       if (form.resume) formData.append('resume', form.resume);
       if (form.headshot) formData.append('headshot', form.headshot);
@@ -143,7 +155,7 @@ const CareersPage = () => {
           <h1 className="text-3xl font-bold text-white mb-4">Thank You!</h1>
           <p className="text-slate-300 mb-2">Your application has been received.</p>
           <p className="text-slate-400 text-sm mb-8">
-            We'll review your application and get back to you soon. A confirmation has been sent to {form.email}.
+            We&apos;ll review your application and get back to you soon. A confirmation has been sent to {form.email}.
           </p>
           <Button onClick={() => navigate('/')} className="bg-red-600 hover:bg-red-700 text-white px-8">
             Back to Home
@@ -287,6 +299,10 @@ const CareersPage = () => {
                     const cat = FOH_POSITIONS.includes(pos) ? 'FOH' : 'BOH';
                     updateForm('position', pos);
                     updateForm('position_category', cat);
+                    // Clear age-gate answer if the new position doesn't require it
+                    if (!AGE_GATED_POSITIONS.includes(pos)) {
+                      updateForm('is_21_or_over', '');
+                    }
                   }}
                   className="w-full bg-slate-800 border border-slate-700 text-white rounded-md px-3 py-2 text-sm"
                   data-testid="careers-position"
@@ -301,6 +317,46 @@ const CareersPage = () => {
                 </select>
                 {errors.position && <p className="text-red-400 text-xs mt-1">{errors.position}</p>}
               </div>
+
+              {requiresAgeCheck && (
+                <div data-testid="age-21-check">
+                  <label className="text-sm text-slate-300 mb-2 block">
+                    Are you 21 years of age or older? *
+                    <span className="block text-xs text-slate-500 mt-0.5">
+                      Required for positions that serve or handle alcohol.
+                    </span>
+                  </label>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => updateForm('is_21_or_over', 'yes')}
+                      className={`flex-1 px-4 py-2.5 rounded-md text-sm font-semibold border transition-colors ${
+                        form.is_21_or_over === 'yes'
+                          ? 'bg-red-600 border-red-500 text-white'
+                          : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
+                      }`}
+                      data-testid="age-21-yes"
+                    >
+                      Yes, I am 21+
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => updateForm('is_21_or_over', 'no')}
+                      className={`flex-1 px-4 py-2.5 rounded-md text-sm font-semibold border transition-colors ${
+                        form.is_21_or_over === 'no'
+                          ? 'bg-red-600 border-red-500 text-white'
+                          : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
+                      }`}
+                      data-testid="age-21-no"
+                    >
+                      No
+                    </button>
+                  </div>
+                  {errors.is_21_or_over && (
+                    <p className="text-red-400 text-xs mt-2" data-testid="age-21-error">{errors.is_21_or_over}</p>
+                  )}
+                </div>
+              )}
 
               <div>
                 <div className="flex items-center justify-between mb-3">

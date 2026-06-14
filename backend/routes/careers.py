@@ -38,6 +38,15 @@ def send_application_email(application_data: dict, recipient_emails: list):
         phone = application_data.get("phone", "N/A")
         position = application_data.get("position", "N/A")
         location = application_data.get("location", "N/A")
+        is_21 = application_data.get("is_21_or_over")
+        age_row = ""
+        if is_21 in ("yes", "no"):
+            badge = "21+ Confirmed" if is_21 == "yes" else "Under 21"
+            color = "#16a34a" if is_21 == "yes" else "#dc2626"
+            age_row = (
+                f'<tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Age (21+):</strong></td>'
+                f'<td style="padding: 8px;"><span style="background:{color};color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;">{badge}</span></td></tr>'
+            )
 
         html_content = f"""
         <html><body style="font-family: Arial, sans-serif;">
@@ -48,6 +57,7 @@ def send_application_email(application_data: dict, recipient_emails: list):
             <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Phone:</strong></td><td style="padding: 8px;">{phone}</td></tr>
             <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Position:</strong></td><td style="padding: 8px;">{position}</td></tr>
             <tr><td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Location:</strong></td><td style="padding: 8px;">{location}</td></tr>
+            {age_row}
         </table>
         <p style="margin-top: 20px; color: #888;">View and manage applications at your admin dashboard.</p>
         </body></html>
@@ -73,6 +83,7 @@ async def submit_job_application(
     location: str = Form(...),
     position_category: str = Form(...),
     position: str = Form(...),
+    is_21_or_over: str = Form(""),
     availability: str = Form("{}"),
     resume: Optional[UploadFile] = File(None),
     headshot: Optional[UploadFile] = File(None),
@@ -128,12 +139,22 @@ async def submit_job_application(
     except Exception:
         availability_data = {}
 
+    # Enforce 21+ on the server too — frontend may be bypassed
+    AGE_GATED_POSITIONS = {"Floor Manager", "Bartender", "Server", "Hookah"}
+    is_21_normalized = (is_21_or_over or "").strip().lower()
+    if position in AGE_GATED_POSITIONS:
+        if is_21_normalized not in ("yes", "no"):
+            raise HTTPException(status_code=400, detail="The 21+ confirmation is required for this position.")
+        if is_21_normalized == "no":
+            raise HTTPException(status_code=400, detail="Applicants must be 21 or over to apply for this position.")
+
     application_id = str(uuid.uuid4())
     application = {
         "id": application_id, "name": name, "email": email, "phone": phone,
         "social_links": {"instagram": instagram, "facebook": facebook, "tiktok": tiktok},
         "location": location, "location_email": LOCATION_EMAILS.get(location, ""),
         "position_category": position_category, "position": position,
+        "is_21_or_over": is_21_normalized if is_21_normalized in ("yes", "no") else None,
         "availability": availability_data, "resume_url": resume_url,
         "headshot_url": headshot_url, "status": "new",
         "created_at": datetime.now(timezone.utc).isoformat()
