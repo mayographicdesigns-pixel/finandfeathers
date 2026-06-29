@@ -25,7 +25,7 @@
   },
   {
     "name": "Fin's Tacos*",
-    "description": "Corn tortillas, pickled cabbage salad, house made peach & pineapple salsa, jack cheese, topped with herb sour cream. Saut\u00e9ed veggies, chicken, catfish, shrimp (+$4) or steak (+$4)",
+    "description": "Corn tortillas, pickled cabbage salad, house made peach & pineapple salsa, jack cheese, topped with herb sour cream. Sautéed veggies, chicken, catfish, shrimp (+$4) or steak (+$4)",
     "price": 14,
     "category": "starters",
     "badges": [
@@ -66,7 +66,7 @@
   },
   {
     "name": "Dynamite Pepper Shrimp*",
-    "description": "Hand-battered deep-fried shrimp tossed in homemade sweet pepper sauce with jalape\u00f1o and tropical banana peppers. Served with chipotle ranch dipping sauce",
+    "description": "Hand-battered deep-fried shrimp tossed in homemade sweet pepper sauce with jalapeño and tropical banana peppers. Served with chipotle ranch dipping sauce",
     "price": 17,
     "category": "starters",
     "badges": [
@@ -246,7 +246,7 @@
   },
   {
     "name": "Veggie Bowl",
-    "description": "Saut\u00e9ed vegetables with sweet chili glaze - tender broccoli, carrots, tomatoes, and spinach saut\u00e9ed in garlic butter, served over rice pilaf (No sides included)",
+    "description": "Sautéed vegetables with sweet chili glaze - tender broccoli, carrots, tomatoes, and spinach sautéed in garlic butter, served over rice pilaf (No sides included)",
     "price": 20,
     "category": "entrees",
     "badges": [
@@ -331,7 +331,7 @@
   },
   {
     "name": "Fire Chicken Sandwich*",
-    "description": "Grilled or deep-fried chicken breast, drizzled with our housemade fire sauce with melted jack cheese, saut\u00e9ed jalape\u00f1os and blue cheese",
+    "description": "Grilled or deep-fried chicken breast, drizzled with our housemade fire sauce with melted jack cheese, sautéed jalapeños and blue cheese",
     "price": 16,
     "category": "sandwiches",
     "badges": [
@@ -357,7 +357,7 @@
   },
   {
     "name": "Catfish Filet Sandwich*",
-    "description": "Deep-fried catfish topped with option of parmesan sauce, tartar or r\u00e9moulade sauce & lettuce, tomatoes and pickles. Add cheese +$1",
+    "description": "Deep-fried catfish topped with option of parmesan sauce, tartar or rémoulade sauce & lettuce, tomatoes and pickles. Add cheese +$1",
     "price": 17,
     "category": "sandwiches",
     "badges": [],
@@ -369,7 +369,7 @@
   },
   {
     "name": "Salmon Burger*",
-    "description": "Perfectly cooked 4oz salmon fillet, seasoned and garnished with your choice of parmesan, tartar, or r\u00e9moulade sauce. Served with lettuce, tomatoes, and pickles. Add cheese +$1",
+    "description": "Perfectly cooked 4oz salmon fillet, seasoned and garnished with your choice of parmesan, tartar, or rémoulade sauce. Served with lettuce, tomatoes, and pickles. Add cheese +$1",
     "price": 19,
     "category": "sandwiches",
     "badges": [],
@@ -478,8 +478,8 @@
     "image_url": "/images/menu/sides/Whipped Potatoes.jpg"
   },
   {
-    "name": "Saut\u00e9ed Garlic Spinach",
-    "description": "Fresh spinach saut\u00e9ed with garlic",
+    "name": "Sautéed Garlic Spinach",
+    "description": "Fresh spinach sautéed with garlic",
     "price": 7,
     "category": "sides",
     "badges": [
@@ -488,9 +488,9 @@
     "imageUrl": "",
     "layout": "line",
     "id": "4f3b3668-6345-4934-bfc6-2fb1d70908d6",
-    "image": "/images/menu/sides/Saut\u00e9ed Garlic Spinach.jpg",
+    "image": "/images/menu/sides/Sautéed Garlic Spinach.jpg",
     "type": "food",
-    "image_url": "/images/menu/sides/Saut\u00e9ed Garlic Spinach.jpg"
+    "image_url": "/images/menu/sides/Sautéed Garlic Spinach.jpg"
   },
   {
     "name": "Lemon Butter Broccoli*",
@@ -508,8 +508,8 @@
     "image_url": "/images/menu/sides/Lemon Butter Broccoli.jpg"
   },
   {
-    "name": "Jalape\u00f1o Roasted Corn",
-    "description": "Roasted corn with jalape\u00f1os",
+    "name": "Jalapeño Roasted Corn",
+    "description": "Roasted corn with jalapeños",
     "price": 7,
     "category": "sides",
     "badges": [
@@ -519,9 +519,9 @@
     "imageUrl": "",
     "layout": "line",
     "id": "eca4320e-98cf-4235-9b1f-78c81dae6c7f",
-    "image": "/images/menu/sides/Jalape\u00f1o Roasted Corn.jpg",
+    "image": "/images/menu/sides/Jalapeño Roasted Corn.jpg",
     "type": "food",
-    "image_url": "/images/menu/sides/Jalape\u00f1o Roasted Corn.jpg"
+    "image_url": "/images/menu/sides/Jalapeño Roasted Corn.jpg"
   },
   {
     "name": "Crispy Fries",
@@ -936,7 +936,7 @@
     "name": "Long Island Iced Tea",
     "description": "Vodka, rum, gin, tequila, triple sec, and sour mix over ice with a splash of cola",
     "price": 5.0,
-    "image": "",
+    "image": "/images/cocktails/Long Island.jpg",
     "category": "daily-specials",
     "badges": [],
     "type": "drink",
@@ -974,7 +974,7 @@
   },
   {
     "name": "Bellini",
-    "description": "The quintessential brunch classic. A soft, opaque blend of sweet peach pur\u00e9e and La Marca sparkling Prosecco, garnished with a fresh orange slice and a cherry. Served in a Stemless Glass.",
+    "description": "The quintessential brunch classic. A soft, opaque blend of sweet peach purée and La Marca sparkling Prosecco, garnished with a fresh orange slice and a cherry. Served in a Stemless Glass.",
     "price": 10,
     "image": "",
     "category": "brunch-drinks",
@@ -1260,7 +1260,7 @@
   },
   {
     "name": "Moet Rose",
-    "description": "Moet & Chandon Rose Imperial \u2014 Bottle Only",
+    "description": "Moet & Chandon Rose Imperial — Bottle Only",
     "price": 325,
     "image": "",
     "category": "beer-wine",
@@ -1579,7 +1579,7 @@
   {
     "id": "c7",
     "name": "Pacific Coast Hwy",
-    "description": "A Hennessy Margarita \u2014 Hennessy VS, triple sec, sour mix, lime juice, and agave. Served in a tall glass.",
+    "description": "A Hennessy Margarita — Hennessy VS, triple sec, sour mix, lime juice, and agave. Served in a tall glass.",
     "price": 17,
     "category": "cocktails",
     "badges": [
@@ -1633,7 +1633,7 @@
   {
     "id": "c11",
     "name": "Rodeo Drive",
-    "description": "The ultimate margarita, crafted with exclusive Patr\u00f3n Fin & Feathers Barrel Select Premium A\u00f1ejo, Grand Marnier, lime, agave, sour mix, and a Taj\u00edn rim.",
+    "description": "The ultimate margarita, crafted with exclusive Patrón Fin & Feathers Barrel Select Premium Añejo, Grand Marnier, lime, agave, sour mix, and a Tajín rim.",
     "price": 20,
     "category": "cocktails",
     "badges": [
@@ -1648,7 +1648,7 @@
   {
     "id": "c12",
     "name": "Old Atlanta",
-    "description": "A peach state twist on a traditional old fashioned. Uncle Nearest, peach pur\u00e9e, simple syrup, garnished with an orange slice and cherry.",
+    "description": "A peach state twist on a traditional old fashioned. Uncle Nearest, peach purée, simple syrup, garnished with an orange slice and cherry.",
     "price": 17,
     "category": "cocktails",
     "badges": [
@@ -2085,7 +2085,7 @@
     "description": "Blanco Tequila, Orange Juice, and a dash of Grenadine. Add premium Tequila for a $5 upcharge.",
     "type": "drink",
     "price": 10,
-    "image": "",
+    "image": "/images/cocktails/Tequila Sunrise.jpg",
     "image_url": "",
     "is_active": true
   },
@@ -2096,7 +2096,7 @@
     "description": "Vodka, Orange Juice, and a dash of Grenadine. Add premium Vodka for a $5 upcharge.",
     "type": "drink",
     "price": 12,
-    "image": "",
+    "image": "/images/cocktails/Vodka Sunrise.jpg",
     "image_url": "",
     "is_active": true
   },
