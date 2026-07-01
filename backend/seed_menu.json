@@ -936,7 +936,7 @@
     "name": "Long Island Iced Tea",
     "description": "Vodka, rum, gin, tequila, triple sec, and sour mix over ice with a splash of cola",
     "price": 5.0,
-    "image": "/images/cocktails/Long Island.jpg",
+    "image": "",
     "category": "daily-specials",
     "badges": [],
     "type": "drink",
@@ -1548,7 +1548,7 @@
     "layout": "card",
     "is_active": true,
     "image_url": "/images/cocktails/Baldwin-Hills.jpg",
-    "image": "/images/cocktails/Baldwin-Hills.jpg"
+    "image": "/images/cocktails/Baldwin Hills.jpg"
   },
   {
     "id": "c5",
@@ -1585,7 +1585,7 @@
     "badges": [
       "Premium"
     ],
-    "layout": "line",
+    "layout": "card",
     "is_active": true,
     "image": "/images/cocktails/Pacific Coast Hwy.jpg",
     "image_url": "/images/cocktails/Pacific Coast Hwy.jpg",
@@ -2085,7 +2085,7 @@
     "description": "Blanco Tequila, Orange Juice, and a dash of Grenadine. Add premium Tequila for a $5 upcharge.",
     "type": "drink",
     "price": 10,
-    "image": "/images/cocktails/Tequila Sunrise.jpg",
+    "image": "",
     "image_url": "",
     "is_active": true
   },
@@ -2096,7 +2096,7 @@
     "description": "Vodka, Orange Juice, and a dash of Grenadine. Add premium Vodka for a $5 upcharge.",
     "type": "drink",
     "price": 12,
-    "image": "/images/cocktails/Vodka Sunrise.jpg",
+    "image": "",
     "image_url": "",
     "is_active": true
   },
