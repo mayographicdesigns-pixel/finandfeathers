@@ -480,6 +480,123 @@ async def admin_store_menu_images(request: Request, username: str = Depends(get_
 
 # ==================== FILE UPLOADS ====================
 
+@router.post("/admin/menu/{item_id}/image")
+async def admin_replace_menu_item_image(
+    item_id: str,
+    file: UploadFile = File(...),
+    username: str = Depends(get_current_admin)
+):
+    """Replace the image for a specific menu item.
+
+    The uploaded image is center-cropped to square, resized to 800×800 JPEG (~90KB),
+    saved to /app/frontend/public/images/<category>/, then applied to every location
+    row that shares this item's `name` + `category` (so the change propagates across
+    all 10 Fin & Feathers locations). Also mirrored into `seed_menu.json` so the swap
+    survives future redeploys.
+    """
+    from PIL import Image
+    import io
+    import json
+    import re
+
+    # Locate the source menu item — accept either UUID id or a name lookup
+    item = await db.menu_items.find_one({"id": item_id}, {"_id": 0})
+    if not item:
+        item = await db.menu_items.find_one({"name": item_id}, {"_id": 0})
+    if not item:
+        raise HTTPException(status_code=404, detail=f"Menu item '{item_id}' not found")
+
+    file_ext = Path(file.filename or "").suffix.lower()
+    if file_ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(status_code=400, detail=f"File type not allowed: {file_ext}")
+
+    contents = await file.read()
+    if len(contents) > MAX_FILE_SIZE:
+        raise HTTPException(status_code=400, detail="File too large (10MB max)")
+
+    # Square-crop + resize to 800×800 JPEG
+    try:
+        img = Image.open(io.BytesIO(contents)).convert("RGB")
+        w, h = img.size
+        s = min(w, h)
+        left, top = (w - s) // 2, (h - s) // 2
+        img = img.crop((left, top, left + s, top + s)).resize((800, 800), Image.LANCZOS)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Could not decode image: {e}")
+
+    # Choose a folder based on the menu item's category
+    category = (item.get("category") or "other").strip()
+    subfolder_map = {
+        "cocktails": "cocktails",
+        "signature-cocktails": "cocktails",
+        "beer-wine": "cocktails",
+        "brunch-drinks": "cocktails",
+        "mocktails": "cocktails",
+        "starters": "food",
+        "brunch": "food",
+        "entrees": "food",
+        "sandwiches": "food",
+        "sides": "food",
+        "daily-specials": "daily-specials",
+        "hookah": "hookah",
+        "hookah-premium": "hookah",
+    }
+    subfolder = subfolder_map.get(category, "menu")
+    out_dir = ROOT_DIR.parent / "frontend" / "public" / "images" / subfolder
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    # Safe filename derived from item name (preserve spaces so URL-encoded paths still work)
+    safe_name = re.sub(r'[^A-Za-z0-9 &\-]', '', item.get("name", "menu")).strip() or "menu"
+    filename = f"{safe_name}.jpg"
+    dest_path = out_dir / filename
+    dashed_path = out_dir / filename.replace(" ", "-")
+
+    # Write image bytes atomically
+    with open(dest_path, "wb") as f:
+        img.save(f, "JPEG", quality=88, optimize=True)
+    # Mirror to the hyphen variant so any legacy URL still resolves
+    with open(dashed_path, "wb") as f:
+        img.save(f, "JPEG", quality=88, optimize=True)
+
+    public_url = f"/images/{subfolder}/{filename}"
+
+    # Propagate to every location row that shares this item's name+category
+    now = datetime.now(timezone.utc)
+    result = await db.menu_items.update_many(
+        {"name": item.get("name"), "category": category},
+        {"$set": {"image": public_url, "image_url": public_url, "updated_at": now}}
+    )
+
+    # Mirror into seed_menu.json so future redeploys don't overwrite
+    try:
+        seed_path = ROOT_DIR / "seed_menu.json"
+        if seed_path.exists():
+            with open(seed_path, "r", encoding="utf-8") as sf:
+                seed = json.load(sf)
+            touched = 0
+            for entry in seed:
+                if entry.get("name") == item.get("name") and entry.get("category") == category:
+                    entry["image"] = public_url
+                    touched += 1
+            if touched:
+                with open(seed_path, "w", encoding="utf-8") as sf:
+                    json.dump(seed, sf, indent=2, ensure_ascii=False)
+    except Exception as e:
+        # Log but don't fail the request — the DB update is what patrons see immediately
+        import logging
+        logging.warning(f"seed_menu.json sync skipped for {item.get('name')}: {e}")
+
+    # Cache-buster query so the browser fetches the new file
+    display_url = f"{public_url}?v={int(now.timestamp())}"
+    return {
+        "name": item.get("name"),
+        "category": category,
+        "image": public_url,
+        "display_url": display_url,
+        "locations_updated": result.modified_count,
+    }
+
+
 @router.post("/admin/upload")
 async def admin_upload_file(
     file: UploadFile = File(...),

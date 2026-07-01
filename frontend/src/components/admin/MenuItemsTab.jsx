@@ -164,25 +164,62 @@ const MenuItemsTab = () => {
     }
   };
 
-  // Quick image upload for a specific item (click photo to replace)
-  const handleQuickImageUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file || !quickUploadItemId) return;
+  // Quick image upload for a specific item — uses the /admin/menu/{id}/image endpoint
+  // which square-crops, resizes to 800×800 JPEG, propagates to all 10 locations, and
+  // mirrors into seed_menu.json for redeploy persistence.
+  const uploadItemImage = async (item, file) => {
+    if (!item || !file) return;
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
-      toast({ title: 'Error', description: 'Please upload a valid image', variant: 'destructive' });
+      toast({ title: 'Error', description: 'Please upload a valid image (JPG/PNG/GIF/WEBP)', variant: 'destructive' });
       return;
     }
     try {
-      const result = await uploadImage(file);
-      await updateMenuItem(quickUploadItemId, { image: result.url });
-      setItems(items.map(i => i.id === quickUploadItemId ? { ...i, image: result.url, image_url: result.url } : i));
-      toast({ title: 'Image updated', description: 'Synced to all locations automatically' });
+      const token = localStorage.getItem('adminToken');
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch(
+        `${window.location.origin}/api/admin/menu/${encodeURIComponent(item.id)}/image`,
+        { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd }
+      );
+      if (!res.ok) {
+        const detail = await res.text();
+        throw new Error(detail || `HTTP ${res.status}`);
+      }
+      const data = await res.json();
+      // Apply the new image (with cache-buster) to every local row of this item
+      setItems((prev) =>
+        prev.map((i) =>
+          i.name === item.name && i.category === item.category
+            ? { ...i, image: data.image, image_url: data.image, updated_at: new Date().toISOString() }
+            : i
+        )
+      );
+      toast({
+        title: 'Image updated',
+        description: `${item.name} — synced to ${data.locations_updated} location(s)`,
+      });
     } catch (err) {
-      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+      toast({ title: 'Upload failed', description: err.message, variant: 'destructive' });
     }
+  };
+
+  const handleQuickImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    const item = items.find((i) => i.id === quickUploadItemId);
+    await uploadItemImage(item, file);
     if (quickFileRef.current) quickFileRef.current.value = '';
     setQuickUploadItemId(null);
+  };
+
+  // Drag-and-drop image swap on an admin card
+  const [dragOverItemId, setDragOverItemId] = useState(null);
+  const onCardDrop = async (e, item) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverItemId(null);
+    const file = e.dataTransfer?.files?.[0];
+    if (file) await uploadItemImage(item, file);
   };
 
   // Sync master images to all locations
@@ -753,17 +790,23 @@ const MenuItemsTab = () => {
           {filteredItems.map((item) => (
             <Card key={item.id} className="bg-slate-800/50 border-slate-700 overflow-hidden">
               <CardContent className="p-0">
-                {/* Clickable Image — click to replace photo */}
+                {/* Clickable + drag-and-drop image — click OR drop a new photo to replace */}
                 <div
-                  className="relative aspect-[4/3] bg-slate-700 cursor-pointer group"
+                  className={`relative aspect-[4/3] bg-slate-700 cursor-pointer group transition-all ${
+                    dragOverItemId === item.id ? 'ring-4 ring-emerald-500 ring-inset' : ''
+                  }`}
                   onClick={() => { setQuickUploadItemId(item.id); quickFileRef.current?.click(); }}
-                  title="Click to replace image"
+                  onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setDragOverItemId(item.id); }}
+                  onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); setDragOverItemId(null); }}
+                  onDrop={(e) => onCardDrop(e, item)}
+                  title="Click or drop a file to replace image"
                   data-testid={`menu-item-image-${item.id}`}
                 >
                   {item.image ? (
-                    <img 
-                      src={getImageSrc(item.image)} 
-                      alt={item.name} 
+                    <img
+                      src={getImageSrc(item.image) + `?v=${item.updated_at || ''}`}
+                      alt={item.name}
                       className="w-full h-full object-cover"
                       loading="lazy"
                     />
@@ -772,11 +815,20 @@ const MenuItemsTab = () => {
                       No Image
                     </div>
                   )}
-                  {/* Hover overlay */}
+                  {/* Drop-here overlay (green) */}
+                  {dragOverItemId === item.id && (
+                    <div className="absolute inset-0 bg-emerald-600/70 flex items-center justify-center pointer-events-none">
+                      <div className="text-center">
+                        <Upload className="w-8 h-8 text-white mx-auto mb-1" />
+                        <span className="text-white text-sm font-bold">Drop to Replace</span>
+                      </div>
+                    </div>
+                  )}
+                  {/* Hover overlay (click-to-replace) */}
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <div className="text-center">
                       <Upload className="w-6 h-6 text-white mx-auto mb-1" />
-                      <span className="text-white text-xs font-medium">Replace Photo</span>
+                      <span className="text-white text-xs font-medium">Click or Drop</span>
                     </div>
                   </div>
                   {/* Image type indicator */}
