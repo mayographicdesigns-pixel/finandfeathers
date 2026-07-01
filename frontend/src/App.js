@@ -33,6 +33,7 @@ function AppRouter() {
   return (
     <Routes>
       <Route path="/" element={<LinkTreeHomePage />} />
+      <Route path="/login" element={<LinkTreeHomePage />} />
       <Route path="/locations" element={<LocationsPage />} />
       <Route path="/locations/:slug" element={<LocationDetailPage />} />
       <Route path="/menu" element={<MenuPage />} />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ExternalLink, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Clock, X, Image as ImageIcon, Edit2, Save, LogOut, Settings, GripVertical, Navigation, User, Users, ShoppingBag, Calendar, Download, RefreshCw, Share, MoreVertical, Plus, Briefcase, Mic, Music } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
@@ -758,6 +758,7 @@ const SortableImage = ({ image, index, editMode, editingImageIndex, setEditingIm
 
 const LinkTreeHomePage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -850,18 +851,13 @@ const LinkTreeHomePage = () => {
     toast({ title: 'Reordered', description: 'Image order updated. Click "Save Changes" to persist.' });
   };
 
-  // Check if welcome popup should be shown - uses sessionStorage to show once per browser session
+  // Show the welcome popup only when the user visits /login (or explicitly requests it).
+  // The homepage no longer auto-pops the modal.
   useEffect(() => {
-    const hasSeenThisSession = sessionStorage.getItem('ff_welcome_shown_session');
-    
-    if (!hasSeenThisSession) {
-      // Small delay to let the page load first
-      const timer = setTimeout(() => {
-        setShowWelcomePopup(true);
-      }, 500);
-      return () => clearTimeout(timer);
+    if (location.pathname === '/login') {
+      setShowWelcomePopup(true);
     }
-  }, []);
+  }, [location.pathname]);
 
   // PWA Install detection
   useEffect(() => {
@@ -1142,7 +1138,11 @@ const LinkTreeHomePage = () => {
       {/* Welcome Popup */}
       {showWelcomePopup && (
         <WelcomePopup 
-          onClose={() => setShowWelcomePopup(false)}
+          onClose={() => {
+            setShowWelcomePopup(false);
+            // If the user got here via /login, bounce them back to the home page after closing
+            if (location.pathname === '/login') navigate('/', { replace: true });
+          }}
           onSubmit={async (userInfo) => {
             try {
               const res = await fetch(`${API_URL}/api/user/register`, {
@@ -1284,9 +1284,20 @@ const LinkTreeHomePage = () => {
           <Button
             onClick={() => navigate('/menu')}
             className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+            data-testid="view-menu-btn"
           >
             <ExternalLink className="w-5 h-5 mr-2" />
             View Full Menu
+          </Button>
+
+          {/* Select Location */}
+          <Button
+            onClick={() => navigate('/locations')}
+            className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
+            data-testid="select-location-btn"
+          >
+            <MapPin className="w-5 h-5 mr-2" />
+            Select Location
           </Button>
 
           {/* Order Online */}
@@ -1297,15 +1308,6 @@ const LinkTreeHomePage = () => {
           >
             <ExternalLink className="w-5 h-5 mr-2" />
             Order Online
-          </Button>
-
-          {/* Find a Location */}
-          <Button
-            onClick={() => navigate('/locations')}
-            className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
-          >
-            <MapPin className="w-5 h-5 mr-2" />
-            Find a Location
           </Button>
 
           {/* Check In ! / My Account */}
