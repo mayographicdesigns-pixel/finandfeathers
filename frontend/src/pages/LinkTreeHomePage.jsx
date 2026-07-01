@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ExternalLink, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Clock, X, Image as ImageIcon, Edit2, Save, LogOut, Settings, GripVertical, Navigation, User, Users, ShoppingBag, Calendar, Download, RefreshCw, Share, MoreVertical, Plus, Briefcase, Mic, Music } from 'lucide-react';
+import { ExternalLink, MapPin, Phone, Mail, Instagram, Facebook, Twitter, Clock, X, Image as ImageIcon, Edit2, Save, LogOut, LogIn, Settings, GripVertical, Navigation, User, Users, ShoppingBag, Calendar, Download, RefreshCw, Share, MoreVertical, Plus, Briefcase, Mic, Music } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -1228,6 +1228,22 @@ const LinkTreeHomePage = () => {
       )}
 
       <div className={`max-w-2xl mx-auto ${isAdmin ? 'pt-12' : ''}`}>
+        {/* Log In / Sign Up quick access — top-right corner, hidden if user already has a profile */}
+        {!localStorage.getItem('ff_user_profile_id') && !isAdmin && (
+          <div className="fixed top-3 right-3 z-30">
+            <Button
+              onClick={() => navigate('/login')}
+              variant="ghost"
+              size="sm"
+              className="text-white/90 hover:text-white bg-black/60 hover:bg-black/80 h-9 px-3 rounded-full text-xs font-semibold backdrop-blur-md border border-white/20 shadow-lg"
+              data-testid="header-login-btn"
+              title="Log In / Sign Up"
+            >
+              <LogIn className="w-4 h-4 mr-1.5" />
+              Log In
+            </Button>
+          </div>
+        )}
         {/* Logo/Header */}
         <div className="text-center mb-8 relative group">
           {editMode && (
