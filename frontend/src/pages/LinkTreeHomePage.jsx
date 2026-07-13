@@ -1284,6 +1284,27 @@ const LinkTreeHomePage = () => {
         </div>
 
         {/* Weekly Specials Section */}
+        {/* Coming Soon: Marietta, GA banner */}
+        <Card
+          className="bg-gradient-to-r from-amber-500 via-red-600 to-amber-500 border-none mb-4 overflow-hidden relative shadow-lg shadow-red-500/40"
+          data-testid="coming-soon-marietta-banner"
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.2),_transparent_60%)] pointer-events-none" />
+          <CardContent className="p-4 relative">
+            <div className="flex items-center justify-center gap-2 flex-wrap">
+              <span className="text-white text-xs font-bold uppercase tracking-widest bg-black/25 px-2.5 py-0.5 rounded-full">
+                Coming Soon
+              </span>
+              <span className="text-white font-black text-lg md:text-xl tracking-tight text-center">
+                📍 Marietta, Georgia!!
+              </span>
+            </div>
+            <p className="text-white/90 text-xs text-center mt-1 font-medium">
+              A new Fin &amp; Feathers is on the way — stay tuned for the grand opening
+            </p>
+          </CardContent>
+        </Card>
+
         <Card className="bg-gradient-to-br from-red-900/30 to-red-950/30 border-red-600/50">
           <CardContent className="p-6">
             <div className="flex items-center gap-2 mb-4">
