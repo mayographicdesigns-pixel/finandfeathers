@@ -772,6 +772,40 @@ const LinkTreeHomePage = () => {
   
   // Welcome popup state
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+
+  // Marietta waitlist state
+  const [showWaitlist, setShowWaitlist] = useState(false);
+  const [waitlistForm, setWaitlistForm] = useState({ name: '', email: '', phone: '' });
+  const [waitlistBusy, setWaitlistBusy] = useState(false);
+  const [waitlistSuccess, setWaitlistSuccess] = useState('');
+
+  const submitWaitlist = async (e) => {
+    if (e?.preventDefault) e.preventDefault();
+    setWaitlistBusy(true);
+    setWaitlistSuccess('');
+    try {
+      const fd = new FormData();
+      fd.append('name', waitlistForm.name.trim());
+      fd.append('email', waitlistForm.email.trim());
+      fd.append('phone', waitlistForm.phone.trim());
+      fd.append('referral_source', 'marietta-banner');
+      const res = await fetch(`${window.location.origin}/api/marietta-waitlist`, {
+        method: 'POST',
+        body: fd,
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ detail: `HTTP ${res.status}` }));
+        throw new Error(err.detail || 'Signup failed');
+      }
+      const data = await res.json();
+      setWaitlistSuccess(data.message || "You're on the list!");
+      setWaitlistForm({ name: '', email: '', phone: '' });
+    } catch (err) {
+      setWaitlistSuccess(`❌ ${err.message}`);
+    } finally {
+      setWaitlistBusy(false);
+    }
+  };
   
   // Admin editing state
   const [isAdmin, setIsAdmin] = useState(false);
@@ -1167,6 +1201,89 @@ const LinkTreeHomePage = () => {
         isAndroid={isAndroid}
       />
 
+      {/* Marietta Waitlist Modal */}
+      {showWaitlist && (
+        <div
+          className="fixed inset-0 z-[60] bg-black/70 flex items-center justify-center p-4"
+          onClick={() => setShowWaitlist(false)}
+          data-testid="marietta-waitlist-modal"
+        >
+          <div
+            className="bg-gradient-to-br from-slate-900 to-black border border-red-600/40 rounded-2xl max-w-md w-full p-6 relative shadow-2xl shadow-red-600/20"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowWaitlist(false)}
+              className="absolute top-3 right-3 text-slate-400 hover:text-white transition-colors"
+              aria-label="Close"
+              data-testid="waitlist-close-btn"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="text-center mb-5">
+              <div className="inline-block bg-gradient-to-r from-amber-500 to-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-2">
+                Coming Soon
+              </div>
+              <h2 className="text-2xl font-black text-white">📍 Marietta, GA</h2>
+              <p className="text-slate-300 text-sm mt-1">
+                Join the waitlist and we&apos;ll text you the second we open.
+              </p>
+            </div>
+            {waitlistSuccess ? (
+              <div className="text-center py-4">
+                <p className="text-emerald-400 font-semibold text-base mb-4" data-testid="waitlist-success">{waitlistSuccess}</p>
+                <Button
+                  onClick={() => setShowWaitlist(false)}
+                  className="bg-red-600 hover:bg-red-700 text-white w-full h-12 rounded-xl font-semibold"
+                >
+                  Close
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={submitWaitlist} className="space-y-3">
+                <input
+                  type="text"
+                  required
+                  placeholder="Your name"
+                  value={waitlistForm.name}
+                  onChange={(e) => setWaitlistForm({ ...waitlistForm, name: e.target.value })}
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-red-500"
+                  data-testid="waitlist-name-input"
+                />
+                <input
+                  type="email"
+                  required
+                  placeholder="Email address"
+                  value={waitlistForm.email}
+                  onChange={(e) => setWaitlistForm({ ...waitlistForm, email: e.target.value })}
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-red-500"
+                  data-testid="waitlist-email-input"
+                />
+                <input
+                  type="tel"
+                  placeholder="Mobile (optional)"
+                  value={waitlistForm.phone}
+                  onChange={(e) => setWaitlistForm({ ...waitlistForm, phone: e.target.value })}
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:border-red-500"
+                  data-testid="waitlist-phone-input"
+                />
+                <Button
+                  type="submit"
+                  disabled={waitlistBusy}
+                  className="w-full bg-gradient-to-r from-amber-500 to-red-600 hover:from-amber-600 hover:to-red-700 text-white h-12 rounded-xl font-bold text-base shadow-lg shadow-red-500/30"
+                  data-testid="waitlist-submit-btn"
+                >
+                  {waitlistBusy ? 'Adding you...' : '🎉 Save My Spot'}
+                </Button>
+                <p className="text-slate-500 text-[10px] text-center leading-tight">
+                  We&apos;ll only reach out about the Marietta opening. No spam, ever.
+                </p>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Admin Bar */}
       {isAdmin && (
         <div className="fixed top-0 left-0 right-0 bg-red-600 text-white py-2 px-4 z-50 flex items-center justify-between">
@@ -1284,10 +1401,14 @@ const LinkTreeHomePage = () => {
         </div>
 
         {/* Weekly Specials Section */}
-        {/* Coming Soon: Marietta, GA banner */}
+        {/* Coming Soon: Marietta, GA banner — click to join waitlist */}
         <Card
-          className="bg-gradient-to-r from-amber-500 via-red-600 to-amber-500 border-none mb-4 overflow-hidden relative shadow-lg shadow-red-500/40"
+          className="bg-gradient-to-r from-amber-500 via-red-600 to-amber-500 border-none mb-4 overflow-hidden relative shadow-lg shadow-red-500/40 cursor-pointer hover:scale-[1.01] transition-transform"
           data-testid="coming-soon-marietta-banner"
+          onClick={() => { setShowWaitlist(true); setWaitlistSuccess(''); }}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowWaitlist(true); setWaitlistSuccess(''); } }}
         >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.2),_transparent_60%)] pointer-events-none" />
           <CardContent className="p-4 relative">
@@ -1299,8 +1420,8 @@ const LinkTreeHomePage = () => {
                 📍 Marietta, Georgia!!
               </span>
             </div>
-            <p className="text-white/90 text-xs text-center mt-1 font-medium">
-              A new Fin &amp; Feathers is on the way — stay tuned for the grand opening
+            <p className="text-white/95 text-xs text-center mt-1 font-semibold">
+              Tap to join the waitlist — be first to know when we open
             </p>
           </CardContent>
         </Card>

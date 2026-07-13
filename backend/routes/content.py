@@ -428,3 +428,104 @@ async def admin_delete_instagram_post(post_id: str, username: str = Depends(get_
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Instagram post not found")
     return {"message": "Instagram post deleted"}
+
+
+# ==================== MARIETTA WAITLIST ====================
+
+from fastapi import Form
+from fastapi.responses import Response
+import re as _re
+
+
+@router.post("/marietta-waitlist")
+async def marietta_waitlist_signup(
+    name: str = Form(...),
+    email: str = Form(...),
+    phone: str = Form(""),
+    referral_source: str = Form(""),
+):
+    """Public signup for the Marietta, GA grand-opening waitlist."""
+    name = (name or "").strip()
+    email = (email or "").strip().lower()
+    phone = (phone or "").strip()
+
+    if not name:
+        raise HTTPException(status_code=400, detail="Name is required")
+    if not _re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email):
+        raise HTTPException(status_code=400, detail="Please enter a valid email")
+
+    # Upsert on email so re-submissions don't duplicate rows
+    now = datetime.now(timezone.utc)
+    existing = await db.marietta_waitlist.find_one({"email": email}, {"_id": 0, "id": 1})
+    if existing:
+        await db.marietta_waitlist.update_one(
+            {"email": email},
+            {"$set": {
+                "name": name,
+                "phone": phone,
+                "referral_source": referral_source,
+                "updated_at": now,
+            }},
+        )
+        return {"status": "updated", "message": "You're already on the list — details updated!"}
+
+    entry = {
+        "id": str(uuid.uuid4()),
+        "name": name,
+        "email": email,
+        "phone": phone,
+        "referral_source": referral_source,
+        "notified": False,
+        "created_at": now,
+        "updated_at": now,
+    }
+    await db.marietta_waitlist.insert_one(entry)
+    entry.pop("_id", None)
+    return {"status": "created", "message": "You're on the list — we'll text you the moment we open!"}
+
+
+@router.get("/admin/marietta-waitlist")
+async def admin_list_marietta_waitlist(username: str = Depends(get_current_admin)):
+    """Return every signup for the Marietta waitlist, newest first."""
+    rows = await db.marietta_waitlist.find({}, {"_id": 0}).sort("created_at", -1).to_list(5000)
+    return {"count": len(rows), "entries": rows}
+
+
+@router.get("/admin/marietta-waitlist/export.csv")
+async def admin_export_marietta_waitlist_csv(username: str = Depends(get_current_admin)):
+    """Download the Marietta waitlist as a CSV file."""
+    rows = await db.marietta_waitlist.find({}, {"_id": 0}).sort("created_at", -1).to_list(50000)
+
+    def _fmt(v):
+        if v is None:
+            return ""
+        s = str(v)
+        if any(c in s for c in [",", '"', "\n", "\r"]):
+            return '"' + s.replace('"', '""') + '"'
+        return s
+
+    header = ["Name", "Email", "Phone", "Referral Source", "Notified", "Signed Up"]
+    lines = [",".join(header)]
+    for r in rows:
+        signed = r.get("created_at")
+        if isinstance(signed, datetime):
+            signed = signed.strftime("%Y-%m-%d %H:%M UTC")
+        lines.append(",".join(_fmt(x) for x in [
+            r.get("name"), r.get("email"), r.get("phone"),
+            r.get("referral_source"), r.get("notified"), signed,
+        ]))
+    body = "\ufeff" + "\n".join(lines)  # BOM for Excel unicode
+    return Response(
+        content=body,
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": 'attachment; filename="marietta-waitlist.csv"'},
+    )
+
+
+@router.delete("/admin/marietta-waitlist/{entry_id}")
+async def admin_delete_marietta_waitlist(entry_id: str, username: str = Depends(get_current_admin)):
+    """Remove a single waitlist entry."""
+    res = await db.marietta_waitlist.delete_one({"id": entry_id})
+    if res.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Entry not found")
+    return {"status": "deleted"}

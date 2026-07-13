@@ -27,6 +27,7 @@ export { default as UsersTab } from './UsersTab';
 export { default as VideosTab } from './VideosTab';
 
 // Other admin components
+export { default as MariettaWaitlistTab } from './MariettaWaitlistTab';
 export { default as MenuImageEditor } from './MenuImageEditor';
 export { default as PageContentTab } from './PageContentTab';
 export { AdminProvider, useAdmin } from './AdminContext';

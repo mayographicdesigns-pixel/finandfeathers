@@ -28,6 +28,7 @@ import {
   DJScheduleTab,
   SettingsTab,
   CareersTab,
+  MariettaWaitlistTab,
   PeopleTab
 } from '../components/admin';
 import { PageContentTab } from '../components/admin';
@@ -58,6 +59,7 @@ const AdminPage = () => {
     { id: 'specials', label: 'Post Special', icon: Megaphone },
     { id: 'events', label: 'Events', icon: Ticket },
     { id: 'careers', label: 'Careers', icon: Briefcase },
+    { id: 'marietta', label: 'Marietta Waitlist', icon: MapPin },
     { id: 'dj-schedule', label: 'DJ Schedule', icon: Music },
     { id: 'gallery', label: 'Gallery', icon: Grid3X3 },
     { id: 'submissions', label: 'Submissions', icon: ImageUp },
@@ -163,6 +165,7 @@ const AdminPage = () => {
         {activeTab === 'specials' && <WeeklyVideosCard />}
         {activeTab === 'events' && <EventsTab />}
         {activeTab === 'careers' && <CareersTab />}
+        {activeTab === 'marietta' && <MariettaWaitlistTab />}
         {activeTab === 'gallery' && <GalleryTab />}
         {activeTab === 'submissions' && <GallerySubmissionsTab />}
         {activeTab === 'posts' && <SocialPostsTab />}
