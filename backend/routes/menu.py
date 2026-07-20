@@ -140,6 +140,85 @@ async def export_menu_csv(admin: str = Depends(get_current_admin), location_slug
     )
 
 
+@router.get("/admin/menu/export-with-images.csv")
+async def export_menu_with_images_csv(admin: str = Depends(get_current_admin)):
+    """Export a distinct menu (deduped across locations) with columns tuned for Excel /
+    Google Sheets: Image (as a live =IMAGE(...) formula), Image URL, Name, Description,
+    Price, Category. Google Sheets renders column A as a thumbnail automatically.
+    Excel shows the raw URL, so the plain "Image URL" column is included for both worlds.
+    """
+    from fastapi.responses import Response
+    import csv
+    import io
+
+    items = await db.menu_items.find({}, {"_id": 0}).to_list(20000)
+
+    # De-duplicate by (name, category) — pick the row with an image if one exists,
+    # otherwise the first one encountered. Preserve display_order for stable sort.
+    seen: dict = {}
+    for it in items:
+        key = ((it.get("name") or "").strip(), (it.get("category") or "").strip())
+        if key == ("", ""):
+            continue
+        current = seen.get(key)
+        has_img = bool(it.get("image") or it.get("image_url"))
+        current_has_img = bool(current and (current.get("image") or current.get("image_url")))
+        if current is None or (has_img and not current_has_img):
+            seen[key] = it
+
+    base_url = os.environ.get("PUBLIC_BASE_URL", "https://finandfeathers.live").rstrip("/")
+
+    def _abs(u):
+        if not u:
+            return ""
+        return f"{base_url}{u}" if u.startswith("/") else u
+
+    def _sort_key(it):
+        # Category first (alphabetical), then display_order, then name
+        return (
+            (it.get("category") or "").lower(),
+            it.get("display_order") if isinstance(it.get("display_order"), (int, float)) else 9999,
+            (it.get("name") or "").lower(),
+        )
+
+    rows = sorted(seen.values(), key=_sort_key)
+
+    # Build CSV with a header row Google Sheets is happy with.
+    output = io.StringIO()
+    writer = csv.writer(output, quoting=csv.QUOTE_MINIMAL)
+    writer.writerow(["Image", "Image URL", "Name", "Description", "Price", "Category"])
+
+    for item in rows:
+        img_path = item.get("image") or item.get("image_url") or ""
+        full = _abs(img_path)
+        # =IMAGE("...") — Google Sheets renders this as an inline thumbnail (column A).
+        # If there's no image, leave the cell blank (Excel/Sheets both handle empty gracefully).
+        formula = f'=IMAGE("{full}")' if full else ""
+        price = item.get("price")
+        # Keep price as a plain number when possible so Sheets/Excel format it as currency easily.
+        if isinstance(price, (int, float)):
+            price_cell = price
+        elif isinstance(price, str) and price.strip():
+            price_cell = price.strip()
+        else:
+            price_cell = ""
+        writer.writerow([
+            formula,
+            full,
+            (item.get("name") or "").replace("*", "").strip(),
+            (item.get("description") or "").strip(),
+            price_cell,
+            item.get("category") or "",
+        ])
+
+    body = "\ufeff" + output.getvalue()  # BOM so Excel decodes UTF-8 emoji/accents
+    return Response(
+        content=body,
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": 'attachment; filename="menu-with-images.csv"'},
+    )
+
+
 
 
 # ==================== PUBLIC MENU ====================

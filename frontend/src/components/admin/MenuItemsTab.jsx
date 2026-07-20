@@ -345,6 +345,34 @@ const MenuItemsTab = () => {
     }
   };
 
+  const [imagesCsvBusy, setImagesCsvBusy] = useState(false);
+  const exportImagesCsv = async () => {
+    setImagesCsvBusy(true);
+    try {
+      const res = await fetch(`${window.location.origin}/api/admin/menu/export-with-images.csv`, {
+        headers: adminHeaders(),
+      });
+      if (!res.ok) throw new Error('Export failed');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'menu-with-images.csv';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast({
+        title: 'Menu with images downloaded',
+        description: 'Open in Google Sheets — images render automatically in column A',
+      });
+    } catch (e) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+    } finally {
+      setImagesCsvBusy(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -495,6 +523,17 @@ const MenuItemsTab = () => {
           >
             {csvBusy ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5" />}
             {csvBusy ? 'Exporting...' : 'Export CSV'}
+          </Button>
+          <Button
+            onClick={exportImagesCsv}
+            disabled={imagesCsvBusy}
+            variant="outline"
+            className="border-sky-600 text-sky-400 hover:bg-sky-900/30 text-xs"
+            data-testid="export-images-csv-btn"
+            title="Distinct menu with clickable image links — opens in Google Sheets with thumbnails auto-rendered"
+          >
+            {imagesCsvBusy ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5" />}
+            {imagesCsvBusy ? 'Exporting...' : 'Export Menu w/ Images'}
           </Button>
           <Button onClick={() => setShowForm(true)} className="bg-red-600 hover:bg-red-700">
             <Plus className="w-4 h-4 mr-2" /> Add Item
