@@ -88,6 +88,28 @@ async def generate_cocktails_pdf_endpoint(admin: str = Depends(get_current_admin
     )
 
 
+@router.post("/admin/menu/generate-master-sheet-pdf")
+@router.get("/admin/menu/generate-master-sheet-pdf")
+async def generate_master_sheet_pdf_endpoint(admin: str = Depends(get_current_admin)):
+    """Generate the printable "Menu Master Sheet" PDF used for server training.
+    One row per distinct menu item: image · name · description · price, grouped by category.
+    """
+    from fastapi.responses import FileResponse
+    import subprocess
+    import sys
+    result = subprocess.run([sys.executable, "generate_master_sheet_pdf.py"], capture_output=True, text=True, cwd=ROOT_DIR)
+    if result.returncode != 0:
+        raise HTTPException(status_code=500, detail=result.stderr or result.stdout)
+    pdf_path = ROOT_DIR.parent / "frontend" / "public" / "menu" / "Fin-and-Feathers-Menu-Master-Sheet.pdf"
+    if not pdf_path.exists():
+        raise HTTPException(status_code=500, detail="PDF was not created")
+    return FileResponse(
+        path=str(pdf_path),
+        media_type="application/pdf",
+        filename="Fin-and-Feathers-Menu-Master-Sheet.pdf",
+    )
+
+
 @router.get("/admin/menu/export-csv")
 async def export_menu_csv(admin: str = Depends(get_current_admin), location_slug: str = None):
     """Export menu items as CSV with photo links."""

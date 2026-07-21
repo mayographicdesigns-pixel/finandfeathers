@@ -48,6 +48,7 @@ const MenuItemsTab = () => {
   const [pdfBusy, setPdfBusy] = useState(false);
   const [letterPdfBusy, setLetterPdfBusy] = useState(false);
   const [cocktailsPdfBusy, setCocktailsPdfBusy] = useState(false);
+  const [masterSheetBusy, setMasterSheetBusy] = useState(false);
   const [csvBusy, setCsvBusy] = useState(false);
   const fileInputRef = useRef(null);
   const quickFileRef = useRef(null);
@@ -320,6 +321,18 @@ const MenuItemsTab = () => {
     }
   };
 
+  const generateMasterSheet = async () => {
+    setMasterSheetBusy(true);
+    try {
+      await downloadAsBlob('/api/admin/menu/generate-master-sheet-pdf', 'Fin-and-Feathers-Menu-Master-Sheet.pdf', 'Master Sheet PDF');
+      toast({ title: 'Menu Master Sheet downloaded', description: 'Image · Name · Description · Price — grouped by category (server training)' });
+    } catch (e) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+    } finally {
+      setMasterSheetBusy(false);
+    }
+  };
+
   const exportCsv = async () => {
     setCsvBusy(true);
     try {
@@ -513,6 +526,17 @@ const MenuItemsTab = () => {
           >
             {cocktailsPdfBusy ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <FileDown className="w-3.5 h-3.5 mr-1.5" />}
             {cocktailsPdfBusy ? 'Generating...' : 'Signature Cocktails PDF (8.5×11)'}
+          </Button>
+          <Button
+            onClick={generateMasterSheet}
+            disabled={masterSheetBusy}
+            variant="outline"
+            className="border-indigo-600 text-indigo-400 hover:bg-indigo-900/30 text-xs"
+            data-testid="generate-master-sheet-pdf-btn"
+            title="Server training reference — image · name · description · price, grouped by category"
+          >
+            {masterSheetBusy ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <FileDown className="w-3.5 h-3.5 mr-1.5" />}
+            {masterSheetBusy ? 'Generating...' : 'Menu Master Sheet PDF'}
           </Button>
           <Button
             onClick={exportCsv}
