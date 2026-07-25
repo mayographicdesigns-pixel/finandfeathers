@@ -101,6 +101,12 @@ routes/
   - Env vars added: `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`
   - Room name = location_slug; slug sanitization consistent across all endpoints (regex `[^a-z0-9-]+`)
   - Tested: 14/14 backend tests pass (iteration_49)
+- [x] **Zoom-style multi-camera stage** — viewers tap "Join with Camera" to hop on-stage with their own camera. Cap enforced server-side at **9 total publishers** (DJ + 8 guests) per room.
+  - New `guest` role in `/api/livekit/token`; publisher count enforced via LiveKit RoomServiceClient
+  - Frontend `StageGrid` renders 1/2/3-column adaptive video grid with per-tile name labels
+  - Guest join/leave without losing stream connection (token re-fetched, `LiveKitRoom` remounted via `key` prop)
+  - Tested: 26/26 backend tests pass (iteration_50; 12 new + 14 regression)
+
 
 
 ## Backlog
