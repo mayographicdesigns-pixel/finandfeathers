@@ -11,6 +11,7 @@ import {
 import { locations } from '../mockData';
 import { formatTimeInTz, formatScheduleDate, timeAgoInTz, getTzAbbreviation, getCurrentLocalTime } from '../utils/timezone';
 import { UserAvatar } from '../components/UserAvatar';
+import { LiveKitViewer } from '../components/LiveKitStream';
 
 const API_URL = window.location.origin;
 
@@ -567,7 +568,9 @@ const DMsTab = ({ userId, userName, userAvatar, locationSlug }) => {
 // ========== LIVE STREAM TAB ==========
 const getEmbedUrl = (url) => {
   if (!url) return null;
-  // In-app camera stream
+  // LiveKit in-app broadcast
+  if (url.startsWith('livekit://')) return { type: 'livekit', embedUrl: null, locationSlug: url.replace('livekit://', '') };
+  // Legacy in-app camera stream (WebSocket relay) — kept for backwards compat
   if (url.startsWith('in-app://')) return { type: 'in-app', embedUrl: null, locationSlug: url.replace('in-app://', '') };
   // YouTube: youtube.com/watch?v=ID or youtu.be/ID or youtube.com/live/ID
   const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|live\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/);
@@ -699,12 +702,17 @@ const LiveTab = ({ djStatus, locationSlug, userId, userName, userAvatar }) => {
   }, [embed?.type, locationSlug]);
 
   const isInApp = embed?.type === 'in-app';
+  const isLiveKit = embed?.type === 'livekit';
 
   return (
     <div className="flex flex-col h-full">
       {/* Stream area */}
       <div className="shrink-0">
-        {isInApp ? (
+        {isLiveKit ? (
+          <div className="relative w-full bg-black" data-testid="livekit-stream-container">
+            <LiveKitViewer locationSlug={embed.locationSlug} viewerName={userName || 'Viewer'} />
+          </div>
+        ) : isInApp ? (
           <div className="relative w-full bg-black">
             <video
               ref={videoRef}

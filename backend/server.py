@@ -220,6 +220,7 @@ from routes.auth import router as auth_router
 from routes.events import router as events_router
 from routes.payments import router as payments_router
 from routes.stream import router as stream_router
+from routes.livekit import router as livekit_router
 from routes.menu import router as menu_router
 from routes.content import router as content_router
 from routes.social import router as social_router
@@ -235,6 +236,7 @@ app.include_router(auth_router)
 app.include_router(events_router)
 app.include_router(payments_router)
 app.include_router(stream_router)
+app.include_router(livekit_router)
 app.include_router(menu_router)
 app.include_router(content_router)
 app.include_router(social_router)

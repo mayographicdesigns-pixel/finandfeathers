@@ -4,6 +4,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent } from '../components/ui/card';
 import { Check, X, Mic, Music, MapPin, LogOut, RefreshCw, ChevronRight, Calendar, Clock, DollarSign, Save, Video, Users } from 'lucide-react';
+import { LiveKitBroadcaster } from '../components/LiveKitStream';
 
 const API_URL = window.location.origin;
 
@@ -29,14 +30,10 @@ const DJPanelPage = () => {
   const [liveStreamUrl, setLiveStreamUrl] = useState('');
   const [savingStream, setSavingStream] = useState(false);
   const [streamActive, setStreamActive] = useState(false);
-  // In-app camera stream state
-  const [cameraStream, setCameraStream] = useState(null);
-  const [cameraActive, setCameraActive] = useState(false);
-  const [cameraError, setCameraError] = useState('');
+  // LiveKit broadcast state
+  const [broadcasting, setBroadcasting] = useState(false);
+  const [broadcastError, setBroadcastError] = useState('');
   const [viewerCount, setViewerCount] = useState(0);
-  const wsRef = React.useRef(null);
-  const mediaRecorderRef = React.useRef(null);
-  const videoPreviewRef = React.useRef(null);
 
   // Load saved DJ session
   useEffect(() => {
@@ -160,113 +157,41 @@ const DJPanelPage = () => {
     finally { setSavingStream(false); }
   };
 
-  // ---- IN-APP CAMERA STREAM ----
-  const startCameraStream = async () => {
-    setCameraError('');
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'environment' },
-        audio: true,
-      });
-      setCameraStream(stream);
-      if (videoPreviewRef.current) {
-        videoPreviewRef.current.srcObject = stream;
-      }
-
-      // Open WebSocket to server
-      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const wsUrl = `${wsProtocol}//${window.location.host}/api/ws/live-stream/${checkedInLocation}?role=broadcaster&dj_id=${djProfile.id}&dj_name=${encodeURIComponent(djProfile.stage_name || djProfile.name)}`;
-      const ws = new WebSocket(wsUrl);
-      wsRef.current = ws;
-
-      ws.onopen = () => {
-        // Start MediaRecorder to chunk video into 1-second segments
-        const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
-          ? 'video/webm;codecs=vp9,opus'
-          : MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')
-            ? 'video/webm;codecs=vp8,opus'
-            : 'video/webm';
-
-        const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 1500000 });
-        mediaRecorderRef.current = recorder;
-
-        recorder.ondataavailable = (e) => {
-          if (e.data.size > 0 && ws.readyState === WebSocket.OPEN) {
-            ws.send(e.data);
-          }
-        };
-        recorder.start(1000); // 1-second chunks
-        setCameraActive(true);
-        setStreamActive(true);
-      };
-
-      ws.onmessage = (e) => {
-        if (typeof e.data === 'string' && e.data.startsWith('ERROR:')) {
-          setCameraError('Another DJ is already broadcasting at this location.');
-          stopCameraStream();
-        }
-      };
-
-      ws.onclose = () => {
-        if (cameraActive) stopCameraStream();
-      };
-
-      ws.onerror = () => {
-        setCameraError('Connection error. Please try again.');
-        stopCameraStream();
-      };
-
-      // Poll viewer count
-      const pollViewers = setInterval(async () => {
-        try {
-          const res = await fetch(`${API_URL}/api/stream/active/${checkedInLocation}`);
-          const data = await res.json();
-          setViewerCount(data.viewer_count || 0);
-        } catch (e) { console.error('Viewer poll error:', e); }
-      }, 5000);
-      wsRef.current._viewerPoll = pollViewers;
-
-    } catch (err) {
-      if (err.name === 'NotAllowedError') {
-        setCameraError('Camera permission denied. Please allow camera access.');
-      } else if (err.name === 'NotFoundError') {
-        setCameraError('No camera found on this device.');
-      } else {
-        setCameraError(`Could not access camera: ${err.message}`);
-      }
-    }
+  // ---- IN-APP CAMERA STREAM (LiveKit) ----
+  const startBroadcast = () => {
+    setBroadcastError('');
+    setBroadcasting(true);
+    setStreamActive(true);
   };
 
-  const stopCameraStream = () => {
-    // Stop MediaRecorder
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      try { mediaRecorderRef.current.stop(); } catch (e) { console.error('MediaRecorder stop error:', e); }
-    }
-    mediaRecorderRef.current = null;
-
-    // Close WebSocket
-    if (wsRef.current) {
-      if (wsRef.current._viewerPoll) clearInterval(wsRef.current._viewerPoll);
-      if (wsRef.current.readyState === WebSocket.OPEN) wsRef.current.close();
-      wsRef.current = null;
-    }
-
-    // Stop camera tracks
-    if (cameraStream) {
-      cameraStream.getTracks().forEach(t => t.stop());
-      setCameraStream(null);
-    }
-    if (videoPreviewRef.current) videoPreviewRef.current.srcObject = null;
-
-    setCameraActive(false);
+  const stopBroadcast = () => {
+    setBroadcasting(false);
     setStreamActive(false);
     setViewerCount(0);
   };
 
-  // Cleanup on unmount
-  React.useEffect(() => {
-    return () => { stopCameraStream(); };
-  }, []);
+  // Poll viewer count from LiveKit stream status while broadcasting
+  useEffect(() => {
+    if (!broadcasting || !checkedInLocation) return;
+    let cancelled = false;
+    const poll = async () => {
+      try {
+        // Reuse the existing viewer-count endpoint from the WebSocket relay; LiveKit
+        // participants are tracked via the `stream/active` endpoint as an approximate
+        // signal. We keep the number user-facing but non-critical.
+        const res = await fetch(`${API_URL}/api/livekit/stream/status/${checkedInLocation}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled && data?.active) {
+          // viewer_count isn't exposed by LiveKit REST here; leave as 0 unless
+          // a future admin webhook writes it back.
+        }
+      } catch (e) { console.error('Viewer poll error:', e); }
+    };
+    poll();
+    const iv = setInterval(poll, 5000);
+    return () => { cancelled = true; clearInterval(iv); };
+  }, [broadcasting, checkedInLocation]);
 
   const savePaymentLinks = async () => {
     if (!djProfile) return;
@@ -330,6 +255,16 @@ const DJPanelPage = () => {
           body: JSON.stringify({ active: false, dj_id: djProfile.id })
         });
         setKaraokeActive(false);
+      }
+      if (broadcasting) {
+        try {
+          await fetch(`${API_URL}/api/livekit/stream/stop`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ location_slug: checkedInLocation, dj_id: djProfile.id })
+          });
+        } catch (e) { console.error(e); }
+        setBroadcasting(false);
       }
       if (streamActive) {
         await fetch(`${API_URL}/api/dj/live-stream/${djProfile.id}`, {
@@ -658,8 +593,8 @@ const DJPanelPage = () => {
               <div className="flex-1">
                 <p className="text-white font-medium">Go Live</p>
                 <p className={`text-xs ${streamActive ? 'text-green-400' : 'text-slate-500'}`}>
-                  {cameraActive
-                    ? `LIVE FROM CAMERA — ${viewerCount} viewer${viewerCount !== 1 ? 's' : ''}`
+                  {broadcasting
+                    ? 'LIVE FROM CAMERA — Viewers can watch on the Vibe page'
                     : streamActive
                       ? 'STREAMING — Viewers can watch on the Vibe page'
                       : 'Stream from your camera or paste a link'}
@@ -667,26 +602,13 @@ const DJPanelPage = () => {
               </div>
             </div>
 
-            {cameraActive ? (
-              <div className="space-y-3">
-                <div className="relative rounded-lg overflow-hidden bg-black">
-                  <video ref={videoPreviewRef} autoPlay muted playsInline className="w-full aspect-video object-cover" data-testid="dj-camera-preview" />
-                  <div className="absolute top-2 left-2 flex items-center gap-1.5 bg-red-600 px-2 py-0.5 rounded-full">
-                    <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-white" /></span>
-                    <span className="text-white text-[10px] font-bold uppercase">Live</span>
-                  </div>
-                  <div className="absolute top-2 right-2 bg-black/60 px-2 py-0.5 rounded text-white text-[10px]">
-                    {viewerCount} watching
-                  </div>
-                </div>
-                <Button
-                  onClick={stopCameraStream}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white text-sm h-9"
-                  data-testid="dj-stop-camera-btn"
-                >
-                  <X className="w-3.5 h-3.5 mr-1.5" /> Stop Broadcasting
-                </Button>
-              </div>
+            {broadcasting ? (
+              <LiveKitBroadcaster
+                locationSlug={checkedInLocation}
+                djId={djProfile.id}
+                djName={djProfile.stage_name || djProfile.name}
+                onStop={stopBroadcast}
+              />
             ) : streamActive ? (
               <div className="space-y-2">
                 <div className="bg-slate-800/50 rounded-lg p-2 text-xs text-slate-400 break-all">
@@ -706,14 +628,14 @@ const DJPanelPage = () => {
               <div className="space-y-3">
                 {/* Camera option */}
                 <Button
-                  onClick={startCameraStream}
+                  onClick={startBroadcast}
                   className="w-full bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white text-sm h-11 font-semibold"
                   data-testid="dj-go-live-camera-btn"
                 >
                   <Video className="w-4 h-4 mr-2" /> Go Live with Camera
                 </Button>
-                {cameraError && (
-                  <p className="text-red-400 text-xs text-center">{cameraError}</p>
+                {broadcastError && (
+                  <p className="text-red-400 text-xs text-center">{broadcastError}</p>
                 )}
                 <div className="flex items-center gap-2 text-slate-600 text-[10px]">
                   <div className="flex-1 h-px bg-slate-800" />

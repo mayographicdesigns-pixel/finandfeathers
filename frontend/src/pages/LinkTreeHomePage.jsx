@@ -840,11 +840,26 @@ const LinkTreeHomePage = () => {
   useEffect(() => {
     const checkLiveStatus = async () => {
       try {
-        // Check for active in-app streams first
+        // Check for active LiveKit streams first
+        try {
+          const lkRes = await fetch(`${API_URL}/api/livekit/streams/active`);
+          const lkStreams = await lkRes.json();
+          if (Array.isArray(lkStreams) && lkStreams.length > 0) {
+            const first = lkStreams[0];
+            setLiveStreamInfo({
+              location_slug: first.location_slug,
+              dj_name: first.dj_name || 'DJ',
+              viewer_count: 0,
+              stream_type: 'livekit',
+            });
+          }
+        } catch (e) { console.error('LiveKit poll error:', e); }
+
+        // Also check legacy in-app streams
         const streamRes = await fetch(`${API_URL}/api/stream/active`);
         const streams = await streamRes.json();
         if (streams.length > 0) {
-          setLiveStreamInfo(streams[0]);
+          setLiveStreamInfo(prev => prev || streams[0]);
         }
 
         const res = await fetch(`${API_URL}/api/locations`);
@@ -856,7 +871,8 @@ const LinkTreeHomePage = () => {
           if (dData.is_live && dData.live_stream_url) {
             setDjLocation(loc);
             // If it's not an in-app stream, still show as live
-            if (!liveStreamInfo && !dData.live_stream_url.startsWith('in-app://')) {
+            const url = dData.live_stream_url;
+            if (!liveStreamInfo && !url.startsWith('in-app://') && !url.startsWith('livekit://')) {
               setLiveStreamInfo({ location_slug: loc.slug, dj_name: dData.dj_stage_name || dData.dj_name, viewer_count: 0 });
             }
           }
