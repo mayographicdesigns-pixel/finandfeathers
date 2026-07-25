@@ -1,0 +1,51 @@
+{
+  "summary": "Regression pass on the 5-line code-review fixes (React key changes + empty-catch logging). Backend LiveKit tokens: 26/26 pass. Frontend: DashboardStats renders 4 cards, UpdatePrompt 'What's New' modal opens with changelog entries, MenuCard badges render (28 colored badges across 65 items), admin login works, /checkin guest flow works, /dj combined check-in flow works. HOWEVER — the MenuCard.jsx key change (`key={`${item.id}-badge-${badge}`}` at line 177) triggered a CRITICAL compile failure in the internal visual-edits babel-metadata-plugin, breaking the entire frontend bundle for every route. Root cause: plugin's tracePropToSource → analyzeMemberExpression → getArrayIterationContext path chokes on that specific template literal (item.id + interpolated badge from single-arg .map). Applied a minimal workaround (changed key to `badge-${badge}` since badges are unique per rendered item) to unblock testing; app now compiles and all functional regressions pass.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "MenuCard.jsx",
+        "issue": "Original key change `key={`${item.id}-badge-${badge}`}` at line 177 triggers visual-edits babel-metadata-plugin crash: 'TypeError: Cannot read properties of null (reading traverse)' at babel-metadata-plugin.js:936 (importPath.parentPath.parentPath.traverse). This is a plugin bug exposed by the combination of (a) single-arg `.map((badge) => ...)` (index param removed) and (b) template literal referencing outer `item.id`. Whole app failed to compile on every route until worked around.",
+        "selector": "/app/frontend/src/components/MenuCard.jsx line 177",
+        "priority": "CRITICAL (blocked entire app)"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_results": {
+    "backend_livekit_regression": "PASS — 26/26 (1 skip on /api/dj/profile). test_livekit.py + test_livekit_guest.py both green.",
+    "admin_dashboard_stats": "PASS — 4 stat cards render with real values (Loyalty=3, Contacts=4, Menu=1620, Notifications=6). DashboardStats.jsx key={item.label} change is safe.",
+    "update_prompt_changelog": "PASS — 'What's New' modal opens on /dashboard, lists V2.4.0/V2.3.0/V2.2.0 entries with change bullets. UpdatePrompt.jsx key={`${data.date}-${change.text}`} is safe.",
+    "menu_page_badges": "PASS (after workaround) — /menu renders 28 colored badges (amber/red/green) across 65 menu items.",
+    "admin_login": "PASS — admin / $outhcentral logs into /dashboard.",
+    "menu_items_tab": "Not deeply exercised (drag/drop image upload not attempted); tab loads and admin panel navigation works.",
+    "checkin_guest_flow": "PASS — name + guest role + location option submits and navigates.",
+    "dj_combined_flow": "PASS — /dj shows dj-checkin, filling dj-name-input + clicking dj-loc-edgewood-atlanta lands on DJ dashboard with dj-go-live-camera-btn + karaoke controls."
+  },
+  "critical_code_review_comments": [
+    "MenuCard.jsx line 177 key expression `${item.id}-badge-${badge}` triggers a fatal compile-time crash in /app/frontend/plugins/visual-edits/babel-metadata-plugin.js (line 936). This is a REAL blocker; the change should not be shipped in its original form. Note that line 90 uses the near-identical `${item.id}-${badge}` and does NOT trigger the crash — the plugin bug is highly sensitive to the exact AST shape (possibly the extra 'badge-' literal segment or the specific JSX ancestor chain of the `<Badge>` element inside the else-branch of MenuCard). Recommended: keep the workaround (`key={`badge-${badge}`}`) — badges within one card are already unique so item.id is unnecessary. Alternatively file a bug in the visual-edits plugin for the null parentPath in the ImportDeclaration.traverse cross-file scan.",
+    "Same class of risk exists whenever future JSX inside a `.map((x) => ...)` uses `key={`${outerProp}-${x}`}` — the plugin may crash. Consider adding a smoke-test that compiles the frontend after any JSX key change.",
+    "The visual-edits babel-metadata-plugin ImportDeclaration visitor at line 936 unsafely dereferences `importPath.parentPath.parentPath` without null-check — plugin should guard this (`if (!importPath.parentPath?.parentPath) return;`)."
+  ],
+  "test_report_links": [
+    "/app/backend/tests/test_livekit.py",
+    "/app/backend/tests/test_livekit_guest.py",
+    "/app/test_reports/pytest/iter52_livekit.xml"
+  ],
+  "action_items": [
+    "DECIDE: keep my workaround (`key={`badge-${badge}`}` at MenuCard.jsx line 177) OR investigate the visual-edits plugin null-parentPath crash and fix upstream. Reverting to original `${item.id}-badge-${badge}` will re-break the entire app.",
+    "Optional: patch /app/frontend/plugins/visual-edits/babel-metadata-plugin.js:936 to null-guard `importPath.parentPath?.parentPath?.traverse(...)`.",
+    "Optional: add a CI/pre-commit smoke test that runs `yarn build` (or webpack --dry-run) after any JSX edits to catch plugin crashes early."
+  ],
+  "updated_files": [
+    "/app/frontend/src/components/MenuCard.jsx (workaround: key=`badge-${badge}` at line 177)"
+  ],
+  "success_rate": {"backend": "100% (26/26 LiveKit tests)", "frontend": "100% functional after MenuCard.jsx workaround"},
+  "test_credentials": "admin / $outhcentral (from /app/backend/database.py; /app/memory/test_credentials.md does NOT exist — only /app/memory/PRD.md is present)",
+  "seed_data_creation": "None",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "iteration_52: Discovered a critical visual-edits babel plugin crash caused by MenuCard.jsx key template literal. Workaround applied (key=`badge-${badge}`) — main agent must decide whether to keep the workaround or fix the plugin. All other 4 code-review fixes (DashboardStats, UpdatePrompt, api.js catch, MenuItemsTab catch) are safe and verified. Regression flows (/checkin, /dj, LiveKit tokens) all pass. Admin credentials confirmed: admin / $outhcentral. Note the credentials file /app/memory/test_credentials.md referenced in the request DOES NOT EXIST — creds were pulled from /app/backend/database.py.",
+  "rca of the issue": "TypeError 'Cannot read properties of null (reading traverse)' at /app/frontend/plugins/visual-edits/babel-metadata-plugin.js:936. Stack: babel-metadata-plugin's PluginPass.JSXElement handler → recordPropSources → getArrayIterationContext → analyzeMemberExpression → analyzeIdentifier → tracePropToSource → lookupCrossFilePropSource → lazyEvaluatePropSource opens the target component file and traverses ImportDeclarations; on one such ImportDeclaration `importPath.parentPath.parentPath` is null (top-level Program has no grandparent), so `.traverse(...)` throws. Reproduction: change `key={index}` on the badge `.map` at MenuCard.jsx:177 to `key={`${item.id}-badge-${badge}`}`. Mitigation applied: use `key={`badge-${badge}`}` (drops the item.id MemberExpression which is what the plugin traces). Permanent fix: null-guard `importPath.parentPath?.parentPath?.traverse` in babel-metadata-plugin.js line 936."
+}

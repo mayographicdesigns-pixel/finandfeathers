@@ -13,7 +13,7 @@ const DashboardStats = ({ stats }) => {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       {statItems.map((item, index) => (
-        <Card key={index} className="bg-slate-800/50 border-slate-700/50">
+        <Card key={item.label} className="bg-slate-800/50 border-slate-700/50">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>

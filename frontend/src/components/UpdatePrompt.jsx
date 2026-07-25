@@ -182,8 +182,8 @@ const UpdatePrompt = ({ autoUpdate = false }) => {
                   </div>
                   <h3 className="text-slate-300 text-sm mb-2">{data.title}</h3>
                   <ul className="space-y-1.5">
-                    {data.changes.map((change, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-slate-400 text-sm">
+                    {data.changes.map((change) => (
+                      <li key={`${data.date}-${change.text}`} className="flex items-start gap-2 text-slate-400 text-sm">
                         {getChangeIcon(change.type)}
                         <span>{change.text}</span>
                       </li>

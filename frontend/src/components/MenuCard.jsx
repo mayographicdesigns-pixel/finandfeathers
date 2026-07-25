@@ -172,9 +172,9 @@ const MenuCard = ({ item, variant = 'default', editMode = false, onEdit, onImage
           {item.description}
         </p>
         <div className="flex flex-wrap gap-1.5">
-          {item.badges && item.badges.map((badge, index) => (
+          {item.badges && item.badges.map((badge) => (
             <Badge
-              key={index}
+              key={`badge-${badge}`}
               variant="outline"
               className={`${
                 badge === "Chef's Special"

@@ -271,7 +271,7 @@ const MenuItemsTab = () => {
       try {
         const j = await res.json();
         if (j.detail) msg = j.detail;
-      } catch { /* ignore */ }
+      } catch (parseErr) { console.error('Response parse error:', parseErr); }
       throw new Error(msg);
     }
     const blob = await res.blob();

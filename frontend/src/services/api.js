@@ -1444,7 +1444,7 @@ export async function createUserProfile(profile) {
   });
   if (!response.ok) {
     let detail = 'Failed to create profile';
-    try { const err = await response.json(); detail = err.detail || detail; } catch (e) { /* parse error */ }
+    try { const err = await response.json(); detail = err.detail || detail; } catch (parseErr) { console.error('Response parse error:', parseErr); }
     throw new Error(detail);
   }
   return await response.json();
