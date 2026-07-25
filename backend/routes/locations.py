@@ -478,3 +478,24 @@ async def seed_promo_videos(admin: str = Depends(get_current_admin)):
 
     await db.promo_videos.insert_many(initial_videos)
     return {"message": f"Successfully seeded {len(initial_videos)} promo videos"}
+
+
+@router.post("/admin/locations/{slug}/sync-specials-to-all")
+async def sync_weekly_specials_to_all(slug: str, admin: str = Depends(get_current_admin)):
+    """Copy the given location's `weekly_specials` array to every other location.
+    Idempotent — writes the same array everywhere, so re-running is a no-op.
+    """
+    source = await db.locations.find_one({"slug": slug}, {"_id": 0, "weekly_specials": 1, "name": 1})
+    if not source:
+        raise HTTPException(status_code=404, detail=f"Location '{slug}' not found")
+    specials = source.get("weekly_specials") or []
+    res = await db.locations.update_many(
+        {"slug": {"$ne": slug}},
+        {"$set": {"weekly_specials": specials, "updated_at": datetime.now(timezone.utc)}},
+    )
+    return {
+        "source_location": source.get("name"),
+        "source_slug": slug,
+        "specials_count": len(specials),
+        "other_locations_updated": res.modified_count,
+    }

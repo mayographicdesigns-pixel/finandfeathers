@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Plus, Edit2, Trash2, Upload, RefreshCw, X, ToggleLeft, ToggleRight
+  Plus, Edit2, Trash2, Upload, RefreshCw, X, ToggleLeft, ToggleRight, Copy
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
@@ -193,6 +193,43 @@ const LocationsTab = () => {
       ...prev,
       weekly_specials: prev.weekly_specials.filter((_, i) => i !== index)
     }));
+  };
+
+  const [syncingSpecials, setSyncingSpecials] = useState(false);
+  const syncSpecialsToAll = async () => {
+    if (!editingLocation?.slug) {
+      toast({ title: 'Save the location first', description: 'Sync only works on locations that already exist.', variant: 'destructive' });
+      return;
+    }
+    // Warn before an irreversible overwrite
+    const label = editingLocation.name || editingLocation.slug;
+    if (!window.confirm(
+      `This copies the ${formData.weekly_specials.length} specials shown here to every OTHER location, ` +
+      `overwriting whatever they currently have. Continue?\n\nSource: ${label}`
+    )) return;
+
+    setSyncingSpecials(true);
+    try {
+      // Persist the current form's specials first so the source is up to date
+      await adminUpdateLocation(editingLocation.id || editingLocation.slug, {
+        weekly_specials: formData.weekly_specials,
+      });
+      const token = localStorage.getItem('adminToken');
+      const res = await fetch(
+        `${window.location.origin}/api/admin/locations/${encodeURIComponent(editingLocation.slug)}/sync-specials-to-all`,
+        { method: 'POST', headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      toast({
+        title: 'Specials synced',
+        description: `${data.specials_count} specials copied to ${data.other_locations_updated} other location(s).`,
+      });
+    } catch (err) {
+      toast({ title: 'Sync failed', description: err.message, variant: 'destructive' });
+    } finally {
+      setSyncingSpecials(false);
+    }
   };
 
   const handleToggleFeature = async (location, feature) => {
@@ -397,11 +434,27 @@ const LocationsTab = () => {
 
               {/* Weekly Specials */}
               <div>
-                <div className="flex justify-between items-center mb-2">
+                <div className="flex justify-between items-center mb-2 flex-wrap gap-2">
                   <label className="text-sm text-slate-300">Weekly Specials</label>
-                  <Button type="button" size="sm" onClick={addSpecial} className="bg-slate-700">
-                    <Plus className="w-3 h-3 mr-1" /> Add
-                  </Button>
+                  <div className="flex gap-2">
+                    {editingLocation && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={syncSpecialsToAll}
+                        disabled={syncingSpecials}
+                        className="bg-amber-600 hover:bg-amber-700 text-white"
+                        data-testid="sync-specials-to-all-btn"
+                        title="Copy these specials to every other location"
+                      >
+                        <Copy className="w-3 h-3 mr-1" />
+                        {syncingSpecials ? 'Syncing…' : 'Sync to All Locations'}
+                      </Button>
+                    )}
+                    <Button type="button" size="sm" onClick={addSpecial} className="bg-slate-700">
+                      <Plus className="w-3 h-3 mr-1" /> Add
+                    </Button>
+                  </div>
                 </div>
                 {formData.weekly_specials.map((special, index) => (
                   <div key={`special-${special.day || 'new'}-${index}`} className="flex gap-2 mb-2">
