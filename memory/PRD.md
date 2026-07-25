@@ -111,6 +111,10 @@ routes/
   - DJ Panel merged its "enter name" and "pick location" screens into one — tap a preset name (or type one) + tap a location and both `/api/dj/login` + `/api/dj/checkin` fire together
   - LinkTreeHomePage no longer auto-opens the legacy WelcomePopup modal
   - Tested: 10/10 frontend flows pass (iteration_51)
+- [x] **DJ Unified Wall View** — DJs see the check-in wall for ALL locations merged into one wall. Each post/chat/DM/user shows a small location tag next to the name so the DJ knows where the message came from.
+  - Backend: `/api/wall/posts/all`, `/api/wall/chat/all`, `/api/wall/users/all` return items across every location. DM messages now store `from_location_slug` and `to_location_slug`; conversations pipeline projects `partner_location_slug`.
+  - Frontend: new `LocationTag` component; `SocialWallPage` derives `isDJ` from `userProfile.is_dj` and passes it to Feed/Chat/DMs tabs — DJ mode swaps the fetch slug to `all` and renders the tag next to each name.
+  - Tested: backend 9/9 pass, frontend Playwright confirms DJ sees tags across 4 locations while guests see zero tags (iteration_53, 100%).
 
 
 
