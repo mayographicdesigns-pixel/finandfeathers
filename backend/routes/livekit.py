@@ -76,7 +76,8 @@ async def start_livekit_stream(body: dict):
 
     Also updates dj_profiles.live_stream_url so the homepage banner can detect it.
     """
-    location_slug = (body.get("location_slug") or "").strip().lower()
+    raw_slug = (body.get("location_slug") or "").strip().lower()
+    location_slug = re.sub(r"[^a-z0-9-]+", "-", raw_slug)
     dj_id = body.get("dj_id") or ""
     dj_name = body.get("dj_name") or "DJ"
     if not location_slug or not dj_id:
@@ -110,7 +111,8 @@ async def start_livekit_stream(body: dict):
 @router.post("/livekit/stream/stop")
 async def stop_livekit_stream(body: dict):
     """DJ marks the stream as ended and clears their profile."""
-    location_slug = (body.get("location_slug") or "").strip().lower()
+    raw_slug = (body.get("location_slug") or "").strip().lower()
+    location_slug = re.sub(r"[^a-z0-9-]+", "-", raw_slug)
     dj_id = body.get("dj_id") or ""
     if not location_slug:
         raise HTTPException(status_code=400, detail="location_slug required")

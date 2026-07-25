@@ -55,6 +55,7 @@ routes/
 - Hostinger SMTP (Email)
 - OpenAI GPT-4 Vision (AI Flyer Reader) via emergentintegrations
 - APScheduler (Background tasks)
+- **LiveKit Cloud (WebRTC live streaming — DJ Go Live)** [Feb 2026]
 
 ## Completed Tasks
 ### March 2026 Session 1
@@ -89,6 +90,18 @@ routes/
 - [x] Auto-seed: locations + full menu (187 items) on empty DB startup
 - [x] Code quality: XSS protection (DOMPurify), empty catch blocks fixed, test secrets removed, database.py refactored
 - [x] Renamed cocktail "Fin-A-Rita" → "Rodeo Drive" (seed_menu.json, mockData.js, MongoDB, image swap to /images/cocktails/Rodeo-Drive.jpg)
+
+### February 2026 Session (LiveKit)
+- [x] **DJ Go Live — LiveKit Cloud integration** (replaces broken WebSocket+MediaRecorder+MediaSource DIY streaming). Works reliably on iOS Safari, Android Chrome, and desktop. Supports audio + video, ~50-100 viewers per stream.
+  - New backend router `/app/backend/routes/livekit.py` with endpoints: `POST /api/livekit/token`, `POST /api/livekit/stream/start`, `POST /api/livekit/stream/stop`, `GET /api/livekit/stream/status/{slug}`, `GET /api/livekit/streams/active`
+  - New frontend component `/app/frontend/src/components/LiveKitStream.jsx` — exports `LiveKitBroadcaster` (DJ side) and `LiveKitViewer` (audience side)
+  - DJPanelPage `/dj` — "Go Live with Camera" now uses LiveKit with mic/cam toggles + camera flip
+  - SocialWallPage Live tab — auto-detects `livekit://` URL scheme and renders LiveKitViewer
+  - LinkTreeHomePage — polls `/api/livekit/streams/active` for the "DJ Live" banner
+  - Env vars added: `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`
+  - Room name = location_slug; slug sanitization consistent across all endpoints (regex `[^a-z0-9-]+`)
+  - Tested: 14/14 backend tests pass (iteration_49)
+
 
 ## Backlog
 - [ ] Per-Location Weekly Specials management (P2)
