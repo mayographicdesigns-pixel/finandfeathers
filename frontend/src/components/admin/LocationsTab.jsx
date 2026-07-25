@@ -196,6 +196,43 @@ const LocationsTab = () => {
   };
 
   const [syncingSpecials, setSyncingSpecials] = useState(false);
+  const [syncingHours, setSyncingHours] = useState(false);
+
+  const syncHoursToAll = async () => {
+    if (!editingLocation?.slug) {
+      toast({ title: 'Save the location first', description: 'Sync only works on locations that already exist.', variant: 'destructive' });
+      return;
+    }
+    const label = editingLocation.name || editingLocation.slug;
+    if (!window.confirm(
+      `This copies the 7-day hours shown here to every OTHER location, ` +
+      `overwriting whatever they currently have. Continue?\n\nSource: ${label}`
+    )) return;
+    setSyncingHours(true);
+    try {
+      await adminUpdateLocation(editingLocation.id || editingLocation.slug, {
+        hours: formData.hours,
+      });
+      const token = localStorage.getItem('adminToken');
+      const res = await fetch(
+        `${window.location.origin}/api/admin/locations/${encodeURIComponent(editingLocation.slug)}/sync-hours-to-all`,
+        { method: 'POST', headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ detail: `HTTP ${res.status}` }));
+        throw new Error(err.detail || `HTTP ${res.status}`);
+      }
+      const data = await res.json();
+      toast({
+        title: 'Hours synced',
+        description: `${data.days_synced} days copied to ${data.other_locations_updated} other location(s).`,
+      });
+    } catch (err) {
+      toast({ title: 'Sync failed', description: err.message, variant: 'destructive' });
+    } finally {
+      setSyncingHours(false);
+    }
+  };
   const syncSpecialsToAll = async () => {
     if (!editingLocation?.slug) {
       toast({ title: 'Save the location first', description: 'Sync only works on locations that already exist.', variant: 'destructive' });
@@ -416,7 +453,23 @@ const LocationsTab = () => {
 
               {/* Hours */}
               <div>
-                <label className="text-sm text-slate-300 block mb-2">Hours</label>
+                <div className="flex justify-between items-center mb-2 flex-wrap gap-2">
+                  <label className="text-sm text-slate-300">Hours</label>
+                  {editingLocation && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={syncHoursToAll}
+                      disabled={syncingHours}
+                      className="bg-amber-600 hover:bg-amber-700 text-white"
+                      data-testid="sync-hours-to-all-btn"
+                      title="Copy these hours to every other location"
+                    >
+                      <Copy className="w-3 h-3 mr-1" />
+                      {syncingHours ? 'Syncing…' : 'Sync to All Locations'}
+                    </Button>
+                  )}
+                </div>
                 <div className="grid grid-cols-7 gap-2">
                   {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map(day => (
                     <div key={day}>

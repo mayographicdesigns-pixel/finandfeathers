@@ -499,3 +499,25 @@ async def sync_weekly_specials_to_all(slug: str, admin: str = Depends(get_curren
         "specials_count": len(specials),
         "other_locations_updated": res.modified_count,
     }
+
+
+@router.post("/admin/locations/{slug}/sync-hours-to-all")
+async def sync_hours_to_all(slug: str, admin: str = Depends(get_current_admin)):
+    """Copy the given location's `hours` object to every other location.
+    Same pattern as sync-specials-to-all."""
+    source = await db.locations.find_one({"slug": slug}, {"_id": 0, "hours": 1, "name": 1})
+    if not source:
+        raise HTTPException(status_code=404, detail=f"Location '{slug}' not found")
+    hours = source.get("hours") or {}
+    if not hours:
+        raise HTTPException(status_code=400, detail="Source location has no hours to sync")
+    res = await db.locations.update_many(
+        {"slug": {"$ne": slug}},
+        {"$set": {"hours": hours, "updated_at": datetime.now(timezone.utc)}},
+    )
+    return {
+        "source_location": source.get("name"),
+        "source_slug": slug,
+        "days_synced": len(hours),
+        "other_locations_updated": res.modified_count,
+    }
