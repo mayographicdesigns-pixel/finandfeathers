@@ -21,13 +21,47 @@ router = APIRouter(prefix="/api")
 class LiveKitTokenRequest(BaseModel):
     location_slug: str = Field(..., min_length=1, max_length=64)
     identity: str = Field(..., min_length=1, max_length=128)
-    role: Literal["dj", "viewer"]
+    role: Literal["dj", "viewer", "guest"]
     display_name: Optional[str] = None
+
+
+# Max publishing cameras per room — DJ + 8 guests, Zoom-style
+MAX_PUBLISHERS_PER_ROOM = 9
+
+
+async def _count_room_publishers(room_name: str) -> int:
+    """Count how many participants are currently publishing tracks in a room."""
+    lk_url = os.environ.get("LIVEKIT_URL")
+    lk_api_key = os.environ.get("LIVEKIT_API_KEY")
+    lk_api_secret = os.environ.get("LIVEKIT_API_SECRET")
+    if not (lk_url and lk_api_key and lk_api_secret):
+        return 0
+    try:
+        # LiveKit REST needs an https URL, not wss://
+        rest_url = lk_url.replace("wss://", "https://").replace("ws://", "http://")
+        lkapi = api.LiveKitAPI(url=rest_url, api_key=lk_api_key, api_secret=lk_api_secret)
+        try:
+            participants = await lkapi.room.list_participants(
+                api.ListParticipantsRequest(room=room_name)
+            )
+            count = 0
+            for p in participants.participants:
+                # Count anyone who has published a track OR has canPublish permission
+                if p.tracks and len(p.tracks) > 0:
+                    count += 1
+                elif p.permission and p.permission.can_publish:
+                    count += 1
+            return count
+        finally:
+            await lkapi.aclose()
+    except Exception as e:
+        logging.warning(f"LiveKit publisher count failed for {room_name}: {e}")
+        return 0
 
 
 @router.post("/livekit/token")
 async def create_livekit_token(body: LiveKitTokenRequest):
-    """Create a LiveKit access token for a DJ (publisher) or a viewer (subscriber)."""
+    """Create a LiveKit access token for a DJ, guest publisher, or viewer."""
     lk_url = os.environ.get("LIVEKIT_URL")
     lk_api_key = os.environ.get("LIVEKIT_API_KEY")
     lk_api_secret = os.environ.get("LIVEKIT_API_SECRET")
@@ -39,17 +73,27 @@ async def create_livekit_token(body: LiveKitTokenRequest):
     if not room:
         raise HTTPException(status_code=400, detail="Invalid location_slug")
 
-    # Guardrail: viewers can only join rooms that are actively broadcasting
-    if body.role == "viewer":
+    # Guardrail: viewers and guest cameras can only join rooms that are actively live
+    if body.role in ("viewer", "guest"):
         live = await db.livekit_streams.find_one({"location_slug": room, "status": "live"})
         if not live:
             raise HTTPException(status_code=409, detail="This location is not live yet")
 
+    # Cap the number of concurrent publishers (DJ + guests) at MAX_PUBLISHERS_PER_ROOM
+    if body.role == "guest":
+        current = await _count_room_publishers(room)
+        if current >= MAX_PUBLISHERS_PER_ROOM:
+            raise HTTPException(
+                status_code=409,
+                detail=f"Camera stage is full ({MAX_PUBLISHERS_PER_ROOM} max). Try again in a moment.",
+            )
+
+    can_publish = body.role in ("dj", "guest")
     grants = api.VideoGrants(
         room_join=True,
         room=room,
-        can_publish=(body.role == "dj"),
-        can_publish_data=(body.role == "dj"),
+        can_publish=can_publish,
+        can_publish_data=can_publish,
         can_subscribe=True,
     )
 
@@ -67,6 +111,7 @@ async def create_livekit_token(body: LiveKitTokenRequest):
         "token": token,
         "room_name": room,
         "role": body.role,
+        "max_publishers": MAX_PUBLISHERS_PER_ROOM,
     }
 
 

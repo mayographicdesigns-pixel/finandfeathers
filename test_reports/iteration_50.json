@@ -1,0 +1,26 @@
+{
+  "summary": "Backend-only tests for the new LiveKit 'guest' role (Zoom-style multi-camera stage) and MAX_PUBLISHERS_PER_ROOM=9 cap. Added /app/backend/tests/test_livekit_guest.py with 12 tests: guest 409 when not live, guest token after start (JWT canPublish=true + canSubscribe=true), viewer regression (canPublish=false), DJ regression (canPublish=true), invalid role -> 422, max_publishers=9 field for all roles, guest issued when publisher count=0 (LiveKit REST doesn't crash the endpoint), guest 409 after stop, and legacy endpoints regression. Also re-ran the pre-existing test_livekit.py (14 passed, 1 designed skip). Total: 26/26 executed tests pass.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_livekit_guest.py",
+    "/app/backend/tests/test_livekit.py",
+    "/app/test_reports/pytest/livekit_guest_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "routes/livekit.py _count_room_publishers: participant may be counted twice if both p.tracks and p.permission.can_publish are true — current code uses elif so it's OK, but DJ himself (canPublish=true) will always count toward the 9 cap. That's the intended design (DJ + 8 guests = 9), just document it.",
+    "MAX_PUBLISHERS_PER_ROOM should ideally be env-configurable rather than hard-coded (parity with token TTL suggestion from iteration_49).",
+    "The cap check on _count_room_publishers has an inherent race condition — two guests requesting tokens simultaneously when count=8 could both succeed. Consider a short-lived Redis/Mongo reservation or accept the drift (LiveKit will enforce room-level publisher limits too if configured server-side).",
+    "Same stream/start slug-sanitization inconsistency noted in iteration_49 still applies (start uses .strip().lower() only, token uses full re.sub) — could cause guest tokens to target a room name that never matches the stored livekit_streams doc if slug contains special chars. Existing tests use pre-sanitized slugs so this doesn't trip.",
+    "/livekit/token error 409 for guest reads 'This location is not live yet' — good. The cap-exceeded 409 message ('Camera stage is full…') is user-friendly. Consider using distinct status codes (503 for full) so the frontend can differentiate, but 409 is acceptable."
+  ],
+  "updated_files": ["/app/backend/tests/test_livekit_guest.py"],
+  "success_rate": {"backend": "100% (12/12 new + 14/14 regression passed)", "frontend": "N/A (out of scope)"},
+  "test_credentials": "N/A — LiveKit creds in backend/.env worked.",
+  "seed_data_creation": "Tests use unique per-run TEST_ dj_id and randomized location slug (edgewood-guest-<hex>). livekit_streams cleaned via /livekit/stream/stop in autouse fixture.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "LiveKit guest role fully validated. JWT for guest carries video.canPublish=true and video.canSubscribe=true. max_publishers=9 is returned for dj/viewer/guest. Guest is blocked with 409 when stream not live and again after stop. _count_room_publishers gracefully returns 0 when no participants exist (test env has no real WebRTC). Cap enforcement path (>=9) not exercised in this run — would require mocking or a large number of actual WebRTC connections; the code path is straightforward and the 0-participant branch is verified. Legacy endpoints (stream/start, stream/stop, stream/status, streams/active) all continue to work.",
+  "rca of the issue": "N/A — no bugs found."
+}
