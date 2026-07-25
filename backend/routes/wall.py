@@ -67,8 +67,11 @@ async def create_wall_post(body: dict):
 
 @router.get("/wall/posts/{location_slug}")
 async def get_wall_posts(location_slug: str, limit: int = 50, skip: int = 0):
+    # Special slug "all" returns posts across every location — used by DJs to see
+    # the unified check-in wall.
+    query = {} if location_slug == "all" else {"location_slug": location_slug}
     cursor = db.wall_posts.find(
-        {"location_slug": location_slug}, {"_id": 0}
+        query, {"_id": 0}
     ).sort("created_at", -1).skip(skip).limit(limit)
     return await cursor.to_list(length=limit)
 
@@ -183,7 +186,8 @@ async def send_chat_message(location_slug: str, body: dict):
 
 @router.get("/wall/chat/{location_slug}")
 async def get_chat_messages(location_slug: str, limit: int = 100, before: str = ""):
-    query = {"location_slug": location_slug}
+    # Special slug "all" returns chat messages across every location (DJ unified view).
+    query = {} if location_slug == "all" else {"location_slug": location_slug}
     if before:
         query["created_at"] = {"$lt": before}
     cursor = db.wall_chat_messages.find(query, {"_id": 0}).sort("created_at", -1).limit(limit)
@@ -209,8 +213,10 @@ async def send_dm(body: dict):
         "from_user_id": from_user_id,
         "from_user_name": body.get("from_user_name", "Anonymous"),
         "from_user_avatar": body.get("from_user_avatar", ""),
+        "from_location_slug": body.get("from_location_slug", ""),
         "to_user_id": to_user_id,
         "to_user_name": body.get("to_user_name", ""),
+        "to_location_slug": body.get("to_location_slug", ""),
         "content": content,
         "read": False,
         "created_at": datetime.now(timezone.utc).isoformat()
@@ -239,10 +245,11 @@ async def get_dm_conversations(user_id: str):
             "last_time": {"$first": "$created_at"},
             "partner_name": {"$first": {"$cond": [{"$eq": ["$from_user_id", user_id]}, "$to_user_name", "$from_user_name"]}},
             "partner_avatar": {"$first": {"$cond": [{"$eq": ["$from_user_id", user_id]}, {"$ifNull": ["$to_user_avatar", ""]}, {"$ifNull": ["$from_user_avatar", ""]}]}},
+            "partner_location_slug": {"$first": {"$cond": [{"$eq": ["$from_user_id", user_id]}, {"$ifNull": ["$to_location_slug", ""]}, {"$ifNull": ["$from_location_slug", ""]}]}},
             "unread": {"$sum": {"$cond": [{"$and": [{"$eq": ["$to_user_id", user_id]}, {"$eq": ["$read", False]}]}, 1, 0]}}
         }},
         {"$sort": {"last_time": -1}},
-        {"$project": {"_id": 0, "partner_id": "$_id", "partner_name": 1, "partner_avatar": 1, "last_message": 1, "last_time": 1, "unread": 1}}
+        {"$project": {"_id": 0, "partner_id": "$_id", "partner_name": 1, "partner_avatar": 1, "partner_location_slug": 1, "last_message": 1, "last_time": 1, "unread": 1}}
     ]
     return await db.wall_dm_messages.aggregate(pipeline).to_list(length=50)
 
@@ -271,37 +278,49 @@ async def get_dm_unread_count(user_id: str):
 
 @router.get("/wall/users/{location_slug}")
 async def get_wall_users(location_slug: str):
+    is_all = location_slug == "all"
+    post_query = {} if is_all else {"location_slug": location_slug}
+    chat_query = {} if is_all else {"location_slug": location_slug}
     recent_posters = await db.wall_posts.find(
-        {"location_slug": location_slug},
-        {"_id": 0, "user_id": 1, "user_name": 1, "user_avatar": 1}
-    ).sort("created_at", -1).limit(50).to_list(length=50)
+        post_query,
+        {"_id": 0, "user_id": 1, "user_name": 1, "user_avatar": 1, "user_photo": 1, "location_slug": 1}
+    ).sort("created_at", -1).limit(200 if is_all else 50).to_list(length=200 if is_all else 50)
     recent_chatters = await db.wall_chat_messages.find(
-        {"location_slug": location_slug},
-        {"_id": 0, "user_id": 1, "user_name": 1, "user_avatar": 1}
-    ).sort("created_at", -1).limit(50).to_list(length=50)
+        chat_query,
+        {"_id": 0, "user_id": 1, "user_name": 1, "user_avatar": 1, "location_slug": 1}
+    ).sort("created_at", -1).limit(200 if is_all else 50).to_list(length=200 if is_all else 50)
     seen = set()
     users = []
 
-    # Include checked-in DJ at this location so users can DM them
-    live_dj = await db.dj_profiles.find_one(
-        {"current_location": location_slug, "is_active": True},
-        {"_id": 0}
-    )
-    if live_dj:
+    # Include checked-in DJ(s). For a location wall, only that location's DJ.
+    # For the DJ unified view (is_all), include every currently-checked-in DJ so they
+    # can be DM'd across locations.
+    dj_query = {"is_active": True, "current_location": {"$ne": None}} if is_all else {
+        "current_location": location_slug, "is_active": True
+    }
+    live_djs = await db.dj_profiles.find(dj_query, {"_id": 0}).to_list(length=50)
+    for live_dj in live_djs:
         dj_id = live_dj.get("id")
-        if dj_id:
+        if dj_id and dj_id not in seen:
             seen.add(dj_id)
             users.append({
                 "user_id": dj_id,
                 "user_name": f"DJ {live_dj.get('stage_name') or live_dj.get('name', 'Unknown')}",
-                "user_avatar": live_dj.get("avatar_emoji", "🎧")
+                "user_avatar": live_dj.get("avatar_emoji", "🎧"),
+                "location_slug": live_dj.get("current_location"),
             })
 
     for u in recent_posters + recent_chatters:
         uid = u.get("user_id")
         if uid and uid not in seen:
             seen.add(uid)
-            users.append({"user_id": uid, "user_name": u.get("user_name", "Anonymous"), "user_avatar": u.get("user_avatar", ""), "user_photo": u.get("user_photo", "")})
+            users.append({
+                "user_id": uid,
+                "user_name": u.get("user_name", "Anonymous"),
+                "user_avatar": u.get("user_avatar", ""),
+                "user_photo": u.get("user_photo", ""),
+                "location_slug": u.get("location_slug"),
+            })
     return users
 
 

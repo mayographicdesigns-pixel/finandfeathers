@@ -6,7 +6,7 @@ import { Card, CardContent } from '../components/ui/card';
 import {
   MessageCircle, Heart, Send, Image, Music, Megaphone, ArrowLeft,
   Settings, Users, Hash, Mail, MoreHorizontal, Trash2, X, Camera, Loader2, ChevronLeft, Bell,
-  Radio, Calendar, Clock, Mic2, Video
+  Radio, Calendar, Clock, Mic2, Video, MapPin
 } from 'lucide-react';
 import { locations } from '../mockData';
 import { formatTimeInTz, formatScheduleDate, timeAgoInTz, getTzAbbreviation, getCurrentLocalTime } from '../utils/timezone';
@@ -15,8 +15,26 @@ import { LiveKitViewer } from '../components/LiveKitStream';
 
 const API_URL = window.location.origin;
 
+// Small badge showing which location a post/message came from — used when a DJ views
+// the unified check-in wall across all locations.
+const LocationTag = ({ slug }) => {
+  if (!slug) return null;
+  const loc = locations.find(l => l.slug === slug);
+  const name = loc?.name?.replace('Fin & Feathers - ', '') || slug;
+  return (
+    <span
+      className="inline-flex items-center gap-0.5 bg-red-500/15 border border-red-500/25 text-red-300 text-[9px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full ml-1 shrink-0"
+      title={`Posted at ${name}`}
+      data-testid={`location-tag-${slug}`}
+    >
+      <MapPin className="w-2.5 h-2.5" />
+      {name}
+    </span>
+  );
+};
+
 // ========== FEED TAB ==========
-const FeedTab = ({ locationSlug, userId, userName, userAvatar, userPhoto, djStatus }) => {
+const FeedTab = ({ locationSlug, userId, userName, userAvatar, userPhoto, djStatus, isDJ }) => {
   const [posts, setPosts] = useState([]);
   const [newContent, setNewContent] = useState('');
   const [postType, setPostType] = useState('text');
@@ -31,13 +49,14 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar, userPhoto, djStat
   const isDJLive = djStatus?.is_live;
   const karaokeActive = djStatus?.karaoke_active;
 
+  const fetchSlug = isDJ ? 'all' : locationSlug;
   const fetchPosts = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/api/wall/posts/${locationSlug}`);
+      const res = await fetch(`${API_URL}/api/wall/posts/${fetchSlug}`);
       const data = await res.json();
       setPosts(data || []);
     } catch (e) { console.error(e); }
-  }, [locationSlug]);
+  }, [fetchSlug]);
 
   useEffect(() => { fetchPosts(); const iv = setInterval(fetchPosts, 10000); return () => clearInterval(iv); }, [fetchPosts]);
 
@@ -257,6 +276,7 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar, userPhoto, djStat
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-white text-sm font-medium truncate">{post.user_name}</span>
+                      {isDJ && <LocationTag slug={post.location_slug} />}
                       {post.post_type !== 'text' && (
                         <span className={`text-xs ${cfg.color} flex items-center gap-0.5`}>
                           <cfg.icon className="w-3 h-3" /> {cfg.label}
@@ -311,19 +331,20 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar, userPhoto, djStat
 };
 
 // ========== CHAT TAB ==========
-const ChatTab = ({ locationSlug, userId, userName, userAvatar }) => {
+const ChatTab = ({ locationSlug, userId, userName, userAvatar, isDJ }) => {
   const [messages, setMessages] = useState([]);
   const [newMsg, setNewMsg] = useState('');
   const [sending, setSending] = useState(false);
   const bottomRef = useRef(null);
 
+  const fetchSlug = isDJ ? 'all' : locationSlug;
   const fetchMessages = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/api/wall/chat/${locationSlug}`);
+      const res = await fetch(`${API_URL}/api/wall/chat/${fetchSlug}`);
       const data = await res.json();
       setMessages(data || []);
     } catch (e) { console.error(e); }
-  }, [locationSlug]);
+  }, [fetchSlug]);
 
   useEffect(() => { fetchMessages(); const iv = setInterval(fetchMessages, 3000); return () => clearInterval(iv); }, [fetchMessages]);
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
@@ -362,7 +383,10 @@ const ChatTab = ({ locationSlug, userId, userName, userAvatar }) => {
                 ) : <div className="w-6 shrink-0" />}
                 <div>
                   {showAvatar && !isMe && (
-                    <p className="text-slate-500 text-xs mb-0.5 px-1">{msg.user_name}</p>
+                    <p className="text-slate-500 text-xs mb-0.5 px-1 flex items-center">
+                      {msg.user_name}
+                      {isDJ && <LocationTag slug={msg.location_slug} />}
+                    </p>
                   )}
                   <div className={`px-3 py-1.5 rounded-2xl text-sm ${isMe ? 'bg-red-600/80 text-white rounded-br-sm' : 'bg-slate-800 text-slate-200 rounded-bl-sm'}`}>
                     {msg.content}
@@ -392,7 +416,7 @@ const ChatTab = ({ locationSlug, userId, userName, userAvatar }) => {
 };
 
 // ========== DMS TAB ==========
-const DMsTab = ({ userId, userName, userAvatar, locationSlug }) => {
+const DMsTab = ({ userId, userName, userAvatar, locationSlug, isDJ }) => {
   const [conversations, setConversations] = useState([]);
   const [activeThread, setActiveThread] = useState(null);
   const [threadMessages, setThreadMessages] = useState([]);
@@ -412,8 +436,8 @@ const DMsTab = ({ userId, userName, userAvatar, locationSlug }) => {
 
   useEffect(() => { fetchConversations(); const iv = setInterval(fetchConversations, 5000); return () => clearInterval(iv); }, [fetchConversations]);
 
-  const openThread = async (partnerId, partnerName) => {
-    setActiveThread({ id: partnerId, name: partnerName });
+  const openThread = async (partnerId, partnerName, partnerLocationSlug = '') => {
+    setActiveThread({ id: partnerId, name: partnerName, locationSlug: partnerLocationSlug });
     try {
       const res = await fetch(`${API_URL}/api/wall/dm/thread/${userId}/${partnerId}`);
       const data = await res.json();
@@ -441,7 +465,9 @@ const DMsTab = ({ userId, userName, userAvatar, locationSlug }) => {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           from_user_id: userId, from_user_name: userName, from_user_avatar: userAvatar,
+          from_location_slug: locationSlug,
           to_user_id: activeThread.id, to_user_name: activeThread.name,
+          to_location_slug: activeThread.locationSlug || '',
           content: newMsg.trim()
         })
       });
@@ -453,7 +479,8 @@ const DMsTab = ({ userId, userName, userAvatar, locationSlug }) => {
 
   const fetchLocationUsers = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/wall/users/${locationSlug}`);
+      const usersSlug = isDJ ? 'all' : locationSlug;
+      const res = await fetch(`${API_URL}/api/wall/users/${usersSlug}`);
       const data = await res.json();
       setLocationUsers((data || []).filter(u => u.user_id !== userId));
     } catch (e) { console.error(e); }
@@ -461,7 +488,7 @@ const DMsTab = ({ userId, userName, userAvatar, locationSlug }) => {
 
   const startNewDM = (user) => {
     setShowNewDM(false);
-    openThread(user.user_id, user.user_name);
+    openThread(user.user_id, user.user_name, user.location_slug);
   };
 
   // Thread view
@@ -473,6 +500,7 @@ const DMsTab = ({ userId, userName, userAvatar, locationSlug }) => {
             <ChevronLeft className="w-5 h-5" />
           </button>
           <span className="text-white font-medium text-sm">{activeThread.name}</span>
+          {isDJ && <LocationTag slug={activeThread.locationSlug} />}
         </div>
         <div className="flex-1 overflow-y-auto p-3 space-y-2" data-testid="dm-thread">
           {threadMessages.map(msg => {
@@ -517,9 +545,9 @@ const DMsTab = ({ userId, userName, userAvatar, locationSlug }) => {
 
       {showNewDM && (
         <div className="p-3 bg-slate-800/50 border-b border-slate-700">
-          <p className="text-slate-400 text-xs mb-2">People at this location:</p>
+          <p className="text-slate-400 text-xs mb-2">{isDJ ? 'People across all locations:' : 'People at this location:'}</p>
           {locationUsers.length === 0 ? (
-            <p className="text-slate-600 text-xs">No other users found at this location yet.</p>
+            <p className="text-slate-600 text-xs">No other users found yet.</p>
           ) : (
             <div className="space-y-1">
               {locationUsers.map(u => (
@@ -527,6 +555,7 @@ const DMsTab = ({ userId, userName, userAvatar, locationSlug }) => {
                   className="flex items-center gap-2 w-full p-2 rounded-lg hover:bg-slate-700 transition-colors" data-testid={`dm-user-${u.user_id}`}>
                   <UserAvatar photoUrl={u.user_photo} emoji={u.user_avatar} name={u.user_name} size="sm" />
                   <span className="text-white text-sm">{u.user_name}</span>
+                  {isDJ && <LocationTag slug={u.location_slug} />}
                 </button>
               ))}
             </div>
@@ -544,13 +573,16 @@ const DMsTab = ({ userId, userName, userAvatar, locationSlug }) => {
           </div>
         )}
         {conversations.map(conv => (
-          <button key={conv.partner_id} onClick={() => openThread(conv.partner_id, conv.partner_name)}
+          <button key={conv.partner_id} onClick={() => openThread(conv.partner_id, conv.partner_name, conv.partner_location_slug)}
             className="flex items-center gap-3 w-full p-3 border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors text-left"
             data-testid={`conv-${conv.partner_id}`}>
             <UserAvatar photoUrl={conv.partner_photo} emoji={conv.partner_avatar} name={conv.partner_name} size="lg" />
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
-                <span className="text-white text-sm font-medium truncate">{conv.partner_name}</span>
+                <span className="text-white text-sm font-medium truncate flex items-center">
+                  {conv.partner_name}
+                  {isDJ && <LocationTag slug={conv.partner_location_slug} />}
+                </span>
                 {conv.unread > 0 && (
                   <span className="bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[18px] text-center">{conv.unread}</span>
                 )}
@@ -1407,9 +1439,9 @@ const SocialWallPage = () => {
       <div className="flex-1 max-w-lg mx-auto w-full flex flex-col overflow-hidden">
         {activeTab === 'live' && isStreaming && <LiveTab djStatus={djStatus} locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} userPhoto={userPhoto} />}
         {activeTab === 'here' && <WhosHereTab locationSlug={slug} userId={userId} userName={userName} djStatus={djStatus} userPhoto={userPhoto} />}
-        {activeTab === 'feed' && <FeedTab locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} userPhoto={userPhoto} djStatus={djStatus} />}
-        {activeTab === 'chat' && <ChatTab locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} userPhoto={userPhoto} />}
-        {activeTab === 'dms' && <DMsTab userId={userId} userName={userName} userAvatar={userAvatar} userPhoto={userPhoto} locationSlug={slug} />}
+        {activeTab === 'feed' && <FeedTab locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} userPhoto={userPhoto} djStatus={djStatus} isDJ={!!userProfile?.is_dj} />}
+        {activeTab === 'chat' && <ChatTab locationSlug={slug} userId={userId} userName={userName} userAvatar={userAvatar} userPhoto={userPhoto} isDJ={!!userProfile?.is_dj} />}
+        {activeTab === 'dms' && <DMsTab userId={userId} userName={userName} userAvatar={userAvatar} userPhoto={userPhoto} locationSlug={slug} isDJ={!!userProfile?.is_dj} />}
       </div>
     </div>
   );
