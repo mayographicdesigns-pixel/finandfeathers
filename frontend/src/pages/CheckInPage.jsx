@@ -332,7 +332,7 @@ const CheckInPage = () => {
 
             <Button
               onClick={handleSubmit}
-              disabled={saving || !canSubmit}
+              disabled={saving}
               className="w-full h-12 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl disabled:opacity-40"
               data-testid="checkin-submit-btn"
             >

@@ -106,6 +106,11 @@ routes/
   - Frontend `StageGrid` renders 1/2/3-column adaptive video grid with per-tile name labels
   - Guest join/leave without losing stream connection (token re-fetched, `LiveKitRoom` remounted via `key` prop)
   - Tested: 26/26 backend tests pass (iteration_50; 12 new + 14 regression)
+- [x] **Unified Login + Check-In flow** — replaced the old multi-step /checkin page + WelcomePopup modal + DJ Panel's two screens with **single-screen forms**. Users now see name + location + role on one screen and submit once.
+  - `/login` and `/checkin` both render the unified `CheckInPage` (name + location dropdown + Guest/Staff toggle, with 5-icon staff role picker inline)
+  - DJ Panel merged its "enter name" and "pick location" screens into one — tap a preset name (or type one) + tap a location and both `/api/dj/login` + `/api/dj/checkin` fire together
+  - LinkTreeHomePage no longer auto-opens the legacy WelcomePopup modal
+  - Tested: 10/10 frontend flows pass (iteration_51)
 
 
 
