@@ -364,147 +364,185 @@ const DJPanelPage = () => {
   };
 
   // Get locations where this DJ is scheduled
-  const scheduledLocations = [...new Set(mySchedule.map(s => s.location_slug))];
+  const scheduledLocations = djProfile
+    ? [...new Set(mySchedule.map(s => s.location_slug))]
+    : [];
 
-  // LOGIN SCREEN
-  if (!djProfile) {
+  // Combined login + check-in handler
+  const handleLoginAndCheckIn = async (loginName, locSlug) => {
+    const trimmed = (loginName || '').trim();
+    if (!trimmed || !locSlug) return;
+    setLogging(true);
+    try {
+      // 1) Login (creates/loads DJ profile)
+      const loginRes = await fetch(`${API_URL}/api/dj/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: trimmed })
+      });
+      const profile = await loginRes.json();
+      // 2) Check in at location
+      await fetch(`${API_URL}/api/dj/checkin/${profile.id}?location_slug=${locSlug}`, { method: 'POST' });
+      const updated = { ...profile, current_location: locSlug };
+      setDjProfile(updated);
+      setCheckedInLocation(locSlug);
+      localStorage.setItem('ff_dj_profile', JSON.stringify(updated));
+    } catch (e) { console.error(e); }
+    finally { setLogging(false); }
+  };
+
+  // COMBINED CHECK-IN SCREEN (name + location on one page)
+  if (!djProfile || !checkedInLocation) {
+    // If already logged in (djProfile), lock name field to that identity
+    const effectiveName = djProfile ? (djProfile.stage_name || djProfile.name) : djName;
+    const hasName = !!(djProfile || djName.trim());
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4" data-testid="dj-login">
-        <Card className="bg-slate-900 border-slate-700 w-full max-w-sm">
-          <CardContent className="p-6 text-center">
-            <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Mic className="w-8 h-8 text-red-400" />
-            </div>
-            <h1 className="text-2xl font-bold text-white mb-1">DJ Check-In</h1>
-            <p className="text-slate-400 text-sm mb-5">Select your name or enter it below</p>
-
-            {/* Scheduled DJ names as buttons */}
-            {scheduledNames.length > 0 && (
-              <div className="flex flex-wrap gap-2 justify-center mb-4">
-                {scheduledNames.map(name => (
-                  <button
-                    key={name}
-                    onClick={() => handleLogin(name)}
-                    disabled={logging}
-                    className="px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm hover:bg-red-600 hover:border-red-600 transition-colors"
-                    data-testid={`dj-select-${name.replace(/\s/g, '-')}`}
-                  >
-                    {name}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            <div className="border-t border-slate-800 pt-4">
-              <p className="text-slate-500 text-xs mb-3">Or enter a different name:</p>
-              <form onSubmit={e => { e.preventDefault(); handleLogin(); }} className="flex gap-2">
-                <Input
-                  value={djName}
-                  onChange={e => setDjName(e.target.value)}
-                  placeholder="DJ name"
-                  className="bg-slate-800 border-slate-700 text-white text-sm"
-                  data-testid="dj-name-input"
-                />
-                <Button
-                  type="submit"
-                  disabled={!djName.trim() || logging}
-                  className="bg-red-600 hover:bg-red-700 text-white"
-                  data-testid="dj-login-btn"
-                >
-                  Go
-                </Button>
-              </form>
-            </div>
-
-            <button onClick={() => navigate('/')} className="text-slate-500 text-xs mt-4 hover:text-slate-300">
-              Back to Home
+      <div className="min-h-screen bg-black p-4 flex items-start justify-center" data-testid="dj-checkin">
+        <div className="w-full max-w-md pt-8">
+          <div className="flex items-center justify-between mb-5">
+            <button onClick={() => navigate('/')} className="text-slate-400 hover:text-white text-sm flex items-center gap-1" data-testid="dj-back-home">
+              ← Home
             </button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // LOCATION SELECT SCREEN
-  if (!checkedInLocation) {
-    return (
-      <div className="min-h-screen bg-black p-4" data-testid="dj-location-select">
-        <div className="max-w-md mx-auto">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-xl font-bold text-white">Hey, {djProfile.stage_name || djProfile.name}</h1>
-              <p className="text-slate-400 text-sm">Select your location to check in</p>
-            </div>
-            <Button variant="ghost" onClick={handleLogout} className="text-slate-400 hover:text-red-400" data-testid="dj-logout-btn">
-              <LogOut className="w-5 h-5" />
-            </Button>
+            {djProfile && (
+              <Button variant="ghost" size="sm" onClick={handleLogout} className="text-slate-400 hover:text-red-400" data-testid="dj-logout-btn">
+                <LogOut className="w-4 h-4 mr-1" /> Switch DJ
+              </Button>
+            )}
           </div>
 
-          {/* My Schedule Summary */}
-          {mySchedule.length > 0 && (
-            <Card className="bg-slate-900 border-slate-800 mb-4">
-              <CardContent className="p-4">
-                <h3 className="text-sm font-semibold text-slate-400 mb-2 flex items-center gap-1">
-                  <Calendar className="w-3 h-3" /> Your Schedule This Week
-                </h3>
-                <div className="space-y-1">
-                  {mySchedule.map((s, i) => (
-                    <div key={`sched-${i}`} className="flex items-center justify-between text-sm">
-                      <span className="text-white">{s.day_of_week}</span>
-                      <span className="text-slate-400">{locationName(s.location_slug)} • {s.time_slot}</span>
-                    </div>
-                  ))}
+          <Card className="bg-slate-900 border-slate-800">
+            <CardContent className="p-6">
+              <div className="text-center mb-5">
+                <div className="w-14 h-14 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Mic className="w-7 h-7 text-red-400" />
                 </div>
-              </CardContent>
-            </Card>
-          )}
+                <h1 className="text-2xl font-bold text-white mb-1">DJ Check-In</h1>
+                <p className="text-slate-400 text-sm">Enter your name and pick a location — both in one step.</p>
+              </div>
 
-          {/* Scheduled locations first, then all others */}
-          <div className="space-y-2">
-            {scheduledLocations.length > 0 && (
-              <p className="text-xs text-slate-500 uppercase tracking-wide px-1">Your Locations</p>
-            )}
-            {locations
-              .filter(loc => scheduledLocations.includes(loc.slug))
-              .map(loc => {
-                const locSchedule = mySchedule.filter(s => s.location_slug === loc.slug);
-                return (
-                  <button
-                    key={loc.slug}
-                    onClick={() => handleCheckIn(loc.slug)}
-                    className="w-full flex items-center gap-3 bg-slate-900 border border-red-500/30 rounded-xl p-4 text-left hover:border-red-500/60 transition-colors"
-                    data-testid={`dj-loc-${loc.slug}`}
-                  >
-                    <MapPin className="w-5 h-5 text-red-400 flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <span className="text-white block">{loc.name}</span>
-                      <span className="text-xs text-slate-500">
-                        {locSchedule.map(s => `${s.day_of_week} ${s.time_slot}`).join(' | ')}
-                      </span>
+              {/* DJ NAME */}
+              <div className="mb-4">
+                <label className="text-slate-400 text-xs uppercase tracking-wide mb-1.5 block">DJ Name</label>
+                {djProfile ? (
+                  <div className="flex items-center justify-between h-10 px-3 rounded-md bg-slate-800/60 border border-slate-700">
+                    <span className="text-white text-sm font-medium">{effectiveName}</span>
+                    <button onClick={handleLogout} className="text-red-400 text-xs" data-testid="dj-change-name-btn">Change</button>
+                  </div>
+                ) : (
+                  <>
+                    {scheduledNames.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mb-2">
+                        {scheduledNames.map(n => (
+                          <button
+                            key={n}
+                            onClick={() => setDjName(n)}
+                            className={`px-2.5 py-1 rounded-md text-xs border transition-colors ${
+                              djName === n
+                                ? 'bg-red-600 border-red-500 text-white'
+                                : 'bg-slate-800 border-slate-700 text-slate-300 hover:border-slate-600'
+                            }`}
+                            data-testid={`dj-select-${n.replace(/\s/g, '-')}`}
+                          >
+                            {n}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    <Input
+                      value={djName}
+                      onChange={(e) => setDjName(e.target.value)}
+                      placeholder="Or type a name…"
+                      className="bg-slate-800 border-slate-700 text-white text-sm h-10"
+                      data-testid="dj-name-input"
+                    />
+                  </>
+                )}
+              </div>
+
+              {/* LOCATION */}
+              <div className="mb-4">
+                <label className="text-slate-400 text-xs uppercase tracking-wide mb-1.5 block">Location</label>
+
+                {scheduledLocations.length > 0 && (
+                  <p className="text-[10px] text-slate-500 uppercase tracking-wide mb-1">Your Locations</p>
+                )}
+                <div className="space-y-1.5 mb-2">
+                  {locations.filter(l => scheduledLocations.includes(l.slug)).map(loc => {
+                    const locSchedule = mySchedule.filter(s => s.location_slug === loc.slug);
+                    return (
+                      <button
+                        key={loc.slug}
+                        onClick={() => handleLoginAndCheckIn(effectiveName, loc.slug)}
+                        disabled={!hasName || logging}
+                        className="w-full flex items-center gap-2.5 bg-slate-800/50 border border-red-500/30 rounded-lg p-3 text-left hover:border-red-500/60 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                        data-testid={`dj-loc-${loc.slug}`}
+                      >
+                        <MapPin className="w-4 h-4 text-red-400 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <span className="text-white text-sm block">{loc.name?.replace('Fin & Feathers - ', '')}</span>
+                          {locSchedule.length > 0 && (
+                            <span className="text-[10px] text-slate-500">
+                              {locSchedule.map(s => `${s.day_of_week} ${s.time_slot}`).join(' | ')}
+                            </span>
+                          )}
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-red-400 flex-shrink-0" />
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {locations.filter(l => !scheduledLocations.includes(l.slug)).length > 0 && (
+                  <>
+                    <p className="text-[10px] text-slate-500 uppercase tracking-wide mb-1 mt-3">Other Locations</p>
+                    <div className="space-y-1.5">
+                      {locations.filter(l => !scheduledLocations.includes(l.slug)).map(loc => (
+                        <button
+                          key={loc.slug}
+                          onClick={() => handleLoginAndCheckIn(effectiveName, loc.slug)}
+                          disabled={!hasName || logging}
+                          className="w-full flex items-center gap-2.5 bg-slate-800/40 border border-slate-700 rounded-lg p-3 text-left hover:border-slate-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                          data-testid={`dj-loc-${loc.slug}`}
+                        >
+                          <MapPin className="w-4 h-4 text-slate-500 flex-shrink-0" />
+                          <span className="text-white text-sm flex-1">{loc.name?.replace('Fin & Feathers - ', '')}</span>
+                          <ChevronRight className="w-4 h-4 text-slate-600 flex-shrink-0" />
+                        </button>
+                      ))}
                     </div>
-                    <ChevronRight className="w-4 h-4 text-red-400" />
-                  </button>
-                );
-              })}
+                  </>
+                )}
+              </div>
 
-            {locations.filter(loc => !scheduledLocations.includes(loc.slug)).length > 0 && (
-              <p className="text-xs text-slate-500 uppercase tracking-wide px-1 mt-4">Other Locations</p>
-            )}
-            {locations
-              .filter(loc => !scheduledLocations.includes(loc.slug))
-              .map(loc => (
-                <button
-                  key={loc.slug}
-                  onClick={() => handleCheckIn(loc.slug)}
-                  className="w-full flex items-center gap-3 bg-slate-900 border border-slate-800 rounded-xl p-4 text-left hover:border-slate-600 transition-colors"
-                  data-testid={`dj-loc-${loc.slug}`}
-                >
-                  <MapPin className="w-5 h-5 text-slate-500 flex-shrink-0" />
-                  <span className="text-white flex-1">{loc.name}</span>
-                  <ChevronRight className="w-4 h-4 text-slate-600" />
-                </button>
-              ))}
-          </div>
+              {!hasName && (
+                <p className="text-slate-500 text-xs text-center mt-2" data-testid="dj-hint-name-first">
+                  Enter your DJ name above, then tap a location to check in.
+                </p>
+              )}
+              {logging && (
+                <p className="text-red-400 text-xs text-center mt-2 flex items-center justify-center gap-1.5">
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Checking you in…
+                </p>
+              )}
+
+              {/* Schedule preview when logged in */}
+              {djProfile && mySchedule.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-slate-800">
+                  <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2 flex items-center gap-1">
+                    <Calendar className="w-3 h-3" /> Your Schedule This Week
+                  </h3>
+                  <div className="space-y-1">
+                    {mySchedule.map((s, i) => (
+                      <div key={`sched-${i}`} className="flex items-center justify-between text-xs">
+                        <span className="text-white">{s.day_of_week}</span>
+                        <span className="text-slate-400">{locationName(s.location_slug)} • {s.time_slot}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     );

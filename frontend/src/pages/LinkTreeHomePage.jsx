@@ -901,13 +901,9 @@ const LinkTreeHomePage = () => {
     toast({ title: 'Reordered', description: 'Image order updated. Click "Save Changes" to persist.' });
   };
 
-  // Show the welcome popup only when the user visits /login (or explicitly requests it).
-  // The homepage no longer auto-pops the modal.
-  useEffect(() => {
-    if (location.pathname === '/login') {
-      setShowWelcomePopup(true);
-    }
-  }, [location.pathname]);
+  // /login now renders the unified CheckInPage — the homepage never auto-opens
+  // the legacy WelcomePopup modal anymore. Manual triggers (e.g. header buttons)
+  // can still call setShowWelcomePopup(true) if needed.
 
   // PWA Install detection
   useEffect(() => {
