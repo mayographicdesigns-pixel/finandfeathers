@@ -1357,22 +1357,6 @@ const LinkTreeHomePage = () => {
       )}
 
       <div className={`max-w-2xl mx-auto ${isAdmin ? 'pt-12' : ''}`}>
-        {/* Log In / Sign Up quick access — top-right corner, hidden if user already has a profile */}
-        {!localStorage.getItem('ff_user_profile_id') && !isAdmin && (
-          <div className="fixed top-3 right-3 z-30">
-            <Button
-              onClick={() => navigate('/login')}
-              variant="ghost"
-              size="sm"
-              className="text-white/90 hover:text-white bg-black/60 hover:bg-black/80 h-9 px-3 rounded-full text-xs font-semibold backdrop-blur-md border border-white/20 shadow-lg"
-              data-testid="header-login-btn"
-              title="Log In / Sign Up"
-            >
-              <LogIn className="w-4 h-4 mr-1.5" />
-              Log In
-            </Button>
-          </div>
-        )}
         {/* Logo/Header */}
         <div className="text-center mb-8 relative group">
           {editMode && (
@@ -1480,24 +1464,14 @@ const LinkTreeHomePage = () => {
             Order Online
           </Button>
 
-          {/* Check In ! / My Account */}
+          {/* Check In */}
           <Button
-            onClick={() => {
-              const profileId = localStorage.getItem('ff_user_profile_id');
-              const userLocation = localStorage.getItem('ff_user_location');
-              if (profileId && userLocation) {
-                navigate(`/social/${userLocation}`);
-              } else if (profileId) {
-                navigate(`/social/${locations[0]?.slug || 'midtown'}`);
-              } else {
-                navigate('/account');
-              }
-            }}
+            onClick={() => navigate('/checkin')}
             className="w-full bg-red-600 hover:bg-red-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
-            data-testid="my-account-btn"
+            data-testid="checkin-btn"
           >
             <User className="w-5 h-5 mr-2" />
-            {localStorage.getItem('ff_user_profile_id') ? 'Check In !' : 'My Account'}
+            Check In
           </Button>
 
           {/* DJ IS LIVE STREAMING banner */}
