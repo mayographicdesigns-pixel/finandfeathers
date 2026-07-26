@@ -119,6 +119,8 @@ routes/
 - [x] **Homepage Check-In consolidation** — removed the tiny top-right "Log In" pill and replaced the mixed "My Account / Check In !" button with a single big red **Check In** button (matches Select Location / Order Online styling). Routes to `/checkin` regardless of sign-in state. iteration_58, 5/5 pass.
 - [x] **Live Check-In Counter Badge** — the homepage Check In button now shows a small live pill (`data-testid=checkin-count-badge`) with the total number of currently-checked-in guests across every location. Pill has a pulsing white dot for live-feel. Backend endpoint `GET /api/checkins/count[?location_slug=X]` returns the count after purging expired check-ins. Polls every 30s. iteration_59, 100% pass (5/5 backend, 3/3 frontend).
 - [x] **Prominent "END LIVE" button** — the LiveKit PublisherControls previously had the stop control as a tiny X icon inside a 4-col grid. Refactored to a 3-col icon row (mic / cam / flip) with a full-width red "END LIVE" button below. Guests who joined the stage see the same button labeled "Leave Stage" (isHost=false). iteration_60, 100% pass.
+- [x] **Confirm End Live** — DJ host taps END LIVE → an inline red-tinted mini-dialog appears with "Keep Broadcasting / End Live" so a fat-finger doesn't kill a set. Guest publishers still get one-tap Leave Stage. iteration_61, 100% pass.
+
 
 
 
