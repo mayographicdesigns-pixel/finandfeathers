@@ -3,7 +3,7 @@ import { Card, CardContent } from '../ui/card';
 import { Button } from '../ui/button';
 import {
   Radio, MapPin, LogOut, X, RefreshCw, Music,
-  Mic, Circle, UserCheck, ChevronDown
+  Mic, Circle, UserCheck, ChevronDown, AlertTriangle, Send
 } from 'lucide-react';
 import { toast } from '../../hooks/use-toast';
 
@@ -132,6 +132,36 @@ const DJControlTab = () => {
   const activeDjs = djs.filter(dj => !!dj.current_location);
   const offlineDjs = djs.filter(dj => !dj.current_location);
 
+  // ---- Emergency Broadcast ----
+  const [ebMessage, setEbMessage] = useState('');
+  const [ebAuthor, setEbAuthor] = useState('Fin & Feathers Management');
+  const [ebSending, setEbSending] = useState(false);
+  const [ebConfirm, setEbConfirm] = useState(false);
+
+  const sendEmergencyBroadcast = async () => {
+    const msg = ebMessage.trim();
+    if (!msg) return;
+    setEbSending(true);
+    try {
+      const token = localStorage.getItem('admin_token');
+      const res = await fetch(`${API_URL}/api/admin/wall/emergency-broadcast`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token ? `Bearer ${token}` : ''
+        },
+        body: JSON.stringify({ content: msg, author_name: ebAuthor.trim() || undefined })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Broadcast failed');
+      toast({ title: 'Emergency broadcast sent', description: `Delivered to ${data.count} locations.` });
+      setEbMessage('');
+      setEbConfirm(false);
+    } catch (e) {
+      toast({ title: 'Broadcast failed', description: e.message, variant: 'destructive' });
+    } finally { setEbSending(false); }
+  };
+
   if (loading) {
     return (
       <div className="text-center py-12 text-slate-400" data-testid="dj-control-loading">Loading DJs…</div>
@@ -160,6 +190,69 @@ const DJControlTab = () => {
           <RefreshCw className="w-4 h-4 mr-1.5" /> Refresh
         </Button>
       </div>
+
+      {/* Emergency Broadcast */}
+      <Card className="bg-gradient-to-br from-amber-950/40 to-red-950/40 border-amber-500/30" data-testid="emergency-broadcast-card">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <AlertTriangle className="w-5 h-5 text-amber-400" />
+            <h3 className="text-white font-semibold">Emergency Broadcast</h3>
+            <span className="text-[10px] text-amber-300/70 uppercase tracking-wide ml-auto">Admin-only · fans out to every location</span>
+          </div>
+          <input
+            type="text"
+            value={ebAuthor}
+            onChange={(e) => setEbAuthor(e.target.value)}
+            placeholder="Author name (default: Fin & Feathers Management)"
+            className="w-full bg-slate-900/70 border border-slate-700 rounded-md h-9 px-3 text-white text-xs mb-2 focus:border-amber-500/50 focus:outline-none"
+            data-testid="emergency-author-input"
+          />
+          <textarea
+            value={ebMessage}
+            onChange={(e) => setEbMessage(e.target.value)}
+            placeholder="e.g. Free shots at Edgewood in 10 min!"
+            maxLength={500}
+            rows={2}
+            className="w-full bg-slate-900/70 border border-slate-700 rounded-md p-3 text-white text-sm mb-3 focus:border-amber-500/50 focus:outline-none resize-none"
+            data-testid="emergency-message-input"
+          />
+          <div className="flex items-center justify-between">
+            <span className="text-slate-500 text-[10px]">{ebMessage.length}/500</span>
+            {ebConfirm ? (
+              <div className="flex gap-2" data-testid="emergency-confirm-row">
+                <Button
+                  onClick={() => setEbConfirm(false)}
+                  size="sm"
+                  variant="outline"
+                  className="border-slate-700 text-slate-300 hover:bg-slate-800 h-9"
+                  data-testid="emergency-cancel-btn"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={sendEmergencyBroadcast}
+                  disabled={ebSending}
+                  size="sm"
+                  className="bg-red-600 hover:bg-red-700 text-white h-9 font-semibold"
+                  data-testid="emergency-confirm-send-btn"
+                >
+                  {ebSending ? 'Sending…' : 'Confirm Broadcast'}
+                </Button>
+              </div>
+            ) : (
+              <Button
+                onClick={() => setEbConfirm(true)}
+                disabled={!ebMessage.trim()}
+                size="sm"
+                className="bg-amber-600 hover:bg-amber-700 text-white h-9 font-semibold disabled:opacity-40"
+                data-testid="emergency-broadcast-btn"
+              >
+                <Send className="w-3.5 h-3.5 mr-1.5" /> Broadcast to All Locations
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* On Shift */}
       <section>

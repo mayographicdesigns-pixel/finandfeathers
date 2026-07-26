@@ -428,3 +428,56 @@ async def system_cleanup_old_posts(api_key: str = None):
         "deleted_count": result.deleted_count,
         "cleanup_time": datetime.now(timezone.utc).isoformat()
     }
+
+
+
+# ==================== EMERGENCY BROADCAST ====================
+
+@router.post("/admin/wall/emergency-broadcast")
+async def admin_emergency_broadcast(body: dict, username: str = Depends(get_current_admin)):
+    """Admin-only fan-out post: drops one wall_posts entry into every active
+    non-hibachi location, tagged as an emergency broadcast. Uses the same
+    broadcast_id linkage as DJ broadcasts."""
+    content = (body.get("content") or "").strip()
+    if not content:
+        raise HTTPException(status_code=400, detail="Message content is required")
+    if len(content) > 500:
+        raise HTTPException(status_code=400, detail="Message is too long (max 500 chars)")
+
+    author_name = (body.get("author_name") or "Fin & Feathers Management").strip()
+    active_locs = await db.locations.find(
+        {"is_active": True, "slug": {"$ne": "hibachi-food-truck"}},
+        {"_id": 0, "slug": 1}
+    ).to_list(length=50)
+    if not active_locs:
+        raise HTTPException(status_code=404, detail="No active locations to broadcast to")
+
+    broadcast_id = str(uuid.uuid4())
+    now = datetime.now(timezone.utc).isoformat()
+    inserted = []
+    for loc in active_locs:
+        slug = loc.get("slug")
+        if not slug:
+            continue
+        post = {
+            "id": str(uuid.uuid4()),
+            "location_slug": slug,
+            "user_id": f"admin-{username}",
+            "user_name": author_name,
+            "user_avatar": "📣",
+            "user_photo": "",
+            "post_type": "text",
+            "content": content,
+            "image_url": None,
+            "likes": [],
+            "comments": [],
+            "broadcast_id": broadcast_id,
+            "is_broadcast": True,
+            "is_emergency": True,
+            "created_at": now
+        }
+        await db.wall_posts.insert_one(post)
+        post.pop("_id", None)
+        inserted.append(post)
+
+    return {"broadcast_id": broadcast_id, "count": len(inserted), "emergency": True}

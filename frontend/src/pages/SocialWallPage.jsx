@@ -6,7 +6,7 @@ import { Card, CardContent } from '../components/ui/card';
 import {
   MessageCircle, Heart, Send, Image, Music, Megaphone, ArrowLeft,
   Settings, Users, Hash, Mail, MoreHorizontal, Trash2, X, Camera, Loader2, ChevronLeft, Bell,
-  Radio, Calendar, Clock, Mic2, Video, MapPin
+  Radio, Calendar, Clock, Mic2, Video, MapPin, AlertTriangle
 } from 'lucide-react';
 import { locations } from '../mockData';
 import { formatTimeInTz, formatScheduleDate, timeAgoInTz, getTzAbbreviation, getCurrentLocalTime } from '../utils/timezone';
@@ -339,12 +339,12 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar, userPhoto, djStat
                       <span className="text-white text-sm font-medium truncate">{post.user_name}</span>
                       {post.is_broadcast && (
                         <span
-                          className="inline-flex items-center gap-0.5 bg-red-600 text-white text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full shrink-0"
-                          title="Broadcast to all locations"
-                          data-testid="post-broadcast-badge"
+                          className={`inline-flex items-center gap-0.5 ${post.is_emergency ? 'bg-amber-500' : 'bg-red-600'} text-white text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full shrink-0`}
+                          title={post.is_emergency ? 'Emergency broadcast' : 'Broadcast to all locations'}
+                          data-testid={post.is_emergency ? 'post-emergency-badge' : 'post-broadcast-badge'}
                         >
-                          <Megaphone className="w-2.5 h-2.5" />
-                          Broadcast
+                          {post.is_emergency ? <AlertTriangle className="w-2.5 h-2.5" /> : <Megaphone className="w-2.5 h-2.5" />}
+                          {post.is_emergency ? 'Emergency' : 'Broadcast'}
                         </span>
                       )}
                       <LocationTag slug={post.location_slug} />
