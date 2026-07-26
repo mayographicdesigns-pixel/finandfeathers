@@ -111,10 +111,11 @@ routes/
   - DJ Panel merged its "enter name" and "pick location" screens into one — tap a preset name (or type one) + tap a location and both `/api/dj/login` + `/api/dj/checkin` fire together
   - LinkTreeHomePage no longer auto-opens the legacy WelcomePopup modal
   - Tested: 10/10 frontend flows pass (iteration_51)
-- [x] **DJ Unified Wall View** — DJs see the check-in wall for ALL locations merged into one wall. Each post/chat/DM/user shows a small location tag next to the name so the DJ knows where the message came from.
+- [x] **DJ Unified Wall View → Universal Unified Wall** — the check-in wall is now merged across ALL locations for every user (guests + DJs). Location tags render next to every name so users always know which spot each post/message/DM came from.
   - Backend: `/api/wall/posts/all`, `/api/wall/chat/all`, `/api/wall/users/all` return items across every location. DM messages now store `from_location_slug` and `to_location_slug`; conversations pipeline projects `partner_location_slug`.
-  - Frontend: new `LocationTag` component; `SocialWallPage` derives `isDJ` from `userProfile.is_dj` and passes it to Feed/Chat/DMs tabs — DJ mode swaps the fetch slug to `all` and renders the tag next to each name.
-  - Tested: backend 9/9 pass, frontend Playwright confirms DJ sees tags across 4 locations while guests see zero tags (iteration_53, 100%).
+  - Frontend: `SocialWallPage` FeedTab/ChatTab/DMs always hit `/wall/*/all`; `LocationTag` renders unconditionally next to every name. Guests still POST to their currently-checked-in location.
+  - Broadcast toggle remains DJ-only.
+  - Tested: iteration_53 (DJ view), iteration_55 (universal for guests) — 100%.
 - [x] **Post-to-All-Locations Broadcast** — DJs can toggle "Reply to all locations" on the feed composer. A single post fans out to every active Fin & Feathers feed (currently 8 non-hibachi locations), each tagged with a red BROADCAST badge and linked by a shared `broadcast_id`.
   - Backend: `POST /api/wall/posts` accepts `broadcast_all`; validates either `dj_profiles.id` OR `user_profiles` with role/staff_title='dj'. Fans out gallery items for photo broadcasts too. 403 for non-DJs.
   - Frontend: FeedTab shows the toggle only when `isDJ`; broadcast payload uses `ff_dj_profile.id` so guest-shell IDs don't trigger a 403. Green success toast + red BROADCAST badge on broadcasted posts.
