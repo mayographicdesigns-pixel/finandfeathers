@@ -369,7 +369,10 @@ const MyAccountPage = () => {
         instagram_handle: editedProfile.instagram_handle,
         facebook_handle: editedProfile.facebook_handle,
         twitter_handle: editedProfile.twitter_handle,
-        tiktok_handle: editedProfile.tiktok_handle
+        tiktok_handle: editedProfile.tiktok_handle,
+        // Role: 'guest' or one of the staff titles chosen in the profile
+        role: editedProfile.role || 'guest',
+        staff_title: (editedProfile.role && editedProfile.role !== 'guest') ? editedProfile.role : (editedProfile.staff_title || '')
       });
       setProfile(updated);
       setEditedProfile(updated);
@@ -1075,6 +1078,54 @@ const MyAccountPage = () => {
                   ) : (
                     <p className="text-white">{profile.email || 'Not set'}</p>
                   )}
+                </div>
+
+                {/* My Role — Guest or Staff position */}
+                <div data-testid="profile-role-section">
+                  <label className="text-sm text-slate-400 block mb-1">My Role</label>
+                  {isEditing ? (
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { id: 'guest', label: 'Guest' },
+                        { id: 'dj', label: 'DJ' },
+                        { id: 'bartender', label: 'Bartender' },
+                        { id: 'server', label: 'Server' },
+                        { id: 'cook', label: 'Cook' },
+                        { id: 'manager', label: 'Manager' },
+                      ].map(opt => {
+                        const active = (editedProfile?.role || 'guest') === opt.id
+                          || (opt.id !== 'guest' && editedProfile?.staff_title === opt.id);
+                        return (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            onClick={() => setEditedProfile(prev => ({
+                              ...prev,
+                              role: opt.id,
+                              staff_title: opt.id === 'guest' ? '' : opt.id,
+                            }))}
+                            className={`h-10 rounded-md border text-xs font-medium transition-colors ${
+                              active
+                                ? 'bg-red-600 border-red-500 text-white'
+                                : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:border-slate-600'
+                            }`}
+                            data-testid={`role-option-${opt.id}`}
+                          >
+                            {opt.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-white capitalize">
+                      {profile.role === 'staff'
+                        ? (profile.staff_title || 'Staff')
+                        : (profile.role || 'Guest')}
+                    </p>
+                  )}
+                  <p className="text-slate-500 text-[11px] mt-1">
+                    Staff DJs are automatically routed to the DJ Panel after check-in.
+                  </p>
                 </div>
 
                 {/* Birthdate */}

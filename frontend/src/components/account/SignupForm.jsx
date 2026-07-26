@@ -4,7 +4,7 @@ import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
 import { toast } from '../../hooks/use-toast';
-import { initiateGoogleLogin, registerUserWithPassword, loginUserWithPassword, adminLogin, requestPasswordReset } from '../../services/api';
+import { initiateGoogleLogin, registerUserWithPassword, loginUserWithPassword, adminLogin, requestPasswordReset, getUserProfileByEmail, createUserProfile } from '../../services/api';
 
 // Signup Form Component - allows creating account with Google or email/password
 const SignupForm = ({ onProfileCreated, authError }) => {
@@ -281,57 +281,18 @@ const SignupForm = ({ onProfileCreated, authError }) => {
               </div>
             )}
 
-            {/* Email Signup Form */}
+            {/* Simple Signup Form — name + email + phone, no password */}
             {authMode === 'signup' && (
-              <form onSubmit={handleEmailSignup} className="space-y-4">
+              <form onSubmit={handleQuickSignup} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Username *</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Name *</label>
                   <Input
                     type="text"
-                    placeholder="Choose a username"
-                    value={formData.username}
-                    onChange={(e) => setFormData({ ...formData, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '') })}
-                    className="bg-slate-800 border-slate-700 text-white"
-                    required
-                    data-testid="signup-username-input"
-                  />
-                  <p className="text-slate-500 text-xs mt-1">Letters, numbers, and underscores only</p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Password *</label>
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Min 6 characters"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="bg-slate-800 border-slate-700 text-white"
-                    required
-                    data-testid="signup-password-input"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Confirm Password *</label>
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Confirm your password"
-                    value={formData.confirmPassword}
-                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    className="bg-slate-800 border-slate-700 text-white"
-                    required
-                    data-testid="signup-confirm-password-input"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Display Name</label>
-                  <Input
-                    type="text"
-                    placeholder="Your name (optional)"
+                    placeholder="Your name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="bg-slate-800 border-slate-700 text-white"
+                    required
                     data-testid="signup-name-input"
                   />
                 </div>
@@ -340,36 +301,26 @@ const SignupForm = ({ onProfileCreated, authError }) => {
                   <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
                   <Input
                     type="email"
-                    placeholder="you@example.com (optional)"
+                    placeholder="you@example.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="bg-slate-800 border-slate-700 text-white"
                     data-testid="signup-email-input"
                   />
+                  <p className="text-slate-500 text-xs mt-1">Optional — used to remember you next time</p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">Phone Number</label>
                   <Input
                     type="tel"
-                    placeholder="(555) 555-5555 (optional)"
+                    placeholder="(555) 555-5555"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="bg-slate-800 border-slate-700 text-white"
                     data-testid="signup-phone-input"
                   />
-                </div>
-
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="show-password"
-                    checked={showPassword}
-                    onChange={(e) => setShowPassword(e.target.checked)}
-                    className="mr-2"
-                    data-testid="signup-show-password-toggle"
-                  />
-                  <label htmlFor="show-password" className="text-slate-400 text-sm">Show password</label>
+                  <p className="text-slate-500 text-xs mt-1">Optional</p>
                 </div>
 
                 <Button
@@ -382,7 +333,7 @@ const SignupForm = ({ onProfileCreated, authError }) => {
                 </Button>
 
                 <p className="text-center text-slate-400 text-sm mt-4">
-                  <button 
+                  <button
                     type="button"
                     onClick={() => setAuthMode('options')}
                     className="text-red-400 hover:text-red-300"
