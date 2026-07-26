@@ -118,6 +118,8 @@ routes/
 - [x] **Passwordless Email Magic-Link Sign-In** — returning users can tap "Email me a sign-in link instead" on the check-in page; a real email is delivered via Hostinger SMTP with a `/auth/verify?token=…` link. Single click signs them into their profile and routes to `/dj` (staff DJ) or `/checkin` (guest). Tokens are single-use with a 30-minute TTL.
 - [x] **Homepage Check-In consolidation** — removed the tiny top-right "Log In" pill and replaced the mixed "My Account / Check In !" button with a single big red **Check In** button (matches Select Location / Order Online styling). Routes to `/checkin` regardless of sign-in state. iteration_58, 5/5 pass.
 - [x] **Live Check-In Counter Badge** — the homepage Check In button now shows a small live pill (`data-testid=checkin-count-badge`) with the total number of currently-checked-in guests across every location. Pill has a pulsing white dot for live-feel. Backend endpoint `GET /api/checkins/count[?location_slug=X]` returns the count after purging expired check-ins. Polls every 30s. iteration_59, 100% pass (5/5 backend, 3/3 frontend).
+- [x] **Prominent "END LIVE" button** — the LiveKit PublisherControls previously had the stop control as a tiny X icon inside a 4-col grid. Refactored to a 3-col icon row (mic / cam / flip) with a full-width red "END LIVE" button below. Guests who joined the stage see the same button labeled "Leave Stage" (isHost=false). iteration_60, 100% pass.
+
 
 
   - Backend: new `POST /api/auth/magic-link` (upserts profile + sends email + returns single-use token) and `POST /api/auth/magic-link/verify` (410 on reuse/expiry, 404 on invalid). Tokens stored in `magic_link_tokens` collection.
