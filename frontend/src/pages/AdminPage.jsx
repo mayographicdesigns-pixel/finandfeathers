@@ -34,7 +34,8 @@ import {
 import { PageContentTab } from '../components/admin';
 import WeeklyVideosCard from '../components/admin/WeeklyVideosCard';
 import KaraokeControlCard from '../components/admin/KaraokeControlCard';
-import { Settings, Music } from 'lucide-react';
+import DJControlTab from '../components/admin/DJControlTab';
+import { Radio, Settings, Music } from 'lucide-react';
 // Main Admin Page Component
 const AdminPage = () => {
   const navigate = useNavigate();
@@ -61,6 +62,7 @@ const AdminPage = () => {
     { id: 'careers', label: 'Careers', icon: Briefcase },
     { id: 'marietta', label: 'Marietta Waitlist', icon: MapPin },
     { id: 'dj-schedule', label: 'DJ Schedule', icon: Music },
+    { id: 'dj-control', label: 'DJ Control', icon: Radio },
     { id: 'gallery', label: 'Gallery', icon: Grid3X3 },
     { id: 'submissions', label: 'Submissions', icon: ImageUp },
     { id: 'posts', label: 'Posts', icon: MessageSquare },
@@ -180,6 +182,7 @@ const AdminPage = () => {
         {activeTab === 'notifications' && <NotificationsTab />}
         {activeTab === 'admins' && <AdminAccountsTab />}
         {activeTab === 'dj-schedule' && <DJScheduleTab />}
+        {activeTab === 'dj-control' && <DJControlTab />}
         {activeTab === 'settings' && <SettingsTab />}
       </div>
     </div>
