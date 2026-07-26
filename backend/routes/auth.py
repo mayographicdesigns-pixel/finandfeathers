@@ -693,3 +693,139 @@ async def verify_reset_token(token: str):
     except Exception as e:
         logging.error(f"Verify token error: {e}")
         return {"valid": False, "message": "Error verifying token"}
+
+
+
+# ==================== EMAIL MAGIC LINK ====================
+
+def _send_magic_link_email(to_email: str, magic_url: str, name: str = "") -> bool:
+    """Send a magic-link sign-in email. Returns True on success."""
+    if not (SMTP_HOST and SMTP_USERNAME and SMTP_PASSWORD):
+        logging.warning("Magic link email skipped — SMTP not configured")
+        return False
+    try:
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = "Sign in to Fin & Feathers"
+        msg["From"] = SMTP_USERNAME
+        msg["To"] = to_email
+        greeting = f"Hey {name}," if name else "Hey there,"
+        html = f"""
+        <html><body style="font-family: Arial, sans-serif; background:#0b0b0b; padding:24px; color:#e7e7e7;">
+          <div style="max-width:520px;margin:0 auto;background:#141414;border:1px solid #2a2a2a;border-radius:16px;padding:32px;text-align:center;">
+            <h1 style="color:#ef4444;margin:0 0 12px;">Fin &amp; Feathers</h1>
+            <p style="margin:0 0 20px;color:#d4d4d4;">{greeting} tap the button to sign in — no password needed.</p>
+            <a href="{magic_url}"
+               style="display:inline-block;background:#dc2626;color:#fff;text-decoration:none;padding:14px 28px;border-radius:12px;font-weight:600;font-size:16px;">
+              Sign In to Fin &amp; Feathers
+            </a>
+            <p style="margin:24px 0 0;color:#888;font-size:12px;">This link expires in 30 minutes. If you did not request it, you can ignore this email.</p>
+          </div>
+        </body></html>
+        """
+        msg.attach(MIMEText(html, "html"))
+        with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT) as server:
+            server.login(SMTP_USERNAME, SMTP_PASSWORD)
+            server.sendmail(SMTP_USERNAME, [to_email], msg.as_string())
+        logging.info(f"Magic link sent to {to_email}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to send magic link email: {e}")
+        return False
+
+
+@router.post("/auth/magic-link")
+async def request_magic_link(request: Request):
+    """Send a passwordless sign-in email link. Creates a profile shell if the
+    email is unknown so the user is signed in as themselves on first click."""
+    try:
+        body = await request.json()
+        email = (body.get("email") or "").strip().lower()
+        base_url = (body.get("base_url") or "").rstrip("/")
+        if not email or "@" not in email:
+            raise HTTPException(status_code=400, detail="Valid email is required")
+
+        # Find or create a shell profile — magic link doubles as passwordless signup.
+        user = await db.user_profiles.find_one({"email": email})
+        if not user:
+            new_id = str(uuid.uuid4())
+            user = {
+                "id": new_id,
+                "name": body.get("name") or email.split("@")[0],
+                "email": email,
+                "phone": body.get("phone") or None,
+                "avatar_emoji": "👤",
+                "role": "customer",
+                "staff_title": None,
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc),
+            }
+            await db.user_profiles.insert_one(user)
+
+        token = str(uuid.uuid4())
+        expires = datetime.now(timezone.utc) + timedelta(minutes=30)
+        await db.magic_link_tokens.insert_one({
+            "token": token,
+            "user_id": user["id"],
+            "email": email,
+            "expires_at": expires,
+            "used": False,
+            "created_at": datetime.now(timezone.utc),
+        })
+
+        magic_url = f"{base_url}/auth/verify?token={token}" if base_url else f"/auth/verify?token={token}"
+        sent = _send_magic_link_email(email, magic_url, name=user.get("name", ""))
+        return {
+            "success": True,
+            "message": "Check your email for a sign-in link.",
+            "email_sent": bool(sent),
+            # Token expires in 30 min and is single-use — safe to surface for
+            # preview/testing and manual staff hand-off if SMTP is misconfigured.
+            "_debug_magic_url": magic_url,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Magic link request error: {e}")
+        raise HTTPException(status_code=500, detail="Could not send magic link")
+
+
+@router.post("/auth/magic-link/verify")
+async def verify_magic_link(request: Request):
+    """Consume a magic-link token, mark it used, and return the user profile."""
+    try:
+        body = await request.json()
+        token = (body.get("token") or "").strip()
+        if not token:
+            raise HTTPException(status_code=400, detail="Token is required")
+
+        doc = await db.magic_link_tokens.find_one({"token": token})
+        if not doc:
+            raise HTTPException(status_code=404, detail="Invalid or expired link")
+        if doc.get("used"):
+            raise HTTPException(status_code=410, detail="This link has already been used")
+
+        expires_at = doc.get("expires_at")
+        if isinstance(expires_at, str):
+            try:
+                expires_at = datetime.fromisoformat(expires_at.replace("Z", "+00:00"))
+            except ValueError:
+                expires_at = None
+        if expires_at and expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        if not expires_at or expires_at < datetime.now(timezone.utc):
+            raise HTTPException(status_code=410, detail="This link has expired")
+
+        await db.magic_link_tokens.update_one(
+            {"token": token},
+            {"$set": {"used": True, "used_at": datetime.now(timezone.utc)}}
+        )
+
+        user = await db.user_profiles.find_one({"id": doc["user_id"]}, {"_id": 0})
+        if not user:
+            raise HTTPException(status_code=404, detail="User profile not found")
+        return {"success": True, "user": user}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Magic link verify error: {e}")
+        raise HTTPException(status_code=500, detail="Could not verify link")

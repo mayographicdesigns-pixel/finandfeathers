@@ -24,6 +24,8 @@ const CheckInPage = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [animateIn, setAnimateIn] = useState(false);
+  const [magicSending, setMagicSending] = useState(false);
+  const [magicStatus, setMagicStatus] = useState('');
 
   useEffect(() => {
     const t = setTimeout(() => setAnimateIn(true), 80);
@@ -100,6 +102,38 @@ const CheckInPage = () => {
       }
     })();
   }, [urlSlug]);
+
+  const handleSendMagicLink = async () => {
+    setMagicStatus('');
+    const trimmed = email.trim().toLowerCase();
+    if (!trimmed || !trimmed.includes('@')) {
+      setError('Enter your email above first');
+      return;
+    }
+    setError('');
+    setMagicSending(true);
+    try {
+      const res = await fetch(`${API_URL}/api/auth/magic-link`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: trimmed,
+          name: name.trim() || undefined,
+          phone: phone.trim() || undefined,
+          base_url: window.location.origin,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail || 'Could not send link');
+      setMagicStatus(data.email_sent
+        ? 'Check your inbox — a sign-in link is on the way.'
+        : 'Link created. Check your email (or ask staff for the sign-in URL).');
+    } catch (e) {
+      setMagicStatus(`Failed: ${e.message}`);
+    } finally {
+      setMagicSending(false);
+    }
+  };
 
   const handleSubmit = async () => {
     if (!name.trim()) { setError('Please enter your name'); return; }
@@ -328,6 +362,30 @@ const CheckInPage = () => {
                 <><UserCheck className="w-4 h-4 mr-2" />Check In</>
               )}
             </Button>
+
+            <div className="flex items-center gap-2 text-slate-600 text-[10px]">
+              <div className="flex-1 h-px bg-slate-800" />
+              <span>OR</span>
+              <div className="flex-1 h-px bg-slate-800" />
+            </div>
+
+            <button
+              type="button"
+              onClick={handleSendMagicLink}
+              disabled={magicSending || !email.trim()}
+              className="w-full text-red-400 hover:text-red-300 text-xs font-medium py-2 disabled:opacity-40 disabled:cursor-not-allowed"
+              data-testid="magic-link-btn"
+            >
+              {magicSending ? 'Sending link…' : 'Email me a sign-in link instead'}
+            </button>
+            {magicStatus && (
+              <p
+                className={`text-[11px] text-center ${magicStatus.startsWith('Failed') ? 'text-red-400' : 'text-green-400'}`}
+                data-testid="magic-link-status"
+              >
+                {magicStatus}
+              </p>
+            )}
 
             <p className="text-slate-600 text-[10px] text-center">
               Staff can set their role (DJ, bartender, server, cook, manager) in <span className="text-red-400">My Account</span> after checking in.

@@ -1,0 +1,44 @@
+{
+  "summary": "Tested new email magic-link sign-in feature. Backend: 8/8 pytest tests pass (create/reuse profile, invalid email 400, missing email 400, valid verify, reused token 410, bogus token 404, expired token 410). Frontend: 8/10 UI flows pass. Only issue: magic-link-btn is `disabled` when email input is empty, so clicking it is a no-op and the 'Enter your email above first' error never renders — this contradicts the spec but the network call is correctly NOT fired. Success icon presence assertion on /auth/verify failed due to test timing (1.2s auto-redirect races DOM query), but localStorage was correctly set AND redirect landed on /checkin, confirming the success state DID render. Real SMTP delivered (email_sent:true from Hostinger).",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "CheckInPage magic-link-btn",
+        "issue": "Spec says clicking magic-link-btn with empty email should show red error 'Enter your email above first'. Actual: button is disabled (line 375: `disabled={magicSending || !email.trim()}`) so onClick never fires and the setError branch inside handleSendMagicLink is dead code. Either remove the !email.trim() from disabled to match spec, OR delete the dead `if (!trimmed) setError(...)` guard. Network call correctly does NOT fire (spec's second half is satisfied).",
+        "selector": "[data-testid=\"magic-link-btn\"]",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_magic_link.py",
+    "/app/test_reports/pytest/magic_link_results.xml"
+  ],
+  "action_items": [
+    "Decide UX: either remove `!email.trim()` from magic-link-btn disabled prop so the setError('Enter your email above first') branch actually runs, or drop that dead-code guard. Current disabled behavior is arguably fine UX but does not match the review spec."
+  ],
+  "critical_code_review_comments": [
+    "Backend /api/auth/magic-link returns `_debug_magic_url` in the response body — safe for preview but ensure this is gated behind an env flag before production so tokens can't be scraped from response bodies.",
+    "MagicLinkVerifyPage.jsx uses `window.location.origin` as API_URL (line 6) instead of process.env.REACT_APP_BACKEND_URL — currently OK because ingress redirects /api/* to backend, but inconsistent with other pages. Prefer REACT_APP_BACKEND_URL.",
+    "magic_link_tokens collection has no index on `token` — under load a lookup will do a full collection scan. Consider `db.magic_link_tokens.create_index('token', unique=True)` and a TTL index on expires_at."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_magic_link.py (created)"
+  ],
+  "success_rate": {
+    "backend": "100%",
+    "frontend": "80% (8/10; 1 real spec mismatch + 1 timing-only test-side flake)"
+  },
+  "test_credentials": "No credentials required — magic-link is passwordless. Used auto-generated test emails (test_ui_<ts>@example.com). Real SMTP delivered (email_sent:true).",
+  "seed_data_creation": "Each test creates a shell user_profile + magic_link_tokens doc, then cleans them up in fixtures (delete by email prefix).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Magic-link backend is solid (8/8). If main agent adjusts the disabled-btn UX, retest just T1_empty_email_error. Note: MagicLinkVerifyPage auto-redirects 1.2s after success, so any Playwright assertion on magic-verify-success-icon must attach BEFORE navigation via page.wait_for_selector at fast timeout OR simply assert redirect+localStorage as success proxy (that's what we did).",
+  "rca of the issue": "Root cause of T1 failure: In /app/frontend/src/pages/CheckInPage.jsx line 375, the magic-link-btn has `disabled={magicSending || !email.trim()}`. When email is empty, the button is disabled and onClick handler handleSendMagicLink never executes, so the `setError('Enter your email above first')` guard on line 110 becomes unreachable dead code. Mitigation: pick one — (a) remove `!email.trim()` from disabled so the handler runs and shows the error, or (b) delete the unreachable guard and rely on the disabled state as the UX signal."
+}

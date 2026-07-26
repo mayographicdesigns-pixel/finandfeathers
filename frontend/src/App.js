@@ -6,6 +6,7 @@ import LocationDetailPage from "./pages/LocationDetailPage";
 import MenuPage from "./pages/MenuPage";
 import AdminPage from "./pages/AdminPage";
 import CheckInPage from "./pages/CheckInPage";
+import MagicLinkVerifyPage from "./pages/MagicLinkVerifyPage";
 import GalleryPage from "./pages/GalleryPage";
 import MyAccountPage from "./pages/MyAccountPage";
 import MerchandisePage from "./pages/MerchandisePage";
@@ -34,6 +35,7 @@ function AppRouter() {
     <Routes>
       <Route path="/" element={<LinkTreeHomePage />} />
       <Route path="/login" element={<CheckInPage />} />
+      <Route path="/auth/verify" element={<MagicLinkVerifyPage />} />
       <Route path="/locations" element={<LocationsPage />} />
       <Route path="/locations/:slug" element={<LocationDetailPage />} />
       <Route path="/menu" element={<MenuPage />} />
