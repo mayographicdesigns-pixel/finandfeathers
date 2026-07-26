@@ -114,6 +114,12 @@ routes/
 - [x] **DJ Unified Wall View → Universal Unified Wall** — the check-in wall is now merged across ALL locations for every user (guests + DJs). Location tags render next to every name so users always know which spot each post/message/DM came from.
   - Backend: `/api/wall/posts/all`, `/api/wall/chat/all`, `/api/wall/users/all` return items across every location. DM messages now store `from_location_slug` and `to_location_slug`; conversations pipeline projects `partner_location_slug`.
   - Frontend: `SocialWallPage` FeedTab/ChatTab/DMs always hit `/wall/*/all`; `LocationTag` renders unconditionally next to every name. Guests still POST to their currently-checked-in location.
+- [x] **CheckInPage / Login / SignupForm simplification** — removed the role toggle from check-in and moved it to the user profile. Check-in and signup are now the same lightweight flow (name + email + phone + location).
+  - `CheckInPage` (renders at both `/checkin` and `/login`): only asks name, optional email, optional phone, location. On submit, if email is provided the flow either logs the user into their existing profile or creates a new one — no password ever. Auto-routes to `/dj` if the saved profile has `staff_title === 'dj'`, otherwise to `/social/{slug}`.
+  - `MyAccountPage`: new "My Role" section with 6 buttons (Guest / DJ / Bartender / Server / Cook / Manager). Selecting a staff role writes `role` + `staff_title` on the profile via `PUT /api/user/profile/{id}`.
+  - `SignupForm` (email-signup mode): dropped username, password, confirm-password, show-password toggle. Now only name + email + phone. Uses the existing password-less `handleQuickSignup` path.
+  - Tested: 26/26 pass (iteration_56, 100%) — backend 6/6, frontend 20/20 including role-based routing.
+
   - Broadcast toggle remains DJ-only.
   - Tested: iteration_53 (DJ view), iteration_55 (universal for guests) — 100%.
 - [x] **Post-to-All-Locations Broadcast** — DJs can toggle "Reply to all locations" on the feed composer. A single post fans out to every active Fin & Feathers feed (currently 8 non-hibachi locations), each tagged with a red BROADCAST badge and linked by a shared `broadcast_id`.
