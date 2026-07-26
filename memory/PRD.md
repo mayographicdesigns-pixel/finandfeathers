@@ -121,6 +121,8 @@ routes/
 - [x] **Prominent "END LIVE" button** — the LiveKit PublisherControls previously had the stop control as a tiny X icon inside a 4-col grid. Refactored to a 3-col icon row (mic / cam / flip) with a full-width red "END LIVE" button below. Guests who joined the stage see the same button labeled "Leave Stage" (isHost=false). iteration_60, 100% pass.
 - [x] **Confirm End Live** — DJ host taps END LIVE → an inline red-tinted mini-dialog appears with "Keep Broadcasting / End Live" so a fat-finger doesn't kill a set. Guest publishers still get one-tap Leave Stage. iteration_61, 100% pass.
 - [x] **Admin DJ Control Tab** — new tab in the Admin Dashboard (`/dashboard` → "DJ Control") for staff to oversee every DJ from one place.
+- [x] **Emergency Broadcast (Admin)** — admins can push a one-tap message to every location's Vibe Wall from the top of the DJ Control tab (e.g. "Free shots at Edgewood in 10 min!"). New `POST /api/admin/wall/emergency-broadcast` fan-outs the post; each entry is tagged `is_emergency=true` and renders with an amber ⚠ Emergency badge (distinct from the red Megaphone DJ broadcasts). Two-step confirm UX prevents accidental fires. iteration_63, 100% pass (backend 6/6, frontend all criteria).
+
   - Sections: **On Shift** (checked-in DJs — shows live/karaoke badges + Stop Live, Karaoke toggle, Check Out buttons) and **Off Shift** (Check In button expands to a per-location picker).
   - Force-end live calls `/api/livekit/stream/stop`. Check Out clears `current_location` (and stops any active stream first). Check In posts to `/api/dj/checkin/{id}`. Karaoke posts to `/api/karaoke/toggle/{slug}`.
   - Auto-refreshes every 15 seconds; header shows counts "X on shift · Y live · Z off shift".
