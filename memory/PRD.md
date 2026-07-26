@@ -116,6 +116,8 @@ routes/
   - Frontend: `SocialWallPage` FeedTab/ChatTab/DMs always hit `/wall/*/all`; `LocationTag` renders unconditionally next to every name. Guests still POST to their currently-checked-in location.
 - [x] **CheckInPage / Login / SignupForm simplification** — removed the role toggle from check-in and moved it to the user profile. Check-in and signup are now the same lightweight flow (name + email + phone + location).
 - [x] **Passwordless Email Magic-Link Sign-In** — returning users can tap "Email me a sign-in link instead" on the check-in page; a real email is delivered via Hostinger SMTP with a `/auth/verify?token=…` link. Single click signs them into their profile and routes to `/dj` (staff DJ) or `/checkin` (guest). Tokens are single-use with a 30-minute TTL.
+- [x] **Homepage Check-In consolidation** — removed the tiny top-right "Log In" pill and replaced the mixed "My Account / Check In !" button with a single big red **Check In** button (matches Select Location / Order Online styling). Routes to `/checkin` regardless of sign-in state. iteration_58, 5/5 pass.
+
   - Backend: new `POST /api/auth/magic-link` (upserts profile + sends email + returns single-use token) and `POST /api/auth/magic-link/verify` (410 on reuse/expiry, 404 on invalid). Tokens stored in `magic_link_tokens` collection.
   - Frontend: new `MagicLinkVerifyPage` at `/auth/verify`; CheckInPage has an "Email me a sign-in link instead" link + status toast.
   - Tested: 16/18 pass (iteration_57) — backend 8/8 real SMTP delivery, frontend 8/10 (2 non-bug spec mismatches: disabled-button UX is cleaner than the spec said, and the auto-redirect happens faster than the assertion timing — both confirmed working).
