@@ -115,6 +115,10 @@ routes/
   - Backend: `/api/wall/posts/all`, `/api/wall/chat/all`, `/api/wall/users/all` return items across every location. DM messages now store `from_location_slug` and `to_location_slug`; conversations pipeline projects `partner_location_slug`.
   - Frontend: new `LocationTag` component; `SocialWallPage` derives `isDJ` from `userProfile.is_dj` and passes it to Feed/Chat/DMs tabs — DJ mode swaps the fetch slug to `all` and renders the tag next to each name.
   - Tested: backend 9/9 pass, frontend Playwright confirms DJ sees tags across 4 locations while guests see zero tags (iteration_53, 100%).
+- [x] **Post-to-All-Locations Broadcast** — DJs can toggle "Reply to all locations" on the feed composer. A single post fans out to every active Fin & Feathers feed (currently 8 non-hibachi locations), each tagged with a red BROADCAST badge and linked by a shared `broadcast_id`.
+  - Backend: `POST /api/wall/posts` accepts `broadcast_all`; validates either `dj_profiles.id` OR `user_profiles` with role/staff_title='dj'. Fans out gallery items for photo broadcasts too. 403 for non-DJs.
+  - Frontend: FeedTab shows the toggle only when `isDJ`; broadcast payload uses `ff_dj_profile.id` so guest-shell IDs don't trigger a 403. Green success toast + red BROADCAST badge on broadcasted posts.
+  - Tested: backend 5/5 pytest (test_wall_broadcast.py), frontend Playwright 7/7 (iteration_54, 100%).
 
 
 
