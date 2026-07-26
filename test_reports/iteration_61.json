@@ -1,0 +1,31 @@
+{
+  "summary": "Verified DJ END LIVE confirm mini-dialog end-to-end. All requested behaviors work as specified.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_results": {
+    "host_end_live_button": "PASS — pub-leave-btn visible with text 'End Live' after DJ goes live from camera (LiveKit connected as dj_57cae364...).",
+    "confirm_dialog_appears": "PASS — clicking pub-leave-btn shows pub-confirm-end with title 'End the live broadcast?', subtitle 'Your viewers will drop off immediately.', and buttons pub-keep-live-btn ('Keep Broadcasting') and pub-confirm-end-btn ('End Live'). pub-leave-btn is removed from DOM while confirm is shown.",
+    "keep_broadcasting_dismisses": "PASS — clicking pub-keep-live-btn hides pub-confirm-end and brings pub-leave-btn back. Zero POST /api/livekit/stream/stop calls made (verified via page.on('request') network capture).",
+    "confirm_end_live_stops_stream": "PASS — clicking pub-confirm-end-btn fires POST /api/livekit/stream/stop (1 call, 200). LiveKit disconnects, UI returns to pre-broadcast state (dj-go-live-camera-btn visible). GET /api/livekit/streams/active returns [].",
+    "regression_icon_controls": "PASS — after dismissing confirm via Keep Broadcasting, pub-toggle-mic-btn / pub-toggle-cam-btn / pub-flip-cam-btn all visible and mic toggle click succeeds.",
+    "guest_no_confirm": "PASS (code review) — StageGrid renders <PublisherControls onLeave={onLeaveStage} label=\"Leave Stage\" /> without isHost; onClick handler at line 450 is `isHost ? setConfirmEnd(true) : onLeave?.()` so guest tap calls onLeave immediately with no confirm dialog. Button label uses `{isHost ? 'End Live' : label}` = 'Leave Stage'. Not exercised in live browser due to single-session sandbox."
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "LiveKitStream.jsx still uses window.location.origin instead of process.env.REACT_APP_BACKEND_URL — carried over from prior iteration; still recommend switching for consistency.",
+    "Confirm dialog copy is good, but consider adding aria-labelledby pointing to the title <p> for slightly better a11y (currently role='alertdialog' + aria-live='assertive' only)."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "DJ Mike Johnson id 57cae364-b31f-4920-909f-fda18fc78fe6, location edgewood-atlanta (loaded via localStorage ff_dj_profile with current_location override).",
+  "seed_data_creation": "None — used existing DJ profile.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "PublisherControls now has an inline confirm mini-dialog for hosts. Selectors: pub-leave-btn (End Live for host / Leave Stage for guest), pub-confirm-end (the red-tinted dialog container), pub-keep-live-btn (cancel), pub-confirm-end-btn (confirm stop). Host click on pub-leave-btn shows confirm; only pub-confirm-end-btn triggers POST /api/livekit/stream/stop. Guests skip the confirm entirely.",
+  "rca of the issue": "N/A — feature works as specified."
+}

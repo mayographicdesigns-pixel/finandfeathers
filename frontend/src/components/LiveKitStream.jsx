@@ -331,6 +331,7 @@ const PublisherControls = ({ onLeave, label = 'Leave', isHost = false }) => {
   const { localParticipant } = useLocalParticipant();
   const [micOn, setMicOn] = useState(true);
   const [camOn, setCamOn] = useState(true);
+  const [confirmEnd, setConfirmEnd] = useState(false);
   const previewRef = useRef(null);
 
   // For DJ (host) — show a preview of their own camera at the top
@@ -418,14 +419,42 @@ const PublisherControls = ({ onLeave, label = 'Leave', isHost = false }) => {
           <RotateCw className="w-4 h-4" />
         </Button>
       </div>
-      <Button
-        onClick={onLeave}
-        className="w-full bg-red-600 hover:bg-red-700 text-white h-11 font-semibold rounded-lg"
-        data-testid="pub-leave-btn"
-      >
-        <X className="w-4 h-4 mr-2" />
-        {isHost ? 'End Live' : label}
-      </Button>
+      {confirmEnd ? (
+        <div
+          className="rounded-lg border border-red-500/40 bg-red-950/40 p-3 space-y-2"
+          data-testid="pub-confirm-end"
+          role="alertdialog"
+          aria-live="assertive"
+        >
+          <p className="text-white text-sm font-medium text-center">End the live broadcast?</p>
+          <p className="text-red-300/80 text-xs text-center">Your viewers will drop off immediately.</p>
+          <div className="grid grid-cols-2 gap-2 pt-1">
+            <Button
+              onClick={() => setConfirmEnd(false)}
+              className="bg-slate-700 hover:bg-slate-600 text-white h-10"
+              data-testid="pub-keep-live-btn"
+            >
+              Keep Broadcasting
+            </Button>
+            <Button
+              onClick={() => { setConfirmEnd(false); onLeave?.(); }}
+              className="bg-red-600 hover:bg-red-700 text-white h-10 font-semibold"
+              data-testid="pub-confirm-end-btn"
+            >
+              End Live
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <Button
+          onClick={() => isHost ? setConfirmEnd(true) : onLeave?.()}
+          className="w-full bg-red-600 hover:bg-red-700 text-white h-11 font-semibold rounded-lg"
+          data-testid="pub-leave-btn"
+        >
+          <X className="w-4 h-4 mr-2" />
+          {isHost ? 'End Live' : label}
+        </Button>
+      )}
     </div>
   );
 };
