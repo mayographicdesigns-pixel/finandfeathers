@@ -106,8 +106,9 @@ const CheckInPage = () => {
   const handleSendMagicLink = async () => {
     setMagicStatus('');
     const trimmed = email.trim().toLowerCase();
-    if (!trimmed || !trimmed.includes('@')) {
-      setError('Enter your email above first');
+    // Button is disabled when email is empty, so we only reach here with a value.
+    if (!trimmed.includes('@')) {
+      setError('Please enter a valid email');
       return;
     }
     setError('');
