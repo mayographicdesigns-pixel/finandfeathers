@@ -772,6 +772,23 @@ const LinkTreeHomePage = () => {
   
   // Welcome popup state
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+  const [checkinCount, setCheckinCount] = useState(0);
+
+  // Poll the live check-in count every 30s so the button shows social proof.
+  useEffect(() => {
+    let cancelled = false;
+    const poll = async () => {
+      try {
+        const res = await fetch(`${window.location.origin}/api/checkins/count`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled) setCheckinCount(data?.count || 0);
+      } catch (e) { console.error('checkin count poll:', e); }
+    };
+    poll();
+    const iv = setInterval(poll, 30000);
+    return () => { cancelled = true; clearInterval(iv); };
+  }, []);
 
   // Marietta waitlist state
   const [showWaitlist, setShowWaitlist] = useState(false);
@@ -1472,6 +1489,19 @@ const LinkTreeHomePage = () => {
           >
             <User className="w-5 h-5 mr-2" />
             Check In
+            {checkinCount > 0 && (
+              <span
+                className="ml-2 inline-flex items-center gap-1 bg-white/20 text-white text-xs font-bold px-2 py-0.5 rounded-full backdrop-blur-sm"
+                data-testid="checkin-count-badge"
+                title={`${checkinCount} people checked in right now`}
+              >
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white" />
+                </span>
+                {checkinCount}
+              </span>
+            )}
           </Button>
 
           {/* DJ IS LIVE STREAMING banner */}

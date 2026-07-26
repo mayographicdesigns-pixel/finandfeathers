@@ -56,6 +56,17 @@ async def check_in(checkin_data: CheckInCreate):
     )
 
 
+@router.get("/checkins/count")
+async def get_active_checkin_count(location_slug: Optional[str] = None):
+    """Return the number of active (non-expired) check-ins across all locations
+    or for a specific location when location_slug is provided."""
+    # Purge expired first so the count is accurate.
+    await db.checkins.delete_many({"expires_at": {"$lt": datetime.now(timezone.utc)}})
+    query = {"location_slug": location_slug} if location_slug else {}
+    count = await db.checkins.count_documents(query)
+    return {"count": count, "location_slug": location_slug}
+
+
 @router.get("/checkin/{location_slug}", response_model=List[CheckInResponse])
 async def get_checked_in_users(location_slug: str):
     """Get all users currently checked in at a location, including the live DJ"""
