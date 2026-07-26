@@ -26,6 +26,69 @@ async def create_wall_post(body: dict):
         if profile:
             user_photo = profile.get("profile_photo_url", "") or ""
 
+    # DJ broadcast — one post per active location, all linked by broadcast_id
+    broadcast_all = bool(body.get("broadcast_all"))
+    if broadcast_all:
+        # Allow broadcast if the user is a verified DJ profile OR a user profile
+        # tagged with the 'dj' role/staff_title.
+        dj = await db.dj_profiles.find_one({"id": user_id})
+        if not dj:
+            up = await db.user_profiles.find_one(
+                {"id": user_id, "$or": [{"role": "dj"}, {"staff_title": "dj"}]}
+            )
+            if not up:
+                raise HTTPException(status_code=403, detail="Only DJs can broadcast to all locations")
+
+        active_locs = await db.locations.find(
+            {"is_active": True, "slug": {"$ne": "hibachi-food-truck"}},
+            {"_id": 0, "slug": 1}
+        ).to_list(length=50)
+
+        broadcast_id = str(uuid.uuid4())
+        now = datetime.now(timezone.utc).isoformat()
+        inserted = []
+        for loc in active_locs:
+            slug = loc.get("slug")
+            if not slug:
+                continue
+            post = {
+                "id": str(uuid.uuid4()),
+                "location_slug": slug,
+                "user_id": user_id,
+                "user_name": body.get("user_name", "Anonymous"),
+                "user_avatar": body.get("user_avatar", ""),
+                "user_photo": user_photo,
+                "post_type": body.get("post_type", "text"),
+                "content": body.get("content", ""),
+                "image_url": body.get("image_url"),
+                "likes": [],
+                "comments": [],
+                "broadcast_id": broadcast_id,
+                "is_broadcast": True,
+                "created_at": now
+            }
+            await db.wall_posts.insert_one(post)
+            post.pop("_id", None)
+            inserted.append(post)
+            if post.get("image_url"):
+                gallery_item = {
+                    "id": str(uuid.uuid4()),
+                    "title": post.get("content", "")[:100] or f"Photo by {post['user_name']}",
+                    "image_url": post["image_url"],
+                    "category": "social",
+                    "is_active": True,
+                    "display_order": 999,
+                    "location_slug": slug,
+                    "posted_by": post["user_name"],
+                    "posted_by_id": user_id,
+                    "source": "social_wall",
+                    "source_post_id": post["id"],
+                    "created_at": now
+                }
+                await db.gallery_items.insert_one(gallery_item)
+        logging.info(f"DJ broadcast {broadcast_id} sent to {len(inserted)} locations by {user_id}")
+        return {"broadcast_id": broadcast_id, "count": len(inserted), "posts": inserted}
+
     post = {
         "id": str(uuid.uuid4()),
         "location_slug": location_slug,

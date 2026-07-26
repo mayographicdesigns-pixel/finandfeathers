@@ -45,6 +45,8 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar, userPhoto, djStat
   const [karaokeSong, setKaraokeSong] = useState('');
   const [karaokeSubmitting, setKaraokeSubmitting] = useState(false);
   const [karaokeQueue, setKaraokeQueue] = useState([]);
+  const [broadcastAll, setBroadcastAll] = useState(false);
+  const [broadcastToast, setBroadcastToast] = useState('');
 
   const isDJLive = djStatus?.is_live;
   const karaokeActive = djStatus?.karaoke_active;
@@ -122,16 +124,43 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar, userPhoto, djStat
         const upData = await upRes.json();
         image_url = upData.image_url;
       }
-      await fetch(`${API_URL}/api/wall/posts`, {
+      // For broadcast we must send the DJ profile id (from ff_dj_profile) —
+      // the wall's user_id is normally a user_profile / guest id which the
+      // backend broadcast check would reject.
+      let broadcastUserId = userId;
+      if (isDJ && broadcastAll) {
+        try {
+          const stored = localStorage.getItem('ff_dj_profile');
+          if (stored) {
+            const dj = JSON.parse(stored);
+            if (dj?.id) broadcastUserId = dj.id;
+          }
+        } catch (e) { console.error('DJ profile parse:', e); }
+      }
+      const res = await fetch(`${API_URL}/api/wall/posts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_id: userId, location_slug: locationSlug,
+          user_id: broadcastUserId, location_slug: locationSlug,
           user_name: userName, user_avatar: userAvatar,
-          post_type: postType, content: newContent.trim(), image_url
+          post_type: postType, content: newContent.trim(), image_url,
+          broadcast_all: !!(isDJ && broadcastAll)
         })
       });
+      if (isDJ && broadcastAll) {
+        try {
+          const data = await res.json();
+          if (res.ok && data?.count) {
+            setBroadcastToast(`Broadcast sent to ${data.count} location${data.count === 1 ? '' : 's'}`);
+            setTimeout(() => setBroadcastToast(''), 3500);
+          } else if (!res.ok) {
+            setBroadcastToast(`Broadcast failed: ${data?.detail || res.statusText}`);
+            setTimeout(() => setBroadcastToast(''), 4500);
+          }
+        } catch (e) { console.error(e); }
+      }
       setNewContent(''); setImageFile(null); setImagePreview(null); setPostType('text');
+      setBroadcastAll(false);
       fetchPosts();
     } catch (e) { console.error(e); }
     finally { setPosting(false); }
@@ -208,6 +237,37 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar, userPhoto, djStat
             </button>
           </div>
         )}
+        {isDJ && (
+          <button
+            type="button"
+            onClick={() => setBroadcastAll(v => !v)}
+            className={`mt-2 flex items-center gap-2 w-full px-3 py-2 rounded-lg border transition-colors ${
+              broadcastAll
+                ? 'bg-red-600/15 border-red-500/40 text-red-300'
+                : 'bg-slate-800/40 border-slate-700 text-slate-400 hover:border-slate-600'
+            }`}
+            data-testid="broadcast-all-toggle"
+            aria-pressed={broadcastAll}
+          >
+            <Megaphone className={`w-3.5 h-3.5 ${broadcastAll ? 'text-red-400' : 'text-slate-500'}`} />
+            <div className="flex-1 text-left">
+              <p className="text-[11px] font-semibold uppercase tracking-wide leading-tight">
+                {broadcastAll ? 'Broadcasting to all locations' : 'Reply to all locations'}
+              </p>
+              <p className="text-[10px] opacity-70 leading-tight mt-0.5">
+                {broadcastAll ? 'This post will drop on every location\u2019s feed' : 'DJ-only: post once, reach every Fin & Feathers'}
+              </p>
+            </div>
+            <span className={`inline-block w-8 h-4 rounded-full transition-colors relative ${broadcastAll ? 'bg-red-500' : 'bg-slate-700'}`}>
+              <span className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform ${broadcastAll ? 'translate-x-4' : 'translate-x-0.5'}`} />
+            </span>
+          </button>
+        )}
+        {broadcastToast && (
+          <div className="mt-2 px-3 py-2 bg-green-600/15 border border-green-500/30 rounded-lg text-green-300 text-xs text-center" data-testid="broadcast-toast">
+            {broadcastToast}
+          </div>
+        )}
       </div>
 
       {/* Karaoke sign-up banner when active */}
@@ -276,6 +336,16 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar, userPhoto, djStat
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-white text-sm font-medium truncate">{post.user_name}</span>
+                      {post.is_broadcast && (
+                        <span
+                          className="inline-flex items-center gap-0.5 bg-red-600 text-white text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full shrink-0"
+                          title="Broadcast to all locations"
+                          data-testid="post-broadcast-badge"
+                        >
+                          <Megaphone className="w-2.5 h-2.5" />
+                          Broadcast
+                        </span>
+                      )}
                       {isDJ && <LocationTag slug={post.location_slug} />}
                       {post.post_type !== 'text' && (
                         <span className={`text-xs ${cfg.color} flex items-center gap-0.5`}>
