@@ -392,7 +392,7 @@ const PublisherControls = ({ onLeave, label = 'Leave', isHost = false }) => {
         </div>
       )}
 
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-3 gap-2">
         <Button
           onClick={toggleMic}
           className={`${micOn ? 'bg-slate-700 hover:bg-slate-600' : 'bg-red-600 hover:bg-red-700'} text-white h-10`}
@@ -417,15 +417,15 @@ const PublisherControls = ({ onLeave, label = 'Leave', isHost = false }) => {
         >
           <RotateCw className="w-4 h-4" />
         </Button>
-        <Button
-          onClick={onLeave}
-          className="bg-red-600 hover:bg-red-700 text-white h-10"
-          data-testid="pub-leave-btn"
-          title={label}
-        >
-          <X className="w-4 h-4" />
-        </Button>
       </div>
+      <Button
+        onClick={onLeave}
+        className="w-full bg-red-600 hover:bg-red-700 text-white h-11 font-semibold rounded-lg"
+        data-testid="pub-leave-btn"
+      >
+        <X className="w-4 h-4 mr-2" />
+        {isHost ? 'End Live' : label}
+      </Button>
     </div>
   );
 };
