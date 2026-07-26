@@ -51,7 +51,8 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar, userPhoto, djStat
   const isDJLive = djStatus?.is_live;
   const karaokeActive = djStatus?.karaoke_active;
 
-  const fetchSlug = isDJ ? 'all' : locationSlug;
+  // Unified wall — everyone sees posts/chat from all locations. Users still POST to their currently checked-in location.
+  const fetchSlug = 'all';
   const fetchPosts = useCallback(async () => {
     try {
       const res = await fetch(`${API_URL}/api/wall/posts/${fetchSlug}`);
@@ -346,7 +347,7 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar, userPhoto, djStat
                           Broadcast
                         </span>
                       )}
-                      {isDJ && <LocationTag slug={post.location_slug} />}
+                      <LocationTag slug={post.location_slug} />
                       {post.post_type !== 'text' && (
                         <span className={`text-xs ${cfg.color} flex items-center gap-0.5`}>
                           <cfg.icon className="w-3 h-3" /> {cfg.label}
@@ -407,7 +408,8 @@ const ChatTab = ({ locationSlug, userId, userName, userAvatar, isDJ }) => {
   const [sending, setSending] = useState(false);
   const bottomRef = useRef(null);
 
-  const fetchSlug = isDJ ? 'all' : locationSlug;
+  // Unified wall — everyone sees posts/chat from all locations. Users still POST to their currently checked-in location.
+  const fetchSlug = 'all';
   const fetchMessages = useCallback(async () => {
     try {
       const res = await fetch(`${API_URL}/api/wall/chat/${fetchSlug}`);
@@ -455,7 +457,7 @@ const ChatTab = ({ locationSlug, userId, userName, userAvatar, isDJ }) => {
                   {showAvatar && !isMe && (
                     <p className="text-slate-500 text-xs mb-0.5 px-1 flex items-center">
                       {msg.user_name}
-                      {isDJ && <LocationTag slug={msg.location_slug} />}
+                      <LocationTag slug={msg.location_slug} />
                     </p>
                   )}
                   <div className={`px-3 py-1.5 rounded-2xl text-sm ${isMe ? 'bg-red-600/80 text-white rounded-br-sm' : 'bg-slate-800 text-slate-200 rounded-bl-sm'}`}>
@@ -549,8 +551,8 @@ const DMsTab = ({ userId, userName, userAvatar, locationSlug, isDJ }) => {
 
   const fetchLocationUsers = async () => {
     try {
-      const usersSlug = isDJ ? 'all' : locationSlug;
-      const res = await fetch(`${API_URL}/api/wall/users/${usersSlug}`);
+      // Unified DM directory across all locations
+      const res = await fetch(`${API_URL}/api/wall/users/all`);
       const data = await res.json();
       setLocationUsers((data || []).filter(u => u.user_id !== userId));
     } catch (e) { console.error(e); }
@@ -570,7 +572,7 @@ const DMsTab = ({ userId, userName, userAvatar, locationSlug, isDJ }) => {
             <ChevronLeft className="w-5 h-5" />
           </button>
           <span className="text-white font-medium text-sm">{activeThread.name}</span>
-          {isDJ && <LocationTag slug={activeThread.locationSlug} />}
+          <LocationTag slug={activeThread.locationSlug} />
         </div>
         <div className="flex-1 overflow-y-auto p-3 space-y-2" data-testid="dm-thread">
           {threadMessages.map(msg => {
@@ -615,7 +617,7 @@ const DMsTab = ({ userId, userName, userAvatar, locationSlug, isDJ }) => {
 
       {showNewDM && (
         <div className="p-3 bg-slate-800/50 border-b border-slate-700">
-          <p className="text-slate-400 text-xs mb-2">{isDJ ? 'People across all locations:' : 'People at this location:'}</p>
+          <p className="text-slate-400 text-xs mb-2">People across all locations:</p>
           {locationUsers.length === 0 ? (
             <p className="text-slate-600 text-xs">No other users found yet.</p>
           ) : (
@@ -625,7 +627,7 @@ const DMsTab = ({ userId, userName, userAvatar, locationSlug, isDJ }) => {
                   className="flex items-center gap-2 w-full p-2 rounded-lg hover:bg-slate-700 transition-colors" data-testid={`dm-user-${u.user_id}`}>
                   <UserAvatar photoUrl={u.user_photo} emoji={u.user_avatar} name={u.user_name} size="sm" />
                   <span className="text-white text-sm">{u.user_name}</span>
-                  {isDJ && <LocationTag slug={u.location_slug} />}
+                  <LocationTag slug={u.location_slug} />
                 </button>
               ))}
             </div>
@@ -651,7 +653,7 @@ const DMsTab = ({ userId, userName, userAvatar, locationSlug, isDJ }) => {
               <div className="flex items-center justify-between">
                 <span className="text-white text-sm font-medium truncate flex items-center">
                   {conv.partner_name}
-                  {isDJ && <LocationTag slug={conv.partner_location_slug} />}
+                  <LocationTag slug={conv.partner_location_slug} />
                 </span>
                 {conv.unread > 0 && (
                   <span className="bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[18px] text-center">{conv.unread}</span>
