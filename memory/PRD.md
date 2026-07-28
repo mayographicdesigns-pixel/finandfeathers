@@ -123,6 +123,14 @@ routes/
 - [x] **Admin DJ Control Tab** — new tab in the Admin Dashboard (`/dashboard` → "DJ Control") for staff to oversee every DJ from one place.
 - [x] **Emergency Broadcast (Admin)** — admins can push a one-tap message to every location's Vibe Wall from the top of the DJ Control tab (e.g. "Free shots at Edgewood in 10 min!"). New `POST /api/admin/wall/emergency-broadcast` fan-outs the post; each entry is tagged `is_emergency=true` and renders with an amber ⚠ Emergency badge (distinct from the red Megaphone DJ broadcasts). Two-step confirm UX prevents accidental fires. iteration_63, 100% pass (backend 6/6, frontend all criteria).
 - [x] **DJ Live Banner Admin Toggle** — new `dj_live_banner_enabled` app-setting (default true) with a switch on the Admin DJ Control tab. When OFF, the homepage suppresses the "DJ IS LIVE — WATCH NOW" banner even if a DJ is streaming. Frontend polls `/api/settings` every 30s so the banner hides ~within 30s of a toggle. iteration_64, 100% pass (backend 4/4 pytest, frontend all criteria).
+- [x] **Homepage Modules Admin Panel** — extended the single DJ Live toggle into a 5-switch admin panel on the DJ Control tab. Each toggle maps to a public app-setting flag that gates one homepage element:
+  - `dj_live_banner_enabled` — "DJ IS LIVE" banner
+  - `karaoke_signup_banner_enabled` — Live Karaoke Sign-Up CTA
+  - `song_request_banner_enabled` — DJ song request button
+  - `marietta_coming_soon_enabled` — Orange Marietta banner
+  - `featured_events_enabled` — Featured Events image grid
+  - Changes go live within ~30s via polling. iteration_65, 100% pass (backend 5/5 pytest, frontend all criteria + full end-to-end verification of DOM gating).
+
 
 
   - Sections: **On Shift** (checked-in DJs — shows live/karaoke badges + Stop Live, Karaoke toggle, Check Out buttons) and **Off Shift** (Check In button expands to a per-location picker).
