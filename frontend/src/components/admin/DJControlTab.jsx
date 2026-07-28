@@ -132,9 +132,16 @@ const DJControlTab = () => {
   const activeDjs = djs.filter(dj => !!dj.current_location);
   const offlineDjs = djs.filter(dj => !dj.current_location);
 
-  // ---- DJ Live Banner toggle (public homepage) ----
-  const [bannerEnabled, setBannerEnabled] = useState(true);
-  const [bannerBusy, setBannerBusy] = useState(false);
+  // ---- Homepage module toggles ----
+  const HOMEPAGE_MODULES = [
+    { key: 'dj_live_banner_enabled', label: 'DJ IS LIVE Banner', help: 'Shows on homepage when a DJ goes live' },
+    { key: 'karaoke_signup_banner_enabled', label: 'Karaoke Sign-Up Banner', help: 'Live karaoke CTA (shows only during karaoke mode)' },
+    { key: 'song_request_banner_enabled', label: 'Song Request Button', help: 'CTA when a DJ is on shift (no karaoke)' },
+    { key: 'marietta_coming_soon_enabled', label: 'Marietta "Coming Soon"', help: 'Orange banner with waitlist signup' },
+    { key: 'featured_events_enabled', label: 'Featured Events Grid', help: 'Event image grid on the homepage' },
+  ];
+  const [homeModules, setHomeModules] = useState({});
+  const [homeModulesBusy, setHomeModulesBusy] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -145,14 +152,16 @@ const DJControlTab = () => {
         });
         if (!res.ok) return;
         const s = await res.json();
-        setBannerEnabled(s?.dj_live_banner_enabled !== false);
+        const map = {};
+        HOMEPAGE_MODULES.forEach(m => { map[m.key] = s?.[m.key] !== false; });
+        setHomeModules(map);
       } catch (e) { console.error(e); }
     })();
   }, []);
 
-  const toggleBanner = async () => {
-    const next = !bannerEnabled;
-    setBannerBusy(true);
+  const toggleHomeModule = async (key) => {
+    const next = !homeModules[key];
+    setHomeModulesBusy(key);
     try {
       const token = localStorage.getItem('admin_token');
       const res = await fetch(`${API_URL}/api/admin/settings`, {
@@ -161,19 +170,17 @@ const DJControlTab = () => {
           'Content-Type': 'application/json',
           Authorization: token ? `Bearer ${token}` : ''
         },
-        body: JSON.stringify({ dj_live_banner_enabled: next })
+        body: JSON.stringify({ [key]: next })
       });
       if (!res.ok) throw new Error(await res.text());
-      setBannerEnabled(next);
+      setHomeModules(m => ({ ...m, [key]: next }));
       toast({
-        title: next ? 'DJ Live banner ON' : 'DJ Live banner OFF',
-        description: next
-          ? 'The homepage banner will show when a DJ goes live.'
-          : 'The homepage banner is hidden even when a DJ is live.'
+        title: `${HOMEPAGE_MODULES.find(m => m.key === key)?.label}: ${next ? 'ON' : 'OFF'}`,
+        description: next ? 'Now visible on the homepage.' : 'Hidden from the homepage.'
       });
     } catch (e) {
       toast({ title: 'Toggle failed', description: e.message, variant: 'destructive' });
-    } finally { setBannerBusy(false); }
+    } finally { setHomeModulesBusy(''); }
   };
 
   // ---- Emergency Broadcast ----
@@ -298,35 +305,45 @@ const DJControlTab = () => {
         </CardContent>
       </Card>
 
-      {/* Homepage DJ Live Banner Toggle */}
-      <Card className="bg-slate-900 border-slate-800" data-testid="dj-banner-toggle-card">
-        <CardContent className="p-4 flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${bannerEnabled ? 'bg-red-500/20' : 'bg-slate-800'}`}>
-            <Circle className={`w-4 h-4 ${bannerEnabled ? 'text-red-500 fill-red-500 animate-pulse' : 'text-slate-500'}`} />
+      {/* Homepage Modules — admin can turn each homepage element on/off */}
+      <Card className="bg-slate-900 border-slate-800" data-testid="homepage-modules-card">
+        <CardContent className="p-4">
+          <h3 className="text-white font-semibold text-sm mb-1">Homepage Modules</h3>
+          <p className="text-slate-500 text-xs mb-3">Turn any homepage element on or off. Changes go live within ~30 seconds.</p>
+          <div className="space-y-2">
+            {HOMEPAGE_MODULES.map(mod => {
+              const on = !!homeModules[mod.key];
+              const busy = homeModulesBusy === mod.key;
+              return (
+                <div
+                  key={mod.key}
+                  className="flex items-center gap-3 rounded-md border border-slate-800 bg-slate-900/60 px-3 py-2"
+                  data-testid={`home-module-row-${mod.key}`}
+                >
+                  <div className={`w-2.5 h-2.5 rounded-full ${on ? 'bg-red-500' : 'bg-slate-600'}`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white text-sm font-medium truncate">{mod.label}</p>
+                    <p className="text-slate-500 text-[11px] truncate">{mod.help}</p>
+                  </div>
+                  <button
+                    onClick={() => toggleHomeModule(mod.key)}
+                    disabled={busy}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors flex-shrink-0 ${
+                      on ? 'bg-red-600' : 'bg-slate-700'
+                    } disabled:opacity-50`}
+                    data-testid={`home-module-toggle-${mod.key}`}
+                    aria-pressed={on}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        on ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+              );
+            })}
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-white font-medium text-sm">Homepage &ldquo;DJ IS LIVE&rdquo; Banner</p>
-            <p className="text-slate-500 text-xs">
-              {bannerEnabled
-                ? 'Shows on the homepage whenever a DJ goes live'
-                : 'Hidden — banner will NOT show even if a DJ is live'}
-            </p>
-          </div>
-          <button
-            onClick={toggleBanner}
-            disabled={bannerBusy}
-            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${
-              bannerEnabled ? 'bg-red-600' : 'bg-slate-700'
-            } disabled:opacity-50`}
-            data-testid="dj-banner-toggle-btn"
-            aria-pressed={bannerEnabled}
-          >
-            <span
-              className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
-                bannerEnabled ? 'translate-x-6' : 'translate-x-1'
-              }`}
-            />
-          </button>
         </CardContent>
       </Card>
 

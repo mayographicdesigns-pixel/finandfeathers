@@ -854,8 +854,12 @@ const LinkTreeHomePage = () => {
   const [djLocation, setDjLocation] = useState(null);
   const [liveStreamInfo, setLiveStreamInfo] = useState(null); // { location_slug, dj_name, viewer_count }
   const [djLiveBannerEnabled, setDjLiveBannerEnabled] = useState(true);
+  const [karaokeSignupEnabled, setKaraokeSignupEnabled] = useState(true);
+  const [songRequestEnabled, setSongRequestEnabled] = useState(true);
+  const [mariettaComingSoonEnabled, setMariettaComingSoonEnabled] = useState(true);
+  const [featuredEventsEnabled, setFeaturedEventsEnabled] = useState(true);
 
-  // Public app-settings flag — admins can hide the "DJ is Live" banner from the dashboard.
+  // Public app-settings flags — admins can turn each homepage module on/off.
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
@@ -863,7 +867,12 @@ const LinkTreeHomePage = () => {
         const res = await fetch(`${API_URL}/api/settings`);
         if (!res.ok) return;
         const s = await res.json();
-        if (!cancelled) setDjLiveBannerEnabled(s?.dj_live_banner_enabled !== false);
+        if (cancelled) return;
+        setDjLiveBannerEnabled(s?.dj_live_banner_enabled !== false);
+        setKaraokeSignupEnabled(s?.karaoke_signup_banner_enabled !== false);
+        setSongRequestEnabled(s?.song_request_banner_enabled !== false);
+        setMariettaComingSoonEnabled(s?.marietta_coming_soon_enabled !== false);
+        setFeaturedEventsEnabled(s?.featured_events_enabled !== false);
       } catch (e) { console.error(e); }
     };
     load();
@@ -1432,6 +1441,7 @@ const LinkTreeHomePage = () => {
 
         {/* Weekly Specials Section */}
         {/* Coming Soon: Marietta, GA banner — click to join waitlist */}
+        {mariettaComingSoonEnabled && (
         <Card
           className="bg-gradient-to-r from-amber-500 via-red-600 to-amber-500 border-none mb-4 overflow-hidden relative shadow-lg shadow-red-500/40 cursor-pointer hover:scale-[1.01] transition-transform"
           data-testid="coming-soon-marietta-banner"
@@ -1455,6 +1465,7 @@ const LinkTreeHomePage = () => {
             </p>
           </CardContent>
         </Card>
+        )}
 
         <Card className="bg-gradient-to-br from-red-900/30 to-red-950/30 border-red-600/50">
           <CardContent className="p-6">
@@ -1540,7 +1551,7 @@ const LinkTreeHomePage = () => {
           )}
 
           {/* Karaoke/Song Request (when live) */}
-          {karaokeLocation && (
+          {karaokeSignupEnabled && karaokeLocation && (
             <Button
               onClick={() => navigate(`/locations/${karaokeLocation.slug}?checkin=true`)}
               className="w-full bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02] animate-pulse"
@@ -1551,7 +1562,7 @@ const LinkTreeHomePage = () => {
             </Button>
           )}
 
-          {!karaokeLocation && djLocation && (
+          {songRequestEnabled && !karaokeLocation && djLocation && (
             <Button
               onClick={() => navigate(`/locations/${djLocation.slug}?checkin=true`)}
               className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white h-14 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-[1.02]"
@@ -1563,7 +1574,7 @@ const LinkTreeHomePage = () => {
           )}
 
           {/* Featured Events Images Grid */}
-          {events.length > 0 && (
+          {featuredEventsEnabled && events.length > 0 && (
             <div data-testid="featured-events-section">
               <p className="text-slate-400 text-xs text-center mb-2 uppercase tracking-wider font-semibold">Featured Events</p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">

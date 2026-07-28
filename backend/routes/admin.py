@@ -23,40 +23,51 @@ router = APIRouter(prefix="/api")
 async def get_app_settings():
     """Get public app settings"""
     settings = await db.app_settings.find_one({"_id": "global"}, {"_id": 0})
+    defaults = {
+        "token_program_enabled": True,
+        "loyalty_program_enabled": True,
+        "buy_drink_enabled": True,
+        "dj_live_banner_enabled": True,
+        "karaoke_signup_banner_enabled": True,
+        "song_request_banner_enabled": True,
+        "marietta_coming_soon_enabled": True,
+        "featured_events_enabled": True,
+    }
     if not settings:
-        settings = {
-            "token_program_enabled": True,
-            "loyalty_program_enabled": True,
-            "buy_drink_enabled": True,
-            "dj_live_banner_enabled": True,
-        }
-    else:
-        settings.setdefault("dj_live_banner_enabled", True)
-    return settings
+        return defaults
+    return {**defaults, **settings}
 
 
 @router.get("/admin/settings")
 async def get_admin_settings(admin: str = Depends(get_current_admin)):
     """Get all app settings for admin"""
     settings = await db.app_settings.find_one({"_id": "global"})
+    defaults = {
+        "token_program_enabled": True,
+        "loyalty_program_enabled": True,
+        "buy_drink_enabled": True,
+        "dj_live_banner_enabled": True,
+        "karaoke_signup_banner_enabled": True,
+        "song_request_banner_enabled": True,
+        "marietta_coming_soon_enabled": True,
+        "featured_events_enabled": True,
+    }
     if not settings:
-        settings = {
-            "_id": "global",
-            "token_program_enabled": True,
-            "loyalty_program_enabled": True,
-            "buy_drink_enabled": True,
-            "dj_live_banner_enabled": True,
-        }
+        settings = {"_id": "global", **defaults}
         await db.app_settings.insert_one(settings)
     result = {k: v for k, v in settings.items() if k != "_id"}
-    result.setdefault("dj_live_banner_enabled", True)
-    return result
+    return {**defaults, **result}
 
 
 @router.put("/admin/settings")
 async def update_admin_settings(settings: dict, admin: str = Depends(get_current_admin)):
     """Update app settings"""
-    allowed_keys = ["token_program_enabled", "loyalty_program_enabled", "buy_drink_enabled", "dj_live_banner_enabled"]
+    allowed_keys = [
+        "token_program_enabled", "loyalty_program_enabled", "buy_drink_enabled",
+        "dj_live_banner_enabled", "karaoke_signup_banner_enabled",
+        "song_request_banner_enabled", "marietta_coming_soon_enabled",
+        "featured_events_enabled",
+    ]
     update_data = {k: v for k, v in settings.items() if k in allowed_keys}
 
     await db.app_settings.update_one(
