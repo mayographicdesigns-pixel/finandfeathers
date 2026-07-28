@@ -122,6 +122,8 @@ routes/
 - [x] **Confirm End Live** — DJ host taps END LIVE → an inline red-tinted mini-dialog appears with "Keep Broadcasting / End Live" so a fat-finger doesn't kill a set. Guest publishers still get one-tap Leave Stage. iteration_61, 100% pass.
 - [x] **Admin DJ Control Tab** — new tab in the Admin Dashboard (`/dashboard` → "DJ Control") for staff to oversee every DJ from one place.
 - [x] **Emergency Broadcast (Admin)** — admins can push a one-tap message to every location's Vibe Wall from the top of the DJ Control tab (e.g. "Free shots at Edgewood in 10 min!"). New `POST /api/admin/wall/emergency-broadcast` fan-outs the post; each entry is tagged `is_emergency=true` and renders with an amber ⚠ Emergency badge (distinct from the red Megaphone DJ broadcasts). Two-step confirm UX prevents accidental fires. iteration_63, 100% pass (backend 6/6, frontend all criteria).
+- [x] **DJ Live Banner Admin Toggle** — new `dj_live_banner_enabled` app-setting (default true) with a switch on the Admin DJ Control tab. When OFF, the homepage suppresses the "DJ IS LIVE — WATCH NOW" banner even if a DJ is streaming. Frontend polls `/api/settings` every 30s so the banner hides ~within 30s of a toggle. iteration_64, 100% pass (backend 4/4 pytest, frontend all criteria).
+
 
   - Sections: **On Shift** (checked-in DJs — shows live/karaoke badges + Stop Live, Karaoke toggle, Check Out buttons) and **Off Shift** (Check In button expands to a per-location picker).
   - Force-end live calls `/api/livekit/stream/stop`. Check Out clears `current_location` (and stops any active stream first). Check In posts to `/api/dj/checkin/{id}`. Karaoke posts to `/api/karaoke/toggle/{slug}`.
