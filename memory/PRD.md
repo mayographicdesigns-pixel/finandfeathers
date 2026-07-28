@@ -124,6 +124,8 @@ routes/
 - [x] **Emergency Broadcast (Admin)** — admins can push a one-tap message to every location's Vibe Wall from the top of the DJ Control tab (e.g. "Free shots at Edgewood in 10 min!"). New `POST /api/admin/wall/emergency-broadcast` fan-outs the post; each entry is tagged `is_emergency=true` and renders with an amber ⚠ Emergency badge (distinct from the red Megaphone DJ broadcasts). Two-step confirm UX prevents accidental fires. iteration_63, 100% pass (backend 6/6, frontend all criteria).
 - [x] **DJ Live Banner Admin Toggle** — new `dj_live_banner_enabled` app-setting (default true) with a switch on the Admin DJ Control tab. When OFF, the homepage suppresses the "DJ IS LIVE — WATCH NOW" banner even if a DJ is streaming. Frontend polls `/api/settings` every 30s so the banner hides ~within 30s of a toggle. iteration_64, 100% pass (backend 4/4 pytest, frontend all criteria).
 - [x] **Homepage Modules Admin Panel** — extended the single DJ Live toggle into a 5-switch admin panel on the DJ Control tab. Each toggle maps to a public app-setting flag that gates one homepage element:
+- [x] **L: On/Off Live Toggle** — replaced the conditional "Stop Live" button in the Admin DJ Control tab with a persistent per-DJ L: On/Off toggle right before the K: On/Off karaoke toggle. Red + enabled when a DJ is broadcasting (click stops the stream); grey + disabled when not live (DJs still start their own stream from the DJ Panel). iteration_66, 100% pass.
+
   - `dj_live_banner_enabled` — "DJ IS LIVE" banner
   - `karaoke_signup_banner_enabled` — Live Karaoke Sign-Up CTA
   - `song_request_banner_enabled` — DJ song request button
