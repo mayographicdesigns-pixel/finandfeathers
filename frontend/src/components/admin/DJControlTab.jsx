@@ -391,17 +391,22 @@ const DJControlTab = () => {
                     </div>
 
                     <div className="flex items-center gap-1.5">
-                      {isLive(dj) && (
-                        <Button
-                          size="sm"
-                          onClick={() => forceEndLive(dj)}
-                          disabled={busyId === dj.id}
-                          className="bg-red-600 hover:bg-red-700 text-white h-8 text-xs"
-                          data-testid={`dj-force-end-live-${dj.id}`}
-                        >
-                          <X className="w-3 h-3 mr-1" /> Stop Live
-                        </Button>
-                      )}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => forceEndLive(dj)}
+                        disabled={!isLive(dj) || busyId === dj.id}
+                        className={`h-8 text-xs border-slate-700 ${
+                          isLive(dj)
+                            ? 'bg-red-600 hover:bg-red-700 border-red-500 text-white'
+                            : 'text-slate-500 hover:bg-slate-800'
+                        }`}
+                        data-testid={`dj-live-toggle-${dj.id}`}
+                        title={isLive(dj) ? 'Stop live stream' : 'DJ must start stream from their panel'}
+                      >
+                        <Circle className={`w-3 h-3 mr-1 ${isLive(dj) ? 'fill-white' : ''}`} />
+                        {isLive(dj) ? 'L: On' : 'L: Off'}
+                      </Button>
                       <Button
                         size="sm"
                         variant="outline"
