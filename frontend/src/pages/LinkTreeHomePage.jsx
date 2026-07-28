@@ -853,6 +853,23 @@ const LinkTreeHomePage = () => {
   const [karaokeLocation, setKaraokeLocation] = useState(null);
   const [djLocation, setDjLocation] = useState(null);
   const [liveStreamInfo, setLiveStreamInfo] = useState(null); // { location_slug, dj_name, viewer_count }
+  const [djLiveBannerEnabled, setDjLiveBannerEnabled] = useState(true);
+
+  // Public app-settings flag — admins can hide the "DJ is Live" banner from the dashboard.
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/settings`);
+        if (!res.ok) return;
+        const s = await res.json();
+        if (!cancelled) setDjLiveBannerEnabled(s?.dj_live_banner_enabled !== false);
+      } catch (e) { console.error(e); }
+    };
+    load();
+    const iv = setInterval(load, 30000);
+    return () => { cancelled = true; clearInterval(iv); };
+  }, []);
 
   useEffect(() => {
     const checkLiveStatus = async () => {
@@ -1505,7 +1522,7 @@ const LinkTreeHomePage = () => {
           </Button>
 
           {/* DJ IS LIVE STREAMING banner */}
-          {liveStreamInfo && (
+          {djLiveBannerEnabled && liveStreamInfo && (
             <Button
               onClick={() => navigate(`/social/${liveStreamInfo.location_slug}`)}
               className="w-full bg-gradient-to-r from-red-600 via-red-500 to-orange-500 hover:from-red-700 hover:via-red-600 hover:to-orange-600 text-white h-16 text-lg font-bold rounded-xl transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-red-600/30 relative overflow-hidden"

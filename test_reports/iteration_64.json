@@ -1,0 +1,36 @@
+{
+  "summary": "Verified new dj_live_banner_enabled admin toggle end-to-end. Backend: 4/4 pytest (test_dj_banner_toggle.py) — GET /api/settings and GET /api/admin/settings both expose dj_live_banner_enabled; PUT /api/admin/settings persists false and true correctly across both endpoints. Frontend homepage: seeded LiveKit stream (POST /api/livekit/stream/start with location_slug=test-banner-loc, dj MIKE); with flag ON, data-testid='dj-live-streaming-btn' rendered on /. Set flag OFF via API, reloaded / → button correctly absent from DOM. Flipped back ON → button reappears. Frontend admin: /dashboard → DJ Control tab shows data-testid='dj-banner-toggle-card' immediately below emergency-broadcast-card and above ON SHIFT section (document order verified). data-testid='dj-banner-toggle-btn' initial aria-pressed='true'; clicking flips to 'false', GET /api/admin/settings confirms {dj_live_banner_enabled:false}; toast 'DJ Live banner OFF/ON' surfaced (screenshot). Second click restores to 'true' and GET confirms. Cleaned up LiveKit stream via POST /api/livekit/stream/stop; final flag left ON.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_results": {
+    "GET_public_settings_has_flag": "PASS",
+    "GET_admin_settings_has_flag": "PASS",
+    "PUT_flag_false_persists_both_endpoints": "PASS",
+    "PUT_flag_true_persists_both_endpoints": "PASS",
+    "homepage_banner_visible_when_ON_and_stream_active": "PASS",
+    "homepage_banner_hidden_when_OFF": "PASS (dj-live-streaming-btn not in DOM after reload)",
+    "homepage_banner_returns_when_ON_again": "PASS",
+    "admin_toggle_card_visible_between_emergency_and_on_shift": "PASS (document order emergency→toggle confirmed)",
+    "aria_pressed_reflects_state": "PASS (true → false → true)",
+    "toggle_fires_PUT_and_persists": "PASS (verified via subsequent GET)",
+    "success_toast_shown": "PASS ('DJ LIVE BANNER ON/OFF' toast visible in screenshot)"
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_dj_banner_toggle.py",
+    "/app/test_reports/pytest/dj_banner_toggle.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "DJControlTab.jsx uses window.location.origin for API_URL (pre-existing carryover); recommend REACT_APP_BACKEND_URL to match app-wide convention. Not blocking since it works when frontend and backend share origin via ingress.",
+    "get_current_admin remains a no-op app-wide (documented) — PUT /api/admin/settings is reachable without auth. Not a regression, but a longstanding P2.",
+    "LinkTreeHomePage polls /api/settings every 30s but only /api/livekit/streams/active drives banner display; the banner already hides immediately on reload when flag flips OFF, so 30s window is acceptable per requirements."
+  ],
+  "updated_files": ["/app/backend/tests/test_dj_banner_toggle.py"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "admin / $outhcentral (auth is app-wide no-op; endpoint reachable without token in preview).",
+  "seed_data_creation": "Started transient LiveKit stream (location_slug='test-banner-loc', dj_id=57cae364-b31f-4920-909f-fda18fc78fe6) via POST /api/livekit/stream/start; cleaned up via POST /api/livekit/stream/stop after tests. Setting left ON.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "New flag dj_live_banner_enabled lives in db.app_settings _id='global'. Exposed via GET /api/settings (public) and GET /api/admin/settings. Mutated via PUT /api/admin/settings with allowed_keys=[token_program_enabled, loyalty_program_enabled, buy_drink_enabled, dj_live_banner_enabled]. Frontend testids: dj-banner-toggle-card, dj-banner-toggle-btn (aria-pressed reflects state), dj-live-streaming-btn (homepage banner). Homepage gates banner on djLiveBannerEnabled && liveStreamInfo; setting fetched on mount and every 30s.",
+  "rca of the issue": "N/A — feature works as specified."
+}

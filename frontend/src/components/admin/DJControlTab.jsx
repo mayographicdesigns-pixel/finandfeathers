@@ -132,6 +132,50 @@ const DJControlTab = () => {
   const activeDjs = djs.filter(dj => !!dj.current_location);
   const offlineDjs = djs.filter(dj => !dj.current_location);
 
+  // ---- DJ Live Banner toggle (public homepage) ----
+  const [bannerEnabled, setBannerEnabled] = useState(true);
+  const [bannerBusy, setBannerBusy] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const token = localStorage.getItem('admin_token');
+        const res = await fetch(`${API_URL}/api/admin/settings`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+        if (!res.ok) return;
+        const s = await res.json();
+        setBannerEnabled(s?.dj_live_banner_enabled !== false);
+      } catch (e) { console.error(e); }
+    })();
+  }, []);
+
+  const toggleBanner = async () => {
+    const next = !bannerEnabled;
+    setBannerBusy(true);
+    try {
+      const token = localStorage.getItem('admin_token');
+      const res = await fetch(`${API_URL}/api/admin/settings`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token ? `Bearer ${token}` : ''
+        },
+        body: JSON.stringify({ dj_live_banner_enabled: next })
+      });
+      if (!res.ok) throw new Error(await res.text());
+      setBannerEnabled(next);
+      toast({
+        title: next ? 'DJ Live banner ON' : 'DJ Live banner OFF',
+        description: next
+          ? 'The homepage banner will show when a DJ goes live.'
+          : 'The homepage banner is hidden even when a DJ is live.'
+      });
+    } catch (e) {
+      toast({ title: 'Toggle failed', description: e.message, variant: 'destructive' });
+    } finally { setBannerBusy(false); }
+  };
+
   // ---- Emergency Broadcast ----
   const [ebMessage, setEbMessage] = useState('');
   const [ebAuthor, setEbAuthor] = useState('Fin & Feathers Management');
@@ -251,6 +295,38 @@ const DJControlTab = () => {
               </Button>
             )}
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Homepage DJ Live Banner Toggle */}
+      <Card className="bg-slate-900 border-slate-800" data-testid="dj-banner-toggle-card">
+        <CardContent className="p-4 flex items-center gap-3">
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${bannerEnabled ? 'bg-red-500/20' : 'bg-slate-800'}`}>
+            <Circle className={`w-4 h-4 ${bannerEnabled ? 'text-red-500 fill-red-500 animate-pulse' : 'text-slate-500'}`} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-white font-medium text-sm">Homepage &ldquo;DJ IS LIVE&rdquo; Banner</p>
+            <p className="text-slate-500 text-xs">
+              {bannerEnabled
+                ? 'Shows on the homepage whenever a DJ goes live'
+                : 'Hidden — banner will NOT show even if a DJ is live'}
+            </p>
+          </div>
+          <button
+            onClick={toggleBanner}
+            disabled={bannerBusy}
+            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${
+              bannerEnabled ? 'bg-red-600' : 'bg-slate-700'
+            } disabled:opacity-50`}
+            data-testid="dj-banner-toggle-btn"
+            aria-pressed={bannerEnabled}
+          >
+            <span
+              className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
+                bannerEnabled ? 'translate-x-6' : 'translate-x-1'
+              }`}
+            />
+          </button>
         </CardContent>
       </Card>
 
