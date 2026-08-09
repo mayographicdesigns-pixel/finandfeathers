@@ -162,6 +162,9 @@ routes/
 
 
 
+### June 2026 Session (fork)
+- [x] **Marietta Location Added** (Jun 2026) — new `marietta` location in DB: 16 Atlanta St SE, Marietta, GA 30060 · (678) 505-8927 · Hours Mon-Wed Closed, Thu 5pm-12am, Fri-Sat 5pm-3am, Sun 5pm-12am. AI-generated card image assigned. Locations-page hours summary rewritten (`summarizeHours` in LocationsPage.jsx) to group consecutive identical days instead of hardcoded Mon-Thu/Fri-Sat/Sun buckets. Verified via API curl + screenshot.
+
 ## Backlog
 - [ ] Per-Location Weekly Specials management (P2)
 - [ ] WordPress Integration (P2)

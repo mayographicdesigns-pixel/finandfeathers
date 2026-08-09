@@ -11,6 +11,22 @@ import { getLocations, verifyAdminToken, adminUpdateLocation, adminCreateLocatio
 import { toast } from '../hooks/use-toast';
 import { safeHtml } from '../utils/sanitize';
 
+// Groups consecutive days sharing identical hours, e.g. "Mon-Wed: Closed | Thu: 5pm-12am | Fri-Sat: 5pm-3am | Sun: 5pm-12am"
+const summarizeHours = (hours) => {
+  const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+  const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const groups = [];
+  days.forEach((d, i) => {
+    const val = hours[d] || 'Closed';
+    const last = groups[groups.length - 1];
+    if (last && last.val === val) last.end = i;
+    else groups.push({ start: i, end: i, val });
+  });
+  return groups
+    .map(g => `${g.start === g.end ? labels[g.start] : `${labels[g.start]}-${labels[g.end]}`}: ${g.val}`)
+    .join(' | ');
+};
+
 // Reservation Modal Component
 const ReservationModal = ({ isOpen, onClose, location }) => {
   const [guestName, setGuestName] = useState('');
@@ -995,7 +1011,7 @@ const LocationsPage = () => {
                   <div className="mb-4 pb-4 border-b border-slate-700">
                     <p className="text-slate-400 text-xs">
                       {typeof location.hours === 'object' 
-                        ? `Mon-Thu: ${location.hours.monday || 'Closed'} | Fri-Sat: ${location.hours.friday || 'Closed'} | Sun: ${location.hours.sunday || 'Closed'}`
+                        ? summarizeHours(location.hours)
                         : location.hours
                       }
                     </p>
