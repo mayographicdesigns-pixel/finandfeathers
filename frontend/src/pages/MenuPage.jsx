@@ -696,11 +696,13 @@ const MenuPage = () => {
     if (categoryId && drinkCategories.includes(categoryId)) {
       const sortDesc = categoryId === 'cocktails' || categoryId === 'signature-cocktails';
       items = [...items].sort((a, b) => {
+        const orderDiff = (a.display_order ?? 999) - (b.display_order ?? 999);
+        if (sortDesc && orderDiff !== 0) return orderDiff;
         const pA = a.price || 0;
         const pB = b.price || 0;
         const priceDiff = sortDesc ? pB - pA : pA - pB;
         if (priceDiff !== 0) return priceDiff;
-        return (a.display_order ?? 999) - (b.display_order ?? 999);
+        return orderDiff;
       });
     } else {
       // Non-drinks: keep existing display_order behavior
