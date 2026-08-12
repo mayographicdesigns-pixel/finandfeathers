@@ -518,6 +518,80 @@ async def fix_daily_specials_hours():
 
 
 
+async def apply_june2026_data_migrations():
+    """One-time, flag-guarded migration replicating preview DB edits to production.
+
+    Guarded by app_settings flag `migration_june2026_v1` so it runs exactly once
+    per database and never overwrites later admin edits.
+    """
+    try:
+        flag = await db.app_settings.find_one({"key": "migration_june2026_v1"})
+        if flag:
+            return
+        now = datetime.now(timezone.utc)
+
+        # 1. Signature cocktails: pin Crenshaw Blvd first, Rodeo Drive second
+        await db.menu_items.update_many(
+            {"category": "cocktails", "name": "Crenshaw Blvd"},
+            {"$set": {"display_order": 1, "updated_at": now}},
+        )
+        await db.menu_items.update_many(
+            {"category": "cocktails", "name": "Rodeo Drive"},
+            {"$set": {"display_order": 2, "updated_at": now}},
+        )
+
+        # 2. Tequila Sunrise brunch drink: $10, premium option $15
+        await db.menu_items.update_many(
+            {"category": "brunch-drinks", "name": "Tequila Sunrise"},
+            {"$set": {
+                "price": 10,
+                "description": "Blanco Tequila, Orange Juice, and a dash of Grenadine. $15 with premium Tequila.",
+                "updated_at": now,
+            }},
+        )
+
+        # 3. Marietta location
+        if not await db.locations.find_one({"slug": "marietta"}):
+            max_order = 0
+            async for loc in db.locations.find({}, {"display_order": 1}):
+                max_order = max(max_order, loc.get("display_order", 0) or 0)
+            await db.locations.insert_one({
+                "id": str(uuid.uuid4()),
+                "slug": "marietta",
+                "name": "Fin & Feathers - Marietta",
+                "address": "16 Atlanta St SE, Marietta, GA 30060",
+                "phone": "(678) 505-8927",
+                "reservation_phone": None,
+                "coordinates": {"lat": 33.9515, "lng": -84.5490},
+                "image": "https://customer-assets-v7afamib.emergentagent.net/job_833cd44a-05b3-4d96-b7e3-c136122b70a4/artifacts/oh2fgf14_image.png",
+                "hours": {
+                    "monday": "Closed", "tuesday": "Closed", "wednesday": "Closed",
+                    "thursday": "5pm-12am", "friday": "5pm-3am",
+                    "saturday": "5pm-3am", "sunday": "5pm-12am",
+                },
+                "online_ordering": None,
+                "reservations": None,
+                "delivery": None,
+                "social_media": {"instagram": None, "facebook": None, "twitter": None, "tiktok": None},
+                "weekly_specials": [],
+                "is_active": True,
+                "display_order": max_order + 1,
+                "created_at": now,
+                "updated_at": now,
+                "check_in_enabled": True,
+                "tip_staff_enabled": False,
+                "dj_tips_enabled": False,
+                "social_wall_enabled": True,
+                "directions_link": "https://maps.google.com/?q=16+Atlanta+St+SE+Marietta+GA+30060",
+                "review_link": None,
+            })
+
+        await db.app_settings.insert_one({"key": "migration_june2026_v1", "applied_at": now})
+        logging.info("June 2026 data migration applied (cocktail order, tequila sunrise, marietta)")
+    except Exception as e:
+        logging.error(f"June 2026 data migration error: {e}")
+
+
 async def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Grant admin access - no authentication required"""
     return "admin"
