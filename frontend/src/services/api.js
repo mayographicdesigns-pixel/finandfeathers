@@ -1877,6 +1877,22 @@ export async function adminDeleteEvent(eventId) {
   return await response.json();
 }
 
+// Bulk upload event flyers (admin) — each file becomes a hidden event with AI-extracted details
+export async function adminBulkUploadFlyers(files) {
+  const formData = new FormData();
+  files.forEach((f) => formData.append('files', f));
+  const response = await fetch(`${API_URL}/admin/events/bulk-upload`, {
+    method: 'POST',
+    headers: adminHeaders(),
+    body: formData
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.detail || 'Failed to bulk upload flyers');
+  }
+  return data;
+}
+
 
 // ==================== ADMIN GALLERY SUBMISSIONS API ====================
 

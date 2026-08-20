@@ -1,3 +1,5 @@
+<!-- Latest session (Feb 2026): Events UI - Bulk Flyer Upload, Optional Details, AI Read Fix. See "Feb 2026 Session" section below. -->
+
 # Fin & Feathers Restaurant PWA — Product Requirements Document
 
 ## Overview
@@ -168,6 +170,12 @@ routes/
 - [x] **Production Data Migration** (Jun 2026) — added flag-guarded `apply_june2026_data_migrations()` in database.py (runs at startup, flag `migration_june2026_v1` in app_settings): cocktail display orders, Tequila Sunrise $10/$15 premium, Marietta location upsert. Needed because production has a separate DB from preview.
 - [x] **Marietta "Now Open" Banner** (Jun 2026) — homepage banner changed from "Coming Soon"/waitlist to "Now Open" with address (16 Atlanta St SE) + reservations (678) 505-8927; tap navigates to /locations/marietta?tab=info. Still gated by `marietta_coming_soon_enabled` admin toggle. Verified via screenshot (tap navigates correctly).
 - [x] **Live Stream Happy Hour on Wall** (Jun 2026) — Viloud channel embed (16:9 responsive iframe, allowfullscreen + autoplay permissions for mobile fullscreen/rotate) added to the social wall FEED tab above posts, styled like the homepage banner with a pulsing LIVE header. Removed all three chat auto-scroll-to-bottom effects (wall chat, DM thread, second chat) that yanked the page on every 3s poll. Verified via screenshot.
+
+### Feb 2026 Session (fork)
+- [x] **Bulk Flyer Upload** (Feb 2026) — new "Bulk Flyer Upload" button in Admin > Events lets admins select up to 25 flyer images at once. Backend: `POST /api/admin/events/bulk-upload` reads each file, saves to `/api/uploads/`, runs AI extraction (OpenAI gpt-4o via emergentintegrations) to auto-fill name/date/time/location/description, and creates each event **hidden** (`is_active=false`) so admins can review before publishing. Progress panel shows per-file result (AI-filled vs image-only vs error). Failures fall back to "image-only" — the event is still created so nothing is lost.
+- [x] **Optional Event Details** (Feb 2026) — removed `required` HTML attribute and frontend validation on Name/Description/Date/Time. Backend `EventCreate` model now marks all text fields Optional and applies placeholders (`"Untitled Event"`, `"TBD"`) when blank. Admins can post an event with just an image.
+- [x] **AI Flyer Read Fix** (Feb 2026) — root cause: `backend/.env` had `EMERGENT_LLM_KEY=...` and `PRINTFUL_API_TOKEN=...` concatenated on a single line (no newline separator), so the LLM key was polluted → `Invalid API key`. Fixed the newline and hardened the extractor: (1) robust markdown-fence / JSON stripping via regex, (2) coerce all fields to strings and `featured` to bool, (3) return empty-object fallback instead of 500 so the UI stays usable. Verified end-to-end with a synthetic PIL-drawn flyer — AI correctly extracts title, date, time, and venue.
+- [x] **Event schema extension** — added `free_entry: bool` to `Event`, `EventCreate`, and `EventUpdate` models (was already used by the UI but silently dropped by Pydantic).
 
 ## Backlog
 - [ ] Per-Location Weekly Specials management (P2)

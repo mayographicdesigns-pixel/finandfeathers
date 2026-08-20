@@ -186,10 +186,19 @@ async def admin_get_events(username: str = Depends(get_current_admin)):
 
 @router.post("/admin/events")
 async def admin_create_event(event: EventCreate, username: str = Depends(get_current_admin)):
-    """Create a new event"""
+    """Create a new event. All text fields are optional — blanks default to placeholders."""
     event_dict = event.dict()
     event_dict["id"] = str(uuid.uuid4())
-    event_dict["is_active"] = True
+    # Placeholder defaults so UI doesn't break on blanks
+    event_dict["name"] = (event_dict.get("name") or "").strip() or "Untitled Event"
+    event_dict["description"] = (event_dict.get("description") or "").strip() or ""
+    event_dict["date"] = (event_dict.get("date") or "").strip() or "TBD"
+    event_dict["time"] = (event_dict.get("time") or "").strip() or "TBD"
+    event_dict["location"] = (event_dict.get("location") or "").strip() or ""
+    event_dict["image"] = (event_dict.get("image") or "").strip() or ""
+    # is_active: default True if omitted
+    if event_dict.get("is_active") is None:
+        event_dict["is_active"] = True
     event_dict["created_at"] = datetime.now(timezone.utc)
     event_dict["updated_at"] = datetime.now(timezone.utc)
     await db.events.insert_one(event_dict)
@@ -219,11 +228,20 @@ async def admin_delete_event(event_id: str, username: str = Depends(get_current_
 
 
 @router.post("/admin/events/extract-flyer")
-async def extract_event_from_flyer(file: UploadFile = File(...)):
+async def extract_event_from_flyer(file: UploadFile = File(...), username: str = Depends(get_current_admin)):
     """Use AI to read an event flyer image and extract event details"""
+    return await _extract_flyer_details(file)
+
+
+async def _extract_flyer_details(file: UploadFile) -> dict:
+    """Shared helper: extract event fields from an uploaded flyer image using AI."""
     from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent
+    import json as json_lib
+    import re
 
     contents = await file.read()
+    if not contents:
+        raise HTTPException(status_code=400, detail="Empty file")
     if len(contents) > 10 * 1024 * 1024:
         raise HTTPException(status_code=400, detail="Image too large (max 10MB)")
 
@@ -232,39 +250,198 @@ async def extract_event_from_flyer(file: UploadFile = File(...)):
     if not api_key:
         raise HTTPException(status_code=500, detail="AI service not configured")
 
+    empty_result = {"name": "", "description": "", "date": "", "time": "", "location": "", "featured": False}
+
     try:
         chat = LlmChat(
             api_key=api_key,
             session_id=f"flyer_{uuid.uuid4().hex[:8]}",
-            system_message="You are an event data extractor. Extract event information from flyer images and return ONLY a valid JSON object. No markdown, no explanation."
+            system_message=(
+                "You are an event data extractor. Read event flyer images and return ONLY a valid JSON "
+                "object with the requested fields. Never include markdown fences, explanations, or extra text."
+            )
         ).with_model("openai", "gpt-4o")
 
         image_content = ImageContent(image_base64=image_b64)
-        response = await chat.send_message(UserMessage(
-            text="""Extract the following event details from this flyer image. Return ONLY a valid JSON object with these fields:
-{
-  "name": "Event name/title",
-  "description": "Brief description of the event",
-  "date": "Date(s) of the event (e.g., 'March 25, 2026' or 'Every Friday')",
-  "time": "Time of the event (e.g., '9PM - 2AM')",
-  "location": "Venue/location name if visible",
-  "featured": false
-}
-If a field is not visible in the flyer, use an empty string. Return ONLY the JSON, no other text.""",
-            file_contents=[image_content]
-        ))
+        prompt = (
+            "Extract event details from this flyer image. Return ONLY a JSON object with these exact keys: "
+            '{"name": "", "description": "", "date": "", "time": "", "location": "", "featured": false}. '
+            "Rules: "
+            "- name: the event title/headline. "
+            "- description: 1-2 sentence summary of what's happening (DJs, performers, theme). "
+            "- date: exact date(s) as printed (e.g., 'March 25, 2026', 'Every Friday', 'Sat Feb 8'). "
+            "- time: start-end times as printed (e.g., '9PM - 2AM', 'Doors 8PM'). "
+            "- location: venue name or address if shown, otherwise empty string. "
+            "- featured: always false. "
+            "If a field is not clearly visible, return an empty string for it. "
+            "Return ONLY the JSON object, no code fences, no commentary."
+        )
+        response = await chat.send_message(UserMessage(text=prompt, file_contents=[image_content]))
 
-        import json as json_lib
-        cleaned = response.strip()
+        # Robust JSON extraction
+        cleaned = (response or "").strip()
+        # Strip markdown code fences if present
         if cleaned.startswith("```"):
-            cleaned = cleaned.split("\n", 1)[1] if "\n" in cleaned else cleaned[3:]
-            if cleaned.endswith("```"):
-                cleaned = cleaned[:-3]
-            cleaned = cleaned.strip()
-        if cleaned.startswith("json"):
-            cleaned = cleaned[4:].strip()
-        extracted = json_lib.loads(cleaned)
-        return extracted
+            cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
+            cleaned = re.sub(r"\s*```$", "", cleaned)
+        # If still not clean JSON, grab first {...} block
+        if not cleaned.startswith("{"):
+            match = re.search(r"\{.*\}", cleaned, re.DOTALL)
+            if match:
+                cleaned = match.group(0)
+
+        try:
+            extracted = json_lib.loads(cleaned)
+        except Exception:
+            logging.warning(f"Flyer JSON parse fallback. Raw response: {response!r}")
+            return empty_result
+
+        # Normalize: coerce all string fields to strings, featured to bool
+        result = {**empty_result}
+        for key in ["name", "description", "date", "time", "location"]:
+            val = extracted.get(key, "")
+            result[key] = str(val).strip() if val is not None else ""
+        result["featured"] = bool(extracted.get("featured", False))
+        return result
+    except HTTPException:
+        raise
     except Exception as e:
         logging.error(f"AI flyer extraction error: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to extract event details: {str(e)}")
+        # Return empty rather than 500 so bulk uploads still create the event with just the image
+        return empty_result
+
+
+@router.post("/admin/events/bulk-upload")
+async def admin_bulk_upload_flyers(
+    files: list[UploadFile] = File(...),
+    username: str = Depends(get_current_admin)
+):
+    """
+    Bulk upload multiple event flyer images. For each file:
+      1. Save the image to disk (via existing upload flow)
+      2. Try AI extraction to auto-fill name/date/time/etc.
+      3. Create an event (hidden by default) even if AI fails.
+    Returns a per-file result list.
+    """
+    from pathlib import Path
+
+    if not files:
+        raise HTTPException(status_code=400, detail="No files provided")
+    if len(files) > 25:
+        raise HTTPException(status_code=400, detail="Maximum 25 flyers per bulk upload")
+
+    uploads_dir = Path("/app/backend/uploads")
+    uploads_dir.mkdir(parents=True, exist_ok=True)
+
+    results = []
+    # Determine starting display_order (append to end)
+    last = await db.events.find({}, {"display_order": 1}).sort("display_order", -1).limit(1).to_list(1)
+    next_order = ((last[0].get("display_order", 0) if last else 0) + 1)
+
+    for idx, upload in enumerate(files):
+        entry = {"filename": upload.filename, "success": False, "event_id": None, "extracted": False, "error": None}
+        try:
+            # Read once, reuse for both save and AI
+            content = await upload.read()
+            if not content:
+                entry["error"] = "Empty file"
+                results.append(entry)
+                continue
+            if len(content) > 10 * 1024 * 1024:
+                entry["error"] = "File too large (max 10MB)"
+                results.append(entry)
+                continue
+
+            ext = os.path.splitext(upload.filename or "")[1].lower() or ".jpg"
+            if ext not in [".jpg", ".jpeg", ".png", ".gif", ".webp"]:
+                ext = ".jpg"
+            unique_filename = f"event_{uuid.uuid4().hex[:12]}{ext}"
+            file_path = uploads_dir / unique_filename
+            with open(file_path, "wb") as f:
+                f.write(content)
+            image_url = f"/api/uploads/{unique_filename}"
+
+            # AI extraction (best-effort). Build an ad-hoc UploadFile-like object.
+            extracted = {"name": "", "description": "", "date": "", "time": "", "location": "", "featured": False}
+            try:
+                from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent
+                import json as json_lib
+                import re
+                image_b64 = base64.b64encode(content).decode('utf-8')
+                api_key = os.environ.get('EMERGENT_LLM_KEY', '')
+                if api_key:
+                    chat = LlmChat(
+                        api_key=api_key,
+                        session_id=f"bulkflyer_{uuid.uuid4().hex[:8]}",
+                        system_message="You are an event data extractor. Return ONLY a JSON object. No markdown, no commentary."
+                    ).with_model("openai", "gpt-4o")
+                    response = await chat.send_message(UserMessage(
+                        text=(
+                            'Extract event details as JSON with keys: {"name":"","description":"","date":"","time":"","location":"","featured":false}. '
+                            "Use empty strings for missing fields. Return ONLY the JSON."
+                        ),
+                        file_contents=[ImageContent(image_base64=image_b64)]
+                    ))
+                    cleaned = (response or "").strip()
+                    if cleaned.startswith("```"):
+                        cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned)
+                        cleaned = re.sub(r"\s*```$", "", cleaned)
+                    if not cleaned.startswith("{"):
+                        m = re.search(r"\{.*\}", cleaned, re.DOTALL)
+                        if m:
+                            cleaned = m.group(0)
+                    parsed = json_lib.loads(cleaned)
+                    for key in ["name", "description", "date", "time", "location"]:
+                        v = parsed.get(key, "")
+                        extracted[key] = str(v).strip() if v is not None else ""
+                    extracted["featured"] = bool(parsed.get("featured", False))
+                    if extracted["name"] or extracted["date"]:
+                        entry["extracted"] = True
+            except Exception as ai_err:
+                logging.warning(f"Bulk flyer AI extract failed for {upload.filename}: {ai_err}")
+                # continue — we still create the event with just the image
+
+            # Create event doc — always hidden by default for bulk (user chose option b-A)
+            event_doc = {
+                "id": str(uuid.uuid4()),
+                "name": extracted["name"] or "Untitled Event",
+                "description": extracted["description"] or "",
+                "date": extracted["date"] or "TBD",
+                "time": extracted["time"] or "TBD",
+                "location": extracted["location"] or "",
+                "location_slug": None,
+                "image": image_url,
+                "featured": False,
+                "free_entry": False,
+                "packages": ["general"],
+                "package_prices": {"general": 25.0, "vip": 75.0, "table": 200.0},
+                "is_active": False,  # Hidden by default per user request
+                "display_order": next_order + idx,
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc),
+            }
+            await db.events.insert_one(event_doc)
+            event_doc.pop("_id", None)
+
+            entry["success"] = True
+            entry["event_id"] = event_doc["id"]
+            entry["event"] = {
+                "id": event_doc["id"],
+                "name": event_doc["name"],
+                "date": event_doc["date"],
+                "time": event_doc["time"],
+                "image": event_doc["image"],
+            }
+        except Exception as e:
+            logging.error(f"Bulk flyer error for {upload.filename}: {e}")
+            entry["error"] = str(e)
+        results.append(entry)
+
+    successes = sum(1 for r in results if r["success"])
+    extracted_count = sum(1 for r in results if r["extracted"])
+    return {
+        "total": len(files),
+        "created": successes,
+        "extracted": extracted_count,
+        "results": results,
+    }

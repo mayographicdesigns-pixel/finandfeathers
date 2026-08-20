@@ -994,14 +994,15 @@ class LocationResponse(BaseModel):
 
 class Event(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    name: str
-    description: str
-    date: str  # e.g., "Every Friday" or "December 25, 2025"
-    time: str  # e.g., "9PM - 2AM"
-    location: str  # e.g., "Edgewood (Atlanta)" or "All Locations"
+    name: str = ""
+    description: str = ""
+    date: str = ""  # e.g., "Every Friday" or "December 25, 2025"
+    time: str = ""  # e.g., "9PM - 2AM"
+    location: str = ""  # e.g., "Edgewood (Atlanta)" or "All Locations"
     location_slug: Optional[str] = None  # Used for reservation SMS link
-    image: str
+    image: str = ""
     featured: bool = False
+    free_entry: bool = False
     packages: List[str] = ["general"]  # List of package IDs available
     package_prices: Dict[str, float] = Field(default_factory=dict)
     is_active: bool = True
@@ -1010,17 +1011,19 @@ class Event(BaseModel):
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 class EventCreate(BaseModel):
-    name: str
-    description: str
-    date: str
-    time: str
-    location: str
+    name: Optional[str] = ""
+    description: Optional[str] = ""
+    date: Optional[str] = ""
+    time: Optional[str] = ""
+    location: Optional[str] = ""
     location_slug: Optional[str] = None
-    image: str
+    image: Optional[str] = ""
     featured: bool = False
+    free_entry: bool = False
     packages: List[str] = ["general"]
     package_prices: Dict[str, float] = Field(default_factory=dict)
     display_order: int = 0
+    is_active: Optional[bool] = None  # If not set, defaults to True in route
 
 class EventUpdate(BaseModel):
     name: Optional[str] = None
@@ -1031,6 +1034,7 @@ class EventUpdate(BaseModel):
     location_slug: Optional[str] = None
     image: Optional[str] = None
     featured: Optional[bool] = None
+    free_entry: Optional[bool] = None
     packages: Optional[List[str]] = None
     package_prices: Optional[Dict[str, float]] = None
     is_active: Optional[bool] = None

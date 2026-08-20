@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Plus, Edit2, Trash2, Upload, RefreshCw, Ticket, Star, Calendar, Clock, MapPin, Wand2, Save
+  Plus, Edit2, Trash2, Upload, RefreshCw, Ticket, Star, Calendar, Clock, MapPin, Wand2, Save, Layers, CheckCircle2, XCircle
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
@@ -13,6 +13,7 @@ import {
   adminUpdateEvent, 
   adminDeleteEvent,
   adminGetLocations,
+  adminBulkUploadFlyers,
   uploadImage
 } from '../../services/api';
 
@@ -27,8 +28,11 @@ const EventsTab = () => {
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [extracting, setExtracting] = useState(false);
+  const [bulkUploading, setBulkUploading] = useState(false);
+  const [bulkResults, setBulkResults] = useState(null); // { total, created, extracted, results: [...] }
   const fileInputRef = useRef(null);
   const flyerInputRef = useRef(null);
+  const bulkInputRef = useRef(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -143,13 +147,42 @@ const EventsTab = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.name || !formData.description || !formData.date || !formData.time) {
-      toast({ title: 'Error', description: 'Please fill all required fields', variant: 'destructive' });
+  const handleBulkUpload = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+
+    if (files.length > 25) {
+      toast({ title: 'Too many files', description: 'Please upload at most 25 flyers at a time.', variant: 'destructive' });
+      if (bulkInputRef.current) bulkInputRef.current.value = '';
       return;
     }
 
+    setBulkUploading(true);
+    setBulkResults(null);
+    toast({
+      title: `Uploading ${files.length} flyer${files.length !== 1 ? 's' : ''}...`,
+      description: 'AI is reading each flyer. New events will be created as Hidden.'
+    });
+
+    try {
+      const data = await adminBulkUploadFlyers(files);
+      setBulkResults(data);
+      await fetchEvents();
+      toast({
+        title: 'Bulk upload complete',
+        description: `${data.created}/${data.total} events created · ${data.extracted} auto-filled by AI`
+      });
+    } catch (err) {
+      toast({ title: 'Bulk upload failed', description: err.message, variant: 'destructive' });
+    } finally {
+      setBulkUploading(false);
+      if (bulkInputRef.current) bulkInputRef.current.value = '';
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // Event details are optional — blank fields default to placeholders on backend.
     setSubmitting(true);
     try {
       if (editingEvent) {
@@ -277,7 +310,7 @@ const EventsTab = () => {
             <RefreshCw className="w-4 h-4 mr-1" /> Refresh
           </Button>
 
-          {/* AI Flyer Extract */}
+          {/* AI Flyer Extract (single) */}
           <input
             type="file"
             ref={flyerInputRef}
@@ -287,7 +320,7 @@ const EventsTab = () => {
           />
           <Button
             onClick={() => flyerInputRef.current?.click()}
-            disabled={extracting}
+            disabled={extracting || bulkUploading}
             className="bg-purple-600 hover:bg-purple-700"
             data-testid="ai-flyer-btn"
           >
@@ -295,11 +328,79 @@ const EventsTab = () => {
             {extracting ? 'Reading...' : 'AI Flyer Read'}
           </Button>
 
+          {/* Bulk Flyer Upload */}
+          <input
+            type="file"
+            ref={bulkInputRef}
+            onChange={handleBulkUpload}
+            accept="image/*"
+            multiple
+            className="hidden"
+          />
+          <Button
+            onClick={() => bulkInputRef.current?.click()}
+            disabled={bulkUploading || extracting}
+            className="bg-indigo-600 hover:bg-indigo-700"
+            data-testid="bulk-flyer-upload-btn"
+          >
+            {bulkUploading ? <RefreshCw className="w-4 h-4 mr-1 animate-spin" /> : <Layers className="w-4 h-4 mr-1" />}
+            {bulkUploading ? 'Uploading...' : 'Bulk Flyer Upload'}
+          </Button>
+
           <Button onClick={() => setShowForm(true)} className="bg-red-600 hover:bg-red-700" data-testid="add-event-btn">
             <Plus className="w-4 h-4 mr-1" /> Add Event
           </Button>
         </div>
       </div>
+
+      {/* Bulk Upload Results Panel */}
+      {bulkResults && (
+        <Card className="bg-slate-800 border-indigo-700" data-testid="bulk-results-panel">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h4 className="text-white font-semibold flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-indigo-400" />
+                  Bulk Upload Results
+                </h4>
+                <p className="text-slate-400 text-sm mt-1">
+                  {bulkResults.created}/{bulkResults.total} events created (Hidden) · {bulkResults.extracted} auto-filled by AI
+                </p>
+              </div>
+              <Button size="sm" variant="ghost" onClick={() => setBulkResults(null)} className="text-slate-400 hover:text-white">
+                Dismiss
+              </Button>
+            </div>
+            <div className="max-h-64 overflow-y-auto space-y-1">
+              {bulkResults.results.map((r, idx) => (
+                <div
+                  key={idx}
+                  className={`flex items-center gap-2 text-sm px-3 py-2 rounded ${
+                    r.success ? 'bg-slate-900/50 text-slate-300' : 'bg-red-900/20 text-red-300'
+                  }`}
+                >
+                  {r.success ? (
+                    <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+                  ) : (
+                    <XCircle className="w-4 h-4 text-red-500 shrink-0" />
+                  )}
+                  <span className="truncate flex-1">{r.filename}</span>
+                  {r.success ? (
+                    <span className="text-xs text-slate-500">
+                      {r.extracted ? 'AI-filled' : 'Image only'} · {r.event?.name || 'Untitled'}
+                    </span>
+                  ) : (
+                    <span className="text-xs">{r.error}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-slate-500 mt-3">
+              All bulk events are created as <span className="text-slate-300 font-semibold">Hidden</span>. Review, edit and click &quot;Show&quot; to publish.
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Add/Edit Form */}
       {showForm && (
@@ -311,13 +412,12 @@ const EventsTab = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-slate-300 text-sm block mb-2">Event Name *</label>
+                  <label className="text-slate-300 text-sm block mb-2">Event Name <span className="text-slate-500 text-xs">(optional)</span></label>
                   <Input
                     placeholder="e.g., Friday Night Live"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="bg-slate-900 border-slate-700 text-white"
-                    required
                     data-testid="event-name-input"
                   />
                 </div>
@@ -350,36 +450,33 @@ const EventsTab = () => {
               </div>
 
               <div>
-                <label className="text-slate-300 text-sm block mb-2">Description *</label>
+                <label className="text-slate-300 text-sm block mb-2">Description <span className="text-slate-500 text-xs">(optional)</span></label>
                 <Textarea
                   placeholder="Describe the event..."
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="bg-slate-900 border-slate-700 text-white"
                   rows={3}
-                  required
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-slate-300 text-sm block mb-2">Date *</label>
+                  <label className="text-slate-300 text-sm block mb-2">Date <span className="text-slate-500 text-xs">(optional)</span></label>
                   <Input
                     placeholder="e.g., Every Friday or December 25, 2025"
                     value={formData.date}
                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                     className="bg-slate-900 border-slate-700 text-white"
-                    required
                   />
                 </div>
                 <div>
-                  <label className="text-slate-300 text-sm block mb-2">Time *</label>
+                  <label className="text-slate-300 text-sm block mb-2">Time <span className="text-slate-500 text-xs">(optional)</span></label>
                   <Input
                     placeholder="e.g., 9PM - 2AM"
                     value={formData.time}
                     onChange={(e) => setFormData({ ...formData, time: e.target.value })}
                     className="bg-slate-900 border-slate-700 text-white"
-                    required
                   />
                 </div>
               </div>
@@ -482,7 +579,7 @@ const EventsTab = () => {
                     data-testid="free-entry-toggle"
                   />
                   <label htmlFor="free-entry-checkbox" className="text-slate-300 text-sm flex items-center gap-1">
-                    <Ticket className="w-4 h-4 text-green-500" /> Free Entry (shows "Reserve" instead of "Get Tickets")
+                    <Ticket className="w-4 h-4 text-green-500" /> Free Entry (shows &quot;Reserve&quot; instead of &quot;Get Tickets&quot;)
                   </label>
                 </div>
               </div>
