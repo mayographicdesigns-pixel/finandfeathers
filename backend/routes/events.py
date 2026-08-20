@@ -6,12 +6,156 @@ from models import EventCreate, EventUpdate
 from timezone_utils import get_location_tz_name
 from typing import Optional
 from datetime import datetime, timezone
+from pathlib import Path
 import base64
 import uuid
 import os
+import json
 import logging
 
 router = APIRouter(prefix="/api")
+
+# Path to git-tracked snapshot used by the startup sync migration
+EVENTS_SYNC_FILE = Path(__file__).resolve().parent.parent / "migrations" / "events_sync.json"
+
+
+def _serialize_for_snapshot(event: dict) -> dict:
+    """Copy event, drop internal-only fields, convert datetimes to ISO strings."""
+    out = {}
+    for k, v in event.items():
+        if k in ("_id",):
+            continue
+        if isinstance(v, datetime):
+            out[k] = v.isoformat()
+        else:
+            out[k] = v
+    return out
+
+
+def _append_event_snapshot(event: dict) -> None:
+    """Append/replace an event in the git-tracked events_sync.json snapshot.
+
+    Matched by `id`. Safe to call on every create/bulk-create. Failures are
+    logged but never raised so the API stays green.
+    """
+    try:
+        EVENTS_SYNC_FILE.parent.mkdir(parents=True, exist_ok=True)
+        if EVENTS_SYNC_FILE.exists():
+            data = json.loads(EVENTS_SYNC_FILE.read_text() or "{}")
+        else:
+            data = {}
+        events = data.get("events") or []
+        snap = _serialize_for_snapshot(event)
+        # Replace existing entry with same id, else append
+        replaced = False
+        for i, e in enumerate(events):
+            if e.get("id") == snap.get("id"):
+                events[i] = snap
+                replaced = True
+                break
+        if not replaced:
+            events.append(snap)
+        data["events"] = events
+        data["description"] = data.get("description") or (
+            "Auto-generated event snapshot. Startup migration `apply_events_sync_migration()` "
+            "upserts these into the production DB on the next deploy."
+        )
+        EVENTS_SYNC_FILE.write_text(json.dumps(data, indent=2, default=str))
+    except Exception as e:
+        logging.warning(f"Failed to write events_sync.json: {e}")
+
+
+async def _auto_post_event_to_wall(event: dict) -> list:
+    """
+    When an event flips to Active, drop a promo post on the Social Wall.
+    - "all-locations" or blank slug → broadcasts to all active non-hibachi locations
+    - specific slug → single-location post
+    Returns list of created wall_post ids (also stored on the event).
+    """
+    try:
+        image_url = (event.get("image") or "").strip()
+        if not image_url:
+            return []
+
+        name = event.get("name") or "New Event"
+        date = event.get("date") or ""
+        time = event.get("time") or ""
+        location_text = event.get("location") or ""
+        description = (event.get("description") or "").strip()
+
+        # Build a compact caption line
+        meta_bits = [b for b in [date, time, location_text] if b and b.upper() != "TBD"]
+        meta_line = " · ".join(meta_bits)
+        caption = f"🎉 {name}"
+        if meta_line:
+            caption += f"\n{meta_line}"
+        if description:
+            caption += f"\n\n{description}"
+
+        # Determine target locations
+        slug = (event.get("location_slug") or "").strip()
+        targets = []
+        if slug and slug != "all-locations":
+            targets = [slug]
+        else:
+            locs = await db.locations.find(
+                {"is_active": True, "slug": {"$ne": "hibachi-food-truck"}},
+                {"_id": 0, "slug": 1},
+            ).to_list(length=50)
+            targets = [l["slug"] for l in locs if l.get("slug")]
+
+        if not targets:
+            return []
+
+        now_iso = datetime.now(timezone.utc).isoformat()
+        created_ids = []
+        for loc_slug in targets:
+            post_id = str(uuid.uuid4())
+            post = {
+                "id": post_id,
+                "location_slug": loc_slug,
+                "user_id": "system-events",
+                "user_name": "Fin & Feathers",
+                "user_avatar": "",
+                "user_photo": "",
+                "post_type": "photo",
+                "content": caption,
+                "image_url": image_url,
+                "likes": [],
+                "comments": [],
+                "source": "event_auto_post",
+                "source_event_id": event.get("id"),
+                "created_at": now_iso,
+            }
+            if len(targets) > 1:
+                # Group all fan-out posts under a single broadcast_id
+                post["broadcast_id"] = post.get("broadcast_id") or f"event_{event.get('id')}"
+                post["is_broadcast"] = True
+            await db.wall_posts.insert_one(post)
+
+            # Mirror to gallery (matches how DJ posts flow)
+            await db.gallery_items.insert_one({
+                "id": str(uuid.uuid4()),
+                "title": name[:100],
+                "image_url": image_url,
+                "category": "social",
+                "is_active": True,
+                "display_order": 999,
+                "location_slug": loc_slug,
+                "posted_by": "Fin & Feathers",
+                "posted_by_id": "system-events",
+                "source": "event_auto_post",
+                "source_post_id": post_id,
+                "source_event_id": event.get("id"),
+                "created_at": now_iso,
+            })
+            created_ids.append(post_id)
+
+        logging.info(f"Auto-posted event {event.get('id')} to {len(created_ids)} location(s)")
+        return created_ids
+    except Exception as e:
+        logging.error(f"Auto-post event to wall failed: {e}")
+        return []
 
 # Event ticket packages (predefined on backend for security)
 EVENT_PACKAGES = {
@@ -203,18 +347,40 @@ async def admin_create_event(event: EventCreate, username: str = Depends(get_cur
     event_dict["updated_at"] = datetime.now(timezone.utc)
     await db.events.insert_one(event_dict)
     event_dict.pop("_id", None)
+    _append_event_snapshot(event_dict)
     return event_dict
 
 
 @router.put("/admin/events/{event_id}")
 async def admin_update_event(event_id: str, update: EventUpdate, username: str = Depends(get_current_admin)):
-    """Update an existing event"""
+    """Update an existing event. Auto-posts to the Social Wall on Active flip."""
+    existing = await db.events.find_one({"id": event_id}, {"_id": 0})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Event not found")
+
     update_data = {k: v for k, v in update.dict().items() if v is not None}
     update_data["updated_at"] = datetime.now(timezone.utc)
-    result = await db.events.update_one({"id": event_id}, {"$set": update_data})
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Event not found")
+
+    # Detect transition to Active for auto-post
+    will_activate = (
+        update_data.get("is_active") is True
+        and existing.get("is_active") is not True
+        and not existing.get("wall_post_ids")
+    )
+
+    await db.events.update_one({"id": event_id}, {"$set": update_data})
     updated = await db.events.find_one({"id": event_id}, {"_id": 0})
+
+    if will_activate:
+        post_ids = await _auto_post_event_to_wall(updated)
+        if post_ids:
+            await db.events.update_one(
+                {"id": event_id},
+                {"$set": {"wall_post_ids": post_ids, "wall_posted_at": datetime.now(timezone.utc)}},
+            )
+            updated = await db.events.find_one({"id": event_id}, {"_id": 0})
+
+    _append_event_snapshot(updated)
     return updated
 
 
@@ -224,6 +390,15 @@ async def admin_delete_event(event_id: str, username: str = Depends(get_current_
     result = await db.events.delete_one({"id": event_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Event not found")
+    # Remove from git-tracked snapshot too so it doesn't resurrect on next deploy
+    try:
+        if EVENTS_SYNC_FILE.exists():
+            data = json.loads(EVENTS_SYNC_FILE.read_text() or "{}")
+            events = [e for e in (data.get("events") or []) if e.get("id") != event_id]
+            data["events"] = events
+            EVENTS_SYNC_FILE.write_text(json.dumps(data, indent=2, default=str))
+    except Exception as e:
+        logging.warning(f"Failed to purge event {event_id} from events_sync.json: {e}")
     return {"success": True, "message": "Event deleted"}
 
 
@@ -422,6 +597,7 @@ async def admin_bulk_upload_flyers(
             }
             await db.events.insert_one(event_doc)
             event_doc.pop("_id", None)
+            _append_event_snapshot(event_doc)
 
             entry["success"] = True
             entry["event_id"] = event_doc["id"]

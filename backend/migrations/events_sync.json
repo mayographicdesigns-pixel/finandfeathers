@@ -1,0 +1,4 @@
+{
+  "description": "Auto-generated event snapshot. Startup migration apply_events_sync_migration() upserts these into the production DB on the next deploy.",
+  "events": []
+}

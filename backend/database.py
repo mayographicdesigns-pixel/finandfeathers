@@ -592,6 +592,58 @@ async def apply_june2026_data_migrations():
         logging.error(f"June 2026 data migration error: {e}")
 
 
+async def apply_events_sync_migration():
+    """Idempotently upsert events from the git-tracked snapshot
+    `backend/migrations/events_sync.json` into the database.
+
+    Rule: only insert events whose `id` is NOT already in the DB. This means
+    once an event has been synced to prod, further admin edits in prod are
+    preserved (they won't be overwritten by an older preview snapshot). New
+    bulk-uploaded flyers added in preview will land in prod on the next deploy.
+    """
+    try:
+        from pathlib import Path
+        import json as _json
+        sync_path = Path(__file__).resolve().parent / "migrations" / "events_sync.json"
+        if not sync_path.exists():
+            return
+        raw = sync_path.read_text().strip()
+        if not raw:
+            return
+        payload = _json.loads(raw)
+        events = payload.get("events") or []
+        if not events:
+            return
+
+        inserted = 0
+        skipped = 0
+        for ev in events:
+            eid = ev.get("id")
+            if not eid:
+                continue
+            if await db.events.find_one({"id": eid}):
+                skipped += 1
+                continue
+            # Coerce ISO datetime strings back to datetime for created_at/updated_at
+            for k in ("created_at", "updated_at", "wall_posted_at"):
+                v = ev.get(k)
+                if isinstance(v, str):
+                    try:
+                        ev[k] = datetime.fromisoformat(v.replace("Z", "+00:00"))
+                    except Exception:
+                        pass
+            # Never carry wall_post_ids across DBs (posts live in each DB's wall_posts)
+            ev.pop("wall_post_ids", None)
+            ev.pop("wall_posted_at", None)
+            await db.events.insert_one(ev)
+            inserted += 1
+
+        if inserted or skipped:
+            logging.info(f"Events sync migration: inserted={inserted} skipped={skipped}")
+    except Exception as e:
+        logging.error(f"Events sync migration error: {e}")
+
+
 async def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Grant admin access - no authentication required"""
     return "admin"
