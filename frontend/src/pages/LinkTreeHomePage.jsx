@@ -1440,28 +1440,31 @@ const LinkTreeHomePage = () => {
         </div>
 
         {/* Weekly Specials Section */}
-        {/* Coming Soon: Marietta, GA banner — click to join waitlist */}
+        {/* Now Open: Marietta, GA banner — click to view the location page */}
         {mariettaComingSoonEnabled && (
         <Card
           className="bg-gradient-to-r from-amber-500 via-red-600 to-amber-500 border-none mb-4 overflow-hidden relative shadow-lg shadow-red-500/40 cursor-pointer hover:scale-[1.01] transition-transform"
           data-testid="coming-soon-marietta-banner"
-          onClick={() => { setShowWaitlist(true); setWaitlistSuccess(''); }}
+          onClick={() => navigate('/locations/marietta?tab=info')}
           role="button"
           tabIndex={0}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowWaitlist(true); setWaitlistSuccess(''); } }}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/locations/marietta?tab=info'); } }}
         >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.2),_transparent_60%)] pointer-events-none" />
           <CardContent className="p-4 relative">
             <div className="flex items-center justify-center gap-2 flex-wrap">
-              <span className="text-white text-xs font-bold uppercase tracking-widest bg-black/25 px-2.5 py-0.5 rounded-full">
-                Coming Soon
+              <span className="text-white text-xs font-bold uppercase tracking-widest bg-black/25 px-2.5 py-0.5 rounded-full animate-pulse">
+                Now Open
               </span>
               <span className="text-white font-black text-lg md:text-xl tracking-tight text-center">
                 📍 Marietta, Georgia!!
               </span>
             </div>
             <p className="text-white/95 text-xs text-center mt-1 font-semibold">
-              Tap to join the waitlist — be first to know when we open
+              16 Atlanta St SE, Marietta, GA 30060 · Reservations: (678) 505-8927
+            </p>
+            <p className="text-white/80 text-[11px] text-center mt-0.5">
+              Tap to view hours, menu & directions
             </p>
           </CardContent>
         </Card>
