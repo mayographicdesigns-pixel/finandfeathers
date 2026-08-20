@@ -317,6 +317,28 @@ const FeedTab = ({ locationSlug, userId, userName, userAvatar, userPhoto, djStat
         </div>
       )}
 
+      {/* Live Stream Happy Hour banner */}
+      <div className="mx-3 mt-3 rounded-xl overflow-hidden border border-red-600/40 bg-slate-900" data-testid="happy-hour-stream-banner">
+        <div className="bg-gradient-to-r from-red-700 via-red-600 to-amber-600 px-3 py-2 flex items-center gap-2">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white" />
+          </span>
+          <p className="text-white font-bold text-sm tracking-wide uppercase">Live Stream Happy Hour</p>
+        </div>
+        <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+          <iframe
+            src="https://player.viloud.tv/embed/channel/5b57f59511b5217f1593440efd69d249?autoplay=0&volume=1&controls=1&title=1&share=1&open_playlist=0&random=0"
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+            frameBorder="0"
+            allow="autoplay; fullscreen; screen-wake-lock"
+            allowFullScreen
+            title="Live Stream Happy Hour"
+            data-testid="happy-hour-stream-iframe"
+          />
+        </div>
+      </div>
+
       {/* Posts */}
       <div className="flex-1 overflow-y-auto p-3 space-y-3" data-testid="feed-posts">
         {posts.length === 0 && (
@@ -419,7 +441,6 @@ const ChatTab = ({ locationSlug, userId, userName, userAvatar, isDJ }) => {
   }, [fetchSlug]);
 
   useEffect(() => { fetchMessages(); const iv = setInterval(fetchMessages, 3000); return () => clearInterval(iv); }, [fetchMessages]);
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
   const handleSend = async () => {
     if (!newMsg.trim()) return;
@@ -527,7 +548,6 @@ const DMsTab = ({ userId, userName, userAvatar, locationSlug, isDJ }) => {
   }, [activeThread, userId]);
 
   useEffect(() => { if (activeThread) { const iv = setInterval(fetchThread, 3000); return () => clearInterval(iv); } }, [activeThread, fetchThread]);
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [threadMessages]);
 
   const handleSend = async () => {
     if (!newMsg.trim() || !activeThread) return;
@@ -900,7 +920,6 @@ const LiveChat = ({ locationSlug, userId, userName, userAvatar }) => {
   }, [locationSlug]);
 
   useEffect(() => { fetchMessages(); const iv = setInterval(fetchMessages, 3000); return () => clearInterval(iv); }, [fetchMessages]);
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
   const handleSend = async () => {
     if (!newMsg.trim()) return;

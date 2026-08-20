@@ -167,6 +167,7 @@ routes/
 - [x] **Crenshaw Blvd First Signature Cocktail** (Jun 2026) — set display_order Crenshaw Blvd=1, Rodeo Drive=2 across all location copies, and changed cocktail sorting in MenuPage.jsx so display_order takes priority over price-desc for signature cocktails. Verified via screenshot.
 - [x] **Production Data Migration** (Jun 2026) — added flag-guarded `apply_june2026_data_migrations()` in database.py (runs at startup, flag `migration_june2026_v1` in app_settings): cocktail display orders, Tequila Sunrise $10/$15 premium, Marietta location upsert. Needed because production has a separate DB from preview.
 - [x] **Marietta "Now Open" Banner** (Jun 2026) — homepage banner changed from "Coming Soon"/waitlist to "Now Open" with address (16 Atlanta St SE) + reservations (678) 505-8927; tap navigates to /locations/marietta?tab=info. Still gated by `marietta_coming_soon_enabled` admin toggle. Verified via screenshot (tap navigates correctly).
+- [x] **Live Stream Happy Hour on Wall** (Jun 2026) — Viloud channel embed (16:9 responsive iframe, allowfullscreen + autoplay permissions for mobile fullscreen/rotate) added to the social wall FEED tab above posts, styled like the homepage banner with a pulsing LIVE header. Removed all three chat auto-scroll-to-bottom effects (wall chat, DM thread, second chat) that yanked the page on every 3s poll. Verified via screenshot.
 
 ## Backlog
 - [ ] Per-Location Weekly Specials management (P2)
